@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  security-invariant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: CSP connect-src must stay locked to self + openrouter.ai
+        run: |
+          line=$(grep -i 'Content-Security-Policy' public/_headers || true)
+          if [ -z "$line" ]; then echo "::error::No CSP found in public/_headers"; exit 1; fi
+          connect=$(echo "$line" | grep -oE "connect-src[^;]*" || true)
+          echo "connect-src is: $connect"
+          bad=$(echo "$connect" | tr ' ' '\n' | grep -iE '^https?://' | grep -viE '^https://openrouter\.ai/?$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::CSP connect-src allows a host other than https://openrouter.ai:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "OK: connect-src is locked down."
+      - name: No off-origin key persistence (state stays in localStorage)
+        run: |
+          if grep -rInE "document\.cookie[[:space:]]*=" src/; then
+            echo "::error::Writing document.cookie is not allowed; the key/state must stay in localStorage."
+            exit 1
+          fi
+          echo "OK: no cookie writes in src/."

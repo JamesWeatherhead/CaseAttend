@@ -1,0 +1,17 @@
+# Require the maintainer's review on everything that affects safety: key
+# handling, security headers, dependencies, the backend, and all clinical
+# teaching content. Enforced via branch protection ("require review from Code
+# Owners"). As credentialed co-maintainers join, add them to the relevant paths.
+
+# Default owner for anything not otherwise matched.
+*                     @JamesWeatherhead
+
+# --- BYOK security surface (the no-keys invariant) ---
+/src/services/        @JamesWeatherhead
+/public/_headers      @JamesWeatherhead
+/functions/           @JamesWeatherhead
+/package.json         @JamesWeatherhead
+/package-lock.json    @JamesWeatherhead
+
+# --- Clinical teaching content (requires clinician sign-off) ---
+/lib/prompts/         @JamesWeatherhead
