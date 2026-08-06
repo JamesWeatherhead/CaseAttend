@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Study, ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check } from 'lucide-react';
+import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
-import OpenRouterLogo from './OpenRouterLogo';
+import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
 
 interface StudyListProps {
   onSelectStudy: (study: Study) => void;
@@ -230,10 +230,35 @@ const TestimonialRotator: React.FC = () => {
   );
 };
 
+/** Multi-colour Google "G", for the sign-in method chip. */
+const GoogleG: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+  <svg viewBox="0 0 48 48" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+    <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+    <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z" />
+    <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
+  </svg>
+);
+
+/** One sign-in-method chip; every route goes through OpenRouter's own sign-in. */
+const ProviderChip: React.FC<{ label: string; icon: React.ReactNode; onClick: () => void; disabled?: boolean }> = ({ label, icon, onClick, disabled }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    aria-label={`Continue with OpenRouter using ${label}`}
+    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-60 px-3.5 py-2 text-[13px] text-[#c9ced8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+  >
+    {icon}
+    <span>{label}</span>
+  </button>
+);
+
 /**
- * Landing-page callout: one-click OpenRouter sign-in (SSO), stated plainly —
- * free to start, no credit card, and the key never touches our servers.
- * Once connected it collapses to a quiet confirmation instead of nagging.
+ * Landing-page activation band: a two-column OpenRouter sign-in. The left states
+ * the offer (free, no card, sign-in methods); the right is the single blue
+ * "Continue with OpenRouter" action and its two reassurances. Once connected it
+ * collapses to a quiet confirmation instead of nagging.
  */
 const ConnectCallout: React.FC = () => {
   const [connected, setConnected] = useState<boolean>(hasKey());
@@ -256,48 +281,57 @@ const ConnectCallout: React.FC = () => {
 
   if (connected) {
     return (
-      <div className="mb-9 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/30 px-3.5 py-1.5 text-[12px] text-emerald-300/90">
-        <Check className="w-3.5 h-3.5 flex-shrink-0" />
-        <span>Connected to OpenRouter — pick a case below to begin.</span>
+      <div className="w-full max-w-[1100px] mb-12 flex justify-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/30 px-4 py-2 text-[13px] text-emerald-300/90">
+          <Check className="w-4 h-4 flex-shrink-0" />
+          <span>Connected to OpenRouter. Pick a case below to begin.</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-[560px] mb-10 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-6 sm:px-8 py-6 sm:py-7 flex flex-col items-center text-center">
-      {/* OpenRouter mark */}
-      <div className="mb-3 w-9 h-9 rounded-xl border border-white/[0.08] bg-white/[0.05] flex items-center justify-center">
-        <OpenRouterLogo className="w-4 h-4 text-[#c9ced8]" />
-      </div>
+    <div className="w-full max-w-[1100px] mb-12 rounded-[20px] border border-white/[0.07] bg-white/[0.02] p-6 sm:p-9">
+      <div className="grid grid-cols-1 md:grid-cols-2">
 
-      <h2 className="text-[18px] sm:text-[20px] font-semibold text-white tracking-[-0.02em]">
-        Start free — no credit card
-      </h2>
-      <p className="mt-1.5 max-w-[400px] text-[13px] leading-relaxed text-[#8a8f98]">
-        Sign in with OpenRouter and every case is yours. Two free Gemma vision
-        models are included, so you can learn at zero cost.
-      </p>
+        {/* Left: the offer */}
+        <div className="md:pr-10">
+          <OpenRouterLockup className="h-[26px] w-auto" />
+          <h2 className="mt-5 text-[22px] sm:text-[24px] font-semibold text-white tracking-[-0.02em]">
+            Start free with OpenRouter
+          </h2>
+          <p className="mt-2.5 max-w-[420px] text-[14px] leading-relaxed text-[#9096a0]">
+            Use Google, GitHub, or email to sign in in seconds. No credit card required.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            <ProviderChip label="Google" onClick={connect} disabled={connecting} icon={<GoogleG className="w-[15px] h-[15px]" />} />
+            <ProviderChip label="GitHub" onClick={connect} disabled={connecting} icon={<Github className="w-[15px] h-[15px]" />} />
+            <ProviderChip label="Email" onClick={connect} disabled={connecting} icon={<Mail className="w-[15px] h-[15px]" />} />
+          </div>
+        </div>
 
-      <button
-        onClick={connect}
-        disabled={connecting}
-        className="mt-5 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-60 px-6 py-2.5 text-sm font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
-      >
-        <OpenRouterLogo className="w-4 h-4" />
-        {connecting ? 'Redirecting to OpenRouter…' : 'Sign in with OpenRouter'}
-        {!connecting && <ArrowRight className="w-3.5 h-3.5" />}
-      </button>
-      <p className="mt-2 text-[11px] text-[#5b606b]">GitHub, Google, or email · one click</p>
-
-      <div className="my-5 h-px w-full bg-white/[0.06]" />
-
-      <div className="flex items-start gap-2 max-w-[440px] text-left">
-        <ShieldCheck className="mt-0.5 w-4 h-4 flex-shrink-0 text-emerald-400" />
-        <p className="text-[11px] leading-relaxed text-[#8a8f98]">
-          <span className="text-[#c9ced8]">We never see your key.</span> It's created in your
-          browser and sent only to OpenRouter for inference — never stored on, or routed
-          through, our servers.
-        </p>
+        {/* Right: the action */}
+        <div className="mt-8 pt-8 border-t border-white/[0.07] md:mt-0 md:pt-0 md:border-t-0 md:border-l md:border-white/[0.07] md:pl-10 flex flex-col justify-center">
+          <button
+            onClick={connect}
+            disabled={connecting}
+            className="w-full inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 h-[52px] px-4 sm:px-6 text-[15px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
+          >
+            <OpenRouterMark className="w-[18px] h-[18px]" />
+            <span>{connecting ? 'Redirecting to OpenRouter…' : 'Continue with OpenRouter'}</span>
+            {!connecting && <ArrowRight className="w-4 h-4" />}
+          </button>
+          <ul className="mt-5 space-y-3">
+            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
+              <CircleCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
+              <span>Two free Gemma vision models included</span>
+            </li>
+            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
+              <ShieldCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
+              <span>Your credentials stay with OpenRouter</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
@@ -357,10 +391,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
           </a>
         </div>
 
-        {/* Rotating testimonial */}
-        <TestimonialRotator />
-
-        {/* Sign in with OpenRouter — free, no card, key stays in the browser */}
+        {/* Sign in with OpenRouter — free, no card, credentials stay with OpenRouter */}
         <ConnectCallout />
 
         {/* Section label + filters */}
@@ -469,6 +500,11 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </button>
             );
           })}
+        </div>
+
+        {/* Social proof, moved below the cases so it never delays them */}
+        <div className="mt-16 w-full flex justify-center">
+          <TestimonialRotator />
         </div>
       </div>
     </div>
