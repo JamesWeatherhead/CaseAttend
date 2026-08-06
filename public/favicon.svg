@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect x="8" y="8" width="184" height="184" rx="36" ry="36" fill="#0F172A"/>
+  <rect x="16" y="16" width="168" height="168" rx="30" ry="30" fill="none" stroke="#1E3A5F" stroke-width="2.5"/>
+  <text x="100" y="128" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="96" font-weight="800" letter-spacing="-4" fill="#4A9EF7" text-anchor="middle">CA</text>
+</svg>

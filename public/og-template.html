@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #08090a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin-bottom: 40px;
+  }
+  .logo-box {
+    width: 120px;
+    height: 120px;
+    background: #0F172A;
+    border: 4px solid #1E3A5F;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-text {
+    font-size: 60px;
+    font-weight: 800;
+    color: #4A9EF7;
+  }
+  .title {
+    font-size: 110px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -4px;
+  }
+  .tagline {
+    font-size: 44px;
+    font-weight: 500;
+    color: #8a8f98;
+    margin-bottom: 44px;
+  }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 34px;
+    font-weight: 600;
+    color: #F59E0B;
+  }
+  .badge svg {
+    width: 36px;
+    height: 36px;
+  }
+</style>
+</head>
+<body>
+  <div class="logo-row">
+    <div class="logo-box">
+      <span class="logo-text">CA</span>
+    </div>
+    <span class="title">CaseAttend</span>
+  </div>
+  <div class="tagline">AI tutor for medical imaging.</div>
+  <div class="badge">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+    Google DeepMind Hackathon Winner
+  </div>
+</body>
+</html>

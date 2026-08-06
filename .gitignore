@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.local
+.vercel
+*.log
+.env*.local
+
+# Local PNG masters parked out of the build (WebP shipped instead; originals recoverable from TCGA)
+.png-originals/

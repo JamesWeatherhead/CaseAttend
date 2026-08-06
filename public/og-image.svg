@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#08090a"/>
+
+  <!-- Logo box -->
+  <rect x="430" y="140" width="72" height="72" rx="14" fill="#0F172A" stroke="#1E3A5F" stroke-width="2"/>
+  <text x="466" y="192" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" fill="#4A9EF7">CA</text>
+
+  <!-- CaseAttend title -->
+  <text x="520" y="195" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="52" fill="#FFFFFF">CaseAttend</text>
+
+  <!-- Tagline -->
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="26" fill="#8a8f98" text-anchor="middle">AI tutor for medical imaging.</text>
+
+  <!-- Award badge -->
+  <text x="600" y="360" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="20" fill="#F59E0B" text-anchor="middle">&#x1F3C6;  Google DeepMind Hackathon Winner</text>
+</svg>

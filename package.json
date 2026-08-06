@@ -1,0 +1,32 @@
+{
+  "name": "caseattend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "tsx watch api/dev-server.ts",
+    "dev:all": "npm run dev:api & npm run dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
+    "@google/genai": "^1.48.0",
+    "@vercel/node": "^5.7.0",
+    "lucide-react": "^0.556.0",
+    "openai": "^6.33.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "dotenv": "^17.4.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

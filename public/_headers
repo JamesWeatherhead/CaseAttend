@@ -1,0 +1,19 @@
+# Cloudflare Pages security headers (ported from the old vercel.json).
+# Applied to every static asset response. The Pages Function at /api/prompt
+# sets its own JSON headers. connect-src allows the browser-direct BYOK call
+# straight to OpenRouter and nothing else.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://openrouter.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# Content-hashed build output (vite renames on every change) — cache forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Case images live at stable paths — cache a week.
+/images/*
+  Cache-Control: public, max-age=604800
