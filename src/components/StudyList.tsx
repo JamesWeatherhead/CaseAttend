@@ -2,7 +2,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Study, ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Microscope, Loader2, Award } from 'lucide-react';
+import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check } from 'lucide-react';
+import { beginOpenRouterOAuth } from '../services/openrouterAuth';
+import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
+import OpenRouterLogo from './OpenRouterLogo';
 
 interface StudyListProps {
   onSelectStudy: (study: Study) => void;
@@ -227,6 +230,79 @@ const TestimonialRotator: React.FC = () => {
   );
 };
 
+/**
+ * Landing-page callout: one-click OpenRouter sign-in (SSO), stated plainly —
+ * free to start, no credit card, and the key never touches our servers.
+ * Once connected it collapses to a quiet confirmation instead of nagging.
+ */
+const ConnectCallout: React.FC = () => {
+  const [connected, setConnected] = useState<boolean>(hasKey());
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setConnected(hasKey());
+    window.addEventListener(BYOK_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(BYOK_CHANGED_EVENT, sync);
+  }, []);
+
+  const connect = async () => {
+    setConnecting(true);
+    try {
+      await beginOpenRouterOAuth(); // full-page redirect to OpenRouter sign-in
+    } catch {
+      setConnecting(false); // only reached if the redirect failed to start
+    }
+  };
+
+  if (connected) {
+    return (
+      <div className="mb-9 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/30 px-3.5 py-1.5 text-[12px] text-emerald-300/90">
+        <Check className="w-3.5 h-3.5 flex-shrink-0" />
+        <span>Connected to OpenRouter — pick a case below to begin.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-[560px] mb-10 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-6 sm:px-8 py-6 sm:py-7 flex flex-col items-center text-center">
+      {/* OpenRouter mark */}
+      <div className="mb-3 w-9 h-9 rounded-xl border border-white/[0.08] bg-white/[0.05] flex items-center justify-center">
+        <OpenRouterLogo className="w-4 h-4 text-[#c9ced8]" />
+      </div>
+
+      <h2 className="text-[18px] sm:text-[20px] font-semibold text-white tracking-[-0.02em]">
+        Start free — no credit card
+      </h2>
+      <p className="mt-1.5 max-w-[400px] text-[13px] leading-relaxed text-[#8a8f98]">
+        Sign in with OpenRouter and every case is yours. Two free Gemma vision
+        models are included, so you can learn at zero cost.
+      </p>
+
+      <button
+        onClick={connect}
+        disabled={connecting}
+        className="mt-5 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-60 px-6 py-2.5 text-sm font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
+      >
+        <OpenRouterLogo className="w-4 h-4" />
+        {connecting ? 'Redirecting to OpenRouter…' : 'Sign in with OpenRouter'}
+        {!connecting && <ArrowRight className="w-3.5 h-3.5" />}
+      </button>
+      <p className="mt-2 text-[11px] text-[#5b606b]">GitHub, Google, or email · one click</p>
+
+      <div className="my-5 h-px w-full bg-white/[0.06]" />
+
+      <div className="flex items-start gap-2 max-w-[440px] text-left">
+        <ShieldCheck className="mt-0.5 w-4 h-4 flex-shrink-0 text-emerald-400" />
+        <p className="text-[11px] leading-relaxed text-[#8a8f98]">
+          <span className="text-[#c9ced8]">We never see your key.</span> It's created in your
+          browser and sent only to OpenRouter for inference — never stored on, or routed
+          through, our servers.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'xray', label: 'X-ray' },
@@ -283,6 +359,9 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
 
         {/* Rotating testimonial */}
         <TestimonialRotator />
+
+        {/* Sign in with OpenRouter — free, no card, key stays in the browser */}
+        <ConnectCallout />
 
         {/* Section label + filters */}
         <div className="w-full max-w-[1100px] mb-4 flex items-center justify-between">
