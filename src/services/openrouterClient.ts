@@ -9,7 +9,7 @@
  * in this browser's localStorage (see byokStore.ts).
  *
  * The one thing we DO fetch from our own server is the teaching prompt
- * (/api/prompt) so the tutor stays Socratic — that request carries no key.
+ * (/api/prompt) so the tutor keeps asking before telling; that request carries no key.
  */
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -136,7 +136,7 @@ const promptCache = new Map<string, string>();
 /**
  * Fetch the assembled teaching prompt from our own server. Carries NO key —
  * just enough context to pick the right case prompt. Falls back to '' (generic
- * assistant) if unreachable, so chat still functions, just less Socratic.
+ * assistant) if unreachable, so chat still functions, just with a lighter teaching scaffold.
  */
 export async function fetchSystemPrompt(opts: {
   modality: 'radiology' | 'pathology';

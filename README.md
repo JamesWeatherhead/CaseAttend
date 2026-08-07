@@ -1,6 +1,6 @@
 # CaseAttend
 
-Socratic AI tutor for radiology and pathology. Work through real medical images — chest X-rays, brain MRI, H&E histology — with an AI that teaches by asking, not telling.
+AI tutor for radiology and pathology. Work through real medical images (chest X-rays, brain MRI, H&E histology) with an AI that teaches by asking, not telling.
 
 **Live:** [caseattend.com](https://caseattend.com) · Google DeepMind Hackathon winner
 

@@ -69,7 +69,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-panel"]',
       title: 'Your AI Tutor',
-      body: 'The tutor uses the Socratic method: it asks what you see before telling you. This is an educational tool with pre-verified teaching cases, not a clinical diagnostic system.'
+      body: 'The tutor asks what you see before telling you. This is an educational tool with pre-verified teaching cases, not a clinical diagnostic system.'
     },
     {
       selector: '[data-tour-id="ai-provider"]',
