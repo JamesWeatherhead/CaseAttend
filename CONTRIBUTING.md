@@ -49,7 +49,10 @@ what a case says, so correctness is non-negotiable.
   source (guideline, textbook, or primary literature).
 - **Images must be de-identified and openly licensed.** By contributing an image
   you attest that it contains no PHI and that you have the right to share it
-  under this project's license. Prefer open sources (e.g. TCGA open-access).
+  under an open license that permits redistribution with attribution (for
+  example CC BY, CC BY-SA, public domain, or open-access sources such as TCGA).
+  Record the source and license alongside the case. Images keep their own
+  license and are not relicensed under AGPL.
 
 ## Pull requests
 
@@ -60,6 +63,15 @@ what a case says, so correctness is non-negotiable.
 
 ## License
 
-By contributing you agree your contributions are licensed under
-[Apache-2.0](LICENSE) (see section 5 of the license). Your DCO sign-off records
-that you have the right to make the contribution.
+By submitting a contribution, you agree that:
+
+1. your contribution is licensed to the project and to all recipients under the
+   [GNU AGPL v3.0](LICENSE); and
+2. you grant James Weatherhead, the project maintainer, a perpetual, worldwide,
+   non-exclusive, royalty-free, irrevocable license to also distribute your
+   contribution under other terms, including commercial licenses. This keeps a
+   dual-licensing option open for the project. You keep the copyright to your
+   work.
+
+Your DCO sign-off (`git commit -s`) certifies you have the right to make the
+contribution under these terms.

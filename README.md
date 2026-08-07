@@ -66,4 +66,8 @@ PRs welcome — read [CONTRIBUTING.md](CONTRIBUTING.md) first. Clinical content 
 
 ## License
 
-[Apache-2.0](LICENSE) © 2026 James Weatherhead
+CaseAttend's source code is licensed under [AGPL-3.0](LICENSE) © 2026 James Weatherhead.
+
+The bundled teaching images are third-party works under their own licenses (TCGA open-access; Wikimedia Commons images under CC BY-SA 4.0 or CC BY 3.0), attributed in the case files under `lib/prompts/`. They are not covered by AGPL-3.0 and remain under their original terms.
+
+**Commercial licensing.** AGPL-3.0 requires anyone who runs a modified version, including as a network service, to offer their source under the same terms. If that does not fit your use, for example embedding CaseAttend in a closed product or hosted service, a separate commercial license is available on request: contact James Weatherhead via [github.com/JamesWeatherhead](https://github.com/JamesWeatherhead).
