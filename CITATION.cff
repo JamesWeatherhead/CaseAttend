@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: "CaseAttend: an AI tutor for medical imaging"
+message: "If you use CaseAttend in your work, please cite it using the metadata below."
+type: software
+authors:
+  - given-names: James
+    family-names: Weatherhead
+    alias: JamesWeatherhead
+  - given-names: Jake
+    family-names: Weatherhead
+    alias: JakeWeatherhead
+  - given-names: Peter
+    family-names: McCaffrey
+    alias: pmccaffrey6
+  - given-names: George
+    family-names: Golovko
+repository-code: "https://github.com/JamesWeatherhead/CaseAttend"
+url: "https://caseattend.com"
+abstract: >-
+  CaseAttend is an open-source, bring-your-own-key web application that teaches
+  radiology and pathology by working through real medical images with a
+  question-first AI tutor. It was selected as one of 50 winners out of 4,096
+  entries in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon.
+keywords:
+  - medical education
+  - radiology
+  - pathology
+  - medical imaging
+  - large language models
+  - artificial intelligence
+license: AGPL-3.0-only
+version: 0.1.0
+date-released: "2026-08-05"
