@@ -55,6 +55,7 @@ export const LOCAL_STUDY: Study = {
   accessionNumber: "ACC-001",
   studyDate: "20250101",
   modality: "MR",
+  domain: "radiology",
   description: "Brain Stroke Protocol (CC0)",
   seriesCount: LOCAL_SERIES_CONFIG.length,
   instanceCount: LOCAL_SERIES_CONFIG.reduce((acc, s) => acc + s.count, 0),

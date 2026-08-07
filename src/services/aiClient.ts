@@ -14,13 +14,15 @@
 
 import { LearnerLevel } from '../constants';
 import { AiPointer } from '../types';
+import { getDomain } from '../lib/domains';
+import type { DomainKey } from '../lib/domains';
 import { getKey, getModel } from './byokStore';
 import { getOpenRouterResponse, fetchSystemPrompt } from './openrouterClient';
 import type { ORChunk } from './openrouterClient';
 
 export type AiMode = 'chat' | 'deep_think' | 'search';
 export type AIProvider = 'gemini' | 'claude' | 'openai' | 'openrouter';
-export type Modality = 'radiology' | 'pathology';
+export type Modality = DomainKey;
 
 type OnChunk = (
   text: string,
@@ -187,22 +189,7 @@ export const preAnalyzeSlice = async (
   seriesDescription: string,
   studyDescription: string,
 ): Promise<string> => {
-  const analyzePrompt = modality === 'pathology'
-    ? `You are a pathology teaching assistant. Analyze this H&E histology image and provide a BRIEF structured description (3-5 bullet points) covering:
-- Tissue type and architecture
-- Staining quality and pattern
-- Key cellular features visible
-- Notable findings (if any)
-- Magnification assessment
-Context: ${studyDescription}, Series: ${seriesDescription}
-This analysis will be used as grounding context for subsequent teaching questions. Be factual and concise. EDUCATIONAL USE ONLY.`
-    : `You are a radiology teaching assistant. Analyze this MRI slice and provide a BRIEF structured description (3-5 bullet points) covering:
-- Imaging sequence and plane
-- Key anatomical structures visible
-- Signal characteristics
-- Notable features (if any)
-Context: ${studyDescription}, Series: ${seriesDescription}
-This analysis will be used as grounding context for subsequent teaching questions. Be factual and concise. EDUCATIONAL USE ONLY.`;
+  const analyzePrompt = getDomain(modality).preAnalysisPrompt(studyDescription, seriesDescription);
 
   const key = getKey();
   if (!key) return ''; // Not connected yet, skip grounding silently.

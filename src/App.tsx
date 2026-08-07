@@ -596,7 +596,7 @@ const App: React.FC = () => {
                             onCaptureTrigger={performGlobalCapture}
                             onClearCapture={clearGlobalCapture}
                             showCaptureToast={showCaptureToast}
-                            studyMetadata={{ studyId: selectedStudy.id, patientName: selectedStudy.patientName, description: selectedStudy.description, modality: selectedStudy.modality }}
+                            studyMetadata={{ studyId: selectedStudy.id, patientName: selectedStudy.patientName, description: selectedStudy.description, modality: selectedStudy.modality, domain: selectedStudy.domain }}
                             cursor={{ seriesInstanceUID: activeSeries?.id || '', frameIndex: sliceIndex, activeMeasurementId: activeMeasurementId }}
                             onJumpToSlice={setSliceIndex}
                             activeSeriesInfo={activeSeries ? { description: activeSeries.description, instanceCount: activeSeries.instanceCount } : undefined}
