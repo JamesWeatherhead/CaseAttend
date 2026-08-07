@@ -370,7 +370,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         reader.readAsDataURL(blob);
       })
       .catch(() => setIsAnalyzing(false));
-  }, [studyMetadata?.id, provider, byokConnected]);
+  }, [studyMetadata?.studyId, provider, byokConnected]);
 
   // Scroll welcome message to top on first render
   const hasScrolledWelcome = useRef(false);
