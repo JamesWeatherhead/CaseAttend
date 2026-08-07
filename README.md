@@ -1,10 +1,19 @@
 # CaseAttend
 
+[![🏆 Winner: Google DeepMind Kaggle Hackathon](https://img.shields.io/badge/%F0%9F%8F%86%20Winner-Google%20DeepMind%20Kaggle%20Hackathon-gold)](https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool)
+
+> [!IMPORTANT]
+> **🏆 Winner of Google DeepMind's "Vibe Code with Gemini 3 Pro" Kaggle hackathon**, selected as 1 of 50 winners out of 4,096 entries. CaseAttend grew out of that competition project, originally built as **VibeRad**.
+>
+> Read the story: [UTMB News](https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool) and the [Kaggle writeup](https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929).
+
 AI tutor for radiology and pathology. Work through real medical images (chest X-rays, brain MRI, H&E histology) with an AI that teaches by asking, not telling.
 
-**Live:** [caseattend.com](https://caseattend.com) · Google DeepMind Hackathon winner
+**Live:** [caseattend.com](https://caseattend.com)
 
-> **Educational use only.** CaseAttend is a teaching tool — not a diagnostic or clinical decision-making system.
+**Built by the VibeRad team:** [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
+
+> **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
 ## No keys, ever
 
