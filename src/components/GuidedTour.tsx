@@ -23,7 +23,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-provider"]',
       title: 'AI Model',
-      body: 'You are using Claude Opus 4.6 from Anthropic, one of the leading frontier AI labs. Support for OpenAI, Google, and other major providers is coming soon.',
+      body: 'You bring your own OpenRouter key. Choose from a curated list of vision-capable open and frontier models, and swap freely at any time.',
       switchTab: 'ai'
     },
     {
@@ -74,7 +74,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-provider"]',
       title: 'AI Model',
-      body: 'You are currently using Claude Opus 4.6 from Anthropic, one of the leading frontier AI labs. Support for OpenAI, Google, and other major providers is coming soon.'
+      body: 'You bring your own OpenRouter key. Choose from a curated list of vision-capable open and frontier models, and swap freely at any time.'
     },
     {
       selector: '[data-tour-id="teaching-levels"]',
