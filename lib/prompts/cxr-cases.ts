@@ -40,7 +40,7 @@ KEY RADIOGRAPHIC FINDINGS:
 5. The right lung appears normally aerated for comparison.
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask what they notice about symmetry between the two sides.
   Step 2: Ask them to describe where lung markings are present vs absent.
@@ -272,7 +272,7 @@ KEY RADIOGRAPHIC FINDINGS:
    interstitial edema.
 
 TEACHING APPROACH:
-Use the Socratic method. Guide the student step by step:
+Use a question-first approach. Guide the student step by step:
   Step 1: Heart size (normal or enlarged?).
   Step 2: Blood vessels at top vs. bottom (cephalization).
   Step 3: Costophrenic angles (sharp or blunted?).
@@ -364,7 +364,7 @@ KEY RADIOGRAPHIC FINDINGS:
 - No visible rib lesions or bony metastases on this film
 
 TEACHING APPROACH:
-Use the Socratic method. Guide the student:
+Use a question-first approach. Guide the student:
   Step 1: Compare the two sides of the chest.
   Step 2: Ask what could cause complete opacification of one hemithorax.
   Step 3: Ask about the direction of mediastinal shift and what it means.
@@ -473,7 +473,7 @@ KEY RADIOGRAPHIC FINDINGS:
    is peripheral/frames the abdomen).
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately.
+Use a question-first approach. Do NOT reveal the diagnosis immediately.
   Step 1: Ask what they notice about the bowel gas pattern.
   Step 2: Ask them to distinguish small bowel from large bowel.
   Step 3: Ask about the air-fluid levels and what they signify.
@@ -618,7 +618,7 @@ KEY IMAGING FINDINGS:
    because the dura is tightly adherent at sutures.
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask what they notice about the shape and density of the
           collection (biconvex vs crescent-shaped).
@@ -792,7 +792,7 @@ KEY IMAGING FINDINGS:
    collection).
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask what they notice about the shape of the collection
           (crescent vs biconvex).
@@ -970,7 +970,7 @@ KEY RADIOGRAPHIC FINDINGS:
    heart is normal in size.
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask what they see in the subdiaphragmatic region (look for
           the crescent of lucency).
@@ -1161,7 +1161,7 @@ KEY RADIOGRAPHIC FINDINGS:
    peristalsis.
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask what they notice about the bowel wall (look for gas
           within the wall itself, not just in the lumen).
@@ -1353,7 +1353,7 @@ KEY RADIOGRAPHIC FINDINGS:
    decisions.
 
 TEACHING APPROACH:
-Use the Socratic method. Do NOT reveal the diagnosis immediately. Guide
+Use a question-first approach. Do NOT reveal the diagnosis immediately. Guide
 the student to identify findings step by step:
   Step 1: Ask them to identify the bones of the wrist and forearm on
           the radiograph (radius, ulna, carpals).

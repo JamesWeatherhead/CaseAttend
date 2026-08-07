@@ -4,7 +4,7 @@
  * Direct port of the former Vercel `api/prompt.ts`. Returns the assembled
  * CaseAttend teaching prompt for the browser-direct OpenRouter (BYOK) path:
  * the visitor's key never touches our servers, so the browser calls OpenRouter
- * itself — but it still needs the Socratic teaching prompt to behave like
+ * itself — but it still needs the question-first teaching prompt to behave like
  * CaseAttend. This endpoint hands back that prompt and NOTHING ELSE. It never
  * reads, receives, or returns an API key.
  *
