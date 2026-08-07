@@ -39,7 +39,7 @@
 ---
 
 > [!IMPORTANT]
-> **🏆 Winner of Google DeepMind's "Vibe Code with Gemini 3 Pro" Kaggle hackathon**, selected as 1 of 50 winners out of 4,096 entries. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
+> **🏆 One of 50 winners out of 4,096 entries** in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
 
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
@@ -118,6 +118,16 @@ React 19 · TypeScript · Vite 6 · Tailwind 4, deployed on Cloudflare Pages (st
 ## Contributing
 
 PRs welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Clinical content needs clinician review, images must be de-identified and openly licensed, and commits are signed off (DCO). The key-never-leaves-the-browser rule is non-negotiable; see [SECURITY.md](SECURITY.md).
+
+## Cite
+
+If CaseAttend is useful in your research or teaching, please cite it. GitHub's **Cite this repository** button reads [CITATION.cff](CITATION.cff), or use:
+
+```
+Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
+CaseAttend: an AI tutor for medical imaging (Version 0.1.0) [Computer software].
+https://github.com/JamesWeatherhead/CaseAttend
+```
 
 ## License
 
