@@ -25,6 +25,18 @@ npm run build    # production build -> dist/
 
 Node 18+. No environment variables required.
 
+## Branching and releases
+
+- `main` is production. It is protected and deploys the live site, so never
+  commit to it directly.
+- Every change lands through a short-lived branch and a pull request. Name it by
+  intent: `feat/...`, `fix/...`, `chore/...`, or `docs/...`.
+- Open the PR, let CI pass (build plus the security invariant), then merge.
+  Merged branches are deleted automatically.
+- Dependency updates come from Dependabot. Minor and patch bumps are grouped and
+  merge on their own once CI is green. Major bumps arrive as their own PR for a
+  closer look.
+
 ## Architecture in one breath
 
 - `src/` — the React SPA (image viewer, chat, model picker, BYOK connect flow).
