@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
-    "@google/genai": "^1.48.0",
+    "@google/genai": "^2.15.0",
     "@vercel/node": "^5.7.0",
     "lucide-react": "^0.556.0",
     "openai": "^6.33.0",
