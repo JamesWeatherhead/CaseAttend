@@ -2,6 +2,8 @@
 
 // Domain Models
 
+import type { DomainKey } from './lib/domains/types';
+
 export interface Study {
   id: string;
   patientName: string;
@@ -9,6 +11,7 @@ export interface Study {
   accessionNumber: string;
   studyDate: string;
   modality: string;
+  domain: DomainKey;
   description: string;
   seriesCount: number;
   instanceCount: number;

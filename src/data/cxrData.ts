@@ -116,6 +116,7 @@ export const CXR_STUDIES: Study[] = CXR_CASES.map((c) => ({
   accessionNumber: c.accessionNumber,
   studyDate: '20260101',
   modality: 'CR',
+  domain: 'radiology',
   description: c.description,
   seriesCount: 1,
   instanceCount: 1,

@@ -173,6 +173,45 @@ const CARDS = [
     accentBorder: 'rgba(132,204,22,0.3)',
     textClass: 'text-lime-400',
   },
+  {
+    studyId: 'derm-melanoma',
+    modality: 'XC',
+    label: '55M, evolving pigmented lesion',
+    subtitle: 'Dermatology',
+    detail: 'A dark spot on the back that has been changing over the past year. Partner-noticed evolution, irregular border.',
+    icon: Scan,
+    preview: '/images/derm-melanoma/1.jpg',
+    accentColor: 'rgba(217,70,239,1)',
+    accentGlow: 'rgba(217,70,239,0.15)',
+    accentBorder: 'rgba(217,70,239,0.3)',
+    textClass: 'text-fuchsia-400',
+  },
+  {
+    studyId: 'derm-bcc',
+    modality: 'XC',
+    label: '72M, slow-growing nasal lesion',
+    subtitle: 'Dermatology',
+    detail: 'A shiny bump on the nose that occasionally bleeds. Chronic sun exposure history.',
+    icon: Scan,
+    preview: '/images/derm-bcc/1.jpg',
+    accentColor: 'rgba(20,184,166,1)',
+    accentGlow: 'rgba(20,184,166,0.15)',
+    accentBorder: 'rgba(20,184,166,0.3)',
+    textClass: 'text-teal-400',
+  },
+  {
+    studyId: 'derm-sebk',
+    modality: 'XC',
+    label: '65F, long-standing brown lesions',
+    subtitle: 'Dermatology',
+    detail: 'Multiple waxy, stuck-on-looking brown spots on the trunk. Present for years, no change, no symptoms.',
+    icon: Scan,
+    preview: '/images/derm-sebk/1.jpg',
+    accentColor: 'rgba(168,85,247,1)',
+    accentGlow: 'rgba(168,85,247,0.15)',
+    accentBorder: 'rgba(168,85,247,0.3)',
+    textClass: 'text-purple-400',
+  },
 ];
 
 const TESTIMONIALS = [
@@ -343,12 +382,14 @@ const FILTERS = [
   { id: 'ct', label: 'CT' },
   { id: 'mri', label: 'MRI' },
   { id: 'path', label: 'Pathology' },
+  { id: 'derm', label: 'Dermatology' },
 ];
 
 const getFilterForStudy = (studyId: string): string => {
   if (studyId.startsWith('ct-')) return 'ct';
   if (studyId.startsWith('local-study')) return 'mri';
   if (studyId.startsWith('patho-')) return 'path';
+  if (studyId.startsWith('derm-')) return 'derm';
   return 'xray'; // cxr-, axr-, xr- all count as x-ray
 };
 

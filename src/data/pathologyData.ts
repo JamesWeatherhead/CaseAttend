@@ -39,6 +39,7 @@ export const PATHOLOGY_STUDY: Study = {
   accessionNumber: 'PATH-001',
   studyDate: '20250101',
   modality: 'PATH',
+  domain: 'pathology',
   description: 'Breast Invasive Ductal Carcinoma (TCGA, Open Access)',
   seriesCount: PATHOLOGY_SERIES_CONFIG.length,
   instanceCount: PATHOLOGY_SERIES_CONFIG.reduce((acc, s) => acc + s.count, 0),
