@@ -159,6 +159,13 @@ Context: ${studyDescription}, Series: ${seriesDescription}
 This analysis will be used as grounding context for subsequent teaching questions. Be factual and concise. EDUCATIONAL USE ONLY.`;
 }
 
+const CXR_OVERVIEW_IMAGES: Record<string, string> = {
+  'cxr-pneumothorax': '/images/cxr-pneumothorax/1.jpg',
+  'cxr-pneumonia': '/images/cxr-pneumonia/1.jpg',
+  'cxr-chf': '/images/cxr-chf/1.jpg',
+  'cxr-effusion': '/images/cxr-effusion/1.jpg',
+};
+
 export const radiology: Domain = {
   key: 'radiology',
   label: 'Radiology',
@@ -172,4 +179,5 @@ export const radiology: Domain = {
   preAnalysisPrompt,
   contextLabel: (dicomModality: string) => `Radiology (${dicomModality})`,
   captureLabel: () => 'MRI series',
+  overviewImage: (studyId?: string) => (studyId && CXR_OVERVIEW_IMAGES[studyId]) || '/images/sub-1/FLAIR/14.png',
 };

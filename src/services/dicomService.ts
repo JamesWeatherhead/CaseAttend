@@ -3,13 +3,14 @@ import { Study, Series, DicomWebConfig, DiagnosticStep } from "../types";
 import { LOCAL_STUDY, LOCAL_SERIES } from "../data/localData";
 import { PATHOLOGY_STUDY, PATHOLOGY_SERIES, PATHOLOGY_STUDY_ID } from "../data/pathologyData";
 import { CXR_STUDIES, CXR_SERIES_MAP, CXR_STUDY_IDS } from "../data/cxrData";
+import { DERM_STUDIES, DERM_SERIES_MAP, DERM_STUDY_IDS } from "../data/dermatologyData";
 
 /**
  * FETCH STUDIES
  * Returns studies for the selected modality.
  */
 export const searchDicomWebStudies = async (config: DicomWebConfig, query?: string): Promise<Study[]> => {
-  return [LOCAL_STUDY, PATHOLOGY_STUDY, ...CXR_STUDIES];
+  return [LOCAL_STUDY, PATHOLOGY_STUDY, ...CXR_STUDIES, ...DERM_STUDIES];
 };
 
 /**
@@ -22,6 +23,9 @@ export const fetchDicomWebSeries = async (config: DicomWebConfig, studyUid: stri
   }
   if (CXR_STUDY_IDS.includes(studyUid)) {
     return CXR_SERIES_MAP[studyUid] || [];
+  }
+  if (DERM_STUDY_IDS.includes(studyUid)) {
+    return DERM_SERIES_MAP[studyUid] || [];
   }
   return LOCAL_SERIES;
 };

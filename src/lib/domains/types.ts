@@ -1,6 +1,6 @@
 import type { LearnerLevel } from '../../constants';
 
-export type DomainKey = 'radiology' | 'pathology';
+export type DomainKey = 'radiology' | 'pathology' | 'dermatology';
 
 export interface ArtifactHints {
   showWindowLevel: boolean;
@@ -17,4 +17,5 @@ export interface Domain {
   preAnalysisPrompt: (studyDescription: string, seriesDescription: string) => string;
   contextLabel: (dicomModality: string) => string;
   captureLabel: (dicomModality: string) => string;
+  overviewImage: (studyId?: string) => string;
 }

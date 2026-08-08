@@ -139,7 +139,7 @@ const promptCache = new Map<string, string>();
  * assistant) if unreachable, so chat still functions, just with a lighter teaching scaffold.
  */
 export async function fetchSystemPrompt(opts: {
-  modality: 'radiology' | 'pathology';
+  modality: 'radiology' | 'pathology' | 'dermatology';
   caseId?: string;
   learnerLevel: string;
   mode: string;

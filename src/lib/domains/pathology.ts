@@ -63,4 +63,5 @@ export const pathology: Domain = {
   preAnalysisPrompt,
   contextLabel: () => 'Digital Pathology (H&E Histology)',
   captureLabel: () => 'Histology',
+  overviewImage: () => '/images/patho-1/HE_4x/1.webp',
 };

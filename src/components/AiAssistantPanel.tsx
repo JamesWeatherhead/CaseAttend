@@ -146,16 +146,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setSliceAnalysis(null);
     setIsAnalyzing(true);
 
-    // Load the first image of the current study as the overview for pre-analysis
-    const cxrOverviews: Record<string, string> = {
-      'cxr-pneumothorax': '/images/cxr-pneumothorax/1.jpg',
-      'cxr-pneumonia': '/images/cxr-pneumonia/1.jpg',
-      'cxr-chf': '/images/cxr-chf/1.jpg',
-      'cxr-effusion': '/images/cxr-effusion/1.jpg',
-    };
-    const overviewUrl = domain.key === 'pathology'
-      ? '/images/patho-1/HE_4x/1.webp'
-      : cxrOverviews[studyMetadata.studyId] || '/images/sub-1/FLAIR/14.png';
+    // Load the overview image for pre-analysis (each domain knows its own image paths)
+    const overviewUrl = domain.overviewImage(studyMetadata.studyId);
 
     fetch(overviewUrl)
       .then(r => r.blob())
