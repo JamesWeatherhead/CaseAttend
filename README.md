@@ -109,7 +109,7 @@ npm run dev      # Vite dev server
 npm run build    # production build -> dist/
 ```
 
-Node 18+. No environment variables required.
+Node 22+. No environment variables required.
 
 ## Stack
 
