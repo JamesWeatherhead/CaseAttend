@@ -53,15 +53,9 @@ const TOURS: Record<TourId, Step[]> = {
       switchTab: 'ai'
     },
     {
-      selector: '[data-tour-id="capture-button"]',
-      title: 'Capture & Discuss',
-      body: 'When you spot something, capture the slice with the camera. The tutor will ask you to describe what you see and guide you through the interpretation.',
-      switchTab: 'ai'
-    },
-    {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
-      body: 'Not sure what to ask? These suggestions adapt to your level. Use them as starting points, or type your own.',
+      body: 'Not sure what to ask? These suggestions adapt to your level. Use them as starting points, or type your own. The AI automatically sees whatever you are looking at when you press Send.',
       switchTab: 'ai'
     }
   ],
@@ -85,11 +79,6 @@ const TOURS: Record<TourId, Step[]> = {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
       body: 'These adapt to your level and what you are looking at. Use them as starting points, or type your own questions.'
-    },
-    {
-      selector: '[data-tour-id="capture-button"]',
-      title: 'Capture First, Then Ask',
-      body: 'The tutor needs to see what you see. Capture a slice before asking about a specific finding, otherwise answers will be generic.'
     },
     {
       selector: '[data-tour-id="ai-trash"]',
