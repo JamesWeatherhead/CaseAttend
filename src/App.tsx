@@ -224,10 +224,6 @@ const App: React.FC = () => {
     setShowTourMenu(false);
   };
 
-  // Global AI Capture State (Lifted)
-  const [aiContextImage, setAiContextImage] = useState<string | null>(null);
-  const [aiContextSliceInfo, setAiContextSliceInfo] = useState<{slice: number; total?: number; label?: string} | null>(null);
-  const [showCaptureToast, setShowCaptureToast] = useState(false);
   const [aiPointers, setAiPointers] = useState<AiPointer[]>([]);
 
   useEffect(() => {
@@ -281,10 +277,6 @@ const App: React.FC = () => {
       
       // Measurements are now persisted by series, so we don't clear them here.
       setActiveMeasurementId(null);
-      // Reset capture context on series change to avoid stale context
-      setAiContextImage(null);
-      setAiContextSliceInfo(null);
-      
       // Clear segmented slices list on series change since canvas is cleared
       setSegmentationLayer(prev => ({ ...prev, segmentedSlices: [] }));
     }
@@ -327,28 +319,16 @@ const App: React.FC = () => {
     if (activeMeasurementId === id) setActiveMeasurementId(null);
   }, [activeSeriesId, activeMeasurementId]);
   
-  const handleCaptureScreen = () => {
-      return viewerRef.current?.captureScreenshot() || null;
-  };
-
-  const performGlobalCapture = useCallback(() => {
-    const screenshot = handleCaptureScreen();
-    if (screenshot) {
-        setAiContextImage(screenshot);
-        setAiContextSliceInfo({
-            slice: sliceIndex + 1,
-            total: activeSeries?.instanceCount,
-            label: activeSeries?.description || selectedStudy?.description
-        });
-        setShowCaptureToast(true);
-        setTimeout(() => setShowCaptureToast(false), 3000);
-    }
+  const captureCurrentView = useCallback((): { image: string; slice: number; total?: number; label?: string } | null => {
+    const image = viewerRef.current?.captureScreenshot();
+    if (!image) return null;
+    return {
+      image,
+      slice: sliceIndex + 1,
+      total: activeSeries?.instanceCount,
+      label: activeSeries?.description || selectedStudy?.description,
+    };
   }, [sliceIndex, activeSeries, selectedStudy]);
-
-  const clearGlobalCapture = () => {
-    setAiContextImage(null);
-    setAiContextSliceInfo(null);
-  };
 
   const handleClearSegment = (id: number) => {
      if (viewerRef.current) {
@@ -506,7 +486,6 @@ const App: React.FC = () => {
                   <FloatingToolbar
                     activeTool={activeTool}
                     onSelectTool={setActiveTool}
-                    onCapture={performGlobalCapture}
                     position={toolbarPos}
                     onDragStart={handleToolbarDragStart}
                     orientation={toolbarOrientation}
@@ -595,11 +574,7 @@ const App: React.FC = () => {
                      </div>
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'ai' ? 'block z-10' : 'hidden'}`}>
                          <AiAssistantPanel
-                            capturedImage={aiContextImage}
-                            capturedSliceMetadata={aiContextSliceInfo}
-                            onCaptureTrigger={performGlobalCapture}
-                            onClearCapture={clearGlobalCapture}
-                            showCaptureToast={showCaptureToast}
+                            captureCurrentView={captureCurrentView}
                             studyMetadata={{ studyId: selectedStudy.id, patientName: selectedStudy.patientName, description: selectedStudy.description, modality: selectedStudy.modality, domain: selectedStudy.domain }}
                             cursor={{ seriesInstanceUID: activeSeries?.id || '', frameIndex: sliceIndex, activeMeasurementId: activeMeasurementId }}
                             onJumpToSlice={setSliceIndex}

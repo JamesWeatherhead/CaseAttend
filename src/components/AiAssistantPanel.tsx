@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Globe, BrainCircuit, X, Camera, ImageIcon, Trash2, CheckCircle2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound } from 'lucide-react';
+import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound } from 'lucide-react';
 import { streamChatResponse, preAnalyzeSlice, AiMode, AIProvider } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
@@ -11,12 +11,7 @@ import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains';
 
 interface AiAssistantPanelProps {
-  // Capture props lifted to parent
-  capturedImage: string | null;
-  capturedSliceMetadata: { slice: number; total?: number; label?: string } | null;
-  onCaptureTrigger: () => void;
-  onClearCapture: () => void;
-  showCaptureToast: boolean;
+  captureCurrentView: () => { image: string; slice: number; total?: number; label?: string } | null;
 
   studyMetadata?: {
     studyId: string;
@@ -36,14 +31,10 @@ interface AiAssistantPanelProps {
 }
 
 const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
-  capturedImage,
-  capturedSliceMetadata,
-  onCaptureTrigger,
-  onClearCapture,
-  showCaptureToast,
-  studyMetadata, 
-  cursor, 
-  onJumpToSlice, 
+  captureCurrentView,
+  studyMetadata,
+  cursor,
+  onJumpToSlice,
   activeSeriesInfo,
   onStartTour,
   onPointers
@@ -99,10 +90,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const activeRequestRef = useRef(false);
 
-  // Aliases for lifted state
-  const attachedScreenshot = capturedImage;
-  const capturedSliceInfo = capturedSliceMetadata;
-
   // Scroll State
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const [isPinnedToBottom, setIsPinnedToBottom] = useState(true);
@@ -122,13 +109,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   useEffect(() => {
     localStorage.setItem('caseattend_provider', provider);
   }, [provider]);
-
-  // Clear dynamic suggestions when capture changes
-  useEffect(() => {
-    if (capturedImage) {
-       setDynamicSuggestionsMap(null);
-    }
-  }, [capturedImage]);
 
   // Run whole-slide pre-analysis once when the study loads.
   // Uses the first image of the first series as the overview.
@@ -234,14 +214,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setIsPinnedToBottom(true);
   };
 
-  // Derived suggestions: Use Dynamic if available, else Static Initial
+  // Derived suggestions: Use Dynamic if available, else Static Initial.
+  // Auto-capture means the panel always has a view to reference, so the
+  // with-image suggestions are always the right starting set when a study is loaded.
   const currentSuggestions = dynamicSuggestionsMap
       ? dynamicSuggestionsMap[learnerLevel]
-      : domain.getInitialSuggestions(learnerLevel, !!attachedScreenshot, studyMetadata?.studyId);
-
-  const handleCapture = () => {
-      onCaptureTrigger();
-  };
+      : domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId);
 
   const handleClearChat = () => {
     // Abort active request if clearing
@@ -255,8 +233,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       role: 'model',
       text: domain.welcomeMessage(learnerLevel, studyMetadata?.studyId)
     }]);
-    
-    onClearCapture();
+
     setInput('');
     setDynamicSuggestionsMap(null);
     setIsPinnedToBottom(true);
@@ -278,7 +255,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
   const handleSendMessage = async (text: string = input, promptOverride?: string) => {
     const finalText = promptOverride || text;
-    if ((!finalText.trim() && !attachedScreenshot) || isThinking) return;
+    if (!finalText.trim() || isThinking) return;
 
     // BYOK gate: if the visitor hasn't connected OpenRouter yet, open the Connect
     // modal instead of erroring — they've already seen the case; this is the ask.
@@ -287,24 +264,31 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       return;
     }
 
+    // Capture the current view at send time. Auto-capture means whatever the
+    // student is looking at (including any drawings just made) travels with
+    // the message — no explicit Camera button click required.
+    const capture = captureCurrentView();
+    const imageToSend = capture?.image ?? null;
+    const capturedSliceInfo = capture
+      ? { slice: capture.slice, total: capture.total, label: capture.label }
+      : null;
+
     // 1. Optimistically Add User Message
-    const userMsg: ChatMessage = { 
-        id: Date.now().toString(), role: 'user', text: finalText, hasAttachment: !!attachedScreenshot
+    const userMsg: ChatMessage = {
+        id: Date.now().toString(), role: 'user', text: finalText, hasAttachment: !!imageToSend
     };
     setMessages(prev => [...prev, userMsg]);
     setIsPinnedToBottom(true); // Force scroll on new message
-    
+
     // Save current input to restore on error if needed
     const textToRestore = input;
-    
+
     // Clear Input immediately for responsiveness, but we might restore it on error.
     if (!promptOverride) setInput('');
     setIsThinking(true);
     activeRequestRef.current = true;
     // Clear previous AI pointers when starting a new request
     if (onPointers) onPointers([]);
-    
-    const imageToSend = attachedScreenshot;
 
     // Build conversation history as context (include welcome message + prior exchanges)
     const historyLines = messages
@@ -470,8 +454,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       }
   };
 
-  const hasCapturedImage = !!attachedScreenshot;
-
   return (
     <div data-tour-id="ai-panel" className="flex flex-col h-full bg-[#0f1011]">
       {/* Main Header */}
@@ -514,19 +496,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               </button>
           </div>
           <div className="flex items-center gap-1">
-               {attachedScreenshot ? (
-                   <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                       <ImageIcon className="w-3 h-3" />
-                       Active {capturedSliceInfo && `(Slice ${capturedSliceInfo.slice})`}
-                       {isAnalyzing && <span className="text-yellow-400 ml-1 animate-pulse">analyzing...</span>}
-                       {sliceAnalysis && !isAnalyzing && <span className="text-emerald-500 ml-1">grounded</span>}
-                   </span>
-               ) : (
-                   <span className="flex items-center gap-1 text-[#62666d]">
-                       <ImageIcon className="w-3 h-3" />
-                       No image context
-                   </span>
-               )}
+               <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                   <ImageIcon className="w-3 h-3" />
+                   Current view attached on send
+                   {isAnalyzing && <span className="text-yellow-400 ml-1 animate-pulse">analyzing...</span>}
+                   {sliceAnalysis && !isAnalyzing && <span className="text-emerald-500 ml-1">grounded</span>}
+               </span>
           </div>
       </div>
 
@@ -691,26 +666,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             )}
         </div>
 
-        {/* Capture Toast */}
-        {showCaptureToast && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-emerald-900/90 text-emerald-100 px-4 py-2 rounded-full shadow-xl border border-emerald-500/50 flex items-center gap-2 text-xs z-20 animate-in slide-in-from-top-4 fade-in">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Captured slice. All AI modes will now see this image.</span>
-            </div>
-        )}
-
         <div className="p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0">
-            {/* Attached Image Preview */}
-            {attachedScreenshot && (
-                <div className="relative inline-block border border-blue-500 rounded overflow-hidden shadow-lg group mb-3">
-                    <img src={attachedScreenshot} alt="Snapshot" className="h-16 w-auto opacity-80 group-hover:opacity-100 transition-opacity" />
-                    <button onClick={() => { onClearCapture(); setDynamicSuggestionsMap(null); }} className="absolute top-0 right-0 bg-black/50 hover:bg-red-500 text-white p-0.5"><X className="w-3 h-3" /></button>
-                    <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white px-1 text-center truncate">
-                        {capturedSliceInfo ? `Slice ${capturedSliceInfo.slice}` : 'Captured'}
-                    </div>
-                </div>
-            )}
-            
             {/* Compact Learner Level Row */}
             <div data-tour-id="teaching-levels" className="flex items-center justify-end mb-2 gap-2 text-[11px] text-[#8a8f98]">
                 <div className="inline-flex items-center rounded-lg bg-[#0f1011]/50 border border-white/[0.08] p-0.5 gap-0.5">
@@ -750,39 +706,22 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             </div>
 
             {/* Input Area */}
-            <div className="relative flex gap-3 items-center">
-                <div className="relative group">
-                    <button
-                        onClick={handleCapture}
-                        title="Capture the current slice so the AI can see it."
-                        aria-label="Capture current slice as context"
-                        className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
-                            attachedScreenshot
-                            ? 'bg-blue-900/60 border-blue-500/50 text-blue-200 shadow-[0_0_10px_rgba(59,130,246,0.2)]'
-                            : 'bg-blue-900/40 border-blue-700/50 text-blue-200 hover:bg-blue-800'
-                        }`}
-                    >
-                        <Camera className="w-5 h-5" />
-                    </button>
-                </div>
-                
-                <div className="relative flex-1">
-                    <input
-                        className="w-full bg-[#0f1011] border border-white/[0.08] rounded-lg pr-10 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner" 
-                        placeholder={mode === 'deep_think' ? "Ask complex question..." : "Ask a question..."} 
-                        value={input} 
-                        onChange={(e) => setInput(e.target.value)} 
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} 
-                        disabled={isThinking}
-                    />
-                    <button 
-                        onClick={() => handleSendMessage()} 
-                        disabled={(!input.trim() && !attachedScreenshot) || isThinking} 
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors"
-                    >
-                        <Send className="w-4 h-4" />
-                    </button>
-                </div>
+            <div className="relative flex-1">
+                <input
+                    className="w-full bg-[#0f1011] border border-white/[0.08] rounded-lg pr-10 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner"
+                    placeholder={mode === 'deep_think' ? "Ask complex question..." : "Ask a question..."}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    disabled={isThinking}
+                />
+                <button
+                    onClick={() => handleSendMessage()}
+                    disabled={!input.trim() || isThinking}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors"
+                >
+                    <Send className="w-4 h-4" />
+                </button>
             </div>
 
             {/* Dynamic Status / Hint Footer */}
@@ -806,16 +745,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     </div>
                 ) : (
                     <div className="w-full">
-                         {!hasCapturedImage ? (
-                            <span>No image attached. Click the camera to capture the current slice before asking image questions.</span>
-                        ) : (
-                            <span>
-                                Using last captured slice: <span className="text-slate-200 font-mono">{capturedSliceInfo?.slice}</span>
-                                {capturedSliceInfo?.total && <span className="text-slate-500"> / {capturedSliceInfo.total}</span>}
-                                {<span className="text-slate-400"> ({capturedSliceInfo?.label || "MRI series"})</span>}
-                                . Click the camera again to update.
-                            </span>
-                        )}
+                        <span>The AI sees your current view every time you press Send. Scroll, draw, then ask.</span>
                     </div>
                 )}
             </div>

@@ -3,12 +3,11 @@ import React from 'react';
 import { ToolMode } from '../types';
 import { TOOLS } from '../constants';
 import type { ArtifactHints } from '../lib/domains';
-import { Camera, GripVertical, GripHorizontal } from 'lucide-react';
+import { GripVertical, GripHorizontal } from 'lucide-react';
 
 interface FloatingToolbarProps {
   activeTool: ToolMode;
   onSelectTool: (t: ToolMode) => void;
-  onCapture: () => void;
   position: { x: number; y: number };
   onDragStart: (e: React.MouseEvent) => void;
   orientation: 'horizontal' | 'vertical';
@@ -20,7 +19,6 @@ interface FloatingToolbarProps {
 const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   activeTool,
   onSelectTool,
-  onCapture,
   position,
   onDragStart,
   orientation,
@@ -66,21 +64,6 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
       {/* Tools Container */}
       <div className={`flex items-center gap-1.5 p-1 ${isVertical ? 'flex-col' : 'flex-row'}`}>
-        {/* Capture Button */}
-        <button
-          onClick={onCapture}
-          data-tour-id="capture-button"
-          aria-label="Capture slice for AI assistant"
-          className={`rounded-xl text-[#d0d6e0] bg-[#1e1f21] hover:bg-[#28282c] hover:text-white transition-all active:scale-95 group border border-transparent hover:border-white/[0.08] flex items-center justify-center ${
-            isVertical ? 'w-10 h-10' : 'p-2.5'
-          }`}
-          title="Capture Screen"
-        >
-          <Camera className="w-5 h-5 group-hover:text-blue-400" />
-        </button>
-
-        <div className={`bg-white/[0.06] ${isVertical ? 'w-6 h-px my-0.5' : 'w-px h-6 mx-0.5'}`} />
-
         {visibleTools.map((tool) => {
           const Icon = tool.icon;
           const isActive = activeTool === tool.id;
