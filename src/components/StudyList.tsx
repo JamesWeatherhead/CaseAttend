@@ -382,12 +382,14 @@ const FILTERS = [
   { id: 'ct', label: 'CT' },
   { id: 'mri', label: 'MRI' },
   { id: 'path', label: 'Pathology' },
+  { id: 'derm', label: 'Dermatology' },
 ];
 
 const getFilterForStudy = (studyId: string): string => {
   if (studyId.startsWith('ct-')) return 'ct';
   if (studyId.startsWith('local-study')) return 'mri';
   if (studyId.startsWith('patho-')) return 'path';
+  if (studyId.startsWith('derm-')) return 'derm';
   return 'xray'; // cxr-, axr-, xr- all count as x-ray
 };
 

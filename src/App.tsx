@@ -14,6 +14,7 @@ import { TOOLS, MOCK_SEGMENTATION_DATA } from './constants';
 import { Study, Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer } from './types';
 import { fetchDicomWebSeries } from './services/dicomService';
 import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
+import { getDomain } from './lib/domains';
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -511,6 +512,7 @@ const App: React.FC = () => {
                     orientation={toolbarOrientation}
                     isDragging={isDraggingToolbar}
                     instanceCount={activeSeries?.instanceCount ?? 1}
+                    artifactHints={getDomain(selectedStudy.domain).artifactHints}
                   />
 
                   <ViewerCanvas
@@ -530,14 +532,16 @@ const App: React.FC = () => {
                     isScrollEnabled={activeTour === null && (activeSeries?.instanceCount ?? 0) > 1}
                     aiPointers={aiPointers}
                   />
-                  <div className="flex-shrink-0 z-10">
-                    <SeriesSelector 
-                      seriesList={studySeries}
-                      activeSeriesId={activeSeries?.id}
-                      onSelectSeries={setActiveSeries}
-                      dicomConfig={dicomConfig}
-                    />
-                  </div>
+                  {getDomain(selectedStudy.domain).artifactHints.showSeriesSelector && (
+                    <div className="flex-shrink-0 z-10">
+                      <SeriesSelector
+                        seriesList={studySeries}
+                        activeSeriesId={activeSeries?.id}
+                        onSelectSeries={setActiveSeries}
+                        dicomConfig={dicomConfig}
+                      />
+                    </div>
+                  )}
               </div>
 
               <div

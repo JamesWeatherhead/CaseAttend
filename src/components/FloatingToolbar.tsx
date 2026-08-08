@@ -2,6 +2,7 @@
 import React from 'react';
 import { ToolMode } from '../types';
 import { TOOLS } from '../constants';
+import type { ArtifactHints } from '../lib/domains';
 import { Camera, GripVertical, GripHorizontal } from 'lucide-react';
 
 interface FloatingToolbarProps {
@@ -13,6 +14,7 @@ interface FloatingToolbarProps {
   orientation: 'horizontal' | 'vertical';
   isDragging?: boolean;
   instanceCount?: number;
+  artifactHints?: ArtifactHints;
 }
 
 const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
@@ -23,9 +25,15 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   onDragStart,
   orientation,
   isDragging,
-  instanceCount = 1
+  instanceCount = 1,
+  artifactHints
 }) => {
-  const visibleTools = instanceCount > 1 ? TOOLS : TOOLS.filter(t => t.id !== ToolMode.SCROLL);
+  const visibleTools = TOOLS.filter(t => {
+    if (t.id === ToolMode.SCROLL && instanceCount <= 1) return false;
+    if (t.id === ToolMode.WINDOW_LEVEL && artifactHints && !artifactHints.showWindowLevel) return false;
+    if (t.id === ToolMode.BRUSH && artifactHints && !artifactHints.showSegmentation) return false;
+    return true;
+  });
   const isVertical = orientation === 'vertical';
 
   return (
