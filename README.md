@@ -20,8 +20,8 @@
 </p>
 
 <p align="center">
-  <b>AI tutor for radiology and pathology.</b><br>
-  Work through real medical images (chest X-rays, brain MRI, H&amp;E histology) with an AI that teaches by asking, not telling.
+  <b>Case-based visual reasoning tutor: radiology, pathology, dermatology.</b><br>
+  Work through real medical images (chest X-rays, brain MRI, H&amp;E histology, clinical skin photographs) with an AI that teaches by asking, not telling.
 </p>
 
 <p align="center">
@@ -125,7 +125,8 @@ If CaseAttend is useful in your research or teaching, please cite it. GitHub's *
 
 ```
 Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
-CaseAttend: an AI tutor for medical imaging (Version 0.1.0) [Computer software].
+CaseAttend: a case-based visual reasoning tutor for medical education
+(Version 0.2.0) [Computer software].
 https://github.com/JamesWeatherhead/CaseAttend
 ```
 
@@ -133,7 +134,7 @@ https://github.com/JamesWeatherhead/CaseAttend
 
 CaseAttend's source code is licensed under [AGPL-3.0](LICENSE) © 2026 James Weatherhead.
 
-The bundled teaching images are third-party works under their own licenses (TCGA open-access; Wikimedia Commons images under CC BY-SA 4.0 or CC BY 3.0), attributed in the case files under `lib/prompts/`. They are not covered by AGPL-3.0 and remain under their original terms.
+The bundled teaching images are third-party works under their own licenses (TCGA open-access; Wikimedia Commons images under CC BY-SA 4.0 or CC BY 3.0; public-domain images from the National Cancer Institute), attributed in each case's `description` string in `src/data/`. They are not covered by AGPL-3.0 and remain under their original terms.
 
 **Commercial licensing.** AGPL-3.0 requires anyone who runs a modified version, including as a network service, to offer their source under the same terms. If that does not fit your use, for example embedding CaseAttend in a closed product or hosted service, a separate commercial license is available on request: contact James Weatherhead via [github.com/JamesWeatherhead](https://github.com/JamesWeatherhead).
 
