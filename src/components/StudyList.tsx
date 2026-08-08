@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Study, ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail } from 'lucide-react';
+import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
@@ -414,14 +414,27 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
       <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-12 sm:pt-20 pb-12">
 
         {/* Brand */}
-        <div className="flex flex-col items-center mb-5 sm:mb-6">
+        <div className="flex flex-col items-center mb-6 sm:mb-8">
           <div className="flex items-center gap-4 sm:gap-5 mb-4">
             <img src="/logo.svg" alt="CaseAttend" className="w-12 h-12 sm:w-16 sm:h-16 rounded-[14px]" />
             <h1 className="text-[38px] sm:text-[56px] font-bold text-white tracking-[-0.03em]">
               CaseAttend
             </h1>
           </div>
-          <p className="text-[16px] sm:text-[20px] text-[#8a8f98] font-medium mb-2">AI tutor for medical imaging.</p>
+          <p className="text-[18px] sm:text-[22px] text-[#d0d6e0] font-medium mb-3 text-center max-w-[720px] leading-snug tracking-[-0.01em]">
+            Case-based visual reasoning tutor for medical education.
+          </p>
+          <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
+            Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level — from high school to resident. Radiology, pathology, dermatology.
+          </p>
+          <a href="#how-it-works" className="mt-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors">
+            How it works
+          </a>
+        </div>
+
+        {/* Testimonial — social proof up top, before the ask */}
+        <div className="w-full flex justify-center mb-6 sm:mb-8">
+          <TestimonialRotator />
         </div>
 
         {/* Trust signals */}
@@ -543,10 +556,87 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
           })}
         </div>
 
-        {/* Social proof, moved below the cases so it never delays them */}
-        <div className="mt-16 w-full flex justify-center">
-          <TestimonialRotator />
-        </div>
+        {/* How it works — anchor target for the hero link, and depth for scroll-down readers */}
+        <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
+          <div className="text-center mb-10">
+            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-3">How it works</p>
+            <h2 className="text-[24px] sm:text-[32px] font-bold text-white tracking-[-0.02em] mb-3">
+              An AI tutor grounded in a real artifact.
+            </h2>
+            <p className="text-[14px] sm:text-[15px] text-[#8a8f98] max-w-[640px] mx-auto leading-relaxed">
+              Not another chat bot. CaseAttend teaches case-based visual reasoning: the tutor asks before it tells, points at what you should see, and adapts to your level. The engine is domain-agnostic; the content is per-specialty.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
+                <Scan className="w-5 h-5 text-blue-400" />
+              </div>
+              <h3 className="text-[15px] font-bold text-white mb-2">Case-based, not chat-based</h3>
+              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
+                Every session is a real image with a clinical vignette. You scroll slices, adjust contrast, draw on findings. The tutor teaches from a question-first scaffold, not a monologue.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center mb-4">
+                <Layers className="w-5 h-5 text-fuchsia-400" />
+              </div>
+              <h3 className="text-[15px] font-bold text-white mb-2">Domain plugin architecture</h3>
+              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
+                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module — no viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                <KeyRound className="w-5 h-5 text-emerald-400" />
+              </div>
+              <h3 className="text-[15px] font-bold text-white mb-2">BYOK, no keys on our servers</h3>
+              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
+                Your OpenRouter key lives only in your browser and calls the model directly. Two free vision models included. Nothing on our infrastructure to leak, no bill for us to foot.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6">
+            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-4">Under the hood</p>
+            <ul className="space-y-3 text-[13px] text-[#8a8f98] leading-relaxed">
+              <li className="flex gap-3">
+                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
+                <span>Structured <code className="text-[12px] font-mono text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded">&lt;POINTERS&gt;</code> and <code className="text-[12px] font-mono text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded">&lt;SUGGESTIONS&gt;</code> emitted by the model, rendered on-image and per-learner-level.</span>
+              </li>
+              <li className="flex gap-3">
+                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
+                <span>Learner-level system prompts (High school, Undergrad, Pre-Step 1, Post-Step 1, Resident) so depth adapts to your background.</span>
+              </li>
+              <li className="flex gap-3">
+                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
+                <span>Whole-slide pre-analysis grounds the tutor in what's actually in the image, reducing hallucination and jailbreak surface.</span>
+              </li>
+              <li className="flex gap-3">
+                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
+                <span>Auto-capture on send: the AI sees whatever you're looking at (and any drawings you just made) the moment you press Enter. No manual capture step.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#6b7080]">
+            <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Github className="w-3.5 h-3.5" /> Source on GitHub (AGPL-3.0)
+            </a>
+            <span className="text-[#2a2d33]">•</span>
+            <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Award className="w-3.5 h-3.5" /> Google DeepMind hackathon writeup
+            </a>
+            <span className="text-[#2a2d33]">•</span>
+            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              Cite
+            </a>
+          </div>
+        </section>
+
       </div>
     </div>
   );
