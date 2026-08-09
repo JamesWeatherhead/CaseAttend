@@ -385,7 +385,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
             <span>AGPL-3.0</span>
             <span>Domain plugins</span>
             <span>Browser-direct BYOK</span>
-            <span>Reproducible cases</span>
+            <span>Open reference cases</span>
             <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[#aeb4bf]">Citation-ready</a>
           </div>
         </section>
@@ -604,7 +604,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </li>
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Whole-slide pre-analysis grounds the tutor in what's actually in the image, reducing hallucination and jailbreak surface.</span>
+                <span>Overview pre-analysis gives the tutor additional image context before the conversation begins.</span>
               </li>
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
