@@ -2,7 +2,7 @@
 # Applied to every static asset response. connect-src allows the browser-direct
 # BYOK call straight to OpenRouter. CaseAttend has no prompt or inference API.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://openrouter.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://openrouter.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
@@ -15,4 +15,9 @@
 
 # Case images live at stable paths — cache a week.
 /images/*
+  Cache-Control: public, max-age=604800
+
+# Self-hosted OCR worker, WebAssembly, and language data. Paths are stable, so
+# cache for one week and revalidate after deployments that update dependencies.
+/vendor/*
   Cache-Control: public, max-age=604800

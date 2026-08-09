@@ -18,6 +18,7 @@ import {
   type BuiltinAssetPath,
 } from './builtinAssetDigests';
 import { createBuiltinLessonPlan } from './lessonRegistry';
+import { casePackageStore } from '../services/casePackageStore';
 
 type BuiltinCaseDraft = Omit<CasePackageV1Draft, 'lessonPlanRef'>;
 
@@ -547,14 +548,43 @@ async function buildRegistry(): Promise<readonly CasePackageV1[]> {
   return Object.freeze(packages);
 }
 
-export function listCasePackages(): Promise<readonly CasePackageV1[]> {
+export function listBuiltinCasePackages(): Promise<readonly CasePackageV1[]> {
   registryPromise ??= buildRegistry();
   return registryPromise;
 }
 
+export async function listCasePackages(): Promise<readonly CasePackageV1[]> {
+  const builtIns = await listBuiltinCasePackages();
+  const builtInIds = new Set(builtIns.map((casePackage) => casePackage.id));
+  const summaries = await casePackageStore.list();
+  let skippedLocalCount = 0;
+  const localPackages = await Promise.all(summaries.map(async (summary) => {
+    if (builtInIds.has(summary.id)) return null;
+    try {
+      const portable = await casePackageStore.get(summary.id);
+      return portable ? deepFreeze(portable.casePackage) : null;
+    } catch {
+      skippedLocalCount += 1;
+      return null;
+    }
+  }));
+  if (skippedLocalCount > 0) {
+    // Do not echo IDs, asset digests, filenames, or persistence errors: these
+    // can contain sensitive local context. Valid cases remain usable.
+    console.warn(
+      `${skippedLocalCount} browser-local case${skippedLocalCount === 1 ? '' : 's'} could not be verified and ${skippedLocalCount === 1 ? 'was' : 'were'} skipped. Export or delete the affected local data from this browser before retrying.`,
+    );
+  }
+  return Object.freeze([
+    ...builtIns,
+    ...localPackages.filter((casePackage): casePackage is CasePackageV1 => casePackage !== null),
+  ]);
+}
+
 export async function getCasePackage(caseId: string): Promise<CasePackageV1 | undefined> {
-  const packages = await listCasePackages();
-  return packages.find((casePackage) => casePackage.id === caseId);
+  const builtIn = (await listBuiltinCasePackages()).find((casePackage) => casePackage.id === caseId);
+  if (builtIn) return builtIn;
+  return (await casePackageStore.get(caseId))?.casePackage;
 }
 
 export async function requireCasePackage(caseId: string): Promise<CasePackageV1> {

@@ -3,10 +3,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2 } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
+import { casePackageStore } from '../services/casePackageStore';
 
 interface StudyListProps {
   onSelectStudy: (casePackage: CasePackageV1) => void;
@@ -16,7 +17,49 @@ interface StudyListProps {
   setDicomConfig: (config: DicomWebConfig) => void;
   onShowSafety?: () => void;
   onOpenLessonBuilder?: () => void;
+  onOpenCaseStudio?: () => void;
+  onDeleteLocalCase?: (caseId: string) => Promise<void>;
 }
+
+const CasePreviewBackdrop: React.FC<{
+  casePackage: CasePackageV1;
+  active: boolean;
+}> = ({ casePackage, active }) => {
+  const [src, setSrc] = useState(
+    casePackage.preview.src.startsWith('case://assets/') ? '' : casePackage.preview.src,
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    if (!casePackage.preview.src.startsWith('case://assets/')) {
+      setSrc(casePackage.preview.src);
+      return () => { mounted = false; };
+    }
+    void casePackageStore.resolveAssetUri(casePackage.preview.src).then((resolved) => {
+      if (mounted) setSrc(resolved);
+    }).catch(() => {
+      if (mounted) setSrc('');
+    });
+    return () => { mounted = false; };
+  }, [casePackage.preview.src]);
+
+  return (
+    <div
+      role="img"
+      aria-label={casePackage.preview.alt}
+      className="absolute inset-0 transition-all duration-700 ease-out"
+      style={{
+        backgroundImage: src ? `url(${src})` : 'none',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        opacity: active ? 0.8 : 0.6,
+        imageRendering: 'auto',
+        transition: 'opacity 500ms ease',
+      }}
+    />
+  );
+};
 
 const TESTIMONIALS = [
   { quote: "I thought I had a good grasp on tension pneumothorax. Then it asked me to explain exactly how it causes hypotension and low preload. Turns out I didn't.", author: "PGY-1, General Surgery" },
@@ -68,8 +111,13 @@ const TestimonialRotator: React.FC = () => {
             aria-label={`Show testimonial ${i + 1} of ${TESTIMONIALS.length}`}
             aria-pressed={i === idx}
             onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 400); }}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === idx ? 'bg-[#8a8f98] w-4' : 'bg-[#2a2d35] hover:bg-[#4a4e58]'}`}
-          />
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 rounded-full transition-all duration-300 ${i === idx ? 'w-4 bg-[#8a8f98]' : 'w-1.5 bg-[#2a2d35]'}`}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -93,7 +141,7 @@ const ProviderChip: React.FC<{ label: string; icon: React.ReactNode; onClick: ()
     onClick={onClick}
     disabled={disabled}
     aria-label={`Continue with OpenRouter using ${label}`}
-    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-60 px-3.5 py-2 text-[13px] text-[#c9ced8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+    className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-60 px-3.5 py-2 text-[13px] text-[#c9ced8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
   >
     {icon}
     <span>{label}</span>
@@ -196,6 +244,8 @@ const StudyList: React.FC<StudyListProps> = ({
   onSelectStudy,
   dicomConfig,
   onOpenLessonBuilder,
+  onOpenCaseStudio,
+  onDeleteLocalCase,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
@@ -239,7 +289,7 @@ const StudyList: React.FC<StudyListProps> = ({
   }
 
   return (
-    <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto select-none">
+    <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto">
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-12 sm:pt-20 pb-12">
@@ -256,7 +306,7 @@ const StudyList: React.FC<StudyListProps> = ({
             Case-based visual reasoning tutor for medical education.
           </p>
           <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
-            Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level — from high school to resident. Radiology, pathology, dermatology.
+            Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level, from high school to resident. Radiology, pathology, dermatology.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
             {onOpenLessonBuilder && (
@@ -267,6 +317,16 @@ const StudyList: React.FC<StudyListProps> = ({
               >
                 <BookOpen className="w-4 h-4" aria-hidden="true" />
                 Create a lesson
+              </button>
+            )}
+            {onOpenCaseStudio && (
+              <button
+                type="button"
+                onClick={onOpenCaseStudio}
+                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+              >
+                <ImagePlus className="w-4 h-4" aria-hidden="true" />
+                Create a case
               </button>
             )}
             <a href="#how-it-works" className="min-h-11 inline-flex items-center px-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
@@ -280,31 +340,33 @@ const StudyList: React.FC<StudyListProps> = ({
           )}
         </div>
 
-        {/* Testimonial — social proof up top, before the ask */}
+        {/* Testimonial social proof up top, before the ask */}
         <div className="w-full flex justify-center mb-6 sm:mb-8">
           <TestimonialRotator />
         </div>
 
         {/* Trust signals */}
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 mb-8">
-          <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[13px] sm:text-[14px] text-amber-400/90 font-medium hover:text-amber-300 transition-colors">
+          <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 text-[13px] sm:text-[14px] text-amber-400/90 font-medium hover:text-amber-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
             <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
             <span>Google DeepMind Hackathon Winner</span>
           </a>
         </div>
 
-        {/* Sign in with OpenRouter — free, no card, credentials stay with OpenRouter */}
+        {/* Sign in with OpenRouter. Free, no card, credentials stay with OpenRouter. */}
         <ConnectCallout />
 
         {/* Section label + filters */}
-        <div className="w-full max-w-[1100px] mb-4 flex items-center justify-between">
+        <div className="w-full max-w-[1100px] mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em]">Cases</p>
-          <div className="flex gap-1">
+          <div className="flex w-full max-w-full gap-1 overflow-x-auto pb-1 sm:w-auto" aria-label="Filter cases">
             {FILTERS.map(f => (
               <button
                 key={f.id}
+                type="button"
+                aria-pressed={activeFilter === f.id}
                 onClick={() => setActiveFilter(f.id)}
-                className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 ${
+                className={`min-h-11 shrink-0 whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
                   activeFilter === f.id
                     ? 'bg-white/[0.08] text-white'
                     : 'text-[#4a4e58] hover:text-[#8a8f98] hover:bg-white/[0.03]'
@@ -323,9 +385,8 @@ const StudyList: React.FC<StudyListProps> = ({
             const { presentation } = casePackage;
 
             return (
-              <button
+              <article
                 key={casePackage.id}
-                onClick={() => onSelectStudy(casePackage)}
                 onMouseEnter={() => setHovered(casePackage.id)}
                 onMouseLeave={() => setHovered(null)}
                 className="group relative rounded-2xl overflow-hidden text-left outline-none aspect-[4/5] sm:aspect-[4/5]"
@@ -335,20 +396,30 @@ const StudyList: React.FC<StudyListProps> = ({
                   boxShadow: active ? `0 0 40px 8px ${presentation.accentGlow}` : 'none',
                 }}
               >
+                <button
+                  type="button"
+                  className="absolute inset-0 z-20 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-inset"
+                  onClick={() => onSelectStudy(casePackage)}
+                  aria-label={`Start case: ${casePackage.title}`}
+                />
+                {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && (
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3 z-30 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/[0.12] bg-black/70 text-[#c9ced8] hover:bg-red-950 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                    aria-label={`Delete browser-local case: ${casePackage.title}`}
+                    onClick={() => {
+                      if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
+                      void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => {
+                        setLoadError('The browser-local case could not be deleted. Your other cases were not changed.');
+                      });
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                )}
                 {/* Background image: fills the card */}
                 <div className="absolute inset-0">
-                  <div
-                    className="absolute inset-0 transition-all duration-700 ease-out"
-                    style={{
-                      backgroundImage: `url(${casePackage.preview.src})`,
-                      backgroundSize: 'contain',
-                      backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat',
-                      opacity: active ? 0.8 : 0.6,
-                      imageRendering: 'auto',
-                      transition: 'opacity 500ms ease',
-                    }}
-                  />
+                  <CasePreviewBackdrop casePackage={casePackage} active={active} />
                   {/* Gradient overlay: dark at bottom for text legibility only */}
                   <div
                     className="absolute inset-0"
@@ -379,6 +450,11 @@ const StudyList: React.FC<StudyListProps> = ({
                   <div className={`text-[10px] font-bold uppercase tracking-wider ${presentation.textClass} mb-2 opacity-80`}>
                     {presentation.subtitle}
                   </div>
+                  {casePackage.preview.src.startsWith('case://assets/') && (
+                    <div className="mb-2 inline-flex min-h-6 items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
+                      Browser-local
+                    </div>
+                  )}
 
                   {/* Case title */}
                   <div className="text-[16px] sm:text-[17px] font-bold text-white leading-tight mb-2">
@@ -398,12 +474,12 @@ const StudyList: React.FC<StudyListProps> = ({
                     <ArrowRight className={`w-3.5 h-3.5 ${presentation.textClass} opacity-0 group-hover:opacity-70 transition-all duration-200 group-hover:translate-x-0.5`} />
                   </div>
                 </div>
-              </button>
+              </article>
             );
           })}
         </div>
 
-        {/* How it works — anchor target for the hero link, and depth for scroll-down readers */}
+        {/* How it works anchor target for the hero link, and depth for scroll-down readers */}
         <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
           <div className="text-center mb-10">
             <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-3">How it works</p>
@@ -432,7 +508,7 @@ const StudyList: React.FC<StudyListProps> = ({
               </div>
               <h3 className="text-[15px] font-bold text-white mb-2">Domain plugin architecture</h3>
               <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module — no viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
+                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module. No viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
               </p>
             </div>
 

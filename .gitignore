@@ -1,9 +1,15 @@
 node_modules
 dist
+public/vendor/tesseract/
+public/vendor/tesseract-core/
+public/vendor/tessdata/
+public/vendor/fflate/
+public/vendor/NOTICE.txt
 .env
 .env.local
 .vercel
 *.log
+*.tsbuildinfo
 .env*.local
 
 # Local PNG masters parked out of the build (WebP shipped instead; originals recoverable from TCGA)

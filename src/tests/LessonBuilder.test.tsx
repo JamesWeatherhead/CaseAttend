@@ -6,6 +6,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import LessonBuilder from '../components/LessonBuilder';
 import type { CasePackageV1 } from '../core/casePackage';
+import { createStarterLessonPlanV1 } from '../core/starterLesson';
+import { finalizeLessonPlanV1 } from '../core/lessonPlan';
 
 const digest = '0'.repeat(64);
 
@@ -90,13 +92,36 @@ const secondTeachingCase: CasePackageV1 = {
   lessonPlanRef: { id: 'second-teaching-case-lesson', version: '1.0.0', sha256: digest },
 };
 
+const localTeachingCase: CasePackageV1 = {
+  ...secondTeachingCase,
+  id: 'browser-local-teaching-case',
+  title: 'Browser-local teaching case',
+  artifact: {
+    kind: 'image',
+    modality: 'CR',
+    seriesId: 'browser-local-series',
+    seriesLabel: 'Browser-local teaching image',
+    src: `case://assets/${digest}.jpg`,
+    mimeType: 'image/jpeg',
+    sha256: digest,
+    alt: 'Second neutral teaching image.',
+  },
+  preview: {
+    ...secondTeachingCase.preview,
+    src: `case://assets/${digest}.jpg`,
+  },
+  lessonPlanRef: { id: 'browser-local-teaching-case-lesson', version: '1.0.0', sha256: digest },
+};
+
 const loadCasePackages = vi.fn(async () => [teachingCase] as readonly CasePackageV1[]);
 const loadTwoCasePackages = vi.fn(async () => [teachingCase, secondTeachingCase] as readonly CasePackageV1[]);
+const loadLocalCasePackages = vi.fn(async () => [teachingCase, localTeachingCase] as readonly CasePackageV1[]);
 
 describe('LessonBuilder', () => {
   beforeEach(() => {
     loadCasePackages.mockClear();
     loadTwoCasePackages.mockClear();
+    loadLocalCasePackages.mockClear();
     vi.stubGlobal('fetch', vi.fn());
     vi.stubGlobal('crypto', webcrypto);
     vi.stubGlobal('confirm', vi.fn(() => true));
@@ -120,6 +145,7 @@ describe('LessonBuilder', () => {
       expect(within(navigation).getByRole('button', { name: new RegExp(label.replace('/', '\\/')) })).toBeTruthy();
     }
     expect(screen.getByText(/does not contact a model or read an API key/i)).toBeTruthy();
+    expect(screen.getByText(/the terms are not synonyms/i)).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -240,6 +266,146 @@ describe('LessonBuilder', () => {
     expect((screen.getByLabelText(/Educator tutor instructions/) as HTMLTextAreaElement).value).toBe('');
     expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value).toBe('');
     expect(document.body.textContent).not.toContain('CASE A PRIVATE');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('loads the exact browser-local lesson when switching to a custom case', async () => {
+    const storedLesson = await createStarterLessonPlanV1({
+      caseId: localTeachingCase.id,
+      title: 'Exact saved custom lesson',
+      neutralDescription: localTeachingCase.neutralDescription,
+      teachingNotes: localTeachingCase.teachingNotes,
+      sourceName: localTeachingCase.provenance.sourceName,
+      sourceUrl: localTeachingCase.provenance.sourceUrl!,
+      learnerLevels: ['undergrad'],
+    });
+    const loadStoredLesson = vi.fn(async (casePackage: CasePackageV1) => (
+      casePackage.id === localTeachingCase.id ? storedLesson : null
+    ));
+    const resolveAssetUri = vi.fn(async () => 'blob:resolved-lesson-preview');
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        loadCasePackages={loadLocalCasePackages}
+        loadStoredLesson={loadStoredLesson}
+        resolveAssetUri={resolveAssetUri}
+      />,
+    );
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+
+    fireEvent.change(screen.getByRole('combobox', { name: /Case Package/ }), {
+      target: { value: localTeachingCase.id },
+    });
+
+    await waitFor(() => {
+      expect((screen.getByLabelText(/Stable lesson ID/) as HTMLInputElement).value)
+        .toBe(storedLesson.id);
+    });
+    expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value)
+      .toBe('Exact saved custom lesson');
+    expect((screen.getByLabelText(/Neutral case description/) as HTMLTextAreaElement).value)
+      .toBe(storedLesson.neutralDescription);
+    expect(loadStoredLesson).toHaveBeenCalledWith(localTeachingCase);
+    await waitFor(
+      () => expect(resolveAssetUri).toHaveBeenCalledWith(localTeachingCase.preview.src),
+      { timeout: 5_000 },
+    );
+    await waitFor(() => {
+      expect((screen.getByRole('img', { name: localTeachingCase.preview.alt }) as HTMLImageElement).src)
+        .toContain('blob:resolved-lesson-preview');
+    }, { timeout: 5_000 });
+    fireEvent.click(screen.getByRole('button', { name: /Tutor path/ }));
+    await waitFor(() => {
+      expect((screen.getByLabelText(/Socratic opening/) as HTMLTextAreaElement).value)
+        .toBe(storedLesson.socraticOpening);
+      expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value)
+        .toBe(storedLesson.teachingNotes.join('\n'));
+    }, { timeout: 5_000 });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('keeps a browser-local lesson and focuses an actionable error when portable export fails', async () => {
+    const storedLesson = await createStarterLessonPlanV1({
+      caseId: localTeachingCase.id,
+      title: 'Saved local lesson',
+      neutralDescription: localTeachingCase.neutralDescription,
+      teachingNotes: localTeachingCase.teachingNotes,
+      sourceName: localTeachingCase.provenance.sourceName,
+      sourceUrl: localTeachingCase.provenance.sourceUrl!,
+      learnerLevels: ['undergrad'],
+    });
+    const exportPortableCase = vi.fn(async () => {
+      throw new Error('Browser download was blocked.');
+    });
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        initialCaseId={localTeachingCase.id}
+        loadCasePackages={loadLocalCasePackages}
+        loadStoredLesson={vi.fn(async () => storedLesson)}
+        saveUpdatedBundle={vi.fn(async () => true)}
+        exportPortableCase={exportPortableCase}
+        resolveAssetUri={vi.fn(async () => 'blob:resolved-lesson-preview')}
+      />,
+    );
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+
+    fireEvent.click(screen.getByRole('button', { name: /Review\/export/ }));
+    expect(await screen.findByText('Validated draft ready to export')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export bundle' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('The export could not be completed: Browser download was blocked.');
+    await waitFor(() => expect(document.activeElement).toBe(alert));
+    expect(exportPortableCase).toHaveBeenCalledWith(expect.objectContaining({ id: localTeachingCase.id }));
+    fireEvent.click(screen.getByRole('button', { name: /^Setup$/ }));
+    await waitFor(() => {
+      expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toBe('Saved local lesson');
+    }, { timeout: 5_000 });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('refuses a valid advanced imported plan before the visual builder can flatten it', async () => {
+    const starter = await createStarterLessonPlanV1({
+      caseId: localTeachingCase.id,
+      title: 'Advanced saved lesson',
+      neutralDescription: localTeachingCase.neutralDescription,
+      teachingNotes: localTeachingCase.teachingNotes,
+      sourceName: localTeachingCase.provenance.sourceName,
+      sourceUrl: localTeachingCase.provenance.sourceUrl!,
+      learnerLevels: ['undergrad'],
+    });
+    const { manifest: _manifest, ...starterDraft } = starter;
+    const advancedLesson = await finalizeLessonPlanV1({
+      ...starterDraft,
+      learnerOpenings: [{
+        learnerLevel: 'undergrad',
+        content: 'What visual feature would you describe first at your current level?',
+      }],
+    });
+    const loadStoredLesson = vi.fn(async (casePackage: CasePackageV1) => (
+      casePackage.id === localTeachingCase.id ? advancedLesson : null
+    ));
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        loadCasePackages={loadLocalCasePackages}
+        loadStoredLesson={loadStoredLesson}
+      />,
+    );
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    const originalTitle = (screen.getByLabelText(/Lesson title/) as HTMLInputElement).value;
+
+    fireEvent.change(screen.getByRole('combobox', { name: /Case Package/ }), {
+      target: { value: localTeachingCase.id },
+    });
+
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('audience-specific learner openings');
+    expect(alert.textContent).toContain('No lesson content was changed.');
+    expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toBe(originalTitle);
+    expect((screen.getByRole('combobox', { name: /Case Package/ }) as HTMLSelectElement).value)
+      .toBe(teachingCase.id);
     expect(fetch).not.toHaveBeenCalled();
   });
 });

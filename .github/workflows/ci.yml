@@ -67,3 +67,16 @@ jobs:
           echo "OK: only the OpenRouter boundary can read the raw key."
       - name: Browser credential and session export sentinel test
         run: npm exec -- vitest run src/tests/securityBoundary.test.ts
+      - name: Case Studio stays outside the credential and inference boundary
+        run: |
+          unexpected=$(grep -rInE "from ['\"].*(byokStore|openrouterClient|aiClient)['\"]" \
+            src/components/CaseStudio src/core/portableCasePackage.ts \
+            src/core/starterLesson.ts src/services/caseAssetPipeline.ts \
+            src/services/casePackageStore.ts src/services/casePrivacyScanner.ts \
+            src/services/caseStudioController.ts src/services/portableCaseArchive.ts || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::Case Studio imports a credential or inference boundary:"
+            echo "$unexpected"
+            exit 1
+          fi
+          echo "OK: Case Studio cannot import credential or inference clients."

@@ -42,12 +42,22 @@ import './LessonBuilder.css';
 interface LessonBuilderProps {
   onExit: () => void;
   loadCasePackages?: () => Promise<readonly CasePackageV1[]>;
+  initialCaseId?: string;
+  loadStoredLesson?: (casePackage: CasePackageV1) => Promise<LessonPlanV1 | null>;
+  saveUpdatedBundle?: (
+    casePackage: CasePackageV1,
+    lessonPlan: LessonPlanV1,
+    expectedCaseManifestSha256: string,
+  ) => Promise<boolean>;
+  exportPortableCase?: (casePackage: CasePackageV1) => Promise<void>;
+  resolveAssetUri?: (uri: string) => Promise<string>;
 }
 
 interface ObjectiveRow {
   key: number;
   id: string;
   description: string;
+  criterionId: string;
   criterion: string;
   evidence: string;
 }
@@ -149,6 +159,7 @@ function initialForm(casePackage?: CasePackageV1): BuilderForm {
       key: 1,
       id: 'objective-1',
       description: '',
+      criterionId: 'rubric-objective-1',
       criterion: '',
       evidence: '',
     }],
@@ -170,6 +181,103 @@ function initialForm(casePackage?: CasePackageV1): BuilderForm {
     reviewer: '',
     credentials: '',
     reviewedAt: '',
+  };
+}
+
+function assertVisualBuilderCanRepresent(lessonPlan: LessonPlanV1): void {
+  const unsupported: string[] = [];
+  if (lessonPlan.learnerOpenings !== undefined) {
+    unsupported.push('audience-specific learner openings');
+  }
+  if (lessonPlan.allowedHints.some((hint) => hint.objectiveIds.length !== 1)) {
+    unsupported.push('hints linked to more than one objective');
+  }
+  const criteriaByObjective = new Map<string, number>();
+  lessonPlan.rubric.criteria.forEach((criterion) => {
+    if (criterion.objectiveIds.length !== 1) {
+      unsupported.push('rubric criteria linked to more than one objective');
+      return;
+    }
+    const objectiveId = criterion.objectiveIds[0];
+    criteriaByObjective.set(objectiveId, (criteriaByObjective.get(objectiveId) ?? 0) + 1);
+  });
+  if (lessonPlan.objectives.some((objective) => (criteriaByObjective.get(objective.id) ?? 0) !== 1)) {
+    unsupported.push('objectives with multiple rubric criteria');
+  }
+  const uniqueUnsupported = [...new Set(unsupported)];
+  if (uniqueUnsupported.length > 0) {
+    throw new Error(
+      `This valid Lesson Plan v1 uses structures the visual builder cannot edit without losing data: ${uniqueUnsupported.join(', ')}. No lesson content was changed. Use the portable package or SDK as-is, or create a simplified revision before opening it here.`,
+    );
+  }
+}
+
+function isoToLocalDateTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value.replace(/Z$/, '');
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .replace(/Z$/, '');
+}
+
+function formFromLesson(casePackage: CasePackageV1, lessonPlan: LessonPlanV1): BuilderForm {
+  assertVisualBuilderCanRepresent(lessonPlan);
+  return {
+    caseId: casePackage.id,
+    id: lessonPlan.id,
+    title: lessonPlan.title,
+    version: lessonPlan.version,
+    levels: [...lessonPlan.learner.levels],
+    prerequisites: lessonPlan.learner.prerequisites.join('\n'),
+    neutralDescription: lessonPlan.neutralDescription,
+    objectives: lessonPlan.objectives.map((objective, index) => {
+      const criterion = lessonPlan.rubric.criteria.find((entry) => (
+        entry.objectiveIds.includes(objective.id)
+      ));
+      return {
+        key: index + 1,
+        id: objective.id,
+        description: objective.description,
+        criterionId: criterion?.id ?? `rubric-${objective.id}`,
+        criterion: criterion?.criterion ?? '',
+        evidence: criterion?.observableEvidence.join('\n') ?? '',
+      };
+    }),
+    socraticOpening: lessonPlan.socraticOpening,
+    hints: lessonPlan.allowedHints.map((hint, index) => ({
+      key: index + 1,
+      id: hint.id,
+      objectiveId: hint.objectiveIds[0] ?? '',
+      text: hint.text,
+    })),
+    escalations: lessonPlan.escalationConditions.map((condition, index) => ({
+      key: index + 1,
+      id: condition.id,
+      when: condition.when,
+      action: condition.action,
+    })),
+    stopping: lessonPlan.stoppingConditions.map((condition, index) => ({
+      key: index + 1,
+      id: condition.id,
+      when: condition.when,
+      message: condition.message,
+    })),
+    tutorInstructions: lessonPlan.educatorTutorInstructions,
+    answerNotes: lessonPlan.teachingNotes.join('\n'),
+    citations: lessonPlan.citations.map((citation, index) => ({
+      key: index + 1,
+      id: citation.id,
+      title: citation.title,
+      url: citation.url ?? '',
+      doi: citation.doi ?? '',
+      scope: citation.scope,
+    })),
+    reviewed: lessonPlan.clinicalReview.reviewed,
+    reviewer: lessonPlan.clinicalReview.reviewed ? lessonPlan.clinicalReview.reviewer : '',
+    credentials: lessonPlan.clinicalReview.reviewed ? lessonPlan.clinicalReview.credentials : '',
+    reviewedAt: lessonPlan.clinicalReview.reviewed
+      ? isoToLocalDateTime(lessonPlan.clinicalReview.reviewedAt)
+      : '',
   };
 }
 
@@ -218,7 +326,7 @@ function buildDraft(form: BuilderForm): LessonPlanV1Draft {
     educatorTutorInstructions: form.tutorInstructions.trim(),
     rubric: {
       criteria: form.objectives.map((objective) => ({
-        id: `rubric-${objective.id.trim()}`,
+        id: objective.criterionId.trim() || `rubric-${objective.id.trim()}`,
         objectiveIds: [objective.id.trim()],
         criterion: objective.criterion.trim(),
         observableEvidence: lines(objective.evidence),
@@ -335,9 +443,41 @@ const Field: React.FC<FieldProps> = ({ label, htmlFor, hint, required: isRequire
   </div>
 );
 
+const LessonCasePreview: React.FC<{
+  casePackage: CasePackageV1;
+  resolveAssetUri?: (uri: string) => Promise<string>;
+}> = ({ casePackage, resolveAssetUri }) => {
+  const [src, setSrc] = useState(
+    casePackage.preview.src.startsWith('case://assets/') ? '' : casePackage.preview.src,
+  );
+  useEffect(() => {
+    let active = true;
+    if (!casePackage.preview.src.startsWith('case://assets/')) {
+      setSrc(casePackage.preview.src);
+      return () => { active = false; };
+    }
+    setSrc('');
+    if (!resolveAssetUri) return () => { active = false; };
+    void resolveAssetUri(casePackage.preview.src).then((resolved) => {
+      if (active) setSrc(resolved);
+    }).catch(() => {
+      if (active) setSrc('');
+    });
+    return () => { active = false; };
+  }, [casePackage.preview.src, resolveAssetUri]);
+  return src
+    ? <img src={src} alt={casePackage.preview.alt} />
+    : <div role="img" aria-label={casePackage.preview.alt}>Preview stored in this browser</div>;
+};
+
 const LessonBuilder: React.FC<LessonBuilderProps> = ({
   onExit,
   loadCasePackages = listCasePackages,
+  initialCaseId,
+  loadStoredLesson,
+  saveUpdatedBundle,
+  exportPortableCase,
+  resolveAssetUri,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
@@ -350,6 +490,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   const [statusMessage, setStatusMessage] = useState('');
   const errorRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const caseChangeRequestRef = useRef(0);
 
   const selectedCase = useMemo(
     () => casePackages.find((casePackage) => casePackage.id === form.caseId),
@@ -359,11 +500,17 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   useEffect(() => {
     let active = true;
     loadCasePackages()
-      .then((packages) => {
+      .then(async (packages) => {
         if (!active) return;
         if (packages.length === 0) throw new Error('No Case Packages are available.');
+        const initialCase = packages.find((casePackage) => casePackage.id === initialCaseId)
+          ?? packages[0];
+        const storedLesson = loadStoredLesson
+          ? await loadStoredLesson(initialCase)
+          : null;
+        if (!active) return;
         setCasePackages(packages);
-        setForm(initialForm(packages[0]));
+        setForm(storedLesson ? formFromLesson(initialCase, storedLesson) : initialForm(initialCase));
         setLoading(false);
       })
       .catch((error: unknown) => {
@@ -372,7 +519,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         setLoading(false);
       });
     return () => { active = false; };
-  }, [loadCasePackages]);
+  }, [initialCaseId, loadCasePackages, loadStoredLesson]);
 
   useEffect(() => {
     setFinalized(null);
@@ -396,7 +543,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     setErrors([]);
   };
 
-  const changeCase = (caseId: string): boolean => {
+  const changeCase = async (caseId: string): Promise<boolean> => {
     const nextCase = casePackages.find((casePackage) => casePackage.id === caseId);
     if (!nextCase || nextCase.id === form.caseId) return false;
     if (
@@ -406,9 +553,27 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     ) {
       return false;
     }
-    setForm(initialForm(nextCase));
-    setErrors([]);
-    return true;
+    const requestId = ++caseChangeRequestRef.current;
+    setBusy(true);
+    try {
+      const storedLesson = loadStoredLesson
+        ? await loadStoredLesson(nextCase)
+        : null;
+      if (requestId !== caseChangeRequestRef.current) return false;
+      setForm(storedLesson ? formFromLesson(nextCase, storedLesson) : initialForm(nextCase));
+      setErrors([]);
+      return true;
+    } catch (error) {
+      if (requestId !== caseChangeRequestRef.current) return false;
+      showErrors([
+        error instanceof Error
+          ? error.message
+          : 'The exact saved lesson revision could not be loaded.',
+      ]);
+      return false;
+    } finally {
+      if (requestId === caseChangeRequestRef.current) setBusy(false);
+    }
   };
 
   const toggleLevel = (level: LearnerLevel) => {
@@ -440,6 +605,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
       key,
       id: `objective-${key}`,
       description: '',
+      criterionId: `rubric-objective-${key}`,
       criterion: '',
       evidence: '',
     }]);
@@ -530,10 +696,15 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         },
       });
       const nextFinalized = { casePackage, lessonPlan, prompt, bundle };
+      const savedBrowserLocal = saveUpdatedBundle
+        ? await saveUpdatedBundle(casePackage, lessonPlan, selectedCase.manifest.sha256)
+        : false;
       setFinalized(nextFinalized);
       setErrors([]);
       setStatusMessage(
-        lessonPlan.clinicalReview.reviewed
+        savedBrowserLocal
+          ? 'Browser-local case and exact lesson revision saved. The portable export is ready.'
+          : lessonPlan.clinicalReview.reviewed
           ? 'Clinically reviewed lesson and linked Case Package validated. The export is ready.'
           : 'Draft lesson and linked Case Package validated. The draft export is ready.',
       );
@@ -566,21 +737,35 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   };
 
   const downloadBundle = async () => {
-    const ready = finalized ?? await finalize();
-    if (!ready) return;
-    const url = URL.createObjectURL(new Blob([`${JSON.stringify(ready.bundle, null, 2)}\n`], { type: 'application/json' }));
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `${ready.lessonPlan.id}-${ready.lessonPlan.version}.json`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-    setStatusMessage('The versioned case and lesson bundle was downloaded from this browser.');
+    try {
+      const ready = finalized ?? await finalize();
+      if (!ready) return;
+      if (ready.casePackage.preview.src.startsWith('case://assets/') && exportPortableCase) {
+        await exportPortableCase(ready.casePackage);
+        setStatusMessage('The portable case, exact lesson, and referenced images were downloaded from this browser.');
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([`${JSON.stringify(ready.bundle, null, 2)}\n`], { type: 'application/json' }));
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${ready.lessonPlan.id}-${ready.lessonPlan.version}.json`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+      setStatusMessage('The versioned case and lesson bundle was downloaded from this browser.');
+    } catch (error: unknown) {
+      setStatusMessage('');
+      showErrors([
+        error instanceof Error
+          ? `The export could not be completed: ${error.message}`
+          : 'The export could not be completed. Your lesson remains in this browser.',
+      ]);
+    }
   };
 
   if (loading) {
-    return <main className="lesson-builder-loading" aria-busy="true">Loading the built-in Case Packages...</main>;
+    return <main className="lesson-builder-loading" aria-busy="true">Loading Case Packages...</main>;
   }
 
   if (loadError) {
@@ -614,7 +799,8 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
             <p className="lesson-builder-eyebrow">Versioned lesson authoring</p>
             <h1>Teach with images and words</h1>
             <p>
-              A vision-language model, or VLM, is an AI model that can work with images and words together.
+              A vision-language model, or VLM, is an AI model that can interpret images and words together.
+              Many current frontier models are VLMs, but the terms are not synonyms.
               This builder turns teaching intent into a structured lesson without requiring prompt syntax.
             </p>
           </div>
@@ -666,7 +852,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <div className="lesson-builder-info-card">
                   <Info aria-hidden="true" />
                   <p>
-                    Choose a versioned built-in Case Package. A content version and SHA-256 hash make it possible for a study team to record exactly what learners saw. This does not replace IRB review.
+                    Choose a versioned Case Package. A content version and SHA-256 hash make it possible for a study team to record exactly what learners saw. This does not replace IRB review.
                   </p>
                 </div>
                 <div className="lesson-builder-two-column">
@@ -676,9 +862,8 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                         id="lesson-case"
                         className={INPUT_CLASS}
                         value={form.caseId}
-                        onChange={(event) => {
-                          if (!changeCase(event.target.value)) event.currentTarget.value = form.caseId;
-                        }}
+                        onChange={(event) => { void changeCase(event.target.value); }}
+                        disabled={busy}
                         required
                       >
                         {casePackages.map((casePackage) => (
@@ -718,7 +903,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                   </div>
                   {selectedCase && (
                     <aside className="lesson-builder-case-preview" aria-label="Selected Case Package preview">
-                      <img src={selectedCase.preview.src} alt={selectedCase.preview.alt} />
+                      <LessonCasePreview casePackage={selectedCase} resolveAssetUri={resolveAssetUri} />
                       <div>
                         <span>{selectedCase.presentation.subtitle}</span>
                         <h3>{selectedCase.title}</h3>
@@ -876,7 +1061,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                     <div className="lesson-builder-field-grid review-fields">
                       <Field label="Reviewer name" htmlFor="reviewer-name" required><input id="reviewer-name" className={INPUT_CLASS} value={form.reviewer} onChange={(event) => updateForm('reviewer', event.target.value)} required /></Field>
                       <Field label="Credentials" htmlFor="reviewer-credentials" required><input id="reviewer-credentials" className={INPUT_CLASS} value={form.credentials} onChange={(event) => updateForm('credentials', event.target.value)} required /></Field>
-                      <Field label="Review date and time" htmlFor="reviewed-at" required><input id="reviewed-at" className={INPUT_CLASS} type="datetime-local" value={form.reviewedAt} onChange={(event) => updateForm('reviewedAt', event.target.value)} required /></Field>
+                      <Field label="Review date and time" htmlFor="reviewed-at" required><input id="reviewed-at" className={INPUT_CLASS} type="datetime-local" step="0.001" value={form.reviewedAt} onChange={(event) => updateForm('reviewedAt', event.target.value)} required /></Field>
                     </div>
                   )}
                 </fieldset>
