@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Study, ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
 import { ArrowRight, Scan, Microscope, Loader2, Award, Check, Github, Layers, KeyRound, BookOpen, FlaskConical, Code2 } from 'lucide-react';
@@ -221,48 +221,31 @@ const TESTIMONIALS = [
 
 const TestimonialRotator: React.FC = () => {
   const [idx, setIdx] = useState(0);
-  const [fade, setFade] = useState(true);
-
-  const next = useCallback(() => {
-    setFade(false);
-    setTimeout(() => {
-      setIdx(prev => (prev + 1) % TESTIMONIALS.length);
-      setFade(true);
-    }, 400);
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(next, 10000);
-    return () => clearInterval(timer);
-  }, [next]);
 
   const t = TESTIMONIALS[idx];
 
   return (
     <div className="w-full max-w-[560px] flex flex-col items-center text-center px-4">
-      <div
-        className="transition-all duration-400 ease-in-out"
-        style={{
-          opacity: fade ? 1 : 0,
-          transform: fade ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 400ms ease, transform 400ms ease',
-        }}
-      >
+      <div aria-live="polite">
         <p className="text-[13px] sm:text-[14px] text-[#9ca3af] leading-relaxed italic mb-3">
           "{t.quote}"
         </p>
-        <p className="text-[11px] text-[#4a4e58] font-medium tracking-wide">
+        <p className="text-[11px] text-[#777d88] font-medium tracking-wide">
           {t.author}
         </p>
       </div>
-      {/* Dots */}
       <div className="flex gap-1.5 mt-4">
         {TESTIMONIALS.map((_, i) => (
           <button
             key={i}
-            onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 400); }}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === idx ? 'bg-[#8a8f98] w-4' : 'bg-[#2a2d35] hover:bg-[#4a4e58]'}`}
-          />
+            type="button"
+            aria-label={`Show testimonial ${i + 1} of ${TESTIMONIALS.length}`}
+            aria-pressed={i === idx}
+            onClick={() => setIdx(i)}
+            className="group inline-flex h-6 w-6 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+          >
+            <span aria-hidden="true" className={`h-2 rounded-full transition-colors ${i === idx ? 'w-4 bg-[#9ca3af]' : 'w-2 bg-[#656b76] group-hover:bg-[#777d88]'}`} />
+          </button>
         ))}
       </div>
     </div>
@@ -312,8 +295,8 @@ const ConnectCallout: React.FC = () => {
               <h2 className="text-[14px] font-semibold text-white">Bring a vision model when you are ready</h2>
               <OpenRouterLockup className="h-[17px] w-auto opacity-60" />
             </div>
-            <p className="mt-1 text-[12.5px] leading-relaxed text-[#737985]">
-              Two free models, no credit card, and your credentials stay with OpenRouter.
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#777d88]">
+              Two free models, no credit card. Your key stays in this browser; case content goes directly to OpenRouter.
             </p>
           </div>
         </div>
@@ -358,11 +341,11 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-full bg-[#06070a]"><Loader2 className="w-5 h-5 text-[#62666d] animate-spin" /></div>;
+    return <div className="flex items-center justify-center h-full bg-[#06070a]"><Loader2 className="w-5 h-5 text-[#777d88] animate-spin motion-reduce:animate-none" /></div>;
   }
 
   return (
-    <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto select-none">
+    <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto">
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-8 sm:pt-12 pb-12">
@@ -376,7 +359,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
 
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/[0.07] px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/90">
             <Github className="h-3.5 w-3.5" />
-            Open source platform for VLM education
+            Open source platform for visual AI education
           </div>
 
           <h1 className="mt-5 max-w-[900px] text-[36px] sm:text-[52px] lg:text-[60px] font-bold leading-[1.05] text-white tracking-[-0.045em]">
@@ -384,7 +367,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
           </h1>
 
           <p className="mt-5 max-w-[760px] text-[14px] sm:text-[17px] leading-relaxed text-[#969ca7]">
-            CaseAttend is an open foundation for case-based visual education. Compare vision-language models, study teaching behavior, add a specialty, or build a product on the same engine used across radiology, pathology, and dermatology.
+            CaseAttend is an open foundation for teaching with AI that can understand images and text. This is often called a vision-language model, or VLM. Compare models and teaching behavior, add a specialty, or build a product across radiology, pathology, and dermatology.
           </p>
 
           <div className="mt-7 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -398,7 +381,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
             </a>
           </div>
 
-          <div className="mt-6 flex max-w-[760px] flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-[#656b76]">
+          <div className="mt-6 flex max-w-[760px] flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-[#777d88]">
             <span>AGPL-3.0</span>
             <span>Domain plugins</span>
             <span>Browser-direct BYOK</span>
@@ -422,7 +405,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
         <section aria-labelledby="paths-heading" className="mt-10 w-full max-w-[1100px]">
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4f5560]">One open engine</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#777d88]">One open engine</p>
               <h2 id="paths-heading" className="mt-1.5 text-[20px] sm:text-[24px] font-semibold tracking-[-0.025em] text-white">Learn with it. Research it. Build on it.</h2>
             </div>
             <a href="#how-it-works" className="hidden text-[11px] text-blue-400/80 transition-colors hover:text-blue-300 sm:block">How it works</a>
@@ -458,7 +441,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
 
         {/* Section label + filters */}
         <div id="cases" className="w-full max-w-[1100px] mb-4 flex scroll-mt-6 flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-          <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em]">Cases</p>
+          <p className="text-[11px] font-semibold text-[#777d88] uppercase tracking-[0.1em]">Cases</p>
           <div className="flex gap-1">
             {FILTERS.map(f => (
               <button
@@ -467,7 +450,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                 className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 ${
                   activeFilter === f.id
                     ? 'bg-white/[0.08] text-white'
-                    : 'text-[#4a4e58] hover:text-[#8a8f98] hover:bg-white/[0.03]'
+                    : 'text-[#777d88] hover:text-[#aeb4bf] hover:bg-white/[0.03]'
                 }`}
               >
                 {f.label}
@@ -547,13 +530,13 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                   </div>
 
                   {/* Clinical vignette */}
-                  <p className="text-[11px] sm:text-[12px] text-[#6b7080] leading-relaxed mb-3 group-hover:text-[#8a8f98] transition-colors duration-300 line-clamp-3">
+                  <p className="text-[11px] sm:text-[12px] text-[#777d88] leading-relaxed mb-3 group-hover:text-[#a3a9b3] transition-colors duration-300 line-clamp-3">
                     {card.detail}
                   </p>
 
                   {/* CTA */}
                   <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-bold ${card.textClass} uppercase tracking-[0.08em] opacity-70 group-hover:opacity-100 transition-opacity`}>
+                    <span className={`text-[10px] font-bold ${card.textClass} uppercase tracking-[0.08em] opacity-90 group-hover:opacity-100 transition-opacity`}>
                       Start Case
                     </span>
                     <ArrowRight className={`w-3.5 h-3.5 ${card.textClass} opacity-0 group-hover:opacity-70 transition-all duration-200 group-hover:translate-x-0.5`} />
@@ -567,7 +550,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
         {/* How it works: depth for visitors who scroll beyond the cases. */}
         <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
           <div className="text-center mb-10">
-            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-3">How it works</p>
+            <p className="text-[11px] font-semibold text-[#777d88] uppercase tracking-[0.1em] mb-3">How it works</p>
             <h2 className="text-[24px] sm:text-[32px] font-bold text-white tracking-[-0.02em] mb-3">
               An AI tutor grounded in a real artifact.
             </h2>
@@ -603,13 +586,13 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </div>
               <h3 className="text-[15px] font-bold text-white mb-2">BYOK, no keys on our servers</h3>
               <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Your OpenRouter key lives only in your browser and calls the model directly. Two free vision models included. Nothing on our infrastructure to leak, no bill for us to foot.
+                Your OpenRouter key stays in this browser. Case content goes directly from your browser to the model provider, not through CaseAttend. Two free vision models are included.
               </p>
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6">
-            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-4">Under the hood</p>
+            <p className="text-[11px] font-semibold text-[#777d88] uppercase tracking-[0.1em] mb-4">Under the hood</p>
             <ul className="space-y-3 text-[13px] text-[#8a8f98] leading-relaxed">
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
@@ -632,7 +615,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
 
           <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-[690px]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f5560]">Open by default</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#777d88]">Open by default</p>
               <p className="mt-2 text-[13px] leading-relaxed text-[#8a8f98]">
                 Use, study, and extend CaseAttend under AGPL-3.0. Modified network services must publish their source. Commercial licensing is available for closed-source products.
               </p>
@@ -643,7 +626,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
             </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#6b7080]">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#777d88]">
             <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
               <Github className="w-3.5 h-3.5" /> Source on GitHub (AGPL-3.0)
             </a>
