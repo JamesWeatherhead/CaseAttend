@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool"><img src="https://img.shields.io/badge/%F0%9F%8F%86%20Winner-DeepMind%20Kaggle%20Hackathon-gold?style=flat-square" alt="Winner: Google DeepMind Kaggle Hackathon"></a>
+  <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool"><img src="https://img.shields.io/badge/Winner-DeepMind%20Kaggle%20Hackathon-gold?style=flat-square" alt="Winner: Google DeepMind Kaggle Hackathon"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/JamesWeatherhead/CaseAttend?style=flat-square&color=3178C6" alt="License: AGPL-3.0"></a>
   <a href="https://github.com/JamesWeatherhead/CaseAttend/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/JamesWeatherhead/CaseAttend/ci.yml?branch=main&style=flat-square&label=build" alt="CI build status"></a>
   <a href="https://caseattend.com"><img src="https://img.shields.io/badge/Live-caseattend.com-2ea44f?style=flat-square" alt="Live at caseattend.com"></a>
@@ -39,13 +39,13 @@
 ---
 
 > [!IMPORTANT]
-> **🏆 One of 50 winners out of 4,096 entries** in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
+> **One of 50 winners out of 4,096 entries** in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
 
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
-## No keys, ever
+## Browser-stored key, direct-to-provider inference
 
-CaseAttend stores **no API keys**: not in this repo, not on a server. You connect your own [OpenRouter](https://openrouter.ai) key; it lives only in your browser and calls OpenRouter directly, so inference never touches our infrastructure. Nothing to leak, and no bill to foot but your own.
+CaseAttend stores **no API keys** in this repository or on a CaseAttend server. Your browser stores the key locally and sends it only to [OpenRouter](https://openrouter.ai) for inference. CaseAttend's backend never receives the key, case image, or chat. The selected model provider does receive the image and chat you submit through OpenRouter.
 
 ```mermaid
 flowchart LR
@@ -77,7 +77,7 @@ CaseAttend runs on **[OpenRouter](https://openrouter.ai)**. Sign in with OpenRou
 <p align="center">
   <img src="docs/screenshots/02-byok-modal.png" width="360" alt="Bring your own AI modal: Continue with OpenRouter and a model list">
 </p>
-<p align="center"><em>2. <strong>Continue with OpenRouter.</strong> Your key is minted by OpenRouter and lives only in your browser; requests go straight to OpenRouter, never through our servers, so we can't see or bill it. Pick a model; the <strong>Free</strong> ones cost nothing.</em></p>
+<p align="center"><em>2. <strong>Continue with OpenRouter.</strong> Your key is stored in your browser and sent only to OpenRouter. CaseAttend servers never receive it. Pick a model; the <strong>Free</strong> ones cost nothing.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/03-openrouter-signin.png" width="360" alt="OpenRouter sign-in with GitHub, Google, or email">
@@ -115,9 +115,35 @@ Node 22+. No environment variables required.
 
 React 19 · TypeScript · Vite 6 · Tailwind 4, deployed on Cloudflare Pages (static SPA plus one Pages Function).
 
+## Case Package v1
+
+Case Package v1 is the canonical metadata and provenance record for every
+built-in teaching case. The validated registry in `src/data/caseRegistry.ts`
+brings together learner-facing content, visual artifacts, viewer hints, source,
+license, attribution, review status, and lesson-plan linkage. Cards, viewers,
+and attribution surfaces read from this registry instead of maintaining
+separate copies.
+
+Every image or frame records the SHA-256 digest of its bytes. The package
+manifest covers the educational metadata and those asset digests, so a change
+to case content, viewer behavior, provenance, or image bytes changes the package
+identity. A digest identifies bytes. It does not prove de-identification,
+licensing, or clinical review.
+
+Review claims are explicit. If reviewer or de-identification evidence is not
+available, the package remains unreviewed using
+`clinicianReview: { reviewed: false }` or `deidentification.status:
+'not-reviewed'`. Public availability and older descriptive text are not review
+evidence.
+
 ## Contributing
 
-PRs welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Clinical content needs clinician review, images must be de-identified and openly licensed, and commits are signed off (DCO). The key-never-leaves-the-browser rule is non-negotiable; see [SECURITY.md](SECURITY.md).
+PRs welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Case content and
+asset provenance belong in Case Package v1. Clinical and de-identification
+review status must be accurate, image terms must permit redistribution, and
+commits are signed off (DCO). Browser-only key storage, OpenRouter-only key
+transmission, and the CaseAttend server boundary are non-negotiable; see
+[SECURITY.md](SECURITY.md).
 
 ## Cite
 
@@ -134,7 +160,11 @@ https://github.com/JamesWeatherhead/CaseAttend
 
 CaseAttend's source code is licensed under [AGPL-3.0](LICENSE) © 2026 James Weatherhead.
 
-The bundled teaching images are third-party works under their own licenses (TCGA open-access; Wikimedia Commons images under CC BY-SA 4.0 or CC BY 3.0; public-domain images from the National Cancer Institute), attributed in each case's `description` string in `src/data/`. They are not covered by AGPL-3.0 and remain under their original terms.
+The bundled teaching images are third-party works under their own licenses and
+are not covered by AGPL-3.0. Their canonical source, license, attribution,
+review status, and byte-level SHA-256 digest are recorded in the Case Package v1
+registry at `src/data/caseRegistry.ts`. The images remain under their original
+terms.
 
 **Commercial licensing.** AGPL-3.0 requires anyone who runs a modified version, including as a network service, to offer their source under the same terms. If that does not fit your use, for example embedding CaseAttend in a closed product or hosted service, a separate commercial license is available on request: contact James Weatherhead via [github.com/JamesWeatherhead](https://github.com/JamesWeatherhead).
 

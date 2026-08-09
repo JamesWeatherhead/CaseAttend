@@ -13,5 +13,9 @@
 /package.json         @JamesWeatherhead
 /package-lock.json    @JamesWeatherhead
 
-# --- Clinical teaching content (requires clinician sign-off) ---
+# Case package schema and canonical case registry.
+/src/core/            @JamesWeatherhead
+/src/data/caseRegistry.ts @JamesWeatherhead
+
+# Clinical teaching content (requires clinician sign-off).
 /lib/prompts/         @JamesWeatherhead

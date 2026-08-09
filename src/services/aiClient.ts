@@ -147,7 +147,7 @@ export const streamChatResponse = async (
   try {
     const key = getKey();
     if (!key) {
-      throw new Error('Connect your OpenRouter account to start chatting. Your key stays in your browser.');
+      throw new Error('Connect your OpenRouter account to start chatting. Your key is stored in this browser and sent only to OpenRouter.');
     }
     const systemPrompt = await fetchSystemPrompt({
       modality,

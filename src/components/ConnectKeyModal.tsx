@@ -79,7 +79,7 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
           {connected ? (
             <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-lg px-3 py-2.5">
               <Check className="w-4 h-4 flex-shrink-0" />
-              <span>Connected to OpenRouter. Your key is stored only in this browser.</span>
+              <span>Your key is stored in this browser and sent only to OpenRouter.</span>
             </div>
           ) : (
             <div className="space-y-1.5">
@@ -138,10 +138,10 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
           <div className="flex items-start gap-2 text-[11px] text-[#8a8f98] bg-[#161718] border border-white/[0.06] rounded-lg px-3 py-2.5">
             <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
             <span>
-              Your key is minted by OpenRouter and lives only in this browser. Requests go straight
-              from your browser to OpenRouter — never through our servers, so we can't see or bill
-              your key. Cases are synthetic teaching images (no patient data). You can set a spend
-              cap when you authorize.
+              Your key is stored in this browser and sent only to OpenRouter. CaseAttend servers do
+              not receive your key, case images, or chat. When you submit a question, the current
+              view and message go directly to OpenRouter and the selected model provider. Do not use
+              identifiable patient data. You can set a spend cap when you authorize.
             </span>
           </div>
 
