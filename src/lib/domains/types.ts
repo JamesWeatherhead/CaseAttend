@@ -14,8 +14,6 @@ export interface Domain {
   artifactHints: ArtifactHints;
   welcomeMessage: (level: LearnerLevel, studyId?: string) => string;
   getInitialSuggestions: (level: LearnerLevel, hasImage: boolean, studyId?: string) => string[];
-  preAnalysisPrompt: (studyDescription: string, seriesDescription: string) => string;
   contextLabel: (dicomModality: string) => string;
   captureLabel: (dicomModality: string) => string;
-  overviewImage: (studyId?: string) => string;
 }
