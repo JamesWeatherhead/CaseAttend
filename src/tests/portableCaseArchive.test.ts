@@ -10,7 +10,9 @@ import {
 } from '../services/portableCaseArchive';
 import { makePortableCasePackage } from './portableCaseTestFixture';
 
-const FIXED_ZIP_OPTIONS = { mtime: new Date('1980-01-01T00:00:00.000Z') } as const;
+// Local-field 1980-01-01 mirrors the exporter so the rebuilt bytes match in
+// every timezone (fflate encodes ZIP mtime from local date components).
+const FIXED_ZIP_OPTIONS = { mtime: new Date(1980, 0, 1, 0, 0, 0, 0) } as const;
 const MAX_MANIFEST_BYTES = 512 * 1024;
 
 function replaceEveryAscii(bytes: Uint8Array, from: string, to: string): Uint8Array {

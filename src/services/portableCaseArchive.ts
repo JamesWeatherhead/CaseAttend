@@ -451,7 +451,11 @@ export async function exportPortableCaseArchive(
   }
   const archive = zipSync(files, {
     level: 6,
-    mtime: new Date('1980-01-01T00:00:00.000Z'),
+    // fflate encodes the ZIP mtime from local date components, so UTC-midnight
+    // 1980-01-01 rolls back to 1979 in any timezone behind UTC and trips its
+    // 1980-2099 range check. Building the date from local fields pins the DOS
+    // timestamp to 1980-01-01 in every timezone, keeping archives deterministic.
+    mtime: new Date(1980, 0, 1, 0, 0, 0, 0),
     os: 3,
     attrs: 0o644 << 16,
   });

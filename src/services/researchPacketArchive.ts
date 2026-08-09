@@ -788,7 +788,10 @@ export async function exportResearchSupportPacket(
   }
   const archive = zipSync(zipFiles, {
     level: 6,
-    mtime: new Date('1980-01-01T00:00:00.000Z'),
+    // Local-field 1980-01-01 (fflate reads local date components, so a
+    // UTC-midnight value would roll back to 1979 west of UTC and fail its
+    // 1980-2099 range check); keeps the packet's DOS timestamp deterministic.
+    mtime: new Date(1980, 0, 1, 0, 0, 0, 0),
     os: 3,
     attrs: 0o644 << 16,
   });

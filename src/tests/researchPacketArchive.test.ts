@@ -13,9 +13,11 @@ import {
 } from '../services/researchPacketArchive';
 import { makeLaunchReadyResearchStudyBundle } from './researchServiceTestFixture';
 
+// Local-field 1980-01-01 mirrors the exporter so the rebuilt bytes match in
+// every timezone (fflate encodes ZIP mtime from local date components).
 const FIXED_ZIP_OPTIONS = {
   level: 6,
-  mtime: new Date('1980-01-01T00:00:00.000Z'),
+  mtime: new Date(1980, 0, 1, 0, 0, 0, 0),
   os: 3,
   attrs: 0o644 << 16,
 } as const;
