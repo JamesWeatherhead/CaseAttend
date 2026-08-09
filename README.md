@@ -210,8 +210,54 @@ memory for the current tab and shows that the data will be lost when the page
 closes. The **Session data** panel lets the learner preview, export, or delete
 their own records. JSONL is the canonical event export and CSV is a fixed,
 analysis-friendly table. Recording, preview, export, and deletion make no
-network request. A later institution-managed research collector must remain an
-explicit, separately consented deployment feature.
+network request. These ordinary learning-session records are separate from the
+durable, pseudonymous store and restricted exports used by Research Mode.
+
+## Research Mode
+
+Research Setup helps a study team describe a reproducible VLM-education
+protocol, freeze exact cases, lessons, prompts, model routing, sampling,
+viewer/capture rules, assignment, and structured pre/post tasks, and then run a
+locked participant activity. Participant information is English-only in v1;
+teams must provide an institutionally reviewed workflow outside CaseAttend for
+other languages.
+
+The study team issues each 20-character high-entropy participant code outside
+CaseAttend and controls eligibility, linkage, duplicate use, and withdrawal.
+The entered code is transient: CaseAttend derives and stores only a
+manifest-scoped pseudonymous reference, then clears the raw code. Pseudonymous
+data can still be linkable and must not be described as anonymous.
+
+Browser-local Participant Mode fails closed unless IndexedDB is persistent, an
+external institutional determination is recorded, raw-chat collection is off,
+and every case is marked synthetic or carries a de-identification attestation.
+Those gates are workflow controls, not proof of consent, approval,
+de-identification, or compliance.
+
+When a participant presses **Send**, the browser sends the frozen system
+prompt, learner message, and current-view JPEG to OpenRouter and the locked
+upstream model provider. Bring-your-own-key protects the credential boundary:
+the browser-held key is sent only to OpenRouter and is never written to
+research records or exports. It does **not** keep the request payload from
+OpenRouter or the upstream provider. CaseAttend's static application server
+receives neither the key nor the inference request.
+
+Research Mode creates two deliberately different local downloads:
+
+- The **research support packet** contains the frozen manifest, exact prompts,
+  portable case/lesson archives, editable institutional-review templates, and
+  checksums. It contains no participant runs or research records.
+- The **restricted research-data export** contains the study reference,
+  pseudonymous runs, and closed-vocabulary event records in JSONL or CSV. It
+  excludes raw learner/model text, prompts, images and screenshots, direct
+  identifiers, authentication keys, and Case Package or Lesson Plan bodies.
+
+Neither download is automatically uploaded or automatically encrypted. The
+study team remains responsible for approved storage, transfer, access,
+retention, and deletion. CaseAttend does not grant IRB or ethics approval,
+establish HIPAA de-identification or HIPAA/FERPA compliance, or replace legal,
+privacy, security, accessibility, and institutional review. Start with the
+[Research workflow guide](docs/research/README.md).
 
 ## Contributing
 
@@ -229,7 +275,7 @@ If CaseAttend is useful in your research or teaching, please cite it. GitHub's *
 ```
 Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
 CaseAttend: a case-based visual reasoning tutor for medical education
-(Version 0.3.0) [Computer software].
+(Version 0.4.0) [Computer software].
 https://github.com/JamesWeatherhead/CaseAttend
 ```
 

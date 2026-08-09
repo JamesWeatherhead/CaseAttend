@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2 } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2, FlaskConical } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
@@ -18,6 +18,7 @@ interface StudyListProps {
   onShowSafety?: () => void;
   onOpenLessonBuilder?: () => void;
   onOpenCaseStudio?: () => void;
+  onOpenResearchSetup?: () => void;
   onDeleteLocalCase?: (caseId: string) => Promise<void>;
 }
 
@@ -245,6 +246,7 @@ const StudyList: React.FC<StudyListProps> = ({
   dicomConfig,
   onOpenLessonBuilder,
   onOpenCaseStudio,
+  onOpenResearchSetup,
   onDeleteLocalCase,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
@@ -329,13 +331,23 @@ const StudyList: React.FC<StudyListProps> = ({
                 Create a case
               </button>
             )}
+            {onOpenResearchSetup && (
+              <button
+                type="button"
+                onClick={onOpenResearchSetup}
+                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-violet-400/20 bg-violet-400/[0.08] hover:bg-violet-400/[0.14] px-4 text-[13px] font-semibold text-violet-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+              >
+                <FlaskConical className="w-4 h-4" aria-hidden="true" />
+                Set up a research study
+              </button>
+            )}
             <a href="#how-it-works" className="min-h-11 inline-flex items-center px-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
               How it works
             </a>
           </div>
-          {onOpenLessonBuilder && (
+          {(onOpenLessonBuilder || onOpenResearchSetup) && (
             <p className="mt-2 text-[11px] text-[#5e6570] text-center">
-              Build and export a versioned teaching plan in your browser. No prompt syntax or model connection required.
+              Build versioned teaching content or a reproducible VLM education protocol in your browser. CaseAttend does not provide institutional approval.
             </p>
           )}
         </div>

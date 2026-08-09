@@ -7,6 +7,7 @@ import {
 } from '../data/caseRegistry';
 import type { Series, DicomWebConfig, DiagnosticStep } from '../types';
 import { casePackageStore } from './casePackageStore';
+import { getActiveResearchAssetBlob } from './researchAssetResolver';
 
 /**
  * FETCH STUDIES
@@ -50,6 +51,13 @@ const pendingRequests = new Map<string, Promise<Blob>>();
  * Includes Caching and Request Deduplication.
  */
 export const fetchDicomImageBlob = async (config: DicomWebConfig, url: string): Promise<Blob> => {
+  // Research assets remain scoped to the active participant run and are never
+  // copied into the long-lived viewer cache or authoring IndexedDB.
+  if (url.startsWith('case://assets/')) {
+    const researchBlob = getActiveResearchAssetBlob(url);
+    if (researchBlob) return researchBlob;
+  }
+
   // 1. Check Cache
   if (imageCache.has(url)) {
     return imageCache.get(url)!;

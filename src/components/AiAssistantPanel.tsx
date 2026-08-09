@@ -1,7 +1,8 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound, LockKeyhole } from 'lucide-react';
 import { streamChatResponse, AiMode, AIProvider } from '../services/aiClient';
+import type { LockedTutorRuntime } from '../services/aiClient';
 import type { SafeInferenceError } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
@@ -28,6 +29,9 @@ import {
   type SessionStore,
 } from '../services/sessionStore';
 import { getPreference, PREFERENCE_KEYS, setPreference } from '../services/preferenceStore';
+import { fingerprintResearchCapture } from '../core/researchCapture';
+import type { ResearchRecorder } from '../services/researchRecorder';
+import type { ResearchInferenceErrorCode } from '../services/researchStore';
 
 interface AiAssistantPanelProps {
   captureCurrentView: () => CapturedTutorView | null;
@@ -48,6 +52,21 @@ interface AiAssistantPanelProps {
   };
   onStartTour?: () => void;
   onPointers?: (pointers: AiPointer[]) => void;
+  /** Reports whether a request still lacks a persisted terminal event. */
+  onInferenceBusyChange?: (busy: boolean) => void;
+  /** Registers a privacy-safe cancellation seam for the participant lifecycle. */
+  onCancelInferenceReady?: (cancelAndWait: (() => Promise<void>) | null) => void;
+  lockedTutor?: {
+    manifestSha256: string;
+    learnerLevel: LearnerLevel;
+    mode: Exclude<AiMode, 'search'>;
+    runtime: LockedTutorRuntime;
+    research: {
+      recorder: Pick<ResearchRecorder, 'record'>;
+      caseStepId: string;
+      inferenceConfigSha256: string;
+    };
+  };
 }
 
 function safeSessionModelId(value: string): string {
@@ -89,9 +108,13 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   activeSeriesInfo,
   onStartTour,
   onPointers,
+  onInferenceBusyChange,
+  onCancelInferenceReady,
+  lockedTutor,
 }) => {
   // Learner Level State (must be before messages so welcome adapts)
   const [learnerLevel, setLearnerLevel] = useState<LearnerLevel>(() => {
+    if (lockedTutor) return lockedTutor.learnerLevel;
     const stored = getPreference(PREFERENCE_KEYS.learnerLevel) ?? '';
     // Migrate old 'medstudent' value to new default
     if (stored === 'medstudent') return 'ms_preclinical';
@@ -124,15 +147,47 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [showMedPicker, setShowMedPicker] = useState(false);
-  const [mode, setMode] = useState<AiMode>('chat');
+  const [mode, setMode] = useState<AiMode>(() => lockedTutor?.mode ?? 'chat');
   const [provider, setProvider] = useState<AIProvider>('openrouter');
   const [dynamicSuggestionsMap, setDynamicSuggestionsMap] = useState<Record<LearnerLevel, string[]> | null>(null);
+  const lockedTutorKey = lockedTutor
+    ? [
+        lockedTutor.manifestSha256,
+        lockedTutor.runtime.casePackage.manifest.sha256,
+        lockedTutor.runtime.lessonPlan.manifest.sha256,
+        lockedTutor.runtime.expectedSystemPromptSha256,
+        lockedTutor.runtime.historyWindowMessages,
+        lockedTutor.runtime.requestTemplateVersion,
+        lockedTutor.runtime.openRouterPolicy.model,
+        lockedTutor.runtime.openRouterPolicy.upstreamProviderId,
+        lockedTutor.learnerLevel,
+        lockedTutor.mode,
+      ].join(':')
+    : '';
+
+  useEffect(() => {
+    if (!lockedTutor) return;
+    setLearnerLevel(lockedTutor.learnerLevel);
+    setMode(lockedTutor.mode);
+    setProvider('openrouter');
+    setShowMedPicker(false);
+  }, [lockedTutorKey]);
 
   useEffect(() => {
     let active = true;
     setLessonPlan(null);
     setLessonLoadError(null);
     if (!studyMetadata?.studyId) return () => { active = false; };
+
+    if (lockedTutor) {
+      const frozenCase = lockedTutor.runtime.casePackage;
+      if (frozenCase.id !== studyMetadata.studyId || frozenCase.domain !== studyMetadata.domain) {
+        setLessonLoadError('The frozen research case does not match this participant activity.');
+      } else {
+        setLessonPlan(lockedTutor.runtime.lessonPlan);
+      }
+      return () => { active = false; };
+    }
 
     (async () => {
       try {
@@ -149,7 +204,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       }
     })();
     return () => { active = false; };
-  }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
+  }, [lockedTutorKey, sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
 
   // A case switch starts a new versioned teaching session. Never retain another
   // case's welcome, dynamic suggestions, or transcript in the next case.
@@ -183,16 +238,19 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   // and model label update the instant the user connects or switches model.
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [byokConnected, setByokConnected] = useState<boolean>(() => hasKey());
-  const [byokModelLabel, setByokModelLabel] = useState<string>(() => modelLabel(getModel()));
+  const [byokModelLabel, setByokModelLabel] = useState<string>(() => (
+    modelLabel(lockedTutor?.runtime.openRouterPolicy.model ?? getModel())
+  ));
 
   useEffect(() => {
     const sync = () => {
       setByokConnected(hasKey());
-      setByokModelLabel(modelLabel(getModel()));
+      setByokModelLabel(modelLabel(lockedTutor?.runtime.openRouterPolicy.model ?? getModel()));
     };
+    sync();
     window.addEventListener(BYOK_CHANGED_EVENT, sync);
     return () => window.removeEventListener(BYOK_CHANGED_EVENT, sync);
-  }, []);
+  }, [lockedTutorKey]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const requestSequenceRef = useRef(0);
   const mountedRef = useRef(true);
@@ -200,6 +258,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     studyMetadata?.domain ?? 'radiology',
     studyMetadata?.studyId ?? '',
     sessionContextKey,
+    lockedTutorKey,
   ].join(':');
   const studySessionKeyRef = useRef(studySessionKey);
   studySessionKeyRef.current = studySessionKey;
@@ -212,8 +271,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     turnId: string;
     recorder: SessionRecorder | null;
     requestedModelId: string;
+    expectedSystemPromptSha256?: string;
     startedAt: number;
     terminalRecorded: boolean;
+    terminalRecordPromise?: Promise<void>;
+    research?: NonNullable<AiAssistantPanelProps['lockedTutor']>['research'];
     botMessageId?: string;
     inputToRestore?: string;
   };
@@ -234,14 +296,66 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     }
   };
 
-  const recordCancellation = (request: ActiveRequest) => {
-    if (request.terminalRecorded) return;
-    request.terminalRecorded = true;
+  const recordResearchFailure = (
+    request: ActiveRequest,
+    errorCode: ResearchInferenceErrorCode,
+    retryable: boolean,
+    httpStatus?: number,
+  ): Promise<unknown> => {
+    if (!request.research) return Promise.resolve();
+    return request.research.recorder.record({
+      type: 'model_turn_failed',
+      caseStepId: request.research.caseStepId,
+      ...(request.expectedSystemPromptSha256
+        ? { systemPromptSha256: request.expectedSystemPromptSha256 }
+        : {}),
+      inferenceConfigSha256: request.research.inferenceConfigSha256,
+      requestedModelId: request.requestedModelId,
+      errorCode,
+      ...(httpStatus ? { httpStatus } : {}),
+      latencyMs: Math.max(0, Date.now() - request.startedAt),
+      retryable,
+    });
+  };
+
+  const writeResearchTerminal = (
+    request: ActiveRequest,
+    write: () => Promise<unknown>,
+  ): Promise<void> => {
+    if (request.terminalRecorded) return Promise.resolve();
+    if (request.terminalRecordPromise) return request.terminalRecordPromise;
+    const pending = write()
+      .then(() => {
+        request.terminalRecorded = true;
+      })
+      .catch((error: unknown) => {
+        if (request.terminalRecordPromise === pending) {
+          request.terminalRecordPromise = undefined;
+        }
+        throw error;
+      });
+    request.terminalRecordPromise = pending;
+    return pending;
+  };
+
+  const recordCancellation = (request: ActiveRequest): Promise<void> => {
+    if (request.terminalRecorded) return Promise.resolve();
+    if (request.terminalRecordPromise) return request.terminalRecordPromise;
     recordSessionEvent(request.recorder, {
       type: 'turn_cancelled',
       turnId: request.turnId,
     });
+    if (request.research) {
+      return writeResearchTerminal(
+        request,
+        () => recordResearchFailure(request, 'request_aborted', true),
+      );
+    }
+    request.terminalRecorded = true;
+    return Promise.resolve();
   };
+  const recordCancellationRef = useRef(recordCancellation);
+  recordCancellationRef.current = recordCancellation;
   const sessionContextRef = useRef(sessionContext);
   const sessionEffectGenerationRef = useRef(0);
   sessionContextRef.current = sessionContext;
@@ -256,6 +370,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   };
 
   const ensureSessionRecorder = (): SessionRecorder | null => {
+    if (lockedTutor) return null;
     const existing = sessionRecorderRef.current;
     if (existing && !existing.isEnded) return existing;
     if (!sessionContext) return null;
@@ -281,7 +396,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       if (request) {
         request.cancelled = true;
         request.abortController.abort();
-        recordCancellation(request);
+        void recordCancellation(request).catch(() => undefined);
       }
       activeRequestRef.current = null;
     };
@@ -292,7 +407,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     if (request) {
       request.cancelled = true;
       request.abortController.abort();
-      recordCancellation(request);
+      void recordCancellation(request).catch(() => undefined);
       if (request.botMessageId) {
         setMessages((previous) => previous.filter(
           (message) => message.id !== request.botMessageId,
@@ -302,10 +417,10 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     activeRequestRef.current = null;
     setIsThinking(false);
     onPointers?.([]);
-  }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
+  }, [lockedTutorKey, sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
 
   useEffect(() => {
-    if (!sessionContext) return;
+    if (!sessionContext || lockedTutor) return;
     const generation = ++sessionEffectGenerationRef.current;
     const existing = sessionRecorderRef.current;
     const recorder = existing
@@ -327,7 +442,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       ) {
         request.cancelled = true;
         request.abortController.abort();
-        recordCancellation(request);
+        void recordCancellation(request).catch(() => undefined);
         activeRequestRef.current = null;
         setIsThinking(false);
         onPointers?.([]);
@@ -373,7 +488,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         });
       }
     };
-  }, [sessionContextKey, sessionEventStore]);
+  }, [lockedTutorKey, sessionContextKey, sessionEventStore]);
 
   useEffect(() => {
     const stopActiveRequest = (recordTerminal: boolean) => {
@@ -381,7 +496,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       if (!request) return;
       request.cancelled = true;
       if (recordTerminal) {
-        recordCancellation(request);
+        void recordCancellation(request).catch(() => undefined);
       } else {
         request.terminalRecorded = true;
       }
@@ -438,19 +553,19 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       window.removeEventListener('pagehide', handlePageHide);
       window.removeEventListener('pageshow', handlePageShow);
     };
-  }, [sessionContextKey, sessionEventStore, onPointers]);
+  }, [lockedTutorKey, sessionContextKey, sessionEventStore, onPointers]);
 
   // Scroll State
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const [isPinnedToBottom, setIsPinnedToBottom] = useState(true);
   
   useEffect(() => {
-    setPreference(PREFERENCE_KEYS.learnerLevel, learnerLevel);
-  }, [learnerLevel]);
+    if (!lockedTutor) setPreference(PREFERENCE_KEYS.learnerLevel, learnerLevel);
+  }, [learnerLevel, lockedTutorKey]);
 
   useEffect(() => {
-    setPreference(PREFERENCE_KEYS.provider, provider);
-  }, [provider]);
+    if (!lockedTutor) setPreference(PREFERENCE_KEYS.provider, provider);
+  }, [provider, lockedTutorKey]);
 
   // Scroll welcome message to top on first render
   const hasScrolledWelcome = useRef(false);
@@ -538,7 +653,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     if (request) {
       request.cancelled = true;
       request.abortController.abort();
-      recordCancellation(request);
+      void recordCancellation(request).catch(() => undefined);
       activeRequestRef.current = null;
       setIsThinking(false);
       onPointers?.([]);
@@ -568,13 +683,20 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setIsPinnedToBottom(true);
   };
 
-  const handleCancel = () => {
+  const cancelActiveInferenceAndWait = useCallback(async () => {
     const request = activeRequestRef.current;
     if (!request) return;
     request.cancelled = true;
     request.abortController.abort();
-    recordCancellation(request);
-    activeRequestRef.current = null;
+    try {
+      await recordCancellationRef.current(request);
+    } catch (error: unknown) {
+      setCaptureError(error instanceof Error
+        ? `The cancelled request could not be finalized in research storage: ${error.message}`
+        : 'The cancelled request could not be finalized in research storage.');
+      throw error;
+    }
+    if (activeRequestRef.current === request) activeRequestRef.current = null;
     setIsThinking(false);
     onPointers?.([]);
     if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
@@ -584,7 +706,20 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     if (request.botMessageId) {
       setMessages(prev => prev.filter(message => message.id !== request.botMessageId));
     }
+  }, [onPointers]);
+
+  const handleCancel = () => {
+    void cancelActiveInferenceAndWait().catch(() => undefined);
   };
+
+  useEffect(() => {
+    onInferenceBusyChange?.(isThinking);
+  }, [isThinking, onInferenceBusyChange]);
+
+  useEffect(() => {
+    onCancelInferenceReady?.(cancelActiveInferenceAndWait);
+    return () => onCancelInferenceReady?.(null);
+  }, [cancelActiveInferenceAndWait, onCancelInferenceReady]);
 
   const handleSendMessage = async (
     text: string = input,
@@ -601,7 +736,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     if (existingRequest && existingRequest.studySessionKey !== studySessionKey) {
       existingRequest.cancelled = true;
       existingRequest.abortController.abort();
-      recordCancellation(existingRequest);
+      void recordCancellation(existingRequest).catch(() => undefined);
       activeRequestRef.current = null;
     }
     if (activeRequestRef.current) return;
@@ -609,12 +744,18 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     // BYOK gate: if the visitor hasn't connected OpenRouter yet, open the Connect
     // modal instead of erroring — they've already seen the case; this is the ask.
     if (provider === 'openrouter' && !hasKey()) {
+      if (lockedTutor) {
+        setCaptureError('The frozen study cannot send a model request because OpenRouter is not connected. Exit the study and ask the study team for help.');
+        return;
+      }
       setShowConnectModal(true);
       return;
     }
 
     const turnId = crypto.randomUUID();
-    const turnRecorder = ensureSessionRecorder();
+    // Research Mode writes only to its isolated ResearchStore. It must never
+    // dual-write participant activity into the ordinary SessionStore.
+    const turnRecorder = lockedTutor ? null : ensureSessionRecorder();
 
     // Capture in the same synchronous event turn as Send/Enter. Lesson lookup is
     // asynchronous, so capturing after it could attach a later frame or miss an
@@ -645,12 +786,20 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       abortController: new AbortController(),
       turnId,
       recorder: turnRecorder,
-      requestedModelId: safeSessionModelId(getModel()),
+      requestedModelId: safeSessionModelId(
+        lockedTutor?.runtime.openRouterPolicy.model ?? getModel(),
+      ),
+      ...(lockedTutor
+        ? { expectedSystemPromptSha256: lockedTutor.runtime.expectedSystemPromptSha256 }
+        : {}),
       startedAt: Date.now(),
       terminalRecorded: false,
+      ...(lockedTutor ? { research: lockedTutor.research } : {}),
       inputToRestore: promptOverride ? undefined : input,
     };
     activeRequestRef.current = request;
+    // Close the sibling Finish-button race in the same event turn as Send.
+    onInferenceBusyChange?.(true);
     setIsThinking(true);
     setCaptureError(null);
     onPointers?.([]);
@@ -674,6 +823,49 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         learnerLevel,
         mode,
       });
+    }
+
+    if (request.research) {
+      try {
+        const fingerprint = await fingerprintResearchCapture(capture);
+        if (!isCurrentRequest(request)) return;
+        const annotation = capture.viewSnapshot.annotation;
+        await request.research.recorder.record({
+          type: 'capture_recorded',
+          caseStepId: request.research.caseStepId,
+          artifactKind: capture.viewSnapshot.artifactKind,
+          frameIndex: capture.viewSnapshot.frameIndex,
+          frameCount: capture.viewSnapshot.frameCount,
+          ...fingerprint,
+          annotation: {
+            present: annotation.present,
+            measurementCount: annotation.measurementCount,
+            segmentedFrameCount: annotation.segmentedFrameCount,
+            activeFrameLabelCount: annotation.activeFrameLabelCount,
+            revision: annotation.revision,
+          },
+        });
+        if (!isCurrentRequest(request)) return;
+        await request.research.recorder.record({
+          type: 'learner_turn_submitted',
+          caseStepId: request.research.caseStepId,
+          inputSource,
+          mode: lockedTutor!.mode,
+          ...(inputSource === 'lesson_hint' && hintId ? { hintId } : {}),
+        });
+        if (!isCurrentRequest(request)) return;
+      } catch (error) {
+        if (!isCurrentRequest(request)) return;
+        request.terminalRecorded = true;
+        request.abortController.abort();
+        activeRequestRef.current = null;
+        setIsThinking(false);
+        if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
+        setCaptureError(error instanceof Error
+          ? `Research collection stopped before inference: ${error.message}`
+          : 'Research collection stopped before inference because persistent storage failed.');
+        return;
+      }
     }
 
     const imageToSend = capture.image;
@@ -701,8 +893,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     }]);
     setIsPinnedToBottom(true);
 
-    let activeLesson = lessonPlan;
-    if (!activeLesson && studyMetadata?.studyId) {
+    let activeLesson = lockedTutor?.runtime.lessonPlan ?? lessonPlan;
+    if (!activeLesson && studyMetadata?.studyId && !lockedTutor) {
       try {
         const casePackage = await requireCasePackage(studyMetadata.studyId);
         if (!isCurrentRequest(request)) return;
@@ -715,15 +907,20 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         const message = error instanceof Error ? error.message : 'The versioned lesson could not be loaded.';
         if (!request.terminalRecorded) {
           request.terminalRecorded = true;
-          recordSessionEvent(request.recorder, {
-            type: 'model_response_failed',
-            turnId: request.turnId,
-            gateway: 'openrouter',
-            requestedModelId: request.requestedModelId,
-            errorCode: 'prompt_resolution_failed',
-            latencyMs: Math.max(0, Date.now() - request.startedAt),
-            retryable: false,
-          });
+          if (request.research) {
+            await recordResearchFailure(request, 'prompt_resolution_failed', false)
+              .catch(() => undefined);
+          } else {
+            recordSessionEvent(request.recorder, {
+              type: 'model_response_failed',
+              turnId: request.turnId,
+              gateway: 'openrouter',
+              requestedModelId: request.requestedModelId,
+              errorCode: 'prompt_resolution_failed',
+              latencyMs: Math.max(0, Date.now() - request.startedAt),
+              retryable: false,
+            });
+          }
         }
         setLessonLoadError(message);
         setCaptureError(`Lesson unavailable: ${message}`);
@@ -737,15 +934,20 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       if (!isCurrentRequest(request)) return;
       if (!request.terminalRecorded) {
         request.terminalRecorded = true;
-        recordSessionEvent(request.recorder, {
-          type: 'model_response_failed',
-          turnId: request.turnId,
-          gateway: 'openrouter',
-          requestedModelId: request.requestedModelId,
-          errorCode: 'prompt_resolution_failed',
-          latencyMs: Math.max(0, Date.now() - request.startedAt),
-          retryable: false,
-        });
+        if (request.research) {
+          await recordResearchFailure(request, 'prompt_resolution_failed', false)
+            .catch(() => undefined);
+        } else {
+          recordSessionEvent(request.recorder, {
+            type: 'model_response_failed',
+            turnId: request.turnId,
+            gateway: 'openrouter',
+            requestedModelId: request.requestedModelId,
+            errorCode: 'prompt_resolution_failed',
+            latencyMs: Math.max(0, Date.now() - request.startedAt),
+            retryable: false,
+          });
+        }
       }
       setCaptureError('Lesson unavailable. Return to the case list and open a registered teaching case.');
       if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
@@ -762,9 +964,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     )));
 
     // Build conversation history as context (include welcome message + prior exchanges)
-    const historyLines = messages
+    const historyWindowMessages = lockedTutor?.runtime.historyWindowMessages ?? 10;
+    const historyMessages = historyWindowMessages === 0
+      ? []
+      : messages.slice(-historyWindowMessages);
+    const historyLines = historyMessages
       .filter(m => m.text) // skip empty thinking placeholders
-      .slice(-10) // last 10 messages max to avoid token bloat
       .map(m => m.role === 'user' ? `Student: ${m.text}` : `Tutor: ${m.text}`)
       .join('\n\n');
 
@@ -845,25 +1050,57 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             studyMetadata?.studyId,
             request.abortController.signal,
             request.requestedModelId,
+            lockedTutor?.runtime,
         );
         if (isCurrentRequest(request) && !request.terminalRecorded) {
-          request.terminalRecorded = true;
-          recordSessionEvent(request.recorder, {
-            type: 'model_response_completed',
-            turnId: request.turnId,
-            promptSha256: inferenceResult.promptSha256,
-            gateway: 'openrouter',
-            requestedModelId: request.requestedModelId,
-            ...(inferenceResult.resolvedModelId
-              ? { resolvedModelId: inferenceResult.resolvedModelId }
-              : {}),
-            ...(inferenceResult.upstreamProviderId
-              ? { upstreamProviderId: inferenceResult.upstreamProviderId }
-              : {}),
-            latencyMs: inferenceResult.latencyMs,
-            ...(inferenceResult.usage ? { usage: inferenceResult.usage } : {}),
-            ...(inferenceResult.finishReason ? { finishReason: inferenceResult.finishReason } : {}),
-          });
+          if (request.research) {
+            await writeResearchTerminal(request, () => request.research!.recorder.record({
+                type: 'model_turn_completed',
+                caseStepId: request.research!.caseStepId,
+                systemPromptSha256: inferenceResult.promptSha256,
+                inferenceConfigSha256: request.research!.inferenceConfigSha256,
+                requestedModelId: request.requestedModelId,
+                ...(inferenceResult.resolvedModelId
+                  ? { resolvedModelId: inferenceResult.resolvedModelId }
+                  : {}),
+                ...(inferenceResult.upstreamProviderId
+                  ? { upstreamProviderId: inferenceResult.upstreamProviderId }
+                  : {}),
+                latencyMs: inferenceResult.latencyMs,
+                ...(inferenceResult.usage?.promptTokens !== undefined
+                  ? { promptTokens: inferenceResult.usage.promptTokens }
+                  : {}),
+                ...(inferenceResult.usage?.completionTokens !== undefined
+                  ? { completionTokens: inferenceResult.usage.completionTokens }
+                  : {}),
+                ...(inferenceResult.usage?.totalTokens !== undefined
+                  ? { totalTokens: inferenceResult.usage.totalTokens }
+                  : {}),
+                ...(inferenceResult.finishReason
+                  ? { finishReason: inferenceResult.finishReason }
+                  : {}),
+              }));
+            if (!isCurrentRequest(request)) return;
+          }
+          if (!request.research) {
+            request.terminalRecorded = true;
+            recordSessionEvent(request.recorder, {
+              type: 'model_response_completed',
+              turnId: request.turnId,
+              promptSha256: inferenceResult.promptSha256,
+              gateway: 'openrouter',
+              requestedModelId: request.requestedModelId,
+              ...(inferenceResult.resolvedModelId
+                ? { resolvedModelId: inferenceResult.resolvedModelId }
+                : {}),
+              ...(inferenceResult.upstreamProviderId
+                ? { upstreamProviderId: inferenceResult.upstreamProviderId }
+                : {}),
+              latencyMs: inferenceResult.latencyMs,
+              ...(inferenceResult.usage ? { usage: inferenceResult.usage } : {}),
+              ...(inferenceResult.finishReason ? { finishReason: inferenceResult.finishReason } : {}),
+            });
+          }
         }
     } catch (error: any) {
         // If cancelled, do not render error
@@ -871,21 +1108,46 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
         const safeError = isSafeInferenceError(error) ? error : null;
         if (!request.terminalRecorded) {
-          request.terminalRecorded = true;
-          recordSessionEvent(request.recorder, {
-            type: 'model_response_failed',
-            turnId: request.turnId,
-            gateway: 'openrouter',
-            requestedModelId: request.requestedModelId,
-            errorCode: safeError?.code ?? 'unexpected_error',
-            ...(safeError?.httpStatus ? { httpStatus: safeError.httpStatus } : {}),
-            latencyMs: Math.max(0, Date.now() - request.startedAt),
-            retryable: safeError?.retryable ?? true,
-          });
+          if (request.research) {
+            if (safeError?.deviation) {
+              await request.research.recorder.record({
+                type: 'protocol_deviation',
+                caseStepId: request.research.caseStepId,
+                code: safeError.deviation.code,
+                ...(safeError.deviation.expectedId && safeError.deviation.observedId
+                  ? {
+                      expectedId: safeError.deviation.expectedId,
+                      observedId: safeError.deviation.observedId,
+                    }
+                  : {}),
+              }).catch(() => undefined);
+            }
+            await writeResearchTerminal(
+              request,
+              () => recordResearchFailure(
+                request,
+                (safeError?.code ?? 'unexpected_error') as ResearchInferenceErrorCode,
+                safeError?.retryable ?? true,
+                safeError?.httpStatus,
+              ),
+            ).catch(() => undefined);
+          } else {
+            request.terminalRecorded = true;
+            recordSessionEvent(request.recorder, {
+              type: 'model_response_failed',
+              turnId: request.turnId,
+              gateway: 'openrouter',
+              requestedModelId: request.requestedModelId,
+              errorCode: safeError?.code ?? 'unexpected_error',
+              ...(safeError?.httpStatus ? { httpStatus: safeError.httpStatus } : {}),
+              latencyMs: Math.max(0, Date.now() - request.startedAt),
+              retryable: safeError?.retryable ?? true,
+            });
+          }
         }
 
         // ERROR HANDLING
-        console.error("Chat Error Caught in Component:", error);
+        if (!request.research) console.error("Chat Error Caught in Component:", error);
 
         // 1. Remove the placeholder bot message
         setMessages(prev => prev.filter(m => m.id !== botMsgId));
@@ -907,6 +1169,10 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         setIsPinnedToBottom(true);
     } finally {
         if (isCurrentRequest(request)) {
+            if (request.research && !request.terminalRecorded) {
+                setCaptureError('The model request ended, but its terminal research record could not be saved. Finish is blocked. Use Exit study to retry a safe terminal write, or ask the study team for help.');
+                return;
+            }
             setIsThinking(false);
             activeRequestRef.current = null;
         }
@@ -951,7 +1217,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       <div className="h-14 bg-[#161718] border-b border-white/[0.06] px-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 text-[#f7f8f8] font-bold">
           <Sparkles className="w-4 h-4 text-blue-400" /> <span>AI Tutor</span>
-          {onStartTour && (
+          {onStartTour && !lockedTutor && (
               <button
                   onClick={onStartTour}
                   className="ml-1 min-h-11 min-w-11 text-[10px] text-blue-300 hover:text-white inline-flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
@@ -962,7 +1228,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               </button>
           )}
         </div>
-        <button
+        {!lockedTutor && <button
             data-tour-id="ai-trash"
             onClick={handleClearChat}
             className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg bg-[#1e1f21] border border-white/[0.08] text-[#8a8f98] hover:text-red-400 hover:border-red-500/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
@@ -970,7 +1236,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             aria-label="Clear chat and start a new conversation"
         >
             <Trash2 className="w-4 h-4" />
-        </button>
+        </button>}
       </div>
       
       {/* Status Bar */}
@@ -979,14 +1245,21 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               <span data-tour-id="ai-provider" className="text-[10px] text-blue-300/70 font-medium">
                 {byokConnected ? `Powered by ${byokModelLabel}` : 'Bring your own AI'}
               </span>
-              <button
+              {!lockedTutor ? <button
                 onClick={() => setShowConnectModal(true)}
                 className="min-h-11 flex items-center gap-1 text-[10px] font-semibold text-blue-400 hover:text-blue-300 px-2 rounded border border-blue-500/30 hover:border-blue-400/50 bg-blue-500/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                 title={byokConnected ? 'Change model or disconnect' : 'Connect your OpenRouter account'}
               >
                 <KeyRound className="w-2.5 h-2.5" />
                 {byokConnected ? 'Change' : 'Connect'}
-              </button>
+              </button> : (
+                <span
+                  className="inline-flex min-h-11 items-center gap-1 rounded border border-violet-500/30 bg-violet-500/5 px-2 text-[10px] font-semibold text-violet-200"
+                  aria-label={`Frozen research model ${lockedTutor.runtime.openRouterPolicy.model}`}
+                >
+                  <LockKeyhole className="h-3 w-3" aria-hidden="true" /> Frozen condition
+                </span>
+              )}
               {lessonPlan && (
                 <span
                   className="text-[9px] text-[#8a8f98]"
@@ -1179,7 +1452,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
         <div className="p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0">
             {/* Compact Learner Level Row */}
-            <div data-tour-id="teaching-levels" className="flex items-center justify-end mb-2 gap-2 text-[11px] text-[#8a8f98]">
+            {!lockedTutor && <div data-tour-id="teaching-levels" className="flex items-center justify-end mb-2 gap-2 text-[11px] text-[#8a8f98]">
                 <div className="inline-flex items-center rounded-lg bg-[#0f1011]/50 border border-white/[0.08] p-0.5 gap-0.5">
                     <button type="button" onClick={() => { setLearnerLevel('highschool'); setShowMedPicker(false); }}
                       className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'highschool' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
@@ -1214,7 +1487,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                       Resident
                     </button>
                 </div>
-            </div>
+            </div>}
 
             {/* Input Area */}
             <div className="relative flex-1">
@@ -1275,7 +1548,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </div>
       </div>
 
-      {showConnectModal && <ConnectKeyModal onClose={() => setShowConnectModal(false)} />}
+      {showConnectModal && !lockedTutor && <ConnectKeyModal onClose={() => setShowConnectModal(false)} />}
     </div>
   );
 };

@@ -13,7 +13,18 @@
  */
 
 import type { LearnerLevel } from '../constants';
-import { composeLessonPrompt } from '../core/lessonPlan';
+import {
+  composeLessonPrompt,
+  getLessonPlanRef,
+  validateLessonPlanV1,
+  verifyLessonPlanManifestHash,
+  type LessonPlanV1,
+} from '../core/lessonPlan';
+import {
+  validateCasePackageV1,
+  verifyCasePackageManifestHash,
+  type CasePackageV1,
+} from '../core/casePackage';
 import { requireCasePackage } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
 import type { DomainKey } from '../lib/domains';
@@ -43,10 +54,19 @@ export const INFERENCE_ERROR_CODES = [
   'provider_error',
   'invalid_response',
   'empty_response',
+  'protocol_deviation',
   'unexpected_error',
 ] as const;
 
 export type InferenceErrorCode = (typeof INFERENCE_ERROR_CODES)[number];
+
+export type InferenceProtocolDeviationCode =
+  | 'case_mismatch'
+  | 'lesson_mismatch'
+  | 'model_mismatch'
+  | 'provider_mismatch'
+  | 'inference_parameter_mismatch'
+  | 'storage_unavailable';
 
 /**
  * A deliberately small error shape safe to display and export. It never keeps
@@ -56,18 +76,25 @@ export class SafeInferenceError extends Error {
   readonly code: InferenceErrorCode;
   readonly httpStatus?: number;
   readonly retryable: boolean;
+  readonly deviation?: {
+    code: InferenceProtocolDeviationCode;
+    expectedId?: string;
+    observedId?: string;
+  };
 
   constructor(opts: {
     code: InferenceErrorCode;
     message: string;
     retryable: boolean;
     httpStatus?: number;
+    deviation?: SafeInferenceError['deviation'];
   }) {
     super(opts.message);
     this.name = 'SafeInferenceError';
     this.code = opts.code;
     this.retryable = opts.retryable;
     if (opts.httpStatus !== undefined) this.httpStatus = opts.httpStatus;
+    if (opts.deviation) this.deviation = Object.freeze({ ...opts.deviation });
   }
 }
 
@@ -98,6 +125,62 @@ export interface OpenRouterResponseMetadata {
 export interface OpenRouterResponse {
   chunks: ORChunk[];
   metadata: OpenRouterResponseMetadata;
+}
+
+/**
+ * Exact request controls for a frozen research condition. Ordinary teaching
+ * calls intentionally omit this object and retain their current defaults.
+ */
+export interface LockedOpenRouterPolicy {
+  model: string;
+  upstreamProviderId: string;
+  temperature: number;
+  topP: number;
+  seed?: number;
+  maxTokens: number;
+  allowFallbacks: false;
+  requireParameters: true;
+  zeroDataRetention: true;
+  dataCollection: 'deny';
+}
+
+function assertLockedOpenRouterPolicy(policy: LockedOpenRouterPolicy): void {
+  if (safeRequestedModel(policy.model) !== policy.model) {
+    throw new SafeInferenceError({
+      code: 'protocol_deviation',
+      message: 'The frozen research model identifier is invalid. The study request was not sent.',
+      retryable: false,
+      deviation: { code: 'inference_parameter_mismatch' },
+    });
+  }
+  if (safeUpstreamIdentifier(policy.upstreamProviderId) !== policy.upstreamProviderId) {
+    throw new SafeInferenceError({
+      code: 'protocol_deviation',
+      message: 'The frozen research provider identifier is invalid. The study request was not sent.',
+      retryable: false,
+      deviation: { code: 'inference_parameter_mismatch' },
+    });
+  }
+  if (!Number.isFinite(policy.temperature) || policy.temperature < 0 || policy.temperature > 2
+    || !Number.isFinite(policy.topP) || policy.topP < 0 || policy.topP > 1
+    || !Number.isSafeInteger(policy.maxTokens) || policy.maxTokens < 1 || policy.maxTokens > 32768
+    || (policy.seed !== undefined && (!Number.isSafeInteger(policy.seed) || policy.seed < 0))) {
+    throw new SafeInferenceError({
+      code: 'protocol_deviation',
+      message: 'The frozen research sampling policy is invalid. The study request was not sent.',
+      retryable: false,
+      deviation: { code: 'inference_parameter_mismatch' },
+    });
+  }
+  if (policy.allowFallbacks !== false || policy.requireParameters !== true
+    || policy.zeroDataRetention !== true || policy.dataCollection !== 'deny') {
+    throw new SafeInferenceError({
+      code: 'protocol_deviation',
+      message: 'The frozen research routing policy is incomplete. The study request was not sent.',
+      retryable: false,
+      deviation: { code: 'inference_parameter_mismatch' },
+    });
+  }
 }
 
 function finiteTokenCount(value: unknown): number | undefined {
@@ -164,9 +247,12 @@ export async function getOpenRouterResponse(opts: {
   imageBase64: string | null;
   mode: ORMode;
   model: string;
+  lockedPolicy?: LockedOpenRouterPolicy;
   signal?: AbortSignal;
 }): Promise<OpenRouterResponse> {
-  const { message, systemPrompt, imageBase64, mode, model, signal } = opts;
+  const { message, systemPrompt, imageBase64, mode, lockedPolicy, signal } = opts;
+  if (lockedPolicy) assertLockedOpenRouterPolicy(lockedPolicy);
+  const model = lockedPolicy?.model ?? opts.model;
   const apiKey = getKey();
   if (!apiKey) {
     throw new SafeInferenceError({
@@ -195,12 +281,25 @@ export async function getOpenRouterResponse(opts: {
   }
   messages.push({ role: 'user', content: userContent });
 
-  const body = {
+  const body: Record<string, unknown> = {
     model,
     messages,
-    max_tokens: mode === 'deep_think' ? 8192 : 4096,
+    max_tokens: lockedPolicy?.maxTokens ?? (mode === 'deep_think' ? 8192 : 4096),
     stream: false,
   };
+  if (lockedPolicy) {
+    body.temperature = lockedPolicy.temperature;
+    body.top_p = lockedPolicy.topP;
+    if (lockedPolicy.seed !== undefined) body.seed = lockedPolicy.seed;
+    body.provider = {
+      only: [lockedPolicy.upstreamProviderId],
+      order: [lockedPolicy.upstreamProviderId],
+      allow_fallbacks: false,
+      require_parameters: true,
+      zdr: true,
+      data_collection: 'deny',
+    };
+  }
 
   // Fail with a clean message instead of hanging on a slow model.
   const controller = new AbortController();
@@ -298,6 +397,28 @@ export async function getOpenRouterResponse(opts: {
   const finishReason = normalizeFinishReason(firstChoice?.finish_reason);
   const resolvedModelId = safeUpstreamIdentifier(response.model);
   const upstreamProviderId = safeUpstreamIdentifier(response.provider);
+  if (lockedPolicy && (
+    resolvedModelId !== lockedPolicy.model
+    || upstreamProviderId !== lockedPolicy.upstreamProviderId
+  )) {
+    const modelMismatch = resolvedModelId !== lockedPolicy.model;
+    throw new SafeInferenceError({
+      code: 'protocol_deviation',
+      message: 'OpenRouter returned a model or provider outside the frozen research condition. The response was discarded.',
+      retryable: false,
+      deviation: modelMismatch
+        ? {
+            code: 'model_mismatch',
+            expectedId: lockedPolicy.model,
+            observedId: resolvedModelId ?? 'unknown',
+          }
+        : {
+            code: 'provider_mismatch',
+            expectedId: lockedPolicy.upstreamProviderId,
+            observedId: upstreamProviderId ?? 'unknown',
+          },
+    });
+  }
   return {
     chunks,
     metadata: {
@@ -327,15 +448,37 @@ export async function fetchSystemPrompt(opts: {
   learnerLevel: LearnerLevel;
   mode: ORMode;
   hasImage: boolean;
+  casePackage?: CasePackageV1;
+  lessonPlan?: LessonPlanV1;
 }): Promise<string> {
-  const casePackage = await requireCasePackage(opts.caseId);
+  const casePackage = opts.casePackage ?? await requireCasePackage(opts.caseId);
+  if (casePackage.id !== opts.caseId) {
+    throw new Error(`Frozen Case Package '${casePackage.id}' does not match requested case '${opts.caseId}'.`);
+  }
+  if (!validateCasePackageV1(casePackage).valid
+    || !await verifyCasePackageManifestHash(casePackage)) {
+    throw new Error(`Case Package '${casePackage.id}' failed manifest verification.`);
+  }
   if (casePackage.domain !== opts.modality) {
     throw new Error(
       `Case '${casePackage.id}' belongs to '${casePackage.domain}', not '${opts.modality}'. Refusing to compose the wrong lesson.`,
     );
   }
-  const lessonPlan = await requireLessonPlanForCase(casePackage);
+  const lessonPlan = opts.lessonPlan ?? await requireLessonPlanForCase(casePackage);
+  if (!validateLessonPlanV1(lessonPlan).valid
+    || !await verifyLessonPlanManifestHash(lessonPlan)) {
+    throw new Error(`Lesson Plan '${lessonPlan.id}' failed manifest verification.`);
+  }
+  const lessonPlanRef = getLessonPlanRef(lessonPlan);
+  if (casePackage.lessonPlanRef.id !== lessonPlanRef.id
+    || casePackage.lessonPlanRef.version !== lessonPlanRef.version
+    || casePackage.lessonPlanRef.sha256 !== lessonPlanRef.sha256) {
+    throw new Error(`Case Package '${casePackage.id}' is not bound to Lesson Plan '${lessonPlan.id}'.`);
+  }
   const cacheKey = [
+    casePackage.id,
+    casePackage.schemaVersion,
+    casePackage.manifest.sha256,
     lessonPlan.id,
     lessonPlan.version,
     lessonPlan.manifest.sha256,

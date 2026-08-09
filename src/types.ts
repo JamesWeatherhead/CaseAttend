@@ -77,6 +77,11 @@ export interface AnnotationCaptureSnapshot {
 
 export interface ViewerCaptureResult {
   image: string;
+  /** Exact encoded pixels submitted by the tutor capture pipeline. */
+  mimeType?: 'image/jpeg';
+  width?: number;
+  height?: number;
+  capturePipelineVersion?: 'caseattend-canvas-jpeg-v1';
   seriesId: string;
   frameIndex: number;
   frameCount: number;
@@ -106,6 +111,10 @@ export type ReproducibleViewSnapshot = ReproducibleViewSnapshotBase & (
 
 export interface CapturedTutorView {
   image: string;
+  mimeType?: 'image/jpeg';
+  width?: number;
+  height?: number;
+  capturePipelineVersion?: 'caseattend-canvas-jpeg-v1';
   /** One-based frame number retained for learner-facing thumbnail copy. */
   slice: number;
   total: number;

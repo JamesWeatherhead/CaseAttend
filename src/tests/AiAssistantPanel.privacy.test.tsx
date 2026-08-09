@@ -156,6 +156,237 @@ describe('AiAssistantPanel image transmission privacy', () => {
     expect(mocks.streamChatResponse).not.toHaveBeenCalled();
   });
 
+  it('locks participant model, level, mode, and exact case content', async () => {
+    const casePackage = await caseRegistry.requireCasePackage('derm-melanoma');
+    const lessonPlan = await lessonRegistry.requireLessonPlanForCase(casePackage);
+    const runtime = {
+      casePackage,
+      lessonPlan,
+      expectedSystemPromptSha256: 'a'.repeat(64),
+      historyWindowMessages: 4,
+      requestTemplateVersion: '1.0' as const,
+      openRouterPolicy: {
+        model: 'research/locked-model',
+        upstreamProviderId: 'research-provider',
+        temperature: 0,
+        topP: 1,
+        maxTokens: 1024,
+        allowFallbacks: false as const,
+        requireParameters: true as const,
+        zeroDataRetention: true as const,
+        dataCollection: 'deny' as const,
+      },
+    };
+    const researchRecord = vi.fn().mockResolvedValue({});
+    render(
+      <AiAssistantPanel
+        captureCurrentView={() => ({
+          image: 'data:image/jpeg;base64,/9j/2Q==',
+          mimeType: 'image/jpeg',
+          width: 640,
+          height: 480,
+          capturePipelineVersion: 'caseattend-canvas-jpeg-v1',
+          slice: 1,
+          total: 1,
+          label: 'Clinical photograph',
+          viewSnapshot: testViewSnapshot,
+        })}
+        studyMetadata={dermatologyStudy}
+        lockedTutor={{
+          manifestSha256: 'f'.repeat(64),
+          learnerLevel: 'resident',
+          mode: 'deep_think',
+          runtime,
+          research: {
+            recorder: { record: researchRecord },
+            caseStepId: 'case-step-1',
+            inferenceConfigSha256: 'c'.repeat(64),
+          },
+        }}
+      />,
+    );
+
+    expect(await screen.findByText('Frozen condition')).toBeTruthy();
+    expect(screen.queryByText('Change')).toBeNull();
+    expect(screen.queryByText('Undergrad')).toBeNull();
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {
+      target: { value: 'What should I notice?' },
+    });
+    fireEvent.click(screen.getByLabelText('Send view and question'));
+    await waitFor(() => expect(mocks.streamChatResponse).toHaveBeenCalledTimes(1));
+    const call = mocks.streamChatResponse.mock.calls[0];
+    expect(call[1]).toBe('deep_think');
+    expect(call[2]).toBe('resident');
+    expect(call[9]).toBe('research/locked-model');
+    expect(call[10]).toBe(runtime);
+    await waitFor(() => expect(researchRecord).toHaveBeenCalledTimes(3));
+    expect(researchRecord.mock.calls.map(([event]) => event.type)).toEqual([
+      'capture_recorded',
+      'learner_turn_submitted',
+      'model_turn_completed',
+    ]);
+    const researchBytes = JSON.stringify(researchRecord.mock.calls);
+    expect(researchBytes).not.toContain('What should I notice?');
+    expect(researchBytes).not.toContain('data:image');
+    expect(researchBytes).not.toContain('locked-view');
+  });
+
+  it('keeps the tutor busy until an aborted request terminal record is persisted', async () => {
+    const casePackage = await caseRegistry.requireCasePackage('derm-melanoma');
+    const lessonPlan = await lessonRegistry.requireLessonPlanForCase(casePackage);
+    const inferenceGate = deferred<typeof testInferenceResult>();
+    const terminalGate = deferred<any>();
+    const events: Array<Record<string, unknown>> = [];
+    const busyStates: boolean[] = [];
+    let cancelAndWait: (() => Promise<void>) | null = null;
+    mocks.streamChatResponse.mockReturnValueOnce(inferenceGate.promise);
+    const researchRecord = vi.fn((event: Record<string, unknown>): Promise<any> => {
+      events.push(event);
+      return event.type === 'model_turn_failed'
+        ? terminalGate.promise
+        : Promise.resolve({});
+    });
+
+    render(
+      <AiAssistantPanel
+        captureCurrentView={() => ({
+          image: 'data:image/jpeg;base64,/9j/2Q==',
+          mimeType: 'image/jpeg',
+          width: 640,
+          height: 480,
+          capturePipelineVersion: 'caseattend-canvas-jpeg-v1',
+          slice: 1,
+          total: 1,
+          label: 'Clinical photograph',
+          viewSnapshot: testViewSnapshot,
+        })}
+        studyMetadata={dermatologyStudy}
+        onInferenceBusyChange={(busy) => busyStates.push(busy)}
+        onCancelInferenceReady={(handler) => { cancelAndWait = handler; }}
+        lockedTutor={{
+          manifestSha256: 'f'.repeat(64),
+          learnerLevel: 'resident',
+          mode: 'chat',
+          runtime: {
+            casePackage,
+            lessonPlan,
+            expectedSystemPromptSha256: 'a'.repeat(64),
+            historyWindowMessages: 4,
+            requestTemplateVersion: '1.0',
+            openRouterPolicy: {
+              model: 'research/locked-model',
+              upstreamProviderId: 'research-provider',
+              temperature: 0,
+              topP: 1,
+              maxTokens: 1024,
+              allowFallbacks: false,
+              requireParameters: true,
+              zeroDataRetention: true,
+              dataCollection: 'deny',
+            },
+          },
+          research: {
+            recorder: { record: researchRecord },
+            caseStepId: 'case-step-1',
+            inferenceConfigSha256: 'c'.repeat(64),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {
+      target: { value: 'Cancel this exact request.' },
+    });
+    fireEvent.click(screen.getByLabelText('Send view and question'));
+    await waitFor(() => expect(mocks.streamChatResponse).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(cancelAndWait).not.toBeNull());
+    expect(busyStates.at(-1)).toBe(true);
+
+    let cancellationSettled = false;
+    let cancellationPromise!: Promise<void>;
+    act(() => {
+      cancellationPromise = cancelAndWait!();
+      void cancellationPromise.then(() => { cancellationSettled = true; });
+    });
+    await waitFor(() => expect(events.some((event) => event.type === 'model_turn_failed')).toBe(true));
+    expect(events.at(-1)).toMatchObject({
+      type: 'model_turn_failed',
+      errorCode: 'request_aborted',
+    });
+    expect(cancellationSettled).toBe(false);
+    expect(busyStates.at(-1)).toBe(true);
+
+    await act(async () => {
+      terminalGate.resolve({});
+      await cancellationPromise;
+    });
+    expect(cancellationSettled).toBe(true);
+    expect(busyStates.at(-1)).toBe(false);
+
+    await act(async () => {
+      inferenceGate.resolve(testInferenceResult);
+      await inferenceGate.promise;
+    });
+  });
+
+  it('fails closed before inference when persistent research recording fails', async () => {
+    const casePackage = await caseRegistry.requireCasePackage('derm-melanoma');
+    const lessonPlan = await lessonRegistry.requireLessonPlanForCase(casePackage);
+    const researchRecord = vi.fn().mockRejectedValue(new Error('Persistent research storage is unavailable.'));
+    render(
+      <AiAssistantPanel
+        captureCurrentView={() => ({
+          image: 'data:image/jpeg;base64,/9j/2Q==',
+          mimeType: 'image/jpeg',
+          width: 640,
+          height: 480,
+          capturePipelineVersion: 'caseattend-canvas-jpeg-v1',
+          slice: 1,
+          total: 1,
+          label: 'Clinical photograph',
+          viewSnapshot: testViewSnapshot,
+        })}
+        studyMetadata={dermatologyStudy}
+        lockedTutor={{
+          manifestSha256: 'f'.repeat(64),
+          learnerLevel: 'resident',
+          mode: 'chat',
+          runtime: {
+            casePackage,
+            lessonPlan,
+            expectedSystemPromptSha256: 'a'.repeat(64),
+            historyWindowMessages: 4,
+            requestTemplateVersion: '1.0',
+            openRouterPolicy: {
+              model: 'research/locked-model',
+              upstreamProviderId: 'research-provider',
+              temperature: 0,
+              topP: 1,
+              maxTokens: 1024,
+              allowFallbacks: false,
+              requireParameters: true,
+              zeroDataRetention: true,
+              dataCollection: 'deny',
+            },
+          },
+          research: {
+            recorder: { record: researchRecord },
+            caseStepId: 'case-step-1',
+            inferenceConfigSha256: 'c'.repeat(64),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {
+      target: { value: 'This must not reach the model.' },
+    });
+    fireEvent.click(screen.getByLabelText('Send view and question'));
+
+    expect(await screen.findByText(/Research collection stopped before inference/)).toBeTruthy();
+    expect(mocks.streamChatResponse).not.toHaveBeenCalled();
+  });
+
   it('exposes a live conversation log and accessible send, suggestion, and cancel targets', async () => {
     const inferenceGate = deferred<typeof testInferenceResult>();
     mocks.streamChatResponse.mockReturnValueOnce(inferenceGate.promise);

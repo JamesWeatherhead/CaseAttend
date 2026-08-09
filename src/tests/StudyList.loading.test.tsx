@@ -123,6 +123,7 @@ describe('StudyList case loading', () => {
   it('shows a resolved browser-local preview and mobile-safe authoring and filter controls', async () => {
     const onSelectStudy = vi.fn();
     const onOpenCaseStudio = vi.fn();
+    const onOpenResearchSetup = vi.fn();
     const onDeleteLocalCase = vi.fn(async () => undefined);
     mocks.searchDicomWebStudies.mockResolvedValue([localCase]);
     mocks.resolveAssetUri.mockResolvedValue('blob:resolved-local-preview');
@@ -136,6 +137,7 @@ describe('StudyList case loading', () => {
         dicomConfig={{ url: 'local', name: 'Built-in and browser-local cases' }}
         setDicomConfig={() => undefined}
         onOpenCaseStudio={onOpenCaseStudio}
+        onOpenResearchSetup={onOpenResearchSetup}
         onDeleteLocalCase={onDeleteLocalCase}
       />,
     );
@@ -144,6 +146,10 @@ describe('StudyList case loading', () => {
     expect(createCase.className).toContain('min-h-11');
     fireEvent.click(createCase);
     expect(onOpenCaseStudio).toHaveBeenCalledTimes(1);
+    const researchSetup = screen.getByRole('button', { name: 'Set up a research study' });
+    expect(researchSetup.className).toContain('min-h-11');
+    fireEvent.click(researchSetup);
+    expect(onOpenResearchSetup).toHaveBeenCalledTimes(1);
 
     const filterGroup = screen.getByLabelText('Filter cases');
     expect(filterGroup.className).toContain('overflow-x-auto');
