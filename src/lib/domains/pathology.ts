@@ -39,17 +39,6 @@ function getInitialSuggestions(level: LearnerLevel, hasImage: boolean, _studyId?
   return (hasImage ? SUGGESTIONS_WITH_IMAGE : SUGGESTIONS_NO_IMAGE)[level] || [];
 }
 
-function preAnalysisPrompt(studyDescription: string, seriesDescription: string): string {
-  return `You are a pathology teaching assistant. Analyze this H&E histology image and provide a BRIEF structured description (3-5 bullet points) covering:
-- Tissue type and architecture
-- Staining quality and pattern
-- Key cellular features visible
-- Notable findings (if any)
-- Magnification assessment
-Context: ${studyDescription}, Series: ${seriesDescription}
-This analysis will be used as grounding context for subsequent teaching questions. Be factual and concise. EDUCATIONAL USE ONLY.`;
-}
-
 export const pathology: Domain = {
   key: 'pathology',
   label: 'Pathology',
@@ -60,8 +49,6 @@ export const pathology: Domain = {
   },
   welcomeMessage,
   getInitialSuggestions,
-  preAnalysisPrompt,
   contextLabel: () => 'Digital Pathology (H&E Histology)',
   captureLabel: () => 'Histology',
-  overviewImage: () => '/images/patho-1/HE_4x/1.webp',
 };
