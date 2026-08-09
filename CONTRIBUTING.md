@@ -41,8 +41,9 @@ Node 22+. No environment variables required.
 
 - `src/`: the React SPA (image viewer, chat, model picker, BYOK connect flow).
 - `src/lib/domains/`: client-side Domain plugins, one module per domain
-  (`radiology.ts`, `pathology.ts`, `dermatology.ts`). Suggestions, welcome
-  messages, artifact hints, and viewer labels.
+  (`radiology.ts`, `pathology.ts`, `dermatology.ts`, `ecg.ts`,
+  `ultrasound.ts`, `ophthalmology.ts`). Suggestions, welcome messages,
+  artifact hints, and viewer labels.
 - `src/core/casePackage.ts`: the Case Package v1 schema, validators, and
   manifest helpers.
 - `src/data/caseRegistry.ts`: the canonical registry for case metadata,
@@ -52,6 +53,8 @@ Node 22+. No environment variables required.
 - `src/data/lessonRegistry.ts`: the exact built-in Case Package to Lesson Plan
   bindings. Legacy content in `lib/prompts/` is imported as versioned lesson
   content, never selected through a server fallback.
+- `src/data/contentPack.ts`: typed, data-driven pairs for larger built-in case
+  and lesson collections. See `docs/catalog/CONTENT_PACKS.md`.
 
 A new visual-case domain is a plugin, not a fork. See "Adding a new
 visual-case domain" below.
@@ -79,10 +82,10 @@ non-medical) you touch six spots, none of which are the viewer.
 4. **Case package:** define a valid Case Package v1 record with the domain,
    artifact shape, preview, artifact hints, provenance, review status, lesson
    reference, and presentation metadata.
-5. **Register the case:** add the record to `src/data/caseRegistry.ts`, directly
-   or through a domain data module imported there. Study cards, viewer studies,
-   and attribution surfaces must derive from the registry. Do not add separate
-   copies of case metadata to UI components or service fallbacks.
+5. **Register the case:** for a collection, use a typed Content Pack and add it
+   to `src/data/builtinContentPacks.ts`. Study cards, viewer studies, and
+   attribution surfaces derive from the registry. Do not add separate copies
+   of case metadata to UI components or service fallbacks.
 6. **Assets and integrity:** add redistributable assets under `public/images/`,
    record each asset's SHA-256 digest, and regenerate the package manifest. A
    single-frame case uses an `image` artifact. A multi-frame case uses an
@@ -113,6 +116,9 @@ license, attribution, review status, or presentation metadata changes.
 - Each artifact frame and preview records a lowercase SHA-256 digest for the
   exact asset bytes. If the file changes, update its digest and regenerate the
   package manifest.
+- Built-in Content Pack records include an item-level `licenseEvidenceUrl`.
+  This is distinct from the generic license deed and must show the rights for
+  the exact downloaded artifact.
 - The package manifest covers the canonical metadata plus the ordered asset
   digests. Use the helpers in `src/core/casePackage.ts` to generate and verify
   it.

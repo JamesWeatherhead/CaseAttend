@@ -18,6 +18,7 @@ import {
 } from '../core/lessonPlan';
 import { getDomain } from '../lib/domains';
 import { casePackageStore } from '../services/casePackageStore';
+import { getBuiltinContentPackEntry } from './contentPackRegistry';
 
 export type LessonCaseSource = Pick<
   CasePackageV1Draft,
@@ -256,14 +257,21 @@ function sameNotes(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((entry, index) => entry === right[index]);
 }
 
-function isBuiltinCaseId(caseId: string): boolean {
+function isLegacyBuiltinCaseId(caseId: string): boolean {
   return Object.hasOwn(OBJECTIVES_BY_CASE, caseId);
 }
 
 export async function requireLessonPlanForCase(casePackage: CasePackageV1): Promise<LessonPlanV1> {
+  const packedEntry = await getBuiltinContentPackEntry(casePackage.id);
+  if (
+    packedEntry
+    && packedEntry.casePackage.manifest.sha256 !== casePackage.manifest.sha256
+  ) {
+    throw new Error(`Case Package '${casePackage.id}' does not match the built-in Content Pack revision.`);
+  }
   // A stale or manually written local record must never shadow a built-in
   // lesson with the same stable ID. The catalog applies the same precedence.
-  const stored = isBuiltinCaseId(casePackage.id)
+  const stored = isLegacyBuiltinCaseId(casePackage.id) || packedEntry
     ? null
     : await casePackageStore.get(casePackage.id);
   if (
@@ -272,7 +280,9 @@ export async function requireLessonPlanForCase(casePackage: CasePackageV1): Prom
   ) {
     throw new Error(`Case Package '${casePackage.id}' does not match the browser-local stored revision.`);
   }
-  const plan = stored?.lessonPlan ?? await createBuiltinLessonPlan(casePackage);
+  const plan = packedEntry?.lessonPlan
+    ?? stored?.lessonPlan
+    ?? await createBuiltinLessonPlan(casePackage);
   const ref = getLessonPlanRef(plan);
   if (
     casePackage.lessonPlanRef.id !== ref.id
@@ -294,10 +304,15 @@ export async function assertLessonPlanRef(
   caseSource: LessonCaseSource,
   ref: LessonPlanRef,
 ): Promise<void> {
-  const stored = isBuiltinCaseId(caseSource.id)
+  const packedEntry = await getBuiltinContentPackEntry(caseSource.id);
+  const stored = isLegacyBuiltinCaseId(caseSource.id) || packedEntry
     ? null
     : await casePackageStore.get(caseSource.id);
-  const expected = getLessonPlanRef(stored?.lessonPlan ?? await createBuiltinLessonPlan(caseSource));
+  const expected = getLessonPlanRef(
+    packedEntry?.lessonPlan
+      ?? stored?.lessonPlan
+      ?? await createBuiltinLessonPlan(caseSource),
+  );
   if (ref.id !== expected.id || ref.version !== expected.version || ref.sha256 !== expected.sha256) {
     throw new Error(`Lesson Plan reference for Case Package '${caseSource.id}' does not match its manifest.`);
   }

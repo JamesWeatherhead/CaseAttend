@@ -146,6 +146,33 @@ describe('Case Package v1', () => {
     expect(result.errors).toContain('preview.src must reference an image included in artifact.');
   });
 
+  it('accepts the registered visual domains and validates item-level rights evidence', () => {
+    for (const domain of ['ecg', 'ultrasound', 'ophthalmology'] as const) {
+      const draft = singleImageDraft();
+      expect(validateCasePackageDraftV1({
+        ...draft,
+        domain,
+        provenance: {
+          ...draft.provenance,
+          licenseEvidenceUrl: 'https://commons.wikimedia.org/wiki/File:Fixture.jpg#Licensing',
+        },
+      })).toEqual({ valid: true, errors: [] });
+    }
+
+    const draft = singleImageDraft();
+    const invalid = validateCasePackageDraftV1({
+      ...draft,
+      provenance: {
+        ...draft.provenance,
+        licenseEvidenceUrl: 'javascript:alert(1)',
+      },
+    });
+    expect(invalid.valid).toBe(false);
+    expect(invalid.errors).toContain(
+      'provenance.licenseEvidenceUrl must be an HTTPS URL without embedded credentials.',
+    );
+  });
+
   it('requires native image artifacts for single-frame cases', () => {
     const draft = singleImageDraft();
     const result = validateCasePackageDraftV1({

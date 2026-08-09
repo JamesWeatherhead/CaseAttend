@@ -67,6 +67,8 @@ export type ClinicianReview =
 export interface CaseProvenance {
   sourceName: string;
   sourceUrl?: string;
+  /** Item-level page or record that explicitly supports the declared license. */
+  licenseEvidenceUrl?: string;
   license: CaseLicense;
   attribution: string;
   clinicianReview: ClinicianReview;
@@ -130,7 +132,14 @@ const KEBAB_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SEMVER_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const DOMAIN_KEYS = new Set<DomainKey>(['radiology', 'pathology', 'dermatology']);
+const DOMAIN_KEYS = new Set<DomainKey>([
+  'radiology',
+  'pathology',
+  'dermatology',
+  'ecg',
+  'ultrasound',
+  'ophthalmology',
+]);
 const DIFFICULTIES = new Set<CaseDifficulty>(['introductory', 'intermediate', 'advanced']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -353,12 +362,20 @@ function validateProvenance(value: unknown, errors: string[]): void {
   if (!provenance) return;
   rejectUnknownKeys(
     provenance,
-    ['sourceName', 'sourceUrl', 'license', 'attribution', 'clinicianReview'],
+    [
+      'sourceName',
+      'sourceUrl',
+      'licenseEvidenceUrl',
+      'license',
+      'attribution',
+      'clinicianReview',
+    ],
     'provenance',
     errors,
   );
   requireString(provenance.sourceName, 'provenance.sourceName', errors);
   validateHttpsUrl(provenance.sourceUrl, 'provenance.sourceUrl', errors);
+  validateHttpsUrl(provenance.licenseEvidenceUrl, 'provenance.licenseEvidenceUrl', errors);
   requireString(provenance.attribution, 'provenance.attribution', errors);
 
   const license = requireRecord(provenance.license, 'provenance.license', errors);
@@ -487,7 +504,9 @@ function validateDraft(
   requireString(draft.title, 'title', errors);
   requireString(draft.vignette, 'vignette', errors);
   if (typeof draft.domain !== 'string' || !DOMAIN_KEYS.has(draft.domain as DomainKey)) {
-    errors.push("domain must be 'radiology', 'pathology', or 'dermatology'.");
+    errors.push(
+      "domain must be 'radiology', 'pathology', 'dermatology', 'ecg', 'ultrasound', or 'ophthalmology'.",
+    );
   }
   if (typeof draft.difficulty !== 'string' || !DIFFICULTIES.has(draft.difficulty as CaseDifficulty)) {
     errors.push("difficulty must be 'introductory', 'intermediate', or 'advanced'.");

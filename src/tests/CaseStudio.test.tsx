@@ -11,6 +11,7 @@ import CaseStudio, {
   type StudioPrivacyResult,
 } from '../components/CaseStudio/CaseStudio';
 import type { CasePackageV1 } from '../core/casePackage';
+import type { DomainKey } from '../lib/domains/types';
 
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
@@ -118,7 +119,7 @@ function props(overrides: Partial<CaseStudioProps> = {}): CaseStudioProps {
     }),
     scanAssets: vi.fn(async (
       assets: readonly StudioAsset[],
-      _domain: 'radiology' | 'pathology' | 'dermatology',
+      _domain: DomainKey,
       onProgress: (completed: number, total: number) => void,
     ) => {
       onProgress(assets.length, assets.length);

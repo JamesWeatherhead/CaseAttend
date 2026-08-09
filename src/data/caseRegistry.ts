@@ -17,6 +17,7 @@ import {
   BUILTIN_ASSET_SHA256,
   type BuiltinAssetPath,
 } from './builtinAssetDigests';
+import { listBuiltinContentPackEntries } from './contentPackRegistry';
 import { createBuiltinLessonPlan } from './lessonRegistry';
 import { casePackageStore } from '../services/casePackageStore';
 
@@ -531,7 +532,7 @@ let registryPromise: Promise<readonly CasePackageV1[]> | undefined;
 
 async function buildRegistry(): Promise<readonly CasePackageV1[]> {
   const seenIds = new Set<string>();
-  const packages = await Promise.all(
+  const legacyPackages = await Promise.all(
     BUILTIN_CASE_DRAFTS.map(async (draft) => {
       if (seenIds.has(draft.id)) throw new Error(`Duplicate Case Package id: ${draft.id}`);
       seenIds.add(draft.id);
@@ -545,7 +546,18 @@ async function buildRegistry(): Promise<readonly CasePackageV1[]> {
       return deepFreeze(casePackage);
     }),
   );
-  return Object.freeze(packages);
+  const packedEntries = await listBuiltinContentPackEntries();
+  for (const entry of packedEntries) {
+    if (seenIds.has(entry.casePackage.id)) {
+      throw new Error(`Duplicate Case Package id: ${entry.casePackage.id}`);
+    }
+    seenIds.add(entry.casePackage.id);
+    assertPreviewIsIncluded(entry.casePackage);
+  }
+  return Object.freeze([
+    ...legacyPackages,
+    ...packedEntries.map((entry) => entry.casePackage),
+  ]);
 }
 
 export function listBuiltinCasePackages(): Promise<readonly CasePackageV1[]> {

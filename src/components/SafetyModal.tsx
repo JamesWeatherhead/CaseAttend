@@ -12,7 +12,9 @@ function safeExternalUrl(value?: string): string | undefined {
 
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' ? url.href : undefined;
+    return url.protocol === 'https:' && !url.username && !url.password
+      ? url.href
+      : undefined;
   } catch {
     return undefined;
   }
@@ -107,6 +109,9 @@ const SafetyModal: React.FC<SafetyModalProps> = ({ onClose }) => {
                   {casePackages.map((casePackage) => {
                     const sourceUrl = safeExternalUrl(casePackage.provenance.sourceUrl);
                     const licenseUrl = safeExternalUrl(casePackage.provenance.license.url);
+                    const licenseEvidenceUrl = safeExternalUrl(
+                      casePackage.provenance.licenseEvidenceUrl,
+                    );
 
                     return (
                       <article key={casePackage.id} className="rounded-lg border border-slate-700 bg-slate-950/50 p-3">
@@ -152,6 +157,21 @@ const SafetyModal: React.FC<SafetyModalProps> = ({ onClose }) => {
                                   className="text-blue-400 underline hover:text-blue-300"
                                 >
                                   View source
+                                </a>
+                              ) : 'Not recorded in Case Package v1'}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="font-semibold text-slate-300">Rights evidence</dt>
+                            <dd>
+                              {licenseEvidenceUrl ? (
+                                <a
+                                  href={licenseEvidenceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 underline hover:text-blue-300"
+                                >
+                                  View item-level evidence
                                 </a>
                               ) : 'Not recorded in Case Package v1'}
                             </dd>

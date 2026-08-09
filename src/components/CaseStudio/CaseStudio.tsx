@@ -912,6 +912,9 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                       <option value="radiology">Radiology</option>
                       <option value="pathology">Pathology</option>
                       <option value="dermatology">Dermatology</option>
+                      <option value="ecg">ECG</option>
+                      <option value="ultrasound">Ultrasound</option>
+                      <option value="ophthalmology">Ophthalmology</option>
                     </select>
                   </Field>
                   <Field label="Difficulty" htmlFor="case-difficulty" required>
