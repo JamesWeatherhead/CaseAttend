@@ -27,15 +27,19 @@ jobs:
         run: |
           line=$(grep -i 'Content-Security-Policy' public/_headers || true)
           if [ -z "$line" ]; then echo "::error::No CSP found in public/_headers"; exit 1; fi
-          connect=$(echo "$line" | grep -oE "connect-src[^;]*" || true)
-          echo "connect-src is: $connect"
-          bad=$(echo "$connect" | tr ' ' '\n' | grep -iE '^https?://' | grep -viE '^https://openrouter\.ai/?$' || true)
-          if [ -n "$bad" ]; then
-            echo "::error::CSP connect-src allows a host other than https://openrouter.ai:"
-            echo "$bad"
+          connect=$(printf '%s\n' "$line" | grep -oiE "connect-src[[:space:]]+[^;]+" | head -n 1 || true)
+          if [ -z "$connect" ]; then
+            echo "::error::The CSP is missing a connect-src directive."
             exit 1
           fi
-          echo "OK: connect-src is locked down."
+          actual=$(printf '%s\n' "$connect" | sed -E "s/^connect-src[[:space:]]+//; s/[[:space:]]+/ /g; s/^ //; s/ $//")
+          expected="'self' https://openrouter.ai"
+          echo "connect-src tokens are: $actual"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::CSP connect-src must be exactly: $expected"
+            exit 1
+          fi
+          echo "OK: connect-src has the exact self + OpenRouter allowlist."
       - name: No off-origin key persistence (state stays in localStorage)
         run: |
           if grep -rInE "document\.cookie[[:space:]]*=" src/; then
@@ -43,3 +47,18 @@ jobs:
             exit 1
           fi
           echo "OK: no cookie writes in src/."
+      - name: Raw key access stays inside the OpenRouter boundary
+        run: |
+          unexpected=$(grep -rInE '\bgetKey\b|caseattend_openrouter_key' src \
+            --include='*.ts' --include='*.tsx' \
+            | grep -v '^src/services/byokStore.ts:' \
+            | grep -v '^src/services/openrouterClient.ts:' \
+            | grep -v '^src/tests/' || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::Raw key access exists outside byokStore/openrouterClient:"
+            echo "$unexpected"
+            exit 1
+          fi
+          echo "OK: only the OpenRouter boundary can read the raw key."
+      - name: Browser credential and session export sentinel test
+        run: npm exec -- vitest run src/tests/securityBoundary.test.ts

@@ -48,6 +48,26 @@ describe('built-in Lesson Plan registry', () => {
     expect(bcc.educatorTutorInstructions).toContain(bccCase.teachingNotes[0]);
   });
 
+  it('teaches send-time capture without referring to the removed camera workflow', async () => {
+    const casePackages = await listCasePackages();
+    const plans = await Promise.all(casePackages.map(requireLessonPlanForCase));
+    const learnerOpenings = plans.flatMap((plan) => (
+      plan.learnerOpenings?.map((opening) => opening.content) ?? []
+    ));
+
+    expect(learnerOpenings.join('\n')).not.toMatch(
+      /capture it with the camera|capture what you see|then capture/i,
+    );
+    const mriPlan = plans.find((plan) => plan.id === 'local-study-sub1-lesson');
+    const pathologyPlan = plans.find((plan) => plan.id === 'patho-study-breast-lesson');
+    expect(mriPlan?.learnerOpenings?.every((opening) => (
+      opening.content.includes('press Send') || !opening.content.toLowerCase().includes('capture')
+    ))).toBe(true);
+    expect(pathologyPlan?.learnerOpenings?.find(
+      (opening) => opening.learnerLevel === 'ms_preclinical',
+    )?.content).toContain('press Send');
+  });
+
   it('composes one case-specific prompt with the exact ref and no wrong-case fallback', async () => {
     const casePackages = await listCasePackages();
     const epiduralCase = casePackages.find((entry) => entry.id === 'ct-epidural');

@@ -8,22 +8,81 @@ import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
 import SegmentationPanel from './components/SegmentationPanel';
 import AiAssistantPanel from './components/AiAssistantPanel';
+import SessionDataPanel from './components/SessionDataPanel';
 import SafetyModal from './components/SafetyModal';
 import GuidedTour, { TourId } from './components/GuidedTour';
 import FloatingToolbar from './components/FloatingToolbar';
 import { TOOLS, MOCK_SEGMENTATION_DATA } from './constants';
 import type { CasePackageV1 } from './core/casePackage';
 import { primaryCaseModality } from './data/caseRegistry';
-import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer } from './types';
+import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer, type CapturedTutorView } from './types';
 import { fetchDicomWebSeries } from './services/dicomService';
 import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
-import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap } from 'lucide-react';
+import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
+import {
+  getPreference,
+  PREFERENCE_KEYS,
+  removePreference,
+  setPreference,
+} from './services/preferenceStore';
+import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap, Database } from 'lucide-react';
+
+function resolveCapturedArtifact(
+  casePackage: CasePackageV1,
+  viewerSeriesId: string,
+  frameIndex: number,
+) {
+  if (casePackage.artifact.kind === 'image') {
+    if (
+      viewerSeriesId !== `${casePackage.id}:${casePackage.artifact.seriesId}`
+      || frameIndex !== 0
+    ) return null;
+    return {
+      artifactKind: 'image' as const,
+      seriesId: casePackage.artifact.seriesId,
+      frameIndex: 0 as const,
+      frameCount: 1 as const,
+      assetSha256: casePackage.artifact.sha256,
+    };
+  }
+
+  const series = casePackage.artifact.series.find(
+    (candidate) => viewerSeriesId === `${casePackage.id}:${candidate.id}`,
+  );
+  const frame = series?.frames[frameIndex];
+  if (!series || !frame) return null;
+  return {
+    artifactKind: 'image-stack' as const,
+    seriesId: series.id,
+    frameId: frame.id,
+    frameIndex,
+    frameCount: series.frames.length,
+    assetSha256: frame.sha256,
+  };
+}
+
+export function normalizeToolForArtifact(
+  tool: ToolMode,
+  artifactHints: CasePackageV1['artifactHints'],
+  instanceCount: number,
+): ToolMode {
+  if (tool === ToolMode.SCROLL && instanceCount <= 1) return ToolMode.POINTER;
+  if (tool === ToolMode.WINDOW_LEVEL && !artifactHints.showWindowLevel) return ToolMode.POINTER;
+  if (
+    (tool === ToolMode.BRUSH || tool === ToolMode.ERASER)
+    && !artifactHints.showSegmentation
+  ) return ToolMode.POINTER;
+  return tool;
+}
 
 const App: React.FC = () => {
   const [homeView, setHomeView] = useState<'cases' | 'lesson-builder'>('cases');
   // Default to DICOMWEB (which is now effectively Local Mode via the service swap)
   const [connectionType, setConnectionType] = useState<ConnectionType>('DICOMWEB');
   const [showSafetyModal, setShowSafetyModal] = useState(false);
+  const [showSessionData, setShowSessionData] = useState(false);
+  const openSessionData = useCallback(() => setShowSessionData(true), []);
+  const closeSessionData = useCallback(() => setShowSessionData(false), []);
   const [showTourMenu, setShowTourMenu] = useState(false);
   // OpenRouter OAuth: after the redirect back with ?code=, exchange it for a key.
   const [connectNotice, setConnectNotice] = useState<{ ok: boolean; msg: string } | null>(null);
@@ -35,12 +94,24 @@ const App: React.FC = () => {
   });
 
   const [selectedStudy, setSelectedStudy] = useState<CasePackageV1 | null>(null);
+  const handleBackToCases = useCallback(() => {
+    window.dispatchEvent(new Event(CASE_SESSION_EXIT_EVENT));
+    setSelectedStudy(null);
+  }, []);
   const [studySeries, setStudySeries] = useState<Series[]>([]);
   const [activeSeries, setActiveSeries] = useState<Series | null>(null);
+  const seriesLoadRequestRef = useRef(0);
   const [activeTool, setActiveToolRaw] = useState<ToolMode>(ToolMode.SCROLL);
   const setActiveTool = (tool: ToolMode) => {
-    setActiveToolRaw(tool);
-    if (tool === ToolMode.BRUSH) {
+    const allowedTool = selectedStudy
+      ? normalizeToolForArtifact(
+          tool,
+          selectedStudy.artifactHints,
+          activeSeries?.instanceCount ?? 1,
+        )
+      : tool;
+    setActiveToolRaw(allowedTool);
+    if (allowedTool === ToolMode.BRUSH) {
       setSegmentationLayer(prev => prev.activeSegmentId ? prev : { ...prev, activeSegmentId: 1 });
     }
   };
@@ -55,6 +126,14 @@ const App: React.FC = () => {
   // Measurements State (Scoped by Series ID)
   const [measurementsBySeries, setMeasurementsBySeries] = useState<Record<string, Measurement[]>>({});
   const [activeMeasurementId, setActiveMeasurementId] = useState<string | null>(null);
+  const annotationAuditRef = useRef<{ revision: number; lastChangedAt?: string }>({ revision: 0 });
+  const bumpAnnotationAudit = useCallback(() => {
+    annotationAuditRef.current = {
+      revision: annotationAuditRef.current.revision + 1,
+      lastChangedAt: new Date().toISOString(),
+    };
+  }, []);
+  const getAnnotationAudit = useCallback(() => annotationAuditRef.current, []);
 
   // Derived Measurements for Active Series
   const activeSeriesId = activeSeries?.id;
@@ -77,7 +156,9 @@ const App: React.FC = () => {
   // Tour State
   const [activeTour, setActiveTour] = useState<TourId | null>(null);
   // Track tour completion to block scrolling until done (only blocks if Quick Tour is running or initial)
-  const [isTourCompleted, setIsTourCompleted] = useState(() => !!localStorage.getItem('caseattend.guidedTour.completed'));
+  const [isTourCompleted, setIsTourCompleted] = useState(() => (
+    getPreference(PREFERENCE_KEYS.guidedTourCompleted) === 'true'
+  ));
 
   // FloatingToolbar State
   const [showLegacyToolbar, setShowLegacyToolbar] = useState(false);
@@ -196,7 +277,7 @@ const App: React.FC = () => {
   useEffect(() => {
     // Only check if we are actually viewing a study (not on study list)
     if (selectedStudy) {
-      const tourCompleted = localStorage.getItem('caseattend.guidedTour.completed');
+      const tourCompleted = getPreference(PREFERENCE_KEYS.guidedTourCompleted);
       if (!tourCompleted) {
         setIsTourCompleted(false); // Lock scrolling
         // Small delay to ensure DOM is ready
@@ -211,7 +292,7 @@ const App: React.FC = () => {
   const handleCloseTour = () => {
     // Only mark completed if we finished the quick start
     if (activeTour === 'onboarding') {
-        localStorage.setItem('caseattend.guidedTour.completed', 'true');
+        setPreference(PREFERENCE_KEYS.guidedTourCompleted, 'true');
         setIsTourCompleted(true);
     }
     setActiveTour(null);
@@ -219,7 +300,7 @@ const App: React.FC = () => {
 
   const handleStartTour = (id: TourId) => {
     if (id === 'onboarding') {
-         localStorage.removeItem('caseattend.guidedTour.completed');
+         removePreference(PREFERENCE_KEYS.guidedTourCompleted);
          setIsTourCompleted(false);
          setActiveRightTab('ai'); // Start on the Tutor panel
     }
@@ -250,14 +331,24 @@ const App: React.FC = () => {
   }, [isResizingSidebar]);
 
   useEffect(() => {
+    const requestId = ++seriesLoadRequestRef.current;
+    let cancelled = false;
+
     async function loadSeries() {
       if (!selectedStudy) {
         setStudySeries([]);
         setActiveSeries(null);
         return;
       }
+
+      // Do not render the previous case's series while the next package resolves.
+      setStudySeries([]);
+      setActiveSeries(null);
+
       try {
         const seriesData = await fetchDicomWebSeries(dicomConfig, selectedStudy.id);
+        if (cancelled || requestId !== seriesLoadRequestRef.current) return;
+
         setStudySeries(seriesData);
         if (seriesData.length > 0) {
           // Default to first series (T1 likely)
@@ -267,10 +358,15 @@ const App: React.FC = () => {
           setActiveSeries(null);
         }
       } catch (err) {
+        if (cancelled || requestId !== seriesLoadRequestRef.current) return;
         console.error("Error loading series", err);
       }
     }
-    loadSeries();
+
+    void loadSeries();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedStudy, connectionType, dicomConfig]);
 
   useEffect(() => {
@@ -286,13 +382,33 @@ const App: React.FC = () => {
   }, [activeSeries?.id]);
 
   useEffect(() => {
-    if ((activeSeries?.instanceCount ?? 0) <= 1 && activeTool === ToolMode.SCROLL) {
-      setActiveToolRaw(ToolMode.POINTER);
+    annotationAuditRef.current = { revision: 0 };
+    setMeasurementsBySeries({});
+    setActiveMeasurementId(null);
+  }, [selectedStudy?.id, selectedStudy?.manifest.sha256]);
+
+  useEffect(() => {
+    if (!selectedStudy) return;
+    const allowedTool = normalizeToolForArtifact(
+      activeTool,
+      selectedStudy.artifactHints,
+      activeSeries?.instanceCount ?? 1,
+    );
+    if (allowedTool !== activeTool) setActiveToolRaw(allowedTool);
+    if (!selectedStudy.artifactHints.showSegmentation && activeRightTab === 'segment') {
+      setActiveRightTab('ai');
     }
-  }, [activeSeries?.id, activeSeries?.instanceCount, activeTool]);
+  }, [
+    activeRightTab,
+    activeSeries?.id,
+    activeSeries?.instanceCount,
+    activeTool,
+    selectedStudy,
+  ]);
 
   const handleMeasurementAdd = useCallback((m: Measurement) => {
     if (!activeSeriesId) return;
+    bumpAnnotationAudit();
     setMeasurementsBySeries(prev => ({
         ...prev,
         [activeSeriesId]: [...(prev[activeSeriesId] || []), m]
@@ -300,44 +416,58 @@ const App: React.FC = () => {
     setActiveMeasurementId(m.id);
     setActiveTool(ToolMode.POINTER); 
     setActiveRightTab('measure'); 
-  }, [activeSeriesId]);
+  }, [activeSeriesId, bumpAnnotationAudit]);
 
   // Wrapped for ViewerCanvas prop stability
   const onMeasurementUpdateStable = useCallback((m: Measurement) => {
     if (!activeSeriesId) return;
+    bumpAnnotationAudit();
     setMeasurementsBySeries(prev => ({
         ...prev,
         [activeSeriesId]: (prev[activeSeriesId] || []).map(item => item.id === m.id ? m : item)
     }));
-  }, [activeSeriesId]);
+  }, [activeSeriesId, bumpAnnotationAudit]);
 
   const handleMeasurementUpdate = useCallback((id: string, updates: Partial<Measurement>) => {
     if (!activeSeriesId) return;
+    bumpAnnotationAudit();
     setMeasurementsBySeries(prev => ({
         ...prev,
         [activeSeriesId]: (prev[activeSeriesId] || []).map(m => m.id === id ? { ...m, ...updates } : m)
     }));
-  }, [activeSeriesId]);
+  }, [activeSeriesId, bumpAnnotationAudit]);
 
   const handleMeasurementDelete = useCallback((id: string) => {
     if (!activeSeriesId) return;
+    bumpAnnotationAudit();
     setMeasurementsBySeries(prev => ({
         ...prev,
         [activeSeriesId]: (prev[activeSeriesId] || []).filter(m => m.id !== id)
     }));
     if (activeMeasurementId === id) setActiveMeasurementId(null);
-  }, [activeSeriesId, activeMeasurementId]);
+  }, [activeSeriesId, activeMeasurementId, bumpAnnotationAudit]);
   
-  const captureCurrentView = useCallback((): { image: string; slice: number; total?: number; label?: string } | null => {
-    const image = viewerRef.current?.captureScreenshot();
-    if (!image) return null;
+  const captureCurrentView = useCallback((): CapturedTutorView | null => {
+    if (!selectedStudy) return null;
+    const capture = viewerRef.current?.captureCurrentView();
+    if (!capture) return null;
+    const artifact = resolveCapturedArtifact(
+      selectedStudy,
+      capture.seriesId,
+      capture.frameIndex,
+    );
+    if (!artifact || artifact.frameCount !== capture.frameCount) return null;
     return {
-      image,
-      slice: sliceIndex + 1,
-      total: activeSeries?.instanceCount,
-      label: activeSeries?.description || selectedStudy?.neutralDescription,
+      image: capture.image,
+      slice: capture.frameIndex + 1,
+      total: capture.frameCount,
+      label: activeSeries?.description || selectedStudy.neutralDescription,
+      viewSnapshot: {
+        ...artifact,
+        annotation: capture.annotation,
+      },
     };
-  }, [sliceIndex, activeSeries, selectedStudy]);
+  }, [activeSeries?.description, selectedStudy]);
 
   const handleClearSegment = (id: number) => {
      if (viewerRef.current) {
@@ -403,16 +533,17 @@ const App: React.FC = () => {
           <div className="flex items-center gap-3">
             {selectedStudy && (
               <button
-                onClick={() => setSelectedStudy(null)}
-                className="text-[#8a8f98] hover:text-white p-1.5 rounded-lg hover:bg-[#1e1f21] transition-colors"
+                onClick={handleBackToCases}
+                className="min-h-11 min-w-11 text-[#8a8f98] hover:text-white rounded-lg hover:bg-[#1e1f21] transition-colors inline-flex items-center justify-center"
                 title="Back to study list"
+                aria-label="Back to study list"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
               </button>
             )}
             <div className="flex items-center gap-2.5">
               <img src="/logo.svg" alt="" className="w-7 h-7 rounded-lg" />
-              <span className="text-[15px] font-semibold text-[#f7f8f8] tracking-tight">CaseAttend</span>
+              <span className="hidden sm:inline text-[15px] font-semibold text-[#f7f8f8] tracking-tight">CaseAttend</span>
             </div>
           </div>
 
@@ -435,7 +566,9 @@ const App: React.FC = () => {
                 <button
                     data-tour-id="tours-menu-button"
                     onClick={() => setShowTourMenu(!showTourMenu)}
-                    className="text-[11px] font-bold text-[#8a8f98] hover:text-white px-3 py-1.5 rounded-full bg-[#161718] border border-white/[0.08] hover:bg-[#1e1f21] transition-colors flex items-center gap-1.5"
+                    className="min-h-11 min-w-11 text-[11px] font-bold text-[#8a8f98] hover:text-white px-3 rounded-full bg-[#161718] border border-white/[0.08] hover:bg-[#1e1f21] transition-colors flex items-center justify-center gap-1.5"
+                    aria-label="Open guided tours"
+                    aria-expanded={showTourMenu}
                 >
                     <Map className="w-3.5 h-3.5 text-blue-400" />
                     Tours
@@ -447,22 +580,35 @@ const App: React.FC = () => {
                              <div className="px-3 py-2 text-[10px] font-bold text-[#8a8f98] uppercase tracking-wider border-b border-white/[0.06] mb-1">
                                  Guided Tours
                              </div>
-                             <button onClick={() => { setActiveRightTab('ai'); handleStartTour('ai-tour'); }} className="text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
+                             <button onClick={() => { setActiveRightTab('ai'); handleStartTour('ai-tour'); }} className="min-h-11 text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-blue-400" /> AI Tutor Tour
                              </button>
-                             <button onClick={() => { setActiveRightTab('segment'); handleStartTour('seg-tour'); }} className="text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
-                                <Activity className="w-3.5 h-3.5 text-emerald-400" /> Annotation Tour
-                             </button>
+                             {selectedStudy.artifactHints.showSegmentation && (
+                               <button onClick={() => { setActiveRightTab('segment'); handleStartTour('seg-tour'); }} className="min-h-11 text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
+                                  <Activity className="w-3.5 h-3.5 text-emerald-400" /> Annotation Tour
+                               </button>
+                             )}
                         </div>
                     </>
                 )}
             </div>
 
             <button
-                onClick={() => setShowSafetyModal(true)}
-                className="text-[11px] font-medium text-[#8a8f98] hover:text-blue-300 transition-colors flex items-center gap-1.5 px-2"
+                type="button"
+                onClick={openSessionData}
+                className="min-h-11 min-w-11 text-[11px] font-medium text-[#8a8f98] hover:text-blue-300 transition-colors flex items-center justify-center gap-1.5 px-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                aria-label="Open browser-local session data"
             >
-                <Shield className="w-3.5 h-3.5" />
+                <Database className="w-3.5 h-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Session data</span>
+            </button>
+
+            <button
+                onClick={() => setShowSafetyModal(true)}
+                className="min-h-11 min-w-11 text-[11px] font-medium text-[#8a8f98] hover:text-blue-300 transition-colors flex items-center justify-center gap-1.5 px-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                aria-label="Open safety information"
+            >
+                <Shield className="w-3.5 h-3.5" aria-hidden="true" />
                 <span className="hidden sm:inline underline underline-offset-2 decoration-white/[0.08] hover:decoration-blue-500/50">Safety</span>
             </button>
           </div>
@@ -470,9 +616,31 @@ const App: React.FC = () => {
       </header>}
 
       {showSafetyModal && <SafetyModal onClose={() => setShowSafetyModal(false)} />}
+      {showSessionData && <SessionDataPanel onClose={closeSessionData} />}
+
+      {!selectedStudy && homeView === 'cases' && (
+        <button
+          type="button"
+          onClick={openSessionData}
+          className="fixed bottom-4 right-4 z-30 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-[#161718] px-3 text-xs font-semibold text-[#c9ced8] shadow-lg hover:bg-[#202226] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+          aria-label="Open browser-local session data"
+        >
+          <Database className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline">Session data</span>
+        </button>
+      )}
       
       {/* Guided Tour Overlay */}
-      {activeTour && <GuidedTour tourId={activeTour} onClose={handleCloseTour} onSwitchTab={setActiveRightTab} />}
+      {activeTour && (
+        <GuidedTour
+          tourId={activeTour}
+          onClose={handleCloseTour}
+          onSwitchTab={setActiveRightTab}
+          capabilities={{
+            segmentation: selectedStudy?.artifactHints.showSegmentation ?? false,
+          }}
+        />
+      )}
 
       {!selectedStudy && homeView === 'lesson-builder' ? (
         <LessonBuilder onExit={() => setHomeView('cases')} />
@@ -490,10 +658,11 @@ const App: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex-1 flex overflow-hidden">
+          <div data-testid="case-workspace" className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
               <div 
                 ref={viewerContainerRef}
-                className="flex-1 flex flex-col relative min-w-0"
+                data-testid="case-viewer-pane"
+                className="h-[50dvh] min-h-[20rem] flex-none md:h-auto md:min-h-0 md:flex-1 flex flex-col relative min-w-0"
               >
                   <FloatingToolbar
                     activeTool={activeTool}
@@ -518,10 +687,14 @@ const App: React.FC = () => {
                     onMeasurementAdd={handleMeasurementAdd}
                     onMeasurementUpdate={onMeasurementUpdateStable}
                     activeMeasurementId={activeMeasurementId}
-                    segmentationLayer={segmentationLayer}
+                    segmentationLayer={selectedStudy.artifactHints.showSegmentation
+                      ? segmentationLayer
+                      : { ...segmentationLayer, isVisible: false }}
                     onSegmentedSliceUpdate={handleSegmentedSliceUpdate}
                     isScrollEnabled={activeTour === null && (activeSeries?.instanceCount ?? 0) > 1}
                     aiPointers={aiPointers}
+                    getAnnotationAudit={getAnnotationAudit}
+                    onAnnotationMutation={bumpAnnotationAudit}
                   />
                   {selectedStudy.artifactHints.showSeriesSelector && (
                     <div className="flex-shrink-0 z-10">
@@ -536,24 +709,28 @@ const App: React.FC = () => {
               </div>
 
               <div
-                className={`w-1 bg-white/[0.06] hover:bg-blue-500 cursor-col-resize z-30 transition-colors flex flex-col items-center justify-center opacity-0 hover:opacity-100 ${isResizingSidebar ? 'opacity-100 bg-blue-500' : ''}`}
+                data-testid="case-resize-divider"
+                className={`hidden md:flex w-1 bg-white/[0.06] hover:bg-blue-500 cursor-col-resize z-30 transition-colors flex-col items-center justify-center opacity-0 hover:opacity-100 ${isResizingSidebar ? 'opacity-100 bg-blue-500' : ''}`}
                 onMouseDown={() => setIsResizingSidebar(true)}
               >
                  <GripVertical className="w-3 h-3 text-white" />
               </div>
 
               <div
-                 className="flex flex-col h-full bg-[#0f1011] border-l border-white/[0.06] flex-shrink-0 relative"
-                 style={{ width: sidebarWidth }}
+                 data-testid="case-tutor-pane"
+                 className="flex flex-col h-[75dvh] min-h-[36rem] md:h-full md:min-h-0 w-full md:w-[var(--caseattend-sidebar-width)] bg-[#0f1011] border-t md:border-t-0 md:border-l border-white/[0.06] flex-none md:flex-shrink-0 relative"
+                 style={{ '--caseattend-sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
               >
                   <div className="flex border-b border-white/[0.06]">
-                      <button onClick={() => { setActiveRightTab('segment'); if (!segmentationLayer.activeSegmentId) setSegmentationLayer(prev => ({ ...prev, activeSegmentId: 1 })); setActiveTool(ToolMode.BRUSH); }} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-colors ${activeRightTab === 'segment' ? 'bg-[#161718] text-emerald-400 border-b-2 border-emerald-500' : 'text-[#8a8f98] hover:text-[#d0d6e0] hover:bg-[#161718]/50'}`}><Activity className="w-3.5 h-3.5" /> Annotate</button>
+                      {selectedStudy.artifactHints.showSegmentation && (
+                        <button onClick={() => { setActiveRightTab('segment'); if (!segmentationLayer.activeSegmentId) setSegmentationLayer(prev => ({ ...prev, activeSegmentId: 1 })); setActiveTool(ToolMode.BRUSH); }} className={`min-h-11 flex-1 py-3 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-colors ${activeRightTab === 'segment' ? 'bg-[#161718] text-emerald-400 border-b-2 border-emerald-500' : 'text-[#8a8f98] hover:text-[#d0d6e0] hover:bg-[#161718]/50'}`}><Activity className="w-3.5 h-3.5" /> Annotate</button>
+                      )}
                       <button
                           id="tour-ai-tab"
                           data-tour-id="ai-tab"
                           aria-label="AI Tutor tab"
                           onClick={() => setActiveRightTab('ai')}
-                          className={`flex-1 py-3 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-colors ${activeRightTab === 'ai' ? 'bg-[#161718] text-blue-400 border-b-2 border-blue-500' : 'text-[#8a8f98] hover:text-[#d0d6e0] hover:bg-[#161718]/50'}`}
+                          className={`min-h-11 flex-1 py-3 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition-colors ${activeRightTab === 'ai' ? 'bg-[#161718] text-blue-400 border-b-2 border-blue-500' : 'text-[#8a8f98] hover:text-[#d0d6e0] hover:bg-[#161718]/50'}`}
                       >
                           <Sparkles className="w-3.5 h-3.5" /> Tutor
                       </button>
@@ -572,7 +749,7 @@ const App: React.FC = () => {
                             onStartTour={() => {}}
                           />
                      </div>
-                     <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'segment' ? 'block z-10' : 'hidden'}`}>
+                     {selectedStudy.artifactHints.showSegmentation && <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'segment' ? 'block z-10' : 'hidden'}`}>
                          <SegmentationPanel 
                             layer={segmentationLayer} 
                             onChange={setSegmentationLayer} 
@@ -582,10 +759,18 @@ const App: React.FC = () => {
                             onJumpToSlice={setSliceIndex}
                             onStartTour={() => handleStartTour('seg-tour')}
                          />
-                     </div>
+                     </div>}
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'ai' ? 'block z-10' : 'hidden'}`}>
                          <AiAssistantPanel
                             captureCurrentView={captureCurrentView}
+                            sessionContext={{
+                              casePackageRef: {
+                                id: selectedStudy.id,
+                                schemaVersion: selectedStudy.schemaVersion,
+                                sha256: selectedStudy.manifest.sha256,
+                              },
+                              lessonPlanRef: selectedStudy.lessonPlanRef,
+                            }}
                             studyMetadata={{
                               studyId: selectedStudy.id,
                               description: selectedStudy.teachingNotes.join(' '),

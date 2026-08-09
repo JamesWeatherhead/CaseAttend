@@ -2,9 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound } from 'lucide-react';
 import { streamChatResponse, AiMode, AIProvider } from '../services/aiClient';
+import type { SafeInferenceError } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
-import { ChatMessage, CursorContext, AiPointer } from '../types';
+import { ChatMessage, CursorContext, AiPointer, type CapturedTutorView } from '../types';
 import { MarkdownText } from '../utils/markdownUtils';
 import { LearnerLevel } from '../constants';
 import { getDomain } from '../lib/domains';
@@ -12,9 +13,26 @@ import type { DomainKey } from '../lib/domains';
 import { getLessonPlanRef, getLessonSocraticOpening, type LessonPlanV1 } from '../core/lessonPlan';
 import { requireCasePackage } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
+import {
+  CASE_SESSION_EXIT_EVENT,
+  SessionRecorder,
+  clearCaseTransition,
+  consumeCaseTransition,
+  rememberCaseTransition,
+  type SessionRecorderContext,
+  type SessionTransitionLink,
+} from '../services/sessionRecorder';
+import {
+  SESSION_DATA_DELETED_EVENT,
+  type SessionDataDeletedDetail,
+  type SessionStore,
+} from '../services/sessionStore';
+import { getPreference, PREFERENCE_KEYS, setPreference } from '../services/preferenceStore';
 
 interface AiAssistantPanelProps {
-  captureCurrentView: () => { image: string; slice: number; total?: number; label?: string } | null;
+  captureCurrentView: () => CapturedTutorView | null;
+  sessionContext?: SessionRecorderContext;
+  sessionEventStore?: Pick<SessionStore, 'append'>;
 
   studyMetadata?: {
     studyId: string;
@@ -32,8 +50,39 @@ interface AiAssistantPanelProps {
   onPointers?: (pointers: AiPointer[]) => void;
 }
 
+function safeSessionModelId(value: string): string {
+  const trimmed = value.trim();
+  return trimmed.length > 0
+    && trimmed.length <= 200
+    && !trimmed.includes('://')
+    && /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/.test(trimmed)
+    ? trimmed
+    : 'unknown';
+}
+
+function isSafeInferenceError(value: unknown): value is SafeInferenceError {
+  if (!(value instanceof Error)) return false;
+  const candidate = value as Partial<SafeInferenceError>;
+  return typeof candidate.code === 'string' && typeof candidate.retryable === 'boolean';
+}
+
+function sessionContextIdentity(context?: SessionRecorderContext): string {
+  return context
+    ? [
+        context.casePackageRef.id,
+        context.casePackageRef.schemaVersion,
+        context.casePackageRef.sha256,
+        context.lessonPlanRef.id,
+        context.lessonPlanRef.version,
+        context.lessonPlanRef.sha256,
+      ].join(':')
+    : '';
+}
+
 const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   captureCurrentView,
+  sessionContext,
+  sessionEventStore,
   studyMetadata,
   cursor,
   onJumpToSlice,
@@ -43,7 +92,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 }) => {
   // Learner Level State (must be before messages so welcome adapts)
   const [learnerLevel, setLearnerLevel] = useState<LearnerLevel>(() => {
-    const stored = localStorage.getItem('caseattend_learner_level') as string;
+    const stored = getPreference(PREFERENCE_KEYS.learnerLevel) ?? '';
     // Migrate old 'medstudent' value to new default
     if (stored === 'medstudent') return 'ms_preclinical';
     const supported: readonly LearnerLevel[] = [
@@ -59,6 +108,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   });
 
   const domain = getDomain(studyMetadata?.domain ?? 'radiology');
+  const sessionContextKey = sessionContextIdentity(sessionContext);
 
   const [lessonPlan, setLessonPlan] = useState<LessonPlanV1 | null>(null);
   const [lessonLoadError, setLessonLoadError] = useState<string | null>(null);
@@ -99,15 +149,16 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       }
     })();
     return () => { active = false; };
-  }, [studyMetadata?.domain, studyMetadata?.studyId]);
+  }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
 
   // A case switch starts a new versioned teaching session. Never retain another
   // case's welcome, dynamic suggestions, or transcript in the next case.
   useEffect(() => {
     setMessages([{ id: 'welcome', role: 'model', text: welcomeText }]);
+    setInput('');
     setDynamicSuggestionsMap(null);
     setCaptureError(null);
-  }, [studyMetadata?.domain, studyMetadata?.studyId]);
+  }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
 
   // Update the untouched welcome when the resolved lesson or learner level changes.
   useEffect(() => {
@@ -145,7 +196,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const requestSequenceRef = useRef(0);
   const mountedRef = useRef(true);
-  const studySessionKey = `${studyMetadata?.domain ?? 'radiology'}:${studyMetadata?.studyId ?? ''}`;
+  const studySessionKey = [
+    studyMetadata?.domain ?? 'radiology',
+    studyMetadata?.studyId ?? '',
+    sessionContextKey,
+  ].join(':');
   const studySessionKeyRef = useRef(studySessionKey);
   studySessionKeyRef.current = studySessionKey;
 
@@ -153,10 +208,63 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     id: number;
     studySessionKey: string;
     cancelled: boolean;
+    abortController: AbortController;
+    turnId: string;
+    recorder: SessionRecorder | null;
+    requestedModelId: string;
+    startedAt: number;
+    terminalRecorded: boolean;
     botMessageId?: string;
     inputToRestore?: string;
   };
   const activeRequestRef = useRef<ActiveRequest | null>(null);
+  const sessionRecorderRef = useRef<SessionRecorder | null>(null);
+  const previousSessionRef = useRef<SessionTransitionLink | null>(null);
+
+  const recordSessionEvent = (
+    recorder: SessionRecorder | null,
+    event: Parameters<SessionRecorder['record']>[0],
+  ) => {
+    if (!recorder || recorder.isEnded) return;
+    try {
+      void recorder.record(event).catch(() => undefined);
+    } catch {
+      // Metadata recording is fail-closed and must never block the learner's
+      // explicit model request.
+    }
+  };
+
+  const recordCancellation = (request: ActiveRequest) => {
+    if (request.terminalRecorded) return;
+    request.terminalRecorded = true;
+    recordSessionEvent(request.recorder, {
+      type: 'turn_cancelled',
+      turnId: request.turnId,
+    });
+  };
+  const sessionContextRef = useRef(sessionContext);
+  const sessionEffectGenerationRef = useRef(0);
+  sessionContextRef.current = sessionContext;
+
+  const startSessionRecorder = (
+    context: SessionRecorderContext,
+    previous: SessionTransitionLink | null,
+  ): SessionRecorder => {
+    const options = { ...(sessionEventStore ? { store: sessionEventStore } : {}) };
+    if (!previous) return SessionRecorder.start(context, 'case_opened', undefined, options);
+    return SessionRecorder.start(context, previous.startReason, previous.sessionId, options);
+  };
+
+  const ensureSessionRecorder = (): SessionRecorder | null => {
+    const existing = sessionRecorderRef.current;
+    if (existing && !existing.isEnded) return existing;
+    if (!sessionContext) return null;
+    const previous = previousSessionRef.current ?? consumeCaseTransition();
+    previousSessionRef.current = null;
+    const recorder = startSessionRecorder(sessionContext, previous);
+    sessionRecorderRef.current = recorder;
+    return recorder;
+  };
 
   const isCurrentRequest = (request: ActiveRequest): boolean => (
     mountedRef.current
@@ -170,29 +278,178 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     return () => {
       mountedRef.current = false;
       const request = activeRequestRef.current;
-      if (request) request.cancelled = true;
+      if (request) {
+        request.cancelled = true;
+        request.abortController.abort();
+        recordCancellation(request);
+      }
       activeRequestRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     const request = activeRequestRef.current;
-    if (request) request.cancelled = true;
+    if (request) {
+      request.cancelled = true;
+      request.abortController.abort();
+      recordCancellation(request);
+      if (request.botMessageId) {
+        setMessages((previous) => previous.filter(
+          (message) => message.id !== request.botMessageId,
+        ));
+      }
+    }
     activeRequestRef.current = null;
     setIsThinking(false);
     onPointers?.([]);
-  }, [studyMetadata?.domain, studyMetadata?.studyId]);
+  }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
+
+  useEffect(() => {
+    if (!sessionContext) return;
+    const generation = ++sessionEffectGenerationRef.current;
+    const existing = sessionRecorderRef.current;
+    const recorder = existing
+      && !existing.isEnded
+      && sessionContextIdentity(existing.context) === sessionContextKey
+      ? existing
+      : startSessionRecorder(
+          sessionContext,
+          previousSessionRef.current ?? consumeCaseTransition(),
+        );
+    previousSessionRef.current = null;
+    sessionRecorderRef.current = recorder;
+
+    return () => {
+      const request = activeRequestRef.current;
+      if (
+        request?.recorder
+        && sessionContextIdentity(request.recorder.context) === sessionContextKey
+      ) {
+        request.cancelled = true;
+        request.abortController.abort();
+        recordCancellation(request);
+        activeRequestRef.current = null;
+        setIsThinking(false);
+        onPointers?.([]);
+        if (request.botMessageId) {
+          setMessages((previous) => previous.filter(
+            (message) => message.id !== request.botMessageId,
+          ));
+        }
+      }
+
+      const nextContext = sessionContextRef.current;
+      const contextChanged = Boolean(nextContext && sessionContextIdentity(nextContext) !== sessionContextKey);
+      const endReason = contextChanged
+        ? nextContext!.casePackageRef.id !== sessionContext.casePackageRef.id
+            || nextContext!.casePackageRef.sha256 !== sessionContext.casePackageRef.sha256
+          ? 'case_switched'
+          : 'lesson_changed'
+        : 'navigation';
+      const finishSession = () => {
+        const recorderToEnd = sessionRecorderRef.current
+          && sessionContextIdentity(sessionRecorderRef.current.context) === sessionContextKey
+          ? sessionRecorderRef.current
+          : recorder;
+        void recorderToEnd.end(endReason).catch(() => undefined);
+        if (contextChanged) {
+          previousSessionRef.current = {
+            sessionId: recorderToEnd.sessionId,
+            context: recorderToEnd.context,
+            startReason: endReason === 'lesson_changed' ? 'lesson_changed' : 'case_switched',
+          };
+        }
+        if (sessionRecorderRef.current === recorderToEnd) sessionRecorderRef.current = null;
+      };
+
+      if (contextChanged) {
+        finishSession();
+      } else {
+        // React StrictMode immediately replays effects in development. Defer a
+        // same-context navigation end by one microtask so the replay can reuse
+        // the recorder instead of creating a throwaway session.
+        queueMicrotask(() => {
+          if (sessionEffectGenerationRef.current === generation) finishSession();
+        });
+      }
+    };
+  }, [sessionContextKey, sessionEventStore]);
+
+  useEffect(() => {
+    const stopActiveRequest = (recordTerminal: boolean) => {
+      const request = activeRequestRef.current;
+      if (!request) return;
+      request.cancelled = true;
+      if (recordTerminal) {
+        recordCancellation(request);
+      } else {
+        request.terminalRecorded = true;
+      }
+      request.abortController.abort();
+      activeRequestRef.current = null;
+      setIsThinking(false);
+      onPointers?.([]);
+      if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
+      if (request.botMessageId) {
+        setMessages((previous) => previous.filter(
+          (message) => message.id !== request.botMessageId,
+        ));
+      }
+    };
+
+    const handleSessionDataDeleted = (event: Event) => {
+      const detail = (event as CustomEvent<SessionDataDeletedDetail>).detail;
+      const recorder = sessionRecorderRef.current;
+      if (!recorder || (!detail?.all && detail?.sessionId !== recorder.sessionId)) return;
+      stopActiveRequest(false);
+      recorder.abandon();
+      clearCaseTransition(recorder.sessionId);
+      if (sessionRecorderRef.current === recorder) sessionRecorderRef.current = null;
+    };
+
+    const handleCaseExit = () => {
+      const recorder = sessionRecorderRef.current;
+      if (!recorder) return;
+      stopActiveRequest(true);
+      void recorder.end('case_switched').catch(() => undefined);
+      rememberCaseTransition(recorder);
+      if (sessionRecorderRef.current === recorder) sessionRecorderRef.current = null;
+    };
+
+    const handlePageHide = () => {
+      const recorder = sessionRecorderRef.current;
+      if (!recorder) return;
+      stopActiveRequest(true);
+      void recorder.end('page_hidden').catch(() => undefined);
+      if (sessionRecorderRef.current === recorder) sessionRecorderRef.current = null;
+    };
+
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) ensureSessionRecorder();
+    };
+
+    window.addEventListener(SESSION_DATA_DELETED_EVENT, handleSessionDataDeleted);
+    window.addEventListener(CASE_SESSION_EXIT_EVENT, handleCaseExit);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    return () => {
+      window.removeEventListener(SESSION_DATA_DELETED_EVENT, handleSessionDataDeleted);
+      window.removeEventListener(CASE_SESSION_EXIT_EVENT, handleCaseExit);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+    };
+  }, [sessionContextKey, sessionEventStore, onPointers]);
 
   // Scroll State
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const [isPinnedToBottom, setIsPinnedToBottom] = useState(true);
   
   useEffect(() => {
-    localStorage.setItem('caseattend_learner_level', learnerLevel);
+    setPreference(PREFERENCE_KEYS.learnerLevel, learnerLevel);
   }, [learnerLevel]);
 
   useEffect(() => {
-    localStorage.setItem('caseattend_provider', provider);
+    setPreference(PREFERENCE_KEYS.provider, provider);
   }, [provider]);
 
   // Scroll welcome message to top on first render
@@ -265,14 +522,38 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         ? lessonPlan.allowedHints.slice(0, 3).map((hint) => hint.text)
         : domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId)) ?? [];
 
+  const sendSuggestion = (suggestion: string) => {
+    const lessonHint = lessonPlan?.allowedHints.find((hint) => hint.text === suggestion);
+    void handleSendMessage(
+      suggestion,
+      undefined,
+      lessonHint ? 'lesson_hint' : 'typed',
+      lessonHint?.id,
+    );
+  };
+
   const handleClearChat = () => {
     // Abort active request if clearing
     const request = activeRequestRef.current;
     if (request) {
       request.cancelled = true;
+      request.abortController.abort();
+      recordCancellation(request);
       activeRequestRef.current = null;
       setIsThinking(false);
       onPointers?.([]);
+    }
+
+    const previousRecorder = sessionRecorderRef.current;
+    if (previousRecorder && !previousRecorder.isEnded) {
+      void previousRecorder.end('user_restarted').catch(() => undefined);
+      const restarted = SessionRecorder.start(
+        previousRecorder.context,
+        'user_restarted',
+        previousRecorder.sessionId,
+        { ...(sessionEventStore ? { store: sessionEventStore } : {}) },
+      );
+      sessionRecorderRef.current = restarted;
     }
 
     setMessages([{
@@ -291,6 +572,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     const request = activeRequestRef.current;
     if (!request) return;
     request.cancelled = true;
+    request.abortController.abort();
+    recordCancellation(request);
     activeRequestRef.current = null;
     setIsThinking(false);
     onPointers?.([]);
@@ -303,7 +586,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     }
   };
 
-  const handleSendMessage = async (text: string = input, promptOverride?: string) => {
+  const handleSendMessage = async (
+    text: string = input,
+    promptOverride?: string,
+    inputSource: 'typed' | 'lesson_hint' | 'retry' = 'typed',
+    hintId?: string,
+  ) => {
     const finalText = promptOverride || text;
     if (!finalText.trim()) return;
 
@@ -312,6 +600,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     const existingRequest = activeRequestRef.current;
     if (existingRequest && existingRequest.studySessionKey !== studySessionKey) {
       existingRequest.cancelled = true;
+      existingRequest.abortController.abort();
+      recordCancellation(existingRequest);
       activeRequestRef.current = null;
     }
     if (activeRequestRef.current) return;
@@ -323,14 +613,28 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       return;
     }
 
+    const turnId = crypto.randomUUID();
+    const turnRecorder = ensureSessionRecorder();
+
     // Capture in the same synchronous event turn as Send/Enter. Lesson lookup is
     // asynchronous, so capturing after it could attach a later frame or miss an
     // annotation that was present when the learner submitted.
     const capture = captureCurrentView();
     if (!capture?.image) {
+      recordSessionEvent(turnRecorder, {
+        type: 'view_capture_failed',
+        turnId,
+        reason: activeSeriesInfo?.instanceCount ? 'viewer_loading' : 'no_frame',
+      });
       setCaptureError('The current view is still loading. Wait for the image to appear, then submit again.');
       return;
     }
+
+    recordSessionEvent(turnRecorder, {
+      type: 'view_capture_succeeded',
+      turnId,
+      ...capture.viewSnapshot,
+    });
 
     // React state is not a synchronous mutex. Own all later work with a unique
     // request identity acquired before the first await.
@@ -338,6 +642,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       id: ++requestSequenceRef.current,
       studySessionKey,
       cancelled: false,
+      abortController: new AbortController(),
+      turnId,
+      recorder: turnRecorder,
+      requestedModelId: safeSessionModelId(getModel()),
+      startedAt: Date.now(),
+      terminalRecorded: false,
       inputToRestore: promptOverride ? undefined : input,
     };
     activeRequestRef.current = request;
@@ -345,6 +655,51 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setCaptureError(null);
     onPointers?.([]);
     if (!promptOverride) setInput('');
+    if (inputSource === 'lesson_hint') {
+      if (hintId) {
+        recordSessionEvent(turnRecorder, {
+          type: 'learner_message_submitted',
+          turnId,
+          inputSource,
+          hintId,
+          learnerLevel,
+          mode,
+        });
+      }
+    } else {
+      recordSessionEvent(turnRecorder, {
+        type: 'learner_message_submitted',
+        turnId,
+        inputSource,
+        learnerLevel,
+        mode,
+      });
+    }
+
+    const imageToSend = capture.image;
+    const capturedSliceInfo = { slice: capture.slice, total: capture.total, label: capture.label };
+    let capturedViewLabel = capturedSliceInfo.label || studyMetadata?.description;
+    if (!capturedViewLabel || capturedViewLabel === 'No Description' || capturedViewLabel === 'OT') {
+      capturedViewLabel = domain.captureLabel(studyMetadata?.modality || '');
+    }
+    const userMessageId = `request-${request.id}-user`;
+    const knownLessonRef = lessonPlan ? getLessonPlanRef(lessonPlan) : undefined;
+
+    // Keep the exact send-time evidence on the learner's message. It remains
+    // visible while inference is pending and if prompt resolution or inference
+    // later fails.
+    setMessages((previous) => [...previous, {
+      id: userMessageId,
+      role: 'user',
+      text: finalText,
+      hasAttachment: true,
+      ...(knownLessonRef ? { lessonPlanRef: knownLessonRef } : {}),
+      attachedSliceThumbnailDataUrl: imageToSend,
+      attachedSliceIndex: capturedSliceInfo.slice,
+      attachedFrameCount: capturedSliceInfo.total,
+      attachedSequenceLabel: capturedViewLabel,
+    }]);
+    setIsPinnedToBottom(true);
 
     let activeLesson = lessonPlan;
     if (!activeLesson && studyMetadata?.studyId) {
@@ -358,6 +713,18 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       } catch (error) {
         if (!isCurrentRequest(request)) return;
         const message = error instanceof Error ? error.message : 'The versioned lesson could not be loaded.';
+        if (!request.terminalRecorded) {
+          request.terminalRecorded = true;
+          recordSessionEvent(request.recorder, {
+            type: 'model_response_failed',
+            turnId: request.turnId,
+            gateway: 'openrouter',
+            requestedModelId: request.requestedModelId,
+            errorCode: 'prompt_resolution_failed',
+            latencyMs: Math.max(0, Date.now() - request.startedAt),
+            retryable: false,
+          });
+        }
         setLessonLoadError(message);
         setCaptureError(`Lesson unavailable: ${message}`);
         if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
@@ -368,6 +735,18 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     }
     if (!activeLesson) {
       if (!isCurrentRequest(request)) return;
+      if (!request.terminalRecorded) {
+        request.terminalRecorded = true;
+        recordSessionEvent(request.recorder, {
+          type: 'model_response_failed',
+          turnId: request.turnId,
+          gateway: 'openrouter',
+          requestedModelId: request.requestedModelId,
+          errorCode: 'prompt_resolution_failed',
+          latencyMs: Math.max(0, Date.now() - request.startedAt),
+          retryable: false,
+        });
+      }
       setCaptureError('Lesson unavailable. Return to the case list and open a registered teaching case.');
       if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
       setIsThinking(false);
@@ -376,16 +755,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     }
     if (!isCurrentRequest(request)) return;
     const activeLessonRef = getLessonPlanRef(activeLesson);
-    const imageToSend = capture.image;
-    const capturedSliceInfo = { slice: capture.slice, total: capture.total, label: capture.label };
-
-    // 1. Optimistically Add User Message
-    const userMsg: ChatMessage = {
-        id: `request-${request.id}-user`, role: 'user', text: finalText, hasAttachment: true,
-        lessonPlanRef: activeLessonRef,
-    };
-    setMessages(prev => [...prev, userMsg]);
-    setIsPinnedToBottom(true); // Force scroll on new message
+    setMessages((previous) => previous.map((message) => (
+      message.id === userMessageId
+        ? { ...message, lessonPlanRef: activeLessonRef }
+        : message
+    )));
 
     // Build conversation history as context (include welcome message + prior exchanges)
     const historyLines = messages
@@ -413,20 +787,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
     const botMsgId = `request-${request.id}-model`;
     request.botMessageId = botMsgId;
-    
-    let botMessageExtras = {};
-    if (imageToSend) {
-       let label = capturedSliceInfo?.label || studyMetadata?.description;
-       if (!label || label === "No Description" || label === "OT") {
-         label = domain.captureLabel(studyMetadata?.modality || '');
-       }
-
-       botMessageExtras = {
-          attachedSliceThumbnailDataUrl: imageToSend,
-          attachedSliceIndex: capturedSliceInfo?.slice,
-          attachedSequenceLabel: label
-       };
-    }
 
     // 2. Add "Thinking" Placeholder (Initially empty text triggers thinking bubble)
     setMessages(prev => [...prev, { 
@@ -435,12 +795,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         text: '', 
         isThinking: mode === 'deep_think',
         lessonPlanRef: activeLessonRef,
-        ...botMessageExtras
     }]);
 
     try {
         let fullText = '';
-        await streamChatResponse(
+        const inferenceResult = await streamChatResponse(
             promptToSend,
             mode,
             learnerLevel,
@@ -483,11 +842,47 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             },
             provider,
             domain.key,
-            studyMetadata?.studyId
+            studyMetadata?.studyId,
+            request.abortController.signal,
+            request.requestedModelId,
         );
+        if (isCurrentRequest(request) && !request.terminalRecorded) {
+          request.terminalRecorded = true;
+          recordSessionEvent(request.recorder, {
+            type: 'model_response_completed',
+            turnId: request.turnId,
+            promptSha256: inferenceResult.promptSha256,
+            gateway: 'openrouter',
+            requestedModelId: request.requestedModelId,
+            ...(inferenceResult.resolvedModelId
+              ? { resolvedModelId: inferenceResult.resolvedModelId }
+              : {}),
+            ...(inferenceResult.upstreamProviderId
+              ? { upstreamProviderId: inferenceResult.upstreamProviderId }
+              : {}),
+            latencyMs: inferenceResult.latencyMs,
+            ...(inferenceResult.usage ? { usage: inferenceResult.usage } : {}),
+            ...(inferenceResult.finishReason ? { finishReason: inferenceResult.finishReason } : {}),
+          });
+        }
     } catch (error: any) {
         // If cancelled, do not render error
         if (!isCurrentRequest(request)) return;
+
+        const safeError = isSafeInferenceError(error) ? error : null;
+        if (!request.terminalRecorded) {
+          request.terminalRecorded = true;
+          recordSessionEvent(request.recorder, {
+            type: 'model_response_failed',
+            turnId: request.turnId,
+            gateway: 'openrouter',
+            requestedModelId: request.requestedModelId,
+            errorCode: safeError?.code ?? 'unexpected_error',
+            ...(safeError?.httpStatus ? { httpStatus: safeError.httpStatus } : {}),
+            latencyMs: Math.max(0, Date.now() - request.startedAt),
+            retryable: safeError?.retryable ?? true,
+          });
+        }
 
         // ERROR HANDLING
         console.error("Chat Error Caught in Component:", error);
@@ -559,8 +954,9 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
           {onStartTour && (
               <button
                   onClick={onStartTour}
-                  className="ml-2 text-[10px] text-blue-300 hover:text-white flex items-center gap-1 transition-colors"
+                  className="ml-1 min-h-11 min-w-11 text-[10px] text-blue-300 hover:text-white inline-flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                   title="Tour the AI tutor"
+                  aria-label="Tour the AI tutor"
               >
                   <HelpCircle className="w-3.5 h-3.5" />
               </button>
@@ -569,22 +965,23 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         <button
             data-tour-id="ai-trash"
             onClick={handleClearChat}
-            className="p-1.5 rounded-lg bg-[#1e1f21] border border-white/[0.08] text-[#8a8f98] hover:text-red-400 hover:border-red-500/50 transition-colors"
+            className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg bg-[#1e1f21] border border-white/[0.08] text-[#8a8f98] hover:text-red-400 hover:border-red-500/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             title="Clear Chat / New Conversation"
+            aria-label="Clear chat and start a new conversation"
         >
             <Trash2 className="w-4 h-4" />
         </button>
       </div>
       
       {/* Status Bar */}
-      <div className="bg-[#161718]/50 border-b border-white/[0.06] p-2 flex items-center justify-between text-[10px] flex-shrink-0">
-          <div className="flex items-center gap-2">
+      <div className="bg-[#161718]/50 border-b border-white/[0.06] p-2 flex flex-col items-start gap-2 text-[10px] flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2">
               <span data-tour-id="ai-provider" className="text-[10px] text-blue-300/70 font-medium">
                 {byokConnected ? `Powered by ${byokModelLabel}` : 'Bring your own AI'}
               </span>
               <button
                 onClick={() => setShowConnectModal(true)}
-                className="flex items-center gap-1 text-[10px] font-semibold text-blue-400 hover:text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/30 hover:border-blue-400/50 bg-blue-500/5 transition-colors"
+                className="min-h-11 flex items-center gap-1 text-[10px] font-semibold text-blue-400 hover:text-blue-300 px-2 rounded border border-blue-500/30 hover:border-blue-400/50 bg-blue-500/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                 title={byokConnected ? 'Change model or disconnect' : 'Connect your OpenRouter account'}
               >
                 <KeyRound className="w-2.5 h-2.5" />
@@ -599,7 +996,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                 </span>
               )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-start gap-1">
                <span className="flex items-center gap-1 text-emerald-400 font-medium">
                    <ImageIcon className="w-3 h-3" />
                    Nothing is sent to a model until you submit a question
@@ -620,6 +1017,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                 className="absolute inset-0 overflow-y-auto p-4 space-y-5 no-scrollbar" 
                 ref={chatContainerRef}
                 onScroll={handleScroll}
+                role="log"
+                aria-live="polite"
+                aria-relevant="additions text"
+                aria-label="AI tutor conversation"
+                aria-busy={isThinking}
             >
                 {messages.map((m) => {
                     if (m.role === 'error') {
@@ -639,8 +1041,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                         </div>
                                         {m.originalPrompt && (
                                             <button 
-                                                onClick={() => handleSendMessage(m.originalPrompt)}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs rounded-md border border-red-500/20 transition-colors"
+                                                onClick={() => handleSendMessage(m.originalPrompt, undefined, 'retry')}
+                                                className="min-h-11 flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs rounded-md border border-red-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                                                 aria-label="Retry question with current view"
                                             >
                                                 <RotateCcw className="w-3 h-3" /> Retry with current view
@@ -705,29 +1107,28 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                         <div className={`max-w-[95%] rounded-xl p-3 shadow-sm ${m.role === 'user' ? 'bg-[#1e1f21] text-[#d0d6e0] border-l-2 border-blue-500/30' : 'bg-[#161718] text-[#d0d6e0] border border-white/[0.06]'}`}>
                             
-                            {/* New Thumbnail Header for Model */}
-                            {m.role === 'model' && m.attachedSliceThumbnailDataUrl && (
+                            {m.role === 'user' && m.attachedSliceThumbnailDataUrl && (
                                 <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10">
                                     <img 
                                         src={m.attachedSliceThumbnailDataUrl} 
-                                        className="w-16 h-16 rounded object-cover border border-white/10 bg-black/50"
-                                        alt="Analyzed Slice"
+                                        className="w-16 h-16 rounded object-contain border border-white/10 bg-black/50"
+                                        alt={`Captured view sent with this question${m.attachedSequenceLabel ? `: ${m.attachedSequenceLabel}` : ''}`}
                                     />
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Teaching context</span>
+                                        <span className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Captured view</span>
                                         <span className="text-[11px] text-slate-300 font-medium">
-                                        Slice {m.attachedSliceIndex ?? '?'} • {m.attachedSequenceLabel || 'Brain MRI series'}
+                                        View {m.attachedSliceIndex ?? 1} of {m.attachedFrameCount ?? 1} • {m.attachedSequenceLabel || 'Medical image'}
                                         </span>
                                     </div>
                                 </div>
                             )}
 
-                            {m.hasAttachment && m.role === 'user' && (
+                            {m.hasAttachment && m.role === 'user' && !m.attachedSliceThumbnailDataUrl && (
                                 <div
                                     className="mb-2 text-xs text-blue-300 bg-blue-950/50 px-2 py-1 rounded w-fit flex gap-1 cursor-help"
-                                    title="The AI is using the slice you captured for this question."
+                                    title="The AI is using the view you captured for this question."
                                 >
-                                    <ImageIcon className="w-3 h-3"/> Using captured slice
+                                    <ImageIcon className="w-3 h-3"/> Using captured view
                                 </div>
                             )}
                             
@@ -752,8 +1153,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                             {currentSuggestions.map((sugg, idx) => (
                                 <button
                                     key={idx}
-                                    onClick={() => handleSendMessage(sugg)}
-                                    className="text-left text-xs bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95"
+                                    onClick={() => sendSuggestion(sugg)}
+                                    className="min-h-11 text-left text-xs bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                                     aria-label={`Send suggested question with current view: ${sugg}`}
                                 >
                                     {sugg}
@@ -768,7 +1169,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             {!isPinnedToBottom && (
                 <button
                     onClick={scrollToBottom}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#1e1f21]/90 hover:bg-[#28282c] text-blue-300 border border-blue-500/30 shadow-lg rounded-full px-4 py-1.5 text-xs font-bold flex items-center gap-2 transition-all animate-in fade-in slide-in-from-bottom-2 z-10 backdrop-blur-sm"
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 min-h-11 bg-[#1e1f21]/90 hover:bg-[#28282c] text-blue-300 border border-blue-500/30 shadow-lg rounded-full px-4 py-1.5 text-xs font-bold flex items-center gap-2 transition-all animate-in fade-in slide-in-from-bottom-2 z-10 backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                 >
                     <ArrowDown className="w-3.5 h-3.5" />
                     Jump to latest
@@ -781,27 +1182,27 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             <div data-tour-id="teaching-levels" className="flex items-center justify-end mb-2 gap-2 text-[11px] text-[#8a8f98]">
                 <div className="inline-flex items-center rounded-lg bg-[#0f1011]/50 border border-white/[0.08] p-0.5 gap-0.5">
                     <button type="button" onClick={() => { setLearnerLevel('highschool'); setShowMedPicker(false); }}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'highschool' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
+                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'highschool' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
                       HS
                     </button>
                     <button type="button" onClick={() => { setLearnerLevel('undergrad'); setShowMedPicker(false); }}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'undergrad' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
+                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'undergrad' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
                       Undergrad
                     </button>
                     {/* Med button with popover */}
                     <div className="relative">
                       <button type="button" onClick={() => setShowMedPicker(prev => !prev)}
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${(learnerLevel === 'ms_preclinical' || learnerLevel === 'ms_clinical') ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
+                        className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${(learnerLevel === 'ms_preclinical' || learnerLevel === 'ms_clinical') ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
                         Med{(learnerLevel === 'ms_preclinical' || learnerLevel === 'ms_clinical') ? (learnerLevel === 'ms_preclinical' ? ' (Pre)' : ' (Post)') : ''}
                       </button>
                       {showMedPicker && (
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex gap-1 bg-[#1e1f21] border border-white/[0.12] rounded-lg p-1 shadow-xl z-30 whitespace-nowrap">
                           <button type="button" onClick={() => { setLearnerLevel('ms_preclinical'); setShowMedPicker(false); }}
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_preclinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
+                            className={`min-h-11 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_preclinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
                             Pre-Step 1
                           </button>
                           <button type="button" onClick={() => { setLearnerLevel('ms_clinical'); setShowMedPicker(false); }}
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_clinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
+                            className={`min-h-11 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_clinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
                             Post-Step 1
                           </button>
                           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#1e1f21]" />
@@ -809,7 +1210,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                       )}
                     </div>
                     <button type="button" onClick={() => { setLearnerLevel('resident'); setShowMedPicker(false); }}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'resident' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
+                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'resident' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
                       Resident
                     </button>
                 </div>
@@ -818,18 +1219,23 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             {/* Input Area */}
             <div className="relative flex-1">
                 <input
-                    className="w-full bg-[#0f1011] border border-white/[0.08] rounded-lg pr-10 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner"
+                    className="w-full min-h-11 bg-[#0f1011] border border-white/[0.08] rounded-lg pr-12 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner"
                     placeholder={mode === 'deep_think' ? "Ask complex question..." : "Ask a question..."}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        void handleSendMessage();
+                      }
+                    }}
                     disabled={isThinking}
                     aria-label="Question for the AI tutor"
                 />
                 <button
                     onClick={() => handleSendMessage()}
                     disabled={!input.trim() || isThinking}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 inline-flex items-center justify-center text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                     aria-label="Send view and question"
                 >
                     <Send className="w-4 h-4" />
@@ -853,7 +1259,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                         </div>
                         <button
                             onClick={handleCancel}
-                            className="flex items-center gap-1.5 px-2 py-1 hover:bg-white/5 rounded text-[#8a8f98] hover:text-white transition-colors"
+                            className="min-h-11 flex items-center gap-1.5 px-2 py-1 hover:bg-white/5 rounded text-[#8a8f98] hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                            aria-label="Cancel AI response"
                         >
                             <span className="text-[10px] font-bold uppercase tracking-wider">Cancel</span>
                             <X className="w-3 h-3" />
