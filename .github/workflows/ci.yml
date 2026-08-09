@@ -23,6 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: CSP connect-src must stay locked to self + openrouter.ai
         run: |
           line=$(grep -i 'Content-Security-Policy' public/_headers || true)
