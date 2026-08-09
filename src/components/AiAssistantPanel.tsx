@@ -66,6 +66,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [captureError, setCaptureError] = useState<string | null>(null);
   const [showMedPicker, setShowMedPicker] = useState(false);
   const [mode, setMode] = useState<AiMode>('chat');
   // BYOK is the launch model: every visitor uses their own OpenRouter balance, so
@@ -220,7 +221,13 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     // student is looking at (including any drawings just made) travels with
     // the message — no explicit Camera button click required.
     const capture = captureCurrentView();
-    const imageToSend = capture?.image ?? null;
+    if (!capture?.image) {
+      setCaptureError('The current view is still loading. Wait for the image to appear, then submit again.');
+      return;
+    }
+
+    setCaptureError(null);
+    const imageToSend = capture.image;
     const capturedSliceInfo = capture
       ? { slice: capture.slice, total: capture.total, label: capture.label }
       : null;
@@ -445,7 +452,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
           <div className="flex items-center gap-1">
                <span className="flex items-center gap-1 text-emerald-400 font-medium">
                    <ImageIcon className="w-3 h-3" />
-                   Nothing is sent until Send
+                   Nothing is sent to a model until you submit a question
                </span>
           </div>
       </div>
@@ -478,8 +485,9 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                             <button 
                                                 onClick={() => handleSendMessage(m.originalPrompt)}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs rounded-md border border-red-500/20 transition-colors"
+                                                aria-label="Retry question with current view"
                                             >
-                                                <RotateCcw className="w-3 h-3" /> Retry Request
+                                                <RotateCcw className="w-3 h-3" /> Retry with current view
                                             </button>
                                         )}
                                     </div>
@@ -590,6 +598,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                     key={idx}
                                     onClick={() => handleSendMessage(sugg)}
                                     className="text-left text-xs bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95"
+                                    aria-label={`Send suggested question with current view: ${sugg}`}
                                 >
                                     {sugg}
                                 </button>
@@ -673,7 +682,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
             {/* Dynamic Status / Hint Footer */}
             <div data-tour-id="image-status" className="mt-2 text-[11px] text-[#8a8f98] leading-tight min-h-[20px] flex items-center justify-between">
-                {isThinking ? (
+                {captureError ? (
+                    <div role="alert" className="w-full text-red-300 bg-red-950/30 border border-red-500/20 rounded-lg px-3 py-2">
+                        {captureError}
+                    </div>
+                ) : isThinking ? (
                     <div className="w-full flex items-center justify-between bg-blue-900/10 border border-blue-500/20 rounded-lg px-3 py-2 animate-in fade-in">
                         <div className="flex items-center gap-2.5">
                             <div className="relative flex h-2.5 w-2.5">
@@ -692,7 +705,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     </div>
                 ) : (
                     <div className="w-full">
-                        <span>Send includes the current view. The image and chat go directly to OpenRouter and the selected model provider. Your key stays in this browser. Do not use identifiable patient data.</span>
+                        <span>Submitting a question includes the current view. The image and chat go directly to OpenRouter and the selected model provider. Your key is stored in this browser and sent only to OpenRouter. CaseAttend servers never receive it. Do not use identifiable patient data.</span>
                     </div>
                 )}
             </div>
