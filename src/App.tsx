@@ -27,6 +27,7 @@ import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, Segmenta
 import { fetchDicomWebSeries } from './services/dicomService';
 import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
 import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
+import { browserTeachingEngine } from './services/browserTeachingEngine';
 import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
 import {
   getPreference,
@@ -950,6 +951,7 @@ const App: React.FC = () => {
                   )}
                   <div className={`absolute inset-0 bg-[#0f1011] ${activeRightTab === 'ai' ? 'z-10 block' : 'hidden'}`}>
                     <AiAssistantPanel
+                      teachingEngine={browserTeachingEngine}
                       captureCurrentView={captureCurrentView}
                       sessionContext={{
                         casePackageRef: {
@@ -1198,6 +1200,7 @@ const App: React.FC = () => {
                      </div>}
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'ai' ? 'block z-10' : 'hidden'}`}>
                          <AiAssistantPanel
+                            teachingEngine={browserTeachingEngine}
                             captureCurrentView={captureCurrentView}
                             sessionContext={{
                               casePackageRef: {

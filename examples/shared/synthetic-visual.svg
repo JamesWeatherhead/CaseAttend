@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title description">
+  <title id="title">Synthetic visual reasoning example</title>
+  <desc id="description">Three overlapping shapes: a blue circle, an amber triangle, and a pink rounded rectangle on a dark grid.</desc>
+  <rect width="800" height="520" fill="#0b1220"/>
+  <g stroke="#1f2b3d" stroke-width="2" opacity="0.75">
+    <path d="M0 65H800M0 130H800M0 195H800M0 260H800M0 325H800M0 390H800M0 455H800"/>
+    <path d="M80 0V520M160 0V520M240 0V520M320 0V520M400 0V520M480 0V520M560 0V520M640 0V520M720 0V520"/>
+  </g>
+  <circle cx="276" cy="238" r="128" fill="#38bdf8" fill-opacity="0.82" stroke="#bae6fd" stroke-width="6"/>
+  <path d="M470 92L648 392H292Z" fill="#fbbf24" fill-opacity="0.78" stroke="#fef3c7" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="388" y="246" width="292" height="156" rx="38" fill="#f472b6" fill-opacity="0.78" stroke="#fce7f3" stroke-width="6"/>
+  <g fill="#f8fafc" font-family="system-ui, sans-serif" font-size="24" font-weight="700">
+    <text x="196" y="244">Circle</text>
+    <text x="470" y="196">Triangle</text>
+    <text x="474" y="340">Rectangle</text>
+  </g>
+</svg>

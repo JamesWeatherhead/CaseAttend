@@ -452,6 +452,82 @@ describe('AiAssistantPanel image transmission privacy', () => {
     expect(retry.className).toContain('min-h-11');
   });
 
+  it('rebuilds hostile adapter failures without logging or storing their secrets', async () => {
+    const secret = 'sk-hostile-adapter-must-not-escape';
+    const hostileError = new Error(`provider echoed ${secret} and the raw response body`);
+    let unsafeGetterRead = false;
+    Object.defineProperties(hostileError, {
+      code: { value: 'rate_limited', enumerable: true },
+      retryable: { value: true, enumerable: true },
+      httpStatus: { value: 429, enumerable: true },
+      authorization: { value: `Bearer ${secret}`, enumerable: true },
+      cause: { value: { requestBody: secret }, enumerable: true },
+      rawResponse: {
+        enumerable: true,
+        get: () => {
+          unsafeGetterRead = true;
+          throw new Error(`unsafe adapter getter exposed ${secret}`);
+        },
+      },
+    });
+    mocks.streamChatResponse.mockRejectedValueOnce(hostileError);
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const casePackage = await caseRegistry.requireCasePackage('derm-melanoma');
+    const lessonPlan = await lessonRegistry.requireLessonPlanForCase(casePackage);
+    const storedEvents: unknown[] = [];
+    const append = vi.fn(async (event: unknown) => { storedEvents.push(event); });
+
+    render(
+      <AiAssistantPanel
+        captureCurrentView={() => ({
+          image: 'data:image/png;base64,hostile-error-view',
+          slice: 1,
+          total: 1,
+          label: 'Clinical photograph',
+          viewSnapshot: testViewSnapshot,
+        })}
+        studyMetadata={dermatologyStudy}
+        sessionContext={{
+          casePackageRef: {
+            id: casePackage.id,
+            schemaVersion: casePackage.schemaVersion,
+            sha256: casePackage.manifest.sha256,
+          },
+          lessonPlanRef: {
+            id: lessonPlan.id,
+            version: lessonPlan.version,
+            sha256: lessonPlan.manifest.sha256,
+          },
+        }}
+        sessionEventStore={{ append }}
+      />,
+    );
+    await screen.findByText(/Lesson v1\.0\.0/);
+
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {
+      target: { value: 'Retry this ordinary teaching question.' },
+    });
+    fireEvent.click(screen.getByLabelText('Send view and question'));
+
+    expect(await screen.findByText('The AI service is busy. Please try again in a moment.')).toBeTruthy();
+    await waitFor(() => expect(storedEvents.some((event: any) => (
+      event?.event?.type === 'model_response_failed'
+    ))).toBe(true));
+    expect(unsafeGetterRead).toBe(false);
+    expect(document.body.textContent).not.toContain(secret);
+    expect(JSON.stringify(storedEvents)).not.toContain(secret);
+    expect(JSON.stringify(storedEvents)).not.toContain('authorization');
+    const consoleCalls = [
+      ...consoleError.mock.calls,
+      ...consoleWarn.mock.calls,
+      ...consoleLog.mock.calls,
+    ].flat().map((value) => value instanceof Error ? value.message : String(value)).join('\n');
+    expect(consoleCalls).not.toContain(secret);
+    expect(consoleError).not.toHaveBeenCalled();
+  });
+
   it.each(['button', 'enter'] as const)('sends the current annotated view once via %s for a single-frame case', async (action) => {
     const exactCurrentView = 'data:image/png;base64,current-frame-with-annotation';
     const captureCurrentView = vi.fn(() => ({
@@ -709,5 +785,39 @@ describe('AiAssistantPanel image transmission privacy', () => {
     expect(await screen.findByText('Fresh follow-up')).toBeTruthy();
     expect(onJumpToSlice).toHaveBeenCalledWith(1);
     expect(onPointers).toHaveBeenCalledWith([{ x: 25, y: 50, label: 'fresh' }]);
+  });
+
+  it('uses an injected teaching engine without falling through to the legacy client', async () => {
+    const exactView = 'data:image/png;base64,current-sdk-view';
+    const runTurn = vi.fn(async (...args: Parameters<typeof mocks.streamChatResponse>) => {
+      const onChunk = args[4];
+      onChunk('Response from a replacement adapter');
+      return testInferenceResult;
+    });
+
+    render(
+      <AiAssistantPanel
+        teachingEngine={{ runTurn }}
+        captureCurrentView={() => ({
+          image: exactView,
+          slice: 1,
+          total: 1,
+          label: 'Clinical photograph',
+          viewSnapshot: testViewSnapshot,
+        })}
+        studyMetadata={dermatologyStudy}
+      />,
+    );
+
+    await screen.findByText(/Lesson v1\.0\.0/);
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {
+      target: { value: 'Use my replacement teaching engine' },
+    });
+    fireEvent.click(screen.getByLabelText('Send view and question'));
+
+    await waitFor(() => expect(runTurn).toHaveBeenCalledTimes(1));
+    expect(runTurn.mock.calls[0][3]).toBe(exactView);
+    expect(await screen.findByText('Response from a replacement adapter')).toBeTruthy();
+    expect(mocks.streamChatResponse).not.toHaveBeenCalled();
   });
 });

@@ -17,11 +17,12 @@ authors:
 repository-code: "https://github.com/JamesWeatherhead/CaseAttend"
 url: "https://caseattend.com"
 abstract: >-
-  CaseAttend is an open-source, bring-your-own-key web application that teaches
-  case-based visual reasoning across medical subspecialties (radiology,
-  pathology, dermatology) by working through real images with a question-first
-  AI tutor. It was selected as one of 50 winners out of 4,096 entries in the
-  "Vibe Code with Gemini 3 Pro" Kaggle hackathon.
+  CaseAttend is an open-source platform and SDK for case-based visual learning,
+  education research, and product development. Its bring-your-own-key web
+  application teaches across medical subspecialties (radiology, pathology,
+  dermatology) by working through real images with a question-first AI tutor.
+  It was selected as one of 50 winners out of 4,096 entries in the "Vibe Code
+  with Gemini 3 Pro" Kaggle hackathon.
 keywords:
   - medical education
   - radiology
@@ -31,6 +32,9 @@ keywords:
   - case-based learning
   - large language models
   - artificial intelligence
+  - vision-language models
+  - education research
+  - software development kit
 license: AGPL-3.0-only
-version: 0.4.0
+version: 0.5.0
 date-released: "2026-08-09"

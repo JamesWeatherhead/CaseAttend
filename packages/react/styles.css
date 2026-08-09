@@ -1,0 +1,182 @@
+.caseattend-tutor {
+  color: #e8eef7;
+  background: #111a29;
+  border: 1px solid #334155;
+  border-radius: 18px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.caseattend-tutor *,
+.caseattend-tutor *::before,
+.caseattend-tutor *::after {
+  box-sizing: border-box;
+}
+
+.caseattend-tutor__header,
+.caseattend-tutor__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.caseattend-tutor h2,
+.caseattend-tutor h3,
+.caseattend-tutor p {
+  margin-block: 0;
+}
+
+.caseattend-tutor h2 {
+  margin-top: 0.2rem;
+  font-size: clamp(1.2rem, 3vw, 1.55rem);
+}
+
+.caseattend-tutor__eyebrow,
+.caseattend-tutor__attachment,
+.caseattend-tutor__instructions,
+.caseattend-tutor__status {
+  color: #b7c4d6;
+}
+
+.caseattend-tutor__eyebrow {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.caseattend-tutor__transcript {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.caseattend-tutor__turn {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.caseattend-tutor__message {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.caseattend-tutor__message--learner {
+  background: #17243a;
+  border: 1px solid #385071;
+}
+
+.caseattend-tutor__message--tutor {
+  background: #15271f;
+  border: 1px solid #35624c;
+}
+
+.caseattend-tutor__message h3 {
+  font-size: 0.9rem;
+}
+
+.caseattend-tutor__attachment {
+  font-size: 0.82rem;
+}
+
+.caseattend-tutor__form {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.caseattend-tutor__form label {
+  font-weight: 750;
+}
+
+.caseattend-tutor__instructions,
+.caseattend-tutor__status {
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.caseattend-tutor textarea {
+  width: 100%;
+  min-height: 7.5rem;
+  resize: vertical;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+  padding: 0.85rem;
+  color: #f8fafc;
+  background: #0b1220;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.caseattend-tutor textarea::placeholder {
+  color: #94a3b8;
+}
+
+.caseattend-tutor button {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.caseattend-tutor__submit {
+  border: 1px solid #7dd3fc;
+  color: #06121f;
+  background: #7dd3fc;
+}
+
+.caseattend-tutor__secondary {
+  border: 1px solid #64748b;
+  color: #e8eef7;
+  background: transparent;
+}
+
+.caseattend-tutor button:disabled,
+.caseattend-tutor button[aria-disabled="true"],
+.caseattend-tutor textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.caseattend-tutor button:focus-visible,
+.caseattend-tutor textarea:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 3px;
+}
+
+.caseattend-tutor__error {
+  padding: 0.7rem 0.85rem;
+  border-left: 4px solid #fb7185;
+  color: #fecdd3;
+  background: #3a1822;
+}
+
+@media (max-width: 560px) {
+  .caseattend-tutor__header,
+  .caseattend-tutor__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .caseattend-tutor button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caseattend-tutor *,
+  .caseattend-tutor *::before,
+  .caseattend-tutor *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

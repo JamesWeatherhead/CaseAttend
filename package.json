@@ -1,15 +1,26 @@
 {
   "name": "caseattend",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "AGPL-3.0-only",
   "type": "module",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
     "prepare:ocr": "node scripts/syncTesseractAssets.mjs",
     "dev": "npm run prepare:ocr && vite",
-    "build": "npm run prepare:ocr && vite build",
+    "build": "npm run build:sdk && npm run build:examples && npm run prepare:ocr && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "npm run build --workspace @caseattend/core && tsc --noEmit --pretty false && npm run check --workspace @caseattend/react && npm run check --workspace @caseattend/example-basic && npm run check --workspace @caseattend/example-self-hosted-research",
+    "check:sdk": "npm run build --workspace @caseattend/core && npm run check --workspace @caseattend/react && npm run check --workspace @caseattend/example-basic && npm run check --workspace @caseattend/example-self-hosted-research",
+    "build:sdk": "npm run build --workspace @caseattend/core && npm run build --workspace @caseattend/react",
+    "build:examples": "npm run build --workspace @caseattend/example-basic && npm run build --workspace @caseattend/example-self-hosted-research",
+    "example:basic": "npm run dev --workspace @caseattend/example-basic",
+    "example:research": "npm run dev --workspace @caseattend/example-self-hosted-research",
+    "pack:sdk": "npm run build:sdk && npm pack --dry-run --workspace @caseattend/core && npm pack --dry-run --workspace @caseattend/react"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",

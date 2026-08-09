@@ -16,7 +16,7 @@ const sourceTreeUrl = `https://github.com/JamesWeatherhead/CaseAttend/tree/${
 
 export default defineConfig({
   define: {
-    __CASEATTEND_APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.4.0'),
+    __CASEATTEND_APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.5.0'),
     __CASEATTEND_BUILD_REVISION__: JSON.stringify(buildRevision),
     __CASEATTEND_SOURCE_TREE_URL__: JSON.stringify(sourceTreeUrl),
   },

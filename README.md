@@ -20,8 +20,8 @@
 </p>
 
 <p align="center">
-  <b>Case-based visual reasoning tutor: radiology, pathology, dermatology.</b><br>
-  Work through real medical images (chest X-rays, brain MRI, H&amp;E histology, clinical skin photographs) with an AI that teaches by asking, not telling.
+  <b>Open-source platform and SDK for visual learning, research, and product building.</b><br>
+  Teach with built-in or custom cases, study how frontier models support learning, or embed the headless engine in your own product.
 </p>
 
 <p align="center">
@@ -47,6 +47,16 @@ A **vision-language model (VLM)** is an AI model that can work with images and
 words together. In CaseAttend, it can look at the same teaching artifact as the
 learner, ask questions, and respond to what the learner notices. Many current
 frontier models are VLMs, but the terms are not synonyms.
+
+Choose the path that fits your work:
+
+- **Learn or teach:** use the hosted app with radiology, pathology, and
+  dermatology cases, or create a local case and lesson in the browser.
+- **Run education research:** freeze cases, lessons, model routing, capture
+  rules, and structured outcomes with the [Research Mode guide](docs/research/README.md).
+- **Build a product or service:** compose your own domains, artifacts, model
+  adapter, and storage around [`@caseattend/core`](docs/sdk/README.md), with an
+  optional accessible React tutor.
 
 ## Browser-stored key, direct-to-provider inference
 
@@ -109,12 +119,28 @@ CaseAttend runs on **[OpenRouter](https://openrouter.ai)**. Sign in with OpenRou
 ## Develop
 
 ```bash
-npm install
+npm ci
 npm run dev      # Vite dev server
 npm run build    # production build -> dist/
 ```
 
 Node 22+. No environment variables required.
+
+To try the SDK without an account, credential, patient data, or external model
+request:
+
+```bash
+npm run example:basic
+npm run example:research
+npm run build:sdk
+npm run pack:sdk       # build and inspect the publishable package contents
+```
+
+Start with the [SDK guide](docs/sdk/README.md), then inspect the
+[basic teaching example](examples/basic) or
+[memory-only research adapter example](examples/self-hosted-research). The SDK
+packages are versioned independently at `0.1.0`; their raw-free event contract
+is version `1.0`.
 
 ## Stack
 
@@ -275,7 +301,7 @@ If CaseAttend is useful in your research or teaching, please cite it. GitHub's *
 ```
 Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
 CaseAttend: a case-based visual reasoning tutor for medical education
-(Version 0.4.0) [Computer software].
+(Version 0.5.0) [Computer software].
 https://github.com/JamesWeatherhead/CaseAttend
 ```
 
@@ -290,6 +316,13 @@ review status, and byte-level SHA-256 digest are recorded in the Case Package v1
 registry at `src/data/caseRegistry.ts`. The images remain under their original
 terms.
 
-**Commercial licensing.** AGPL-3.0 requires anyone who runs a modified version, including as a network service, to offer their source under the same terms. If that does not fit your use, for example embedding CaseAttend in a closed product or hosted service, a separate commercial license is available on request: contact James Weatherhead via [github.com/JamesWeatherhead](https://github.com/JamesWeatherhead).
+**Commercial licensing.** If you distribute covered CaseAttend code, the AGPL
+includes source-sharing obligations. If you modify CaseAttend and let people
+interact with that modified version over a network, those users must have a
+prominent, no-charge way to receive the Corresponding Source for that version.
+If those terms do not fit a closed product or service, a separate commercial
+license is available on request: contact James Weatherhead via
+[github.com/JamesWeatherhead](https://github.com/JamesWeatherhead). This summary
+is not legal advice; the [license text](LICENSE) controls.
 
 <div align="center"><sub>AGPL-3.0 · © 2026 James Weatherhead</sub></div>
