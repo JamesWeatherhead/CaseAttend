@@ -169,6 +169,33 @@ Plan bundle and never includes a key, chat transcript, screenshot, or unrelated
 browser data. An unreviewed plan remains clearly labeled as a draft; the tool
 does not grant clinical, institutional, or IRB approval.
 
+## Case Studio
+
+Choose **Create a case** on the catalog to turn your own JPEG, PNG, or WebP
+images into a versioned teaching case without writing code. Case Studio
+re-encodes each image in the browser, orders single images or one image stack,
+collects neutral accessible descriptions, provenance, redistribution terms,
+attribution, and an explicit synthetic or de-identification attestation. A
+single-frame dermatology photograph remains a native one-image artifact rather
+than being treated as a one-slice scan.
+
+The privacy screen uses self-hosted browser OCR and face detection when the
+browser supports it. Recognized text is discarded; only warning counts and
+status are shown. These checks are advisory. They do not establish HIPAA
+de-identification, consent, IRB status, permission to publish, or clinical
+suitability. A person must review every image and authored field before saving.
+Raw DICOM is intentionally deferred because DICOM metadata and burned-in pixel
+identifiers need an institution-managed clinical-data workflow.
+
+Saved cases live in IndexedDB in that browser, with a visible memory-only
+fallback when persistent storage is unavailable. Portable `.caseattend` files
+are strict ZIP archives containing exactly one linked Case Package, one exact
+starter Lesson Plan, and the referenced re-encoded image bytes. They never
+enumerate or include an OpenRouter key, chat, session log, original filename,
+or unrelated browser data. Opening the saved case is still local; only a later
+learner action such as **Send** transmits the current view and chat to OpenRouter
+and the selected model provider.
+
 ## Browser-local session events
 
 CaseAttend can record a versioned, metadata-only learning event stream in the
@@ -209,6 +236,7 @@ https://github.com/JamesWeatherhead/CaseAttend
 ## License
 
 CaseAttend's source code is licensed under [AGPL-3.0](LICENSE) © 2026 James Weatherhead.
+Third-party runtime components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 The bundled teaching images are third-party works under their own licenses and
 are not covered by AGPL-3.0. Their canonical source, license, attribution,

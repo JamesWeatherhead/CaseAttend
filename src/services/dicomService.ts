@@ -6,6 +6,7 @@ import {
   requireCasePackage,
 } from '../data/caseRegistry';
 import type { Series, DicomWebConfig, DiagnosticStep } from '../types';
+import { casePackageStore } from './casePackageStore';
 
 /**
  * FETCH STUDIES
@@ -63,6 +64,11 @@ export const fetchDicomImageBlob = async (config: DicomWebConfig, url: string): 
   // 3. Perform Fetch
   const fetchPromise = (async () => {
     try {
+      if (url.startsWith('case://assets/')) {
+        const blob = await casePackageStore.getAssetBlob(url);
+        imageCache.set(url, blob);
+        return blob;
+      }
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Status: ${response.status} (${response.statusText})`);

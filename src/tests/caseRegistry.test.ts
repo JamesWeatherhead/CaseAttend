@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   casePackageToSeries,
   countCaseFrames,
@@ -9,6 +9,7 @@ import {
 } from '../data/caseRegistry';
 import { fetchDicomWebSeries } from '../services/dicomService';
 import { verifyCasePackageManifestHash } from '../core/casePackage';
+import { casePackageStore, type CasePackageSummary } from '../services/casePackageStore';
 
 const EXPECTED_IDS = [
   'local-study-sub1',
@@ -29,6 +30,10 @@ const EXPECTED_IDS = [
 ] as const;
 
 describe('built-in Case Package registry', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('contains the exact 15-case inventory and 128 frames in deliberate order', async () => {
     const packages = await listCasePackages();
 
@@ -108,5 +113,34 @@ describe('built-in Case Package registry', () => {
     };
 
     packages.forEach(visit);
+  });
+
+  it('keeps built-ins and valid locals visible when one local package is corrupt', async () => {
+    const corruptSummary: CasePackageSummary = {
+      id: 'corrupt-local-case',
+      title: 'Corrupt local case',
+      domain: 'dermatology',
+      difficulty: 'introductory',
+      caseManifestSha256: 'a'.repeat(64),
+      lessonPlanId: 'corrupt-local-lesson',
+      lessonPlanVersion: '1.0.0',
+      assetCount: 1,
+      totalAssetBytes: 1,
+      createdAt: '2026-08-09T12:00:00.000Z',
+      updatedAt: '2026-08-09T12:00:00.000Z',
+    };
+    vi.spyOn(casePackageStore, 'list').mockResolvedValue([corruptSummary]);
+    vi.spyOn(casePackageStore, 'get').mockRejectedValue(
+      new Error('sensitive local persistence detail must not escape'),
+    );
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const packages = await listCasePackages();
+
+    expect(packages.map((casePackage) => casePackage.id)).toEqual(EXPECTED_IDS);
+    expect(warning).toHaveBeenCalledWith(
+      '1 browser-local case could not be verified and was skipped. Export or delete the affected local data from this browser before retrying.',
+    );
+    expect(warning.mock.calls.flat().join(' ')).not.toContain('sensitive local persistence detail');
   });
 });

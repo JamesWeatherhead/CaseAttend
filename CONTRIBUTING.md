@@ -124,6 +124,19 @@ license, attribution, review status, or presentation metadata changes.
   missing, use `deidentification.status: 'not-reviewed'`. Never infer either
   status from a public source, filename, or legacy description.
 
+### Browser-authored cases
+
+Use **Create a case** for the supported no-code path. The public workflow accepts
+JPEG, PNG, and WebP, re-encodes them locally, and exports a strict
+`.caseattend` archive. Do not add raw DICOM ingestion to this path without a
+separate design for metadata parsing, burned-in identifiers, institutional data
+controls, and adversarial privacy tests. Do not weaken the required human
+privacy review based on an OCR or face-detector result.
+
+Case Studio modules must remain independent of `byokStore`, `openrouterClient`,
+and `aiClient`. Import, edit, scan, preview, save, and export must make no model
+request and must never enumerate unrelated browser storage.
+
 ## Contributing clinical content (cases, teaching prompts)
 
 Clinical content is the highest-trust part of the project. A student *learns*

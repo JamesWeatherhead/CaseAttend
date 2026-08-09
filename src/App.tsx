@@ -1,8 +1,9 @@
 
 
-import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from 'react';
 import StudyList from './components/StudyList';
 import LessonBuilder from './components/LessonBuilder';
+import CaseStudio from './components/CaseStudio/CaseStudio';
 import ViewerCanvas from './components/ViewerCanvas';
 import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
@@ -26,6 +27,7 @@ import {
   setPreference,
 } from './services/preferenceStore';
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap, Database } from 'lucide-react';
+import { createCaseStudioController } from './services/caseStudioController';
 
 function resolveCapturedArtifact(
   casePackage: CasePackageV1,
@@ -76,7 +78,9 @@ export function normalizeToolForArtifact(
 }
 
 const App: React.FC = () => {
-  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder'>('cases');
+  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio'>('cases');
+  const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
+  const caseStudioController = useMemo(() => createCaseStudioController(), []);
   // Default to DICOMWEB (which is now effectively Local Mode via the service swap)
   const [connectionType, setConnectionType] = useState<ConnectionType>('DICOMWEB');
   const [showSafetyModal, setShowSafetyModal] = useState(false);
@@ -643,7 +647,31 @@ const App: React.FC = () => {
       )}
 
       {!selectedStudy && homeView === 'lesson-builder' ? (
-        <LessonBuilder onExit={() => setHomeView('cases')} />
+        <LessonBuilder
+          onExit={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('cases'); }}
+          initialCaseId={lessonBuilderInitialCaseId}
+          loadStoredLesson={caseStudioController.loadStoredLesson}
+          saveUpdatedBundle={caseStudioController.saveUpdatedBundle}
+          exportPortableCase={caseStudioController.exportCase}
+          resolveAssetUri={caseStudioController.resolveAssetUri}
+        />
+      ) : !selectedStudy && homeView === 'case-studio' ? (
+        <CaseStudio
+          onExit={() => setHomeView('cases')}
+          processFiles={caseStudioController.processFiles}
+          scanAssets={caseStudioController.scanAssets}
+          saveCase={caseStudioController.saveCase}
+          importCase={caseStudioController.importCase}
+          exportCase={caseStudioController.exportCase}
+          onPreview={(casePackage) => { setHomeView('cases'); setSelectedStudy(casePackage); }}
+          onOpenLessonBuilder={(caseId) => {
+            setLessonBuilderInitialCaseId(caseId);
+            setHomeView('lesson-builder');
+          }}
+          releaseAsset={caseStudioController.releaseAsset}
+          getStorageStatus={caseStudioController.getStorageStatus}
+          subscribeStorageStatus={caseStudioController.subscribeStorageStatus}
+        />
       ) : !selectedStudy ? (
         <div className="h-full w-full bg-[#0f1011] overflow-hidden">
            <StudyList 
@@ -653,7 +681,9 @@ const App: React.FC = () => {
             dicomConfig={dicomConfig}
             setDicomConfig={setDicomConfig}
             onShowSafety={() => setShowSafetyModal(true)}
-            onOpenLessonBuilder={() => setHomeView('lesson-builder')}
+            onOpenLessonBuilder={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('lesson-builder'); }}
+            onOpenCaseStudio={() => setHomeView('case-studio')}
+            onDeleteLocalCase={caseStudioController.deleteCase}
           />
         </div>
       ) : (
