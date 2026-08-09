@@ -595,7 +595,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </div>
               <h3 className="text-[15px] font-bold text-white mb-2">BYOK, no keys on our servers</h3>
               <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Your OpenRouter key lives only in your browser and calls the model directly. Two free vision models included. Nothing on our infrastructure to leak, no bill for us to foot.
+                Your OpenRouter key is stored in your browser and sent only to OpenRouter for model requests. CaseAttend servers never receive it. Two free vision models included.
               </p>
             </div>
           </div>
@@ -613,7 +613,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </li>
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Whole-slide pre-analysis grounds the tutor in what's actually in the image, reducing hallucination and jailbreak surface.</span>
+                <span>Submitting a question captures an image from the viewer at that moment, including learner annotations.</span>
               </li>
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />

@@ -54,23 +54,6 @@ function getInitialSuggestions(level: LearnerLevel, hasImage: boolean, _studyId?
   return (hasImage ? SUGGESTIONS_WITH_IMAGE : SUGGESTIONS_NO_IMAGE)[level] || [];
 }
 
-function preAnalysisPrompt(studyDescription: string, seriesDescription: string): string {
-  return `You are a dermatology teaching assistant. Analyze this clinical photograph of a skin lesion and provide a BRIEF structured description (3-5 bullet points) covering:
-- Primary morphology (macule, papule, plaque, nodule, vesicle) and size relative to visible landmarks
-- Border characteristics (smooth, irregular, well-demarcated)
-- Color (uniform vs. variegated; specific shades)
-- Surface features (smooth, scaly, ulcerated, telangiectasias)
-- Surrounding skin
-Context: ${studyDescription}, Series: ${seriesDescription}
-This analysis will be used as grounding context for subsequent teaching questions. Be factual and concise. EDUCATIONAL USE ONLY.`;
-}
-
-const OVERVIEW_IMAGES: Record<string, string> = {
-  'derm-melanoma': '/images/derm-melanoma/1.jpg',
-  'derm-bcc': '/images/derm-bcc/1.jpg',
-  'derm-sebk': '/images/derm-sebk/1.jpg',
-};
-
 export const dermatology: Domain = {
   key: 'dermatology',
   label: 'Dermatology',
@@ -81,8 +64,6 @@ export const dermatology: Domain = {
   },
   welcomeMessage,
   getInitialSuggestions,
-  preAnalysisPrompt,
   contextLabel: () => 'Dermatology (clinical photograph)',
   captureLabel: () => 'Skin photo',
-  overviewImage: (studyId?: string) => (studyId && OVERVIEW_IMAGES[studyId]) || '/images/derm-melanoma/1.jpg',
 };

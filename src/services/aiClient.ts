@@ -14,7 +14,6 @@
 
 import { LearnerLevel } from '../constants';
 import { AiPointer } from '../types';
-import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains';
 import { getKey, getModel } from './byokStore';
 import { getOpenRouterResponse, fetchSystemPrompt } from './openrouterClient';
@@ -174,41 +173,5 @@ export const streamChatResponse = async (
       else userMessage = error.message;
     }
     throw new Error(userMessage);
-  }
-};
-
-/**
- * Pre-analyze a captured slice. Runs once when the user captures an image.
- * Returns a structured description that becomes persistent grounding context for
- * subsequent messages. Like chat, this goes browser-direct to OpenRouter.
- */
-export const preAnalyzeSlice = async (
-  imageBase64: string,
-  _provider: AIProvider,
-  modality: Modality,
-  seriesDescription: string,
-  studyDescription: string,
-): Promise<string> => {
-  const analyzePrompt = getDomain(modality).preAnalysisPrompt(studyDescription, seriesDescription);
-
-  const key = getKey();
-  if (!key) return ''; // Not connected yet, skip grounding silently.
-  try {
-    const chunks = await getOpenRouterResponse({
-      message: analyzePrompt,
-      systemPrompt: '',
-      imageBase64,
-      mode: 'chat',
-      model: getModel(),
-      apiKey: key,
-    });
-    let fullText = '';
-    for (const c of chunks) {
-      if (c.done) break;
-      if (c.text) fullText += c.text;
-    }
-    return fullText;
-  } catch {
-    return '';
   }
 };
