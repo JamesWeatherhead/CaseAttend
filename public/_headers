@@ -1,7 +1,6 @@
 # Cloudflare Pages security headers (ported from the old vercel.json).
-# Applied to every static asset response. The Pages Function at /api/prompt
-# sets its own JSON headers. connect-src allows the browser-direct BYOK call
-# straight to OpenRouter and nothing else.
+# Applied to every static asset response. connect-src allows the browser-direct
+# BYOK call straight to OpenRouter. CaseAttend has no prompt or inference API.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://openrouter.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   X-Content-Type-Options: nosniff

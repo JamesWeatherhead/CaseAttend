@@ -1,7 +1,7 @@
 /**
  * CXR Case Context Blocks
  * Appended to the base radiology system prompt when a CXR case is active.
- * All content has been reviewed and corrected per board-alignment audits.
+ * Legacy case-specific teaching contexts migrated into versioned lesson plans.
  */
 
 export const CXR_CASE_CONTEXTS: Record<string, string> = {

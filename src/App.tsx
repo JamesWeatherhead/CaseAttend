@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import StudyList from './components/StudyList';
+import LessonBuilder from './components/LessonBuilder';
 import ViewerCanvas from './components/ViewerCanvas';
 import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
@@ -19,6 +20,7 @@ import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouter
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap } from 'lucide-react';
 
 const App: React.FC = () => {
+  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder'>('cases');
   // Default to DICOMWEB (which is now effectively Local Mode via the service swap)
   const [connectionType, setConnectionType] = useState<ConnectionType>('DICOMWEB');
   const [showSafetyModal, setShowSafetyModal] = useState(false);
@@ -472,15 +474,18 @@ const App: React.FC = () => {
       {/* Guided Tour Overlay */}
       {activeTour && <GuidedTour tourId={activeTour} onClose={handleCloseTour} onSwitchTab={setActiveRightTab} />}
 
-      {!selectedStudy ? (
+      {!selectedStudy && homeView === 'lesson-builder' ? (
+        <LessonBuilder onExit={() => setHomeView('cases')} />
+      ) : !selectedStudy ? (
         <div className="h-full w-full bg-[#0f1011] overflow-hidden">
            <StudyList 
-            onSelectStudy={setSelectedStudy} 
+            onSelectStudy={(casePackage) => { setHomeView('cases'); setSelectedStudy(casePackage); }}
             connectionType={connectionType}
             setConnectionType={setConnectionType}
             dicomConfig={dicomConfig}
             setDicomConfig={setDicomConfig}
             onShowSafety={() => setShowSafetyModal(true)}
+            onOpenLessonBuilder={() => setHomeView('lesson-builder')}
           />
         </div>
       ) : (

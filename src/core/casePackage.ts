@@ -1,4 +1,5 @@
 import type { DomainKey } from '../lib/domains/types';
+import type { LessonPlanRef } from './lessonPlan';
 
 export const CASE_PACKAGE_VERSION = '1.0' as const;
 
@@ -106,7 +107,7 @@ export interface CasePackageV1Draft {
   contentWarnings: readonly string[];
   neutralDescription: string;
   teachingNotes: readonly string[];
-  lessonPlanRef: string;
+  lessonPlanRef: LessonPlanRef;
   presentation: CasePresentationMetadata;
 }
 
@@ -126,6 +127,7 @@ export interface CasePackageValidationResult {
 
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const KEBAB_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SEMVER_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DOMAIN_KEYS = new Set<DomainKey>(['radiology', 'pathology', 'dermatology']);
@@ -512,7 +514,18 @@ function validateDraft(
   validateStringList(draft.contentWarnings, 'contentWarnings', errors, { allowEmpty: true });
   requireString(draft.neutralDescription, 'neutralDescription', errors);
   validateStringList(draft.teachingNotes, 'teachingNotes', errors, { allowEmpty: false });
-  requireString(draft.lessonPlanRef, 'lessonPlanRef', errors);
+  const lessonPlanRef = requireRecord(draft.lessonPlanRef, 'lessonPlanRef', errors);
+  if (lessonPlanRef) {
+    rejectUnknownKeys(lessonPlanRef, ['id', 'version', 'sha256'], 'lessonPlanRef', errors);
+    validateKebabId(lessonPlanRef.id, 'lessonPlanRef.id', errors);
+    if (
+      requireString(lessonPlanRef.version, 'lessonPlanRef.version', errors)
+      && !SEMVER_PATTERN.test(lessonPlanRef.version)
+    ) {
+      errors.push('lessonPlanRef.version must be a semantic content version such as 1.0.0.');
+    }
+    requireSha256(lessonPlanRef.sha256, 'lessonPlanRef.sha256', errors);
+  }
   validatePresentation(draft.presentation, errors);
 
   return { valid: errors.length === 0, errors };

@@ -47,10 +47,11 @@ Node 22+. No environment variables required.
   manifest helpers.
 - `src/data/caseRegistry.ts`: the canonical registry for case metadata,
   artifacts, provenance, review status, and presentation data.
-- `lib/prompts/`: server-side teaching prompts, one module per domain plus
-  `cxr-cases.ts` for radiology case-specific contexts.
-- `functions/api/prompt.ts`: the only backend; assembles the teaching prompt,
-  key-free.
+- `src/core/lessonPlan.ts`: Lesson Plan v1 validation, manifests, references,
+  and the fixed-policy prompt composer.
+- `src/data/lessonRegistry.ts`: the exact built-in Case Package to Lesson Plan
+  bindings. Legacy content in `lib/prompts/` is imported as versioned lesson
+  content, never selected through a server fallback.
 
 A new visual-case domain is a plugin, not a fork. See "Adding a new
 visual-case domain" below.
@@ -69,13 +70,12 @@ non-medical) you touch six spots, none of which are the viewer.
 2. **Register the domain:** add to `DomainKey` in
    `src/lib/domains/types.ts` and to the `DOMAINS` map in
    `src/lib/domains/index.ts`.
-3. **Server-side prompt module:** `lib/prompts/<key>.ts` exporting a system
-   prompt built with the shared `SUGGESTIONS_INSTRUCTION`,
-   `POINTER_INSTRUCTION`, and `STUCK_STUDENT_GUIDANCE` from
-   `lib/prompts/shared.ts`. Wire it into `lib/prompts/select.ts`: add to the
-   `Modality` union, route in `getSystemPrompt`, and update the label in
-   `buildInstructions`. Also update `src/services/openrouterClient.ts`
-   `fetchSystemPrompt` union.
+3. **Lesson Plan:** define a valid Lesson Plan v1 with stable objectives,
+   learner levels, prerequisites, a Socratic opening, allowed hints,
+   escalation and stopping conditions, tutor instructions, rubric evidence,
+   citations with an explicit `artifact-provenance` or `clinical-teaching`
+   scope, and accurate clinical review status. Finalize it before binding
+   its exact `{id, version, sha256}` reference to the Case Package.
 4. **Case package:** define a valid Case Package v1 record with the domain,
    artifact shape, preview, artifact hints, provenance, review status, lesson
    reference, and presentation metadata.
@@ -92,6 +92,11 @@ You should not need to touch `ViewerCanvas.tsx`, `AiAssistantPanel.tsx`, or
 `services/aiClient.ts`. If a change to those files is required for a new
 domain, the `Domain` interface is missing something and should be extended
 instead.
+
+Teaching prompts are composed in the browser from the fixed public safety
+policy, the exact Lesson Plan manifest, and validated runtime context. Do not
+add a prompt API, generic fallback, or path that posts imported lesson text to
+a CaseAttend server.
 
 `artifactHints` (`showWindowLevel`, `showSeriesSelector`, `showSegmentation`)
 lets a domain suppress viewer affordances that do not apply. For example
@@ -131,7 +136,10 @@ what a case says, so correctness is non-negotiable.
   then it remains explicitly unreviewed. CODEOWNERS routes these changes for
   review.
 - **Cite clinical claims.** Teaching points that assert facts should reference a
-  source (guideline, textbook, or primary literature).
+  source (guideline, textbook, or primary literature) scoped as
+  `clinical-teaching`. A dataset page or license deed scoped as
+  `artifact-provenance` does not support clinical claims. A lesson cannot claim
+  clinician-reviewed status without a clinical-teaching source.
 - **Image terms must permit redistribution.** Record the canonical source,
   creator or required attribution, exact license or use terms, and a license URL
   when available. Suitable terms can include CC BY, CC BY-SA, CC0, public

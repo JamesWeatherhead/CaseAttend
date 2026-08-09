@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 19"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"></a>
-  <a href="https://vite.dev/"><img src="https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 6"></a>
+  <a href="https://vite.dev/"><img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 8"></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind 4"></a>
   <a href="https://pages.cloudflare.com/"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages"></a>
 </p>
@@ -43,6 +43,11 @@
 
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
+A **vision-language model (VLM)** is an AI model that can work with images and
+words together. In CaseAttend, it can look at the same teaching artifact as the
+learner, ask questions, and respond to what the learner notices. Many current
+frontier models are VLMs, but the terms are not synonyms.
+
 ## Browser-stored key, direct-to-provider inference
 
 CaseAttend stores **no API keys** in this repository or on a CaseAttend server. Your browser stores the key locally and sends it only to [OpenRouter](https://openrouter.ai) for inference. CaseAttend's backend never receives the key, case image, or chat. The selected model provider does receive the image and chat you submit through OpenRouter.
@@ -51,15 +56,15 @@ CaseAttend stores **no API keys** in this repository or on a CaseAttend server. 
 flowchart LR
     B["Your browser<br/>(key in localStorage)"] -- "your key + request" --> OR["OpenRouter<br/>(inference)"]
     OR -- "model output" --> B
-    B -- "prompt request (no key)" --> F["CaseAttend function<br/>(prompt only)"]
-    F -- "teaching prompt only" --> B
     classDef ours fill:#0F172A,stroke:#4A9EF7,stroke-width:2px,color:#ffffff;
     classDef ext fill:#1E293B,stroke:#64748B,stroke-width:1px,color:#ffffff;
-    class F ours;
+    class B ours;
     class OR ext;
 ```
 
-Your key only ever travels the browser-to-OpenRouter edge. Our single backend function (`functions/api/prompt.ts`) returns the teaching prompt and never receives, reads, or stores a key.
+Your key only ever travels the browser-to-OpenRouter edge. Case Packages,
+Lesson Plans, validation, prompt composition, and exports all run in the
+browser. CaseAttend has no prompt or inference backend.
 
 ## See it in action
 
@@ -113,7 +118,7 @@ Node 22+. No environment variables required.
 
 ## Stack
 
-React 19 · TypeScript · Vite 6 · Tailwind 4, deployed on Cloudflare Pages (static SPA plus one Pages Function).
+React 19 · TypeScript · Vite 8 · Tailwind 4, deployed on Cloudflare Pages as a static SPA.
 
 ## Case Package v1
 
@@ -135,6 +140,34 @@ available, the package remains unreviewed using
 `clinicianReview: { reviewed: false }` or `deidentification.status:
 'not-reviewed'`. Public availability and older descriptive text are not review
 evidence.
+
+## Lesson Plan v1
+
+Lesson Plan v1 turns teaching intent into portable, versioned data instead of
+unstructured prompt files. Each plan records stable learning objectives,
+supported learner levels, prerequisites, a Socratic opening, allowed hints,
+escalation and stopping conditions, answer-revealing teaching notes, rubric
+criteria with observable evidence, citations, and explicit clinical review
+status.
+
+Each citation declares whether it supports artifact provenance or clinical
+teaching claims. A license deed can document redistribution terms, but it is
+never presented as clinical evidence. The current built-in lessons record
+artifact provenance and remain explicitly unreviewed with clinical sources
+still needed. Search mode discloses that gap instead of inventing support.
+
+Every plan has an educator-controlled semantic version and a deterministic
+SHA-256 manifest. Its Case Package stores the exact `{id, version, sha256}`
+reference, so a study or exported result can identify the teaching content that
+was used. Unknown cases, wrong domains, and mismatched hashes fail closed rather
+than falling back to another case or a generic assistant.
+
+Choose **Build a lesson** on the case catalog to use the browser-local authoring
+flow. The final review separates the policy fixed by CaseAttend from content
+controlled by the educator. Export creates a portable Case Package plus Lesson
+Plan bundle and never includes a key, chat transcript, screenshot, or unrelated
+browser data. An unreviewed plan remains clearly labeled as a draft; the tool
+does not grant clinical, institutional, or IRB approval.
 
 ## Contributing
 

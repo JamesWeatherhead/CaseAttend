@@ -9,6 +9,9 @@ import { MarkdownText } from '../utils/markdownUtils';
 import { LearnerLevel } from '../constants';
 import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains';
+import { getLessonPlanRef, getLessonSocraticOpening, type LessonPlanV1 } from '../core/lessonPlan';
+import { requireCasePackage } from '../data/caseRegistry';
+import { requireLessonPlanForCase } from '../data/lessonRegistry';
 
 interface AiAssistantPanelProps {
   captureCurrentView: () => { image: string; slice: number; total?: number; label?: string } | null;
@@ -43,35 +46,87 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     const stored = localStorage.getItem('caseattend_learner_level') as string;
     // Migrate old 'medstudent' value to new default
     if (stored === 'medstudent') return 'ms_preclinical';
-    return (stored as LearnerLevel) || 'ms_preclinical';
+    const supported: readonly LearnerLevel[] = [
+      'highschool',
+      'undergrad',
+      'ms_preclinical',
+      'ms_clinical',
+      'resident',
+    ];
+    return supported.includes(stored as LearnerLevel)
+      ? stored as LearnerLevel
+      : 'ms_preclinical';
   });
 
   const domain = getDomain(studyMetadata?.domain ?? 'radiology');
 
+  const [lessonPlan, setLessonPlan] = useState<LessonPlanV1 | null>(null);
+  const [lessonLoadError, setLessonLoadError] = useState<string | null>(null);
+  const welcomeText = lessonPlan
+    ? getLessonSocraticOpening(lessonPlan, learnerLevel)
+    : domain.welcomeMessage(learnerLevel, studyMetadata?.studyId);
+
   const initMsg: ChatMessage[] = [
-    { id: 'welcome', role: 'model', text: domain.welcomeMessage(learnerLevel, studyMetadata?.studyId) }
+    { id: 'welcome', role: 'model', text: welcomeText }
   ];
   const [messages, setMessages] = useState(initMsg);
-
-  // Update welcome message when domain, study, or learner level changes
-  useEffect(() => {
-    setMessages(prev => {
-      if (prev.length === 1 && prev[0].id === 'welcome') {
-        return [{ id: 'welcome', role: 'model', text: domain.welcomeMessage(learnerLevel, studyMetadata?.studyId) }];
-      }
-      return prev;
-    });
-  }, [studyMetadata?.domain, studyMetadata?.studyId, learnerLevel]);
-
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [showMedPicker, setShowMedPicker] = useState(false);
   const [mode, setMode] = useState<AiMode>('chat');
+  const [provider, setProvider] = useState<AIProvider>('openrouter');
+  const [dynamicSuggestionsMap, setDynamicSuggestionsMap] = useState<Record<LearnerLevel, string[]> | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setLessonPlan(null);
+    setLessonLoadError(null);
+    if (!studyMetadata?.studyId) return () => { active = false; };
+
+    (async () => {
+      try {
+        const casePackage = await requireCasePackage(studyMetadata.studyId);
+        if (casePackage.domain !== studyMetadata.domain) {
+          throw new Error(`Case domain mismatch for '${studyMetadata.studyId}'.`);
+        }
+        const plan = await requireLessonPlanForCase(casePackage);
+        if (active) setLessonPlan(plan);
+      } catch (error) {
+        if (active) {
+          setLessonLoadError(error instanceof Error ? error.message : 'The versioned lesson could not be loaded.');
+        }
+      }
+    })();
+    return () => { active = false; };
+  }, [studyMetadata?.domain, studyMetadata?.studyId]);
+
+  // A case switch starts a new versioned teaching session. Never retain another
+  // case's welcome, dynamic suggestions, or transcript in the next case.
+  useEffect(() => {
+    setMessages([{ id: 'welcome', role: 'model', text: welcomeText }]);
+    setDynamicSuggestionsMap(null);
+    setCaptureError(null);
+  }, [studyMetadata?.domain, studyMetadata?.studyId]);
+
+  // Update the untouched welcome when the resolved lesson or learner level changes.
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].id === 'welcome') {
+        return [{
+          id: 'welcome',
+          role: 'model',
+          text: welcomeText,
+          lessonPlanRef: lessonPlan ? getLessonPlanRef(lessonPlan) : undefined,
+        }];
+      }
+      return prev;
+    });
+  }, [welcomeText, lessonPlan, learnerLevel]);
+
   // BYOK is the launch model: every visitor uses their own OpenRouter balance, so
   // no inference is billed to a shared developer key. (setProvider retained for a
   // possible future owner-funded tier.)
-  const [provider, setProvider] = useState<AIProvider>('openrouter');
 
   // BYOK connection state, kept in sync via BYOK_CHANGED_EVENT so the status bar
   // and model label update the instant the user connects or switches model.
@@ -88,15 +143,50 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     return () => window.removeEventListener(BYOK_CHANGED_EVENT, sync);
   }, []);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const activeRequestRef = useRef(false);
+  const requestSequenceRef = useRef(0);
+  const mountedRef = useRef(true);
+  const studySessionKey = `${studyMetadata?.domain ?? 'radiology'}:${studyMetadata?.studyId ?? ''}`;
+  const studySessionKeyRef = useRef(studySessionKey);
+  studySessionKeyRef.current = studySessionKey;
+
+  type ActiveRequest = {
+    id: number;
+    studySessionKey: string;
+    cancelled: boolean;
+    botMessageId?: string;
+    inputToRestore?: string;
+  };
+  const activeRequestRef = useRef<ActiveRequest | null>(null);
+
+  const isCurrentRequest = (request: ActiveRequest): boolean => (
+    mountedRef.current
+    && !request.cancelled
+    && activeRequestRef.current === request
+    && request.studySessionKey === studySessionKeyRef.current
+  );
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      const request = activeRequestRef.current;
+      if (request) request.cancelled = true;
+      activeRequestRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const request = activeRequestRef.current;
+    if (request) request.cancelled = true;
+    activeRequestRef.current = null;
+    setIsThinking(false);
+    onPointers?.([]);
+  }, [studyMetadata?.domain, studyMetadata?.studyId]);
 
   // Scroll State
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const [isPinnedToBottom, setIsPinnedToBottom] = useState(true);
   
-  // Dynamic suggestions cache (pre-fetched for all levels)
-  const [dynamicSuggestionsMap, setDynamicSuggestionsMap] = useState<Record<LearnerLevel, string[]> | null>(null);
-
   useEffect(() => {
     localStorage.setItem('caseattend_learner_level', learnerLevel);
   }, [learnerLevel]);
@@ -169,21 +259,27 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   // Derived suggestions: Use Dynamic if available, else Static Initial.
   // Auto-capture means the panel always has a view to reference, so the
   // with-image suggestions are always the right starting set when a study is loaded.
-  const currentSuggestions = dynamicSuggestionsMap
+  const currentSuggestions = (dynamicSuggestionsMap
       ? dynamicSuggestionsMap[learnerLevel]
-      : domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId);
+      : lessonPlan
+        ? lessonPlan.allowedHints.slice(0, 3).map((hint) => hint.text)
+        : domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId)) ?? [];
 
   const handleClearChat = () => {
     // Abort active request if clearing
-    if (activeRequestRef.current) {
-      activeRequestRef.current = false;
+    const request = activeRequestRef.current;
+    if (request) {
+      request.cancelled = true;
+      activeRequestRef.current = null;
       setIsThinking(false);
+      onPointers?.([]);
     }
 
     setMessages([{
       id: 'welcome',
       role: 'model',
-      text: domain.welcomeMessage(learnerLevel, studyMetadata?.studyId)
+      text: welcomeText,
+      lessonPlanRef: lessonPlan ? getLessonPlanRef(lessonPlan) : undefined,
     }]);
 
     setInput('');
@@ -192,22 +288,33 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   };
 
   const handleCancel = () => {
-    activeRequestRef.current = false;
+    const request = activeRequestRef.current;
+    if (!request) return;
+    request.cancelled = true;
+    activeRequestRef.current = null;
     setIsThinking(false);
-    
-    // Remove the placeholder message (the one with empty text)
-    setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last && last.role === 'model' && !last.text) {
-            return prev.slice(0, -1);
-        }
-        return prev;
-    });
+    onPointers?.([]);
+    if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
+
+    // Remove only this request's placeholder. A later request must never be
+    // affected if the cancelled promise settles after a case switch.
+    if (request.botMessageId) {
+      setMessages(prev => prev.filter(message => message.id !== request.botMessageId));
+    }
   };
 
   const handleSendMessage = async (text: string = input, promptOverride?: string) => {
     const finalText = promptOverride || text;
-    if (!finalText.trim() || isThinking) return;
+    if (!finalText.trim()) return;
+
+    // A study change invalidates the old request during render, before effects
+    // run. Let the new study proceed, but reject duplicate events for one study.
+    const existingRequest = activeRequestRef.current;
+    if (existingRequest && existingRequest.studySessionKey !== studySessionKey) {
+      existingRequest.cancelled = true;
+      activeRequestRef.current = null;
+    }
+    if (activeRequestRef.current) return;
 
     // BYOK gate: if the visitor hasn't connected OpenRouter yet, open the Connect
     // modal instead of erroring — they've already seen the case; this is the ask.
@@ -216,37 +323,69 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       return;
     }
 
-    // Capture the current view at send time. Auto-capture means whatever the
-    // student is looking at (including any drawings just made) travels with
-    // the message — no explicit Camera button click required.
+    // Capture in the same synchronous event turn as Send/Enter. Lesson lookup is
+    // asynchronous, so capturing after it could attach a later frame or miss an
+    // annotation that was present when the learner submitted.
     const capture = captureCurrentView();
     if (!capture?.image) {
       setCaptureError('The current view is still loading. Wait for the image to appear, then submit again.');
       return;
     }
 
+    // React state is not a synchronous mutex. Own all later work with a unique
+    // request identity acquired before the first await.
+    const request: ActiveRequest = {
+      id: ++requestSequenceRef.current,
+      studySessionKey,
+      cancelled: false,
+      inputToRestore: promptOverride ? undefined : input,
+    };
+    activeRequestRef.current = request;
+    setIsThinking(true);
     setCaptureError(null);
+    onPointers?.([]);
+    if (!promptOverride) setInput('');
+
+    let activeLesson = lessonPlan;
+    if (!activeLesson && studyMetadata?.studyId) {
+      try {
+        const casePackage = await requireCasePackage(studyMetadata.studyId);
+        if (!isCurrentRequest(request)) return;
+        activeLesson = await requireLessonPlanForCase(casePackage);
+        if (!isCurrentRequest(request)) return;
+        setLessonPlan(activeLesson);
+        setLessonLoadError(null);
+      } catch (error) {
+        if (!isCurrentRequest(request)) return;
+        const message = error instanceof Error ? error.message : 'The versioned lesson could not be loaded.';
+        setLessonLoadError(message);
+        setCaptureError(`Lesson unavailable: ${message}`);
+        if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
+        setIsThinking(false);
+        activeRequestRef.current = null;
+        return;
+      }
+    }
+    if (!activeLesson) {
+      if (!isCurrentRequest(request)) return;
+      setCaptureError('Lesson unavailable. Return to the case list and open a registered teaching case.');
+      if (request.inputToRestore !== undefined) setInput(request.inputToRestore);
+      setIsThinking(false);
+      activeRequestRef.current = null;
+      return;
+    }
+    if (!isCurrentRequest(request)) return;
+    const activeLessonRef = getLessonPlanRef(activeLesson);
     const imageToSend = capture.image;
-    const capturedSliceInfo = capture
-      ? { slice: capture.slice, total: capture.total, label: capture.label }
-      : null;
+    const capturedSliceInfo = { slice: capture.slice, total: capture.total, label: capture.label };
 
     // 1. Optimistically Add User Message
     const userMsg: ChatMessage = {
-        id: Date.now().toString(), role: 'user', text: finalText, hasAttachment: !!imageToSend
+        id: `request-${request.id}-user`, role: 'user', text: finalText, hasAttachment: true,
+        lessonPlanRef: activeLessonRef,
     };
     setMessages(prev => [...prev, userMsg]);
     setIsPinnedToBottom(true); // Force scroll on new message
-
-    // Save current input to restore on error if needed
-    const textToRestore = input;
-
-    // Clear Input immediately for responsiveness, but we might restore it on error.
-    if (!promptOverride) setInput('');
-    setIsThinking(true);
-    activeRequestRef.current = true;
-    // Clear previous AI pointers when starting a new request
-    if (onPointers) onPointers([]);
 
     // Build conversation history as context (include welcome message + prior exchanges)
     const historyLines = messages
@@ -272,7 +411,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         promptToSend += ']';
     }
 
-    const botMsgId = (Date.now() + 1).toString();
+    const botMsgId = `request-${request.id}-model`;
+    request.botMessageId = botMsgId;
     
     let botMessageExtras = {};
     if (imageToSend) {
@@ -294,6 +434,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         role: 'model', 
         text: '', 
         isThinking: mode === 'deep_think',
+        lessonPlanRef: activeLessonRef,
         ...botMessageExtras
     }]);
 
@@ -305,8 +446,9 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             learnerLevel,
             imageToSend,
             (chunk, sources, toolCalls, suggestionsPayload, fullTextReplace, pointersPayload) => {
-                // Cancellation Check
-                if (!activeRequestRef.current) return;
+                // Every stream side effect is owned by this exact request. An
+                // older promise cannot write into a switched case or later turn.
+                if (!isCurrentRequest(request)) return;
 
                 if (toolCalls && onJumpToSlice) {
                     toolCalls.forEach(call => {
@@ -345,7 +487,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         );
     } catch (error: any) {
         // If cancelled, do not render error
-        if (!activeRequestRef.current) return;
+        if (!isCurrentRequest(request)) return;
 
         // ERROR HANDLING
         console.error("Chat Error Caught in Component:", error);
@@ -354,8 +496,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         setMessages(prev => prev.filter(m => m.id !== botMsgId));
         
         // 2. Restore input if it was typed by user (not a suggestion click)
-        if (!promptOverride) {
-            setInput(textToRestore);
+        if (request.inputToRestore !== undefined) {
+            setInput(request.inputToRestore);
         }
 
         // 3. Add Error Message Card
@@ -363,14 +505,15 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             id: Date.now().toString(),
             role: 'error',
             text: error.message || "An unexpected error occurred.",
-            originalPrompt: finalText // Save for retry
+            originalPrompt: finalText,
+            lessonPlanRef: activeLessonRef,
         };
         setMessages(prev => [...prev, errorMessage]);
         setIsPinnedToBottom(true);
     } finally {
-        if (activeRequestRef.current) {
+        if (isCurrentRequest(request)) {
             setIsThinking(false);
-            activeRequestRef.current = false;
+            activeRequestRef.current = null;
         }
     }
   };
@@ -447,6 +590,14 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                 <KeyRound className="w-2.5 h-2.5" />
                 {byokConnected ? 'Change' : 'Connect'}
               </button>
+              {lessonPlan && (
+                <span
+                  className="text-[9px] text-[#8a8f98]"
+                  title={`Lesson ${lessonPlan.id} version ${lessonPlan.version}, SHA-256 ${lessonPlan.manifest.sha256}`}
+                >
+                  Lesson v{lessonPlan.version} {lessonPlan.manifest.sha256.slice(0, 7)}
+                </span>
+              )}
           </div>
           <div className="flex items-center gap-1">
                <span className="flex items-center gap-1 text-emerald-400 font-medium">
@@ -455,6 +606,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                </span>
           </div>
       </div>
+
+      {lessonLoadError && (
+        <div role="alert" className="border-b border-red-500/20 bg-red-950/30 px-3 py-2 text-[11px] text-red-200">
+          Versioned lesson unavailable: {lessonLoadError}
+        </div>
+      )}
 
       {/* Messages Container with Independent Scrolling Context */}
       <div className="flex-1 overflow-hidden relative flex flex-col">

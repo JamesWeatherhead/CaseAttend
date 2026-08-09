@@ -1,6 +1,7 @@
 
 
 // Viewer adapter model. Portable case metadata lives in core/casePackage.ts.
+import type { LessonPlanRef } from './core/lessonPlan';
 
 export interface Series {
   id: string;
@@ -111,6 +112,8 @@ export interface ChatMessage {
   hasAttachment?: boolean;
   suggestions?: string[]; // Dynamic follow-up suggestions
   followUps?: string[]; // Parsed educational follow-ups
+  /** Exact educational content revision used for this turn. */
+  lessonPlanRef?: LessonPlanRef;
   
   // Image Context Metadata (for UI thumbnails)
   attachedSliceIndex?: number;

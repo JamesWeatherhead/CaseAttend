@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
@@ -15,6 +15,7 @@ interface StudyListProps {
   dicomConfig: DicomWebConfig;
   setDicomConfig: (config: DicomWebConfig) => void;
   onShowSafety?: () => void;
+  onOpenLessonBuilder?: () => void;
 }
 
 const TESTIMONIALS = [
@@ -191,7 +192,7 @@ const FILTERS = [
   { id: 'derm', label: 'Dermatology' },
 ];
 
-const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig }) => {
+const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onOpenLessonBuilder }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -225,9 +226,26 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig }) => 
           <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
             Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level — from high school to resident. Radiology, pathology, dermatology.
           </p>
-          <a href="#how-it-works" className="mt-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors">
-            How it works
-          </a>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            {onOpenLessonBuilder && (
+              <button
+                type="button"
+                onClick={onOpenLessonBuilder}
+                className="min-h-11 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+              >
+                <BookOpen className="w-4 h-4" aria-hidden="true" />
+                Create a lesson
+              </button>
+            )}
+            <a href="#how-it-works" className="min-h-11 inline-flex items-center px-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
+              How it works
+            </a>
+          </div>
+          {onOpenLessonBuilder && (
+            <p className="mt-2 text-[11px] text-[#5e6570] text-center">
+              Build and export a versioned teaching plan in your browser. No prompt syntax or model connection required.
+            </p>
+          )}
         </div>
 
         {/* Testimonial — social proof up top, before the ask */}
