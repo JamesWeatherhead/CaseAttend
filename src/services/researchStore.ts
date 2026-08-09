@@ -935,7 +935,7 @@ export class ResearchStore {
       const transaction = database.transaction(DRAFT_STORE, 'readwrite');
       const complete = transactionComplete(transaction);
       const store = transaction.objectStore(DRAFT_STORE);
-      existed = (await requestResult(store.getKey(id))) !== undefined;
+      existed = (await requestResult(store.count(id))) > 0;
       if (existed) store.delete(id);
       await complete;
     });
