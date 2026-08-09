@@ -42,7 +42,7 @@ Node 22+. No environment variables required.
 - `src/` — the React SPA (image viewer, chat, model picker, BYOK connect flow).
 - `src/lib/domains/` — client-side Domain plugins, one module per domain
   (`radiology.ts`, `pathology.ts`, `dermatology.ts`). Suggestions, welcome
-  messages, artifact hints, overview images.
+  messages, artifact hints, and viewer labels.
 - `lib/prompts/` — server-side teaching prompts, one module per domain plus
   `cxr-cases.ts` for radiology case-specific contexts.
 - `functions/api/prompt.ts` — the only backend; assembles the teaching prompt,
@@ -60,8 +60,8 @@ non-medical) you touch six spots, none of which are the viewer.
 1. **Client Domain plugin** — `src/lib/domains/<key>.ts` implementing the
    `Domain` interface from `src/lib/domains/types.ts`: `key`, `label`,
    `artifactHints`, `welcomeMessage`, `getInitialSuggestions`,
-   `preAnalysisPrompt`, `contextLabel`, `captureLabel`, `overviewImage`. Model
-   on `src/lib/domains/dermatology.ts`.
+   `contextLabel`, and `captureLabel`. Model on
+   `src/lib/domains/dermatology.ts`.
 2. **Register the domain** — add to `DomainKey` in
    `src/lib/domains/types.ts` and to the `DOMAINS` map in
    `src/lib/domains/index.ts`.
