@@ -4,8 +4,8 @@
  * One path: OpenRouter (BYOK), BROWSER-DIRECT. The visitor's key goes straight
  * from this browser to OpenRouter (see openrouterClient.ts). Our servers never
  * see it, so we cannot store, log, or leak it, and cannot run up anyone's bill.
- * We only fetch the assembled teaching prompt from /api/prompt, a request that
- * carries no key.
+ * The versioned teaching prompt is assembled in this browser before the direct
+ * OpenRouter request. There is no CaseAttend prompt or inference backend.
  *
  * Output funnels through onChunk with structured-block parsing
  * (<POINTERS> / <SUGGESTIONS>), so the panel renders clean prose first, then the
@@ -148,6 +148,9 @@ export const streamChatResponse = async (
     const key = getKey();
     if (!key) {
       throw new Error('Connect your OpenRouter account to start chatting. Your key is stored in this browser and sent only to OpenRouter.');
+    }
+    if (!caseId) {
+      throw new Error('This teaching session is missing a Case Package. Return to the case list and open a registered case.');
     }
     const systemPrompt = await fetchSystemPrompt({
       modality,

@@ -19,3 +19,4 @@
 
 # Clinical teaching content (requires clinician sign-off).
 /lib/prompts/         @JamesWeatherhead
+/src/data/lessonRegistry.ts @JamesWeatherhead

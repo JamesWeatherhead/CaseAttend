@@ -5,8 +5,8 @@
 CaseAttend is bring-your-own-key. Your OpenRouter API key is stored only in your
 browser's `localStorage` and is sent **only** to `https://openrouter.ai` for
 inference. It is never transmitted to, logged by, or stored on any CaseAttend
-server. The single backend function (`functions/api/prompt.ts`) returns a
-teaching prompt and never receives a key.
+server. Versioned teaching prompts are assembled locally in the browser.
+CaseAttend has no prompt or inference backend.
 
 Changes that would weaken this are out of scope and will not be merged:
 

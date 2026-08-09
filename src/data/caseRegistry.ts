@@ -9,6 +9,7 @@ import {
   type CasePresentationMetadata,
   type CaseProvenance,
 } from '../core/casePackage';
+import { getLessonPlanRef } from '../core/lessonPlan';
 import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains/types';
 import type { Series } from '../types';
@@ -16,6 +17,9 @@ import {
   BUILTIN_ASSET_SHA256,
   type BuiltinAssetPath,
 } from './builtinAssetDigests';
+import { createBuiltinLessonPlan } from './lessonRegistry';
+
+type BuiltinCaseDraft = Omit<CasePackageV1Draft, 'lessonPlanRef'>;
 
 const CC0 = {
   name: 'CC0 1.0 Universal',
@@ -147,7 +151,7 @@ interface SingleImageDefinition {
   contentWarnings: readonly string[];
 }
 
-function singleImageDraft(definition: SingleImageDefinition): CasePackageV1Draft {
+function singleImageDraft(definition: SingleImageDefinition): BuiltinCaseDraft {
   const artifact: CaseImageArtifact = {
     kind: 'image',
     modality: definition.modality,
@@ -179,7 +183,6 @@ function singleImageDraft(definition: SingleImageDefinition): CasePackageV1Draft
     contentWarnings: definition.contentWarnings,
     neutralDescription: definition.neutralDescription,
     teachingNotes: [definition.teachingNote],
-    lessonPlanRef: `builtin:${definition.id}@1`,
     presentation: definition.presentation,
   };
 }
@@ -187,7 +190,7 @@ function singleImageDraft(definition: SingleImageDefinition): CasePackageV1Draft
 const MRI_ALT = 'Axial grayscale brain MRI';
 const MRI_PREVIEW = '/images/sub-1/FLAIR/14.png' as BuiltinAssetPath;
 
-const MRI_CASE: CasePackageV1Draft = {
+const MRI_CASE: BuiltinCaseDraft = {
   schemaVersion: CASE_PACKAGE_VERSION,
   id: 'local-study-sub1',
   title: '72F, progressive memory decline',
@@ -216,13 +219,12 @@ const MRI_CASE: CasePackageV1Draft = {
   contentWarnings: ['Medical imaging'],
   neutralDescription: 'Axial grayscale brain MRI images across FLAIR, T1, DWI, and ADC sequences.',
   teachingNotes: ['Brain MRI stroke protocol teaching case.'],
-  lessonPlanRef: 'builtin:local-study-sub1@1',
   presentation: theme('Brain MRI', 'mri', '59,130,246', 'text-blue-400'),
 };
 
 const PATHOLOGY_PREVIEW = '/images/patho-1/HE_10x/1.webp' as BuiltinAssetPath;
 
-const PATHOLOGY_CASE: CasePackageV1Draft = {
+const PATHOLOGY_CASE: BuiltinCaseDraft = {
   schemaVersion: CASE_PACKAGE_VERSION,
   id: 'patho-study-breast',
   title: '62F, suspicious breast mass',
@@ -250,7 +252,6 @@ const PATHOLOGY_CASE: CasePackageV1Draft = {
   contentWarnings: ['Histopathology image'],
   neutralDescription: 'H&E stained breast tissue images at 4x, 10x, and 40x magnification.',
   teachingNotes: ['Breast invasive ductal carcinoma teaching case.'],
-  lessonPlanRef: 'builtin:patho-study-breast@1',
   presentation: theme('Pathology', 'path', '244,63,94', 'text-rose-400'),
 };
 
@@ -492,7 +493,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
   },
 ];
 
-export const BUILTIN_CASE_DRAFTS: readonly CasePackageV1Draft[] = [
+const BUILTIN_CASE_DRAFTS: readonly BuiltinCaseDraft[] = [
   MRI_CASE,
   PATHOLOGY_CASE,
   ...SINGLE_IMAGE_CASES.map(singleImageDraft),
@@ -533,8 +534,12 @@ async function buildRegistry(): Promise<readonly CasePackageV1[]> {
     BUILTIN_CASE_DRAFTS.map(async (draft) => {
       if (seenIds.has(draft.id)) throw new Error(`Duplicate Case Package id: ${draft.id}`);
       seenIds.add(draft.id);
+      const lessonPlan = await createBuiltinLessonPlan(draft);
       const { schemaVersion: _schemaVersion, ...input } = draft;
-      const casePackage = await createCasePackageV1(input);
+      const casePackage = await createCasePackageV1({
+        ...input,
+        lessonPlanRef: getLessonPlanRef(lessonPlan),
+      });
       assertPreviewIsIncluded(casePackage);
       return deepFreeze(casePackage);
     }),

@@ -8,9 +8,15 @@
  * browser by OpenRouter's OAuth PKCE flow (see openrouterAuth.ts) and lives only
  * in this browser's localStorage (see byokStore.ts).
  *
- * The one thing we DO fetch from our own server is the teaching prompt
- * (/api/prompt) so the tutor keeps asking before telling; that request carries no key.
+ * Versioned teaching prompts are composed locally from the exact Case Package
+ * and Lesson Plan manifests. CaseAttend has no prompt API or inference backend.
  */
+
+import type { LearnerLevel } from '../constants';
+import { composeLessonPrompt } from '../core/lessonPlan';
+import { requireCasePackage } from '../data/caseRegistry';
+import { requireLessonPlanForCase } from '../data/lessonRegistry';
+import type { DomainKey } from '../lib/domains';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
@@ -129,41 +135,53 @@ export async function getOpenRouterResponse(opts: {
   return chunks;
 }
 
-// Cache assembled prompts by (modality|caseId|level|mode|hasImage) so we don't
-// refetch the teaching prompt on every message in the same context.
+// Cache assembled prompts by the exact versioned lesson manifest and runtime
+// context so a changed lesson can never reuse stale teaching instructions.
 const promptCache = new Map<string, string>();
 
 /**
- * Fetch the assembled teaching prompt from our own server. Carries NO key —
- * just enough context to pick the right case prompt. Falls back to '' (generic
- * assistant) if unreachable, so chat still functions, just with a lighter teaching scaffold.
+ * Resolve and compose the exact teaching prompt in this browser. Any unknown
+ * case, domain mismatch, invalid lesson, or manifest mismatch fails closed
+ * before OpenRouter is called.
  */
 export async function fetchSystemPrompt(opts: {
-  modality: 'radiology' | 'pathology' | 'dermatology';
-  caseId?: string;
-  learnerLevel: string;
-  mode: string;
+  modality: DomainKey;
+  caseId: string;
+  learnerLevel: LearnerLevel;
+  mode: ORMode;
   hasImage: boolean;
 }): Promise<string> {
-  const cacheKey = `${opts.modality}|${opts.caseId || ''}|${opts.learnerLevel}|${opts.mode}|${opts.hasImage ? 1 : 0}`;
+  const casePackage = await requireCasePackage(opts.caseId);
+  if (casePackage.domain !== opts.modality) {
+    throw new Error(
+      `Case '${casePackage.id}' belongs to '${casePackage.domain}', not '${opts.modality}'. Refusing to compose the wrong lesson.`,
+    );
+  }
+  const lessonPlan = await requireLessonPlanForCase(casePackage);
+  const cacheKey = [
+    lessonPlan.id,
+    lessonPlan.version,
+    lessonPlan.manifest.sha256,
+    opts.learnerLevel,
+    opts.mode,
+    opts.hasImage ? '1' : '0',
+  ].join('|');
   const cached = promptCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
-  try {
-    const res = await fetch('/api/prompt', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(opts),
-    });
-    if (!res.ok) return '';
-    const data = await res.json().catch(() => null);
-    const sp = data?.systemPrompt;
-    if (typeof sp === 'string') {
-      promptCache.set(cacheKey, sp);
-      return sp;
-    }
-    return '';
-  } catch {
-    return '';
-  }
+  const prompt = (await composeLessonPrompt(lessonPlan, {
+    learnerLevel: opts.learnerLevel,
+    mode: opts.mode,
+    hasImage: opts.hasImage,
+    caseContext: {
+      id: casePackage.id,
+      title: casePackage.title,
+      vignette: casePackage.vignette,
+      neutralDescription: casePackage.neutralDescription,
+      domain: casePackage.domain,
+    },
+  })).providerPrompt;
+  if (!prompt.trim()) throw new Error('Lesson prompt composition returned no fixed safety policy.');
+  promptCache.set(cacheKey, prompt);
+  return prompt;
 }

@@ -9,6 +9,7 @@ import {
 } from '../core/casePackage';
 
 const IMAGE_HASH = '1'.repeat(64);
+const LESSON_HASH = '2'.repeat(64);
 
 function singleImageDraft(): CasePackageV1Draft {
   return {
@@ -60,7 +61,11 @@ function singleImageDraft(): CasePackageV1Draft {
     contentWarnings: ['Clinical image'],
     neutralDescription: 'A close clinical photograph of a single pigmented lesion on skin.',
     teachingNotes: ['Ask the learner to describe morphology before forming a differential.'],
-    lessonPlanRef: 'lesson-plan:dermatology-description@1',
+    lessonPlanRef: {
+      id: 'dermatology-description',
+      version: '1.0.0',
+      sha256: LESSON_HASH,
+    },
     presentation: {
       subtitle: 'Dermatology',
       category: 'clinical-photograph',
