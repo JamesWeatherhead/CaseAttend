@@ -29,7 +29,11 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const visibleTools = TOOLS.filter(t => {
     if (t.id === ToolMode.SCROLL && instanceCount <= 1) return false;
     if (t.id === ToolMode.WINDOW_LEVEL && artifactHints && !artifactHints.showWindowLevel) return false;
-    if (t.id === ToolMode.BRUSH && artifactHints && !artifactHints.showSegmentation) return false;
+    if (
+      (t.id === ToolMode.BRUSH || t.id === ToolMode.ERASER)
+      && artifactHints
+      && !artifactHints.showSegmentation
+    ) return false;
     return true;
   });
   const isVertical = orientation === 'vertical';
@@ -50,17 +54,19 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       }}
     >
       {/* Drag Handle */}
-      <div
+      <button
+        type="button"
         className={`flex items-center justify-center cursor-grab active:cursor-grabbing text-[#8a8f98] hover:text-[#d0d6e0] transition-colors hover:bg-white/[0.04] ${
           isVertical
-            ? 'w-full h-8 mb-1 border-b border-white/[0.06] rounded-t-xl'
-            : 'h-full w-8 mr-1 border-r border-white/[0.06] rounded-l-xl'
+            ? 'w-full min-h-11 mb-1 border-b border-white/[0.06] rounded-t-xl'
+            : 'h-full min-w-11 mr-1 border-r border-white/[0.06] rounded-l-xl'
         }`}
         onMouseDown={onDragStart}
         title="Drag toolbar"
+        aria-label="Drag viewer toolbar"
       >
         {isVertical ? <GripHorizontal className="w-4 h-4" /> : <GripVertical className="w-4 h-4" />}
-      </div>
+      </button>
 
       {/* Tools Container */}
       <div className={`flex items-center gap-1.5 p-1 ${isVertical ? 'flex-col' : 'flex-row'}`}>
@@ -71,12 +77,13 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             <button
               key={tool.id}
               onClick={() => onSelectTool(tool.id)}
-              className={`rounded-xl transition-all active:scale-95 border flex items-center justify-center ${
+              className={`min-h-11 min-w-11 rounded-xl transition-all active:scale-95 border flex items-center justify-center ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 border-blue-500'
                   : 'bg-[#1e1f21] text-[#d0d6e0] hover:bg-[#28282c] hover:text-white border-transparent hover:border-white/[0.08]'
               } ${isVertical ? 'w-10 h-10' : 'p-2.5'}`}
               title={tool.label}
+              aria-label={tool.label}
             >
               <Icon className="w-5 h-5" />
             </button>

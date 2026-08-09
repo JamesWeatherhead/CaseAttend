@@ -28,6 +28,94 @@ interface ViewerCanvasProps {
 
   // AI visual pointers (pulsing indicators on findings)
   aiPointers?: AiPointer[];
+  getAnnotationAudit?: () => { revision: number; lastChangedAt?: string };
+  onAnnotationMutation?: () => void;
+}
+
+function pointToSegmentDistanceSquared(point: Point, start: Point, end: Point): number {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  if (dx === 0 && dy === 0) {
+    return ((point.x - start.x) ** 2) + ((point.y - start.y) ** 2);
+  }
+
+  const projection = Math.max(0, Math.min(1, (
+    ((point.x - start.x) * dx) + ((point.y - start.y) * dy)
+  ) / ((dx * dx) + (dy * dy))));
+  const closestX = start.x + (projection * dx);
+  const closestY = start.y + (projection * dy);
+  return ((point.x - closestX) ** 2) + ((point.y - closestY) ** 2);
+}
+
+function orientation(a: Point, b: Point, c: Point): number {
+  return ((b.y - a.y) * (c.x - b.x)) - ((b.x - a.x) * (c.y - b.y));
+}
+
+function pointOnSegment(a: Point, b: Point, point: Point): boolean {
+  return point.x >= Math.min(a.x, b.x)
+    && point.x <= Math.max(a.x, b.x)
+    && point.y >= Math.min(a.y, b.y)
+    && point.y <= Math.max(a.y, b.y);
+}
+
+function segmentsIntersect(a1: Point, a2: Point, b1: Point, b2: Point): boolean {
+  const o1 = orientation(a1, a2, b1);
+  const o2 = orientation(a1, a2, b2);
+  const o3 = orientation(b1, b2, a1);
+  const o4 = orientation(b1, b2, a2);
+  const epsilon = Number.EPSILON * 16;
+
+  if (((o1 > epsilon && o2 < -epsilon) || (o1 < -epsilon && o2 > epsilon))
+    && ((o3 > epsilon && o4 < -epsilon) || (o3 < -epsilon && o4 > epsilon))) {
+    return true;
+  }
+  if (Math.abs(o1) <= epsilon && pointOnSegment(a1, a2, b1)) return true;
+  if (Math.abs(o2) <= epsilon && pointOnSegment(a1, a2, b2)) return true;
+  if (Math.abs(o3) <= epsilon && pointOnSegment(b1, b2, a1)) return true;
+  if (Math.abs(o4) <= epsilon && pointOnSegment(b1, b2, a2)) return true;
+  return false;
+}
+
+/** True only when a round-capped brush stroke can affect at least one image pixel. */
+export function strokeTouchesImage(
+  start: Point,
+  end: Point,
+  width: number,
+  height: number,
+  brushRadius: number,
+): boolean {
+  if (![start.x, start.y, end.x, end.y, width, height, brushRadius].every(Number.isFinite)) {
+    return false;
+  }
+  if (width <= 0 || height <= 0 || brushRadius < 0) return false;
+
+  const corners: [Point, Point, Point, Point] = [
+    { x: 0, y: 0 },
+    { x: width, y: 0 },
+    { x: width, y: height },
+    { x: 0, y: height },
+  ];
+  const isInside = (point: Point) => (
+    point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height
+  );
+  if (isInside(start) || isInside(end)) return true;
+
+  const edges: Array<[Point, Point]> = [
+    [corners[0], corners[1]],
+    [corners[1], corners[2]],
+    [corners[2], corners[3]],
+    [corners[3], corners[0]],
+  ];
+  const radiusSquared = brushRadius * brushRadius;
+  return edges.some(([edgeStart, edgeEnd]) => {
+    if (segmentsIntersect(start, end, edgeStart, edgeEnd)) return true;
+    return Math.min(
+      pointToSegmentDistanceSquared(start, edgeStart, edgeEnd),
+      pointToSegmentDistanceSquared(end, edgeStart, edgeEnd),
+      pointToSegmentDistanceSquared(edgeStart, start, end),
+      pointToSegmentDistanceSquared(edgeEnd, start, end),
+    ) <= radiusSquared;
+  });
 }
 
 const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({ 
@@ -44,7 +132,9 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   segmentationLayer,
   onSegmentedSliceUpdate,
   isScrollEnabled = true, // Default to enabled
-  aiPointers
+  aiPointers,
+  getAnnotationAudit,
+  onAnnotationMutation,
 }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +177,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   const pointerAnimRef = useRef<number | null>(null);
   
   const [draftMeasurement, setDraftMeasurement] = useState<Measurement | null>(null);
+  const loadedFrameRef = useRef<{ seriesId: string; frameIndex: number } | null>(null);
   
   // Helper to get caches for the current series
   const getSeriesCaches = () => {
@@ -106,14 +197,67 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
   // Expose Capabilities
   useImperativeHandle(ref, () => ({
-    captureScreenshot: () => {
-      if (canvasRef.current) {
-        // Return high-quality JPEG
-        return canvasRef.current.toDataURL('image/jpeg', 0.9);
+    captureCurrentView: () => {
+      const canvas = canvasRef.current;
+      const loadedFrame = loadedFrameRef.current;
+      if (
+        !canvas
+        || canvas.width <= 0
+        || canvas.height <= 0
+        || !series
+        || !currentImageBitmap
+        || !loadedFrame
+        || loadedFrame.seriesId !== series.id
+        || loadedFrame.frameIndex !== sliceIndex
+      ) {
+        return null;
       }
-      return null;
+
+      // AI pointers are transient tutor output, not learner-authored evidence.
+      // Re-render without them for the export, then immediately restore the
+      // visible canvas. Learner measurements and segmentation remain included.
+      renderScene(false);
+      try {
+        const exported = document.createElement('canvas');
+        exported.width = canvas.width;
+        exported.height = canvas.height;
+        const exportedContext = exported.getContext('2d');
+        if (!exportedContext) return null;
+        // Window/level is a CSS filter in the viewer. Bake the same filter into
+        // the submitted pixels so the model receives what the learner saw.
+        exportedContext.filter = getFilterStyle();
+        exportedContext.drawImage(canvas, 0, 0);
+
+        const sliceIdsBySlice = sliceSegmentIdsRef.current.get(series.id);
+        const measurementCount = measurements.filter(
+          (measurement) => measurement.sliceIndex === sliceIndex,
+        ).length;
+        const activeFrameLabelCount = sliceIdsBySlice?.get(sliceIndex)?.size ?? 0;
+        const segmentedFrameCount = sliceIdsBySlice
+          ? [...sliceIdsBySlice.values()].filter((ids) => ids.size > 0).length
+          : 0;
+        const audit = getAnnotationAudit?.() ?? { revision: 0 };
+
+        return {
+          image: exported.toDataURL('image/jpeg', 0.9),
+          seriesId: series.id,
+          frameIndex: sliceIndex,
+          frameCount: series.instances.length,
+          annotation: {
+            present: measurementCount > 0 || segmentedFrameCount > 0,
+            measurementCount,
+            segmentedFrameCount,
+            activeFrameLabelCount,
+            revision: audit.revision,
+            ...(audit.lastChangedAt ? { lastChangedAt: audit.lastChangedAt } : {}),
+          },
+        };
+      } finally {
+        renderScene(true);
+      }
     },
     removeSegment: (id: number) => {
+      let removedSegment = false;
       // Iterate over all series caches to remove the segment ID
       maskCacheRef.current.forEach((maskBySlice, seriesKey) => {
           maskBySlice.forEach((canvas) => {
@@ -136,6 +280,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
             
             if (dirty) {
                ctx.putImageData(imageData, 0, 0);
+               removedSegment = true;
             }
           });
       });
@@ -145,6 +290,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
           sliceIdsBySlice.forEach((ids, sliceIdx) => {
             if (ids.has(id)) {
                 ids.delete(id);
+                removedSegment = true;
                 // Only notify if we are modifying the CURRENT visible series
                 if (seriesKey === series?.id) {
                     onSegmentedSliceUpdate?.(sliceIdx, ids.size);
@@ -152,6 +298,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
             }
           });
       });
+      if (removedSegment) onAnnotationMutation?.();
       
       // Clear all visual caches to force redraw everywhere
       renderCacheRef.current.forEach(map => map.clear());
@@ -291,7 +438,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   };
 
   // --- MAIN RENDER FUNCTION ---
-  const renderScene = () => {
+  const renderScene = (includeAiPointers = true) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -403,7 +550,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     if (draftMeasurement) drawLine(draftMeasurement, true);
 
     // --- AI POINTER INDICATORS ---
-    if (aiPointers && aiPointers.length > 0) {
+    if (includeAiPointers && aiPointers && aiPointers.length > 0) {
       const phase = pointerPhaseRef.current;
       const pulse = Math.sin(phase * Math.PI * 2);
 
@@ -574,6 +721,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   useEffect(() => {
     let active = true;
     let objectUrl: string | null = null;
+    loadedFrameRef.current = null;
 
     const loadFrame = async () => {
       if (!series || series.instances.length === 0) return;
@@ -604,6 +752,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
         if (active) {
           setCurrentImageBitmap(img);
+          loadedFrameRef.current = { seriesId: series.id, frameIndex: sliceIndex };
           setIsImageLoading(false);
         }
       } catch (err: any) {
@@ -656,7 +805,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
   // --- INTERACTION HANDLERS ---
 
-  const getCanvasPoint = (e: React.MouseEvent): Point => {
+  const getCanvasPoint = (e: { clientX: number; clientY: number }): Point => {
      const canvas = canvasRef.current;
      if (!canvas) return { x: 0, y: 0 };
      const rect = canvas.getBoundingClientRect();
@@ -671,7 +820,9 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
      };
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.PointerEvent<HTMLCanvasElement>,
+  ) => {
     e.preventDefault(); 
     
     interactionRef.current.isDragging = true;
@@ -703,25 +854,48 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     }
   };
 
-  const paintOnMask = (p1: Point, p2: Point) => {
-     if (!currentImageBitmap) return;
+  const paintOnMask = (p1: Point, p2: Point): boolean => {
+     if (!currentImageBitmap) return false;
      const w = currentImageBitmap.width || 512;
      const h = currentImageBitmap.height || 512;
-     
-     const maskCanvas = getActiveMaskCanvas(w, h);
-     if (!maskCanvas) return;
-     
-     const ctxMask = maskCanvas.getContext('2d');
-     if (!ctxMask) return;
-     
-     const visualCanvas = getRenderCanvas(sliceIndex, w, h, segmentationLayer.segments);
-     const ctxVisual = visualCanvas?.getContext('2d');
-
      const isEraser = activeTool === ToolMode.ERASER;
      const size = segmentationLayer.brushSize;
      const segId = segmentationLayer.activeSegmentId;
 
-     if (!isEraser && segId) {
+     // A missing segment is not a valid learner annotation, and a stroke whose
+     // round brush footprint never reaches the image must be a true no-op. In
+     // particular, neither case may advance audit timing or claim that this
+     // frame has segmentation when the exported pixels are unchanged.
+     if (!isEraser && (
+       segId === null
+       || !segmentationLayer.segments.some((segment) => segment.id === segId)
+     )) return false;
+     if (!strokeTouchesImage(p1, p2, w, h, size / 2)) return false;
+     
+     const maskCanvas = getActiveMaskCanvas(w, h);
+     if (!maskCanvas) return false;
+     
+     const ctxMask = maskCanvas.getContext('2d');
+     if (!ctxMask) return false;
+
+     // Snapshot only the affected mask rectangle. Erasing transparent pixels
+     // must not advance the learner annotation audit clock or manufacture a
+     // session event when the visible artifact is unchanged.
+     const eraserRadius = (size / 2) + 2;
+     const eraseX = Math.max(0, Math.floor(Math.min(p1.x, p2.x) - eraserRadius));
+     const eraseY = Math.max(0, Math.floor(Math.min(p1.y, p2.y) - eraserRadius));
+     const eraseRight = Math.min(w, Math.ceil(Math.max(p1.x, p2.x) + eraserRadius));
+     const eraseBottom = Math.min(h, Math.ceil(Math.max(p1.y, p2.y) + eraserRadius));
+     const eraseWidth = eraseRight - eraseX;
+     const eraseHeight = eraseBottom - eraseY;
+     const eraseBefore = isEraser && eraseWidth > 0 && eraseHeight > 0
+       ? ctxMask.getImageData(eraseX, eraseY, eraseWidth, eraseHeight)
+       : null;
+     
+     const visualCanvas = getRenderCanvas(sliceIndex, w, h, segmentationLayer.segments);
+     const ctxVisual = visualCanvas?.getContext('2d');
+
+     if (!isEraser && segId !== null) {
          const caches = getSeriesCaches();
          if (caches) {
              const { sliceIdsBySlice } = caches;
@@ -738,7 +912,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
      }
 
      let visualColor = 'rgba(0,0,0,0)';
-     if (!isEraser && segId) {
+     if (!isEraser && segId !== null) {
          const seg = segmentationLayer.segments.find(s => s.id === segId);
          if (seg) visualColor = `rgb(${seg.color.join(',')})`;
      }
@@ -780,15 +954,24 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
      };
 
      drawStroke(ctxMask, true);
+     if (isEraser && eraseBefore) {
+       const eraseAfter = ctxMask.getImageData(eraseX, eraseY, eraseWidth, eraseHeight);
+       const changed = eraseBefore.data.some((value, index) => value !== eraseAfter.data[index]);
+       if (!changed) return false;
+     }
      if (ctxVisual) drawStroke(ctxVisual, false);
+     onAnnotationMutation?.();
      renderScene();
 
      if (isEraser) {
        recomputeSliceSegments(sliceIndex);
      }
+     return true;
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.PointerEvent<HTMLCanvasElement>,
+  ) => {
     if (!interactionRef.current.isDragging) return;
     
     const { activeButton, dragStart } = interactionRef.current;
@@ -867,6 +1050,25 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
       setDraftMeasurement(null);
     }
   };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'mouse') return;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    handleMouseDown(e);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'mouse') return;
+    handleMouseMove(e);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'mouse') return;
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    handleMouseUp();
+  };
   
   const handleWheel = (e: React.WheelEvent) => {
      const isZoomAction = e.ctrlKey || e.metaKey || activeTool === ToolMode.ZOOM;
@@ -893,6 +1095,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         const rect = containerRef.current.getBoundingClientRect();
         const newW = Math.round(rect.width);
         const newH = Math.round(rect.height);
+        if (newW <= 0 || newH <= 0) return;
         setCanvasSize(prev => {
             if (prev.width === newW && prev.height === newH) return prev;
             lastSizeRef.current = { width: newW, height: newH };
@@ -908,10 +1111,38 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     return `contrast(${Math.max(0, c)}%) brightness(${Math.max(0, b)}%)`;
   };
 
+  const handleCanvasKeyDown = (e: React.KeyboardEvent<HTMLCanvasElement>) => {
+    const maxFrame = Math.max(0, (series?.instances.length || series?.instanceCount || 1) - 1);
+    let nextFrame: number | null = null;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+      nextFrame = Math.max(0, sliceIndex - 1);
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+      nextFrame = Math.min(maxFrame, sliceIndex + 1);
+    } else if (e.key === 'Home') {
+      nextFrame = 0;
+    } else if (e.key === 'End') {
+      nextFrame = maxFrame;
+    } else if (e.key === '+' || e.key === '=') {
+      e.preventDefault();
+      setViewport((previous) => ({ ...previous, scale: Math.min(5, previous.scale * 1.1) }));
+      return;
+    } else if (e.key === '-') {
+      e.preventDefault();
+      setViewport((previous) => ({ ...previous, scale: Math.max(0.1, previous.scale * 0.9) }));
+      return;
+    }
+
+    if (nextFrame !== null && isScrollEnabled !== false) {
+      e.preventDefault();
+      if (nextFrame !== sliceIndex) onSliceChange(nextFrame);
+    }
+  };
+
   if (!series) {
     return <div className="flex-1 bg-black flex items-center justify-center text-gray-500">Select a series</div>;
   }
 
+  const hasMultipleFrames = series.instanceCount > 1;
   const scrollPct = series.instanceCount > 0 ? (sliceIndex / series.instanceCount) * 100 : 0;
   
   let cursorStyle = 'default';
@@ -934,19 +1165,33 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onKeyDown={handleCanvasKeyDown}
+        tabIndex={0}
+        role="img"
+        aria-label={`${series.description || series.modality}. Current view ${sliceIndex + 1} of ${Math.max(1, series.instanceCount)}. Use arrow keys to change views and plus or minus to zoom.`}
         style={{ 
           cursor: cursorStyle,
-          filter: getFilterStyle()
+          filter: getFilterStyle(),
+          touchAction: 'none',
         }}
         className="block"
       />
       
-      <div className="absolute right-2 top-4 bottom-4 w-1.5 bg-gray-800 rounded-full overflow-hidden opacity-50 hover:opacity-100 transition-opacity pointer-events-none">
-         <div 
-           className="bg-blue-500 w-full rounded-full"
-           style={{ height: '5%', top: `${scrollPct}%`, position: 'absolute' }}
-         />
-      </div>
+      {hasMultipleFrames && (
+        <div
+          data-testid="slice-scrollbar"
+          className="absolute right-2 top-4 bottom-4 w-1.5 bg-gray-800 rounded-full overflow-hidden opacity-50 hover:opacity-100 transition-opacity pointer-events-none"
+        >
+           <div
+             className="bg-blue-500 w-full rounded-full"
+             style={{ height: '5%', top: `${scrollPct}%`, position: 'absolute' }}
+           />
+        </div>
+      )}
 
       {isImageLoading && (
         <div className="absolute top-4 right-8 text-blue-400">
@@ -976,15 +1221,20 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         <button
             type="button"
             onClick={centerView}
-            className="px-2 py-1 rounded-md bg-slate-800/80 text-slate-100 border border-slate-600 hover:bg-slate-700/90 flex items-center gap-1.5"
+            className="min-h-11 px-3 py-1 rounded-md bg-slate-800/80 text-slate-100 border border-slate-600 hover:bg-slate-700/90 flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
         >
             <Move className="w-3 h-3" />
             Center view
         </button>
 
-        <span className="text-blue-400 drop-shadow-md pointer-events-none">
-            Image: {sliceIndex + 1} / {series.instanceCount}
-        </span>
+        {hasMultipleFrames && (
+          <span
+            data-testid="frame-counter"
+            className="text-blue-400 drop-shadow-md pointer-events-none"
+          >
+              Image: {sliceIndex + 1} / {series.instanceCount}
+          </span>
+        )}
       </div>
     </div>
   );

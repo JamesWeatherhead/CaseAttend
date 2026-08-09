@@ -66,9 +66,56 @@ export interface ViewportState {
   windowCenter: number;
 }
 
+export interface AnnotationCaptureSnapshot {
+  present: boolean;
+  measurementCount: number;
+  segmentedFrameCount: number;
+  activeFrameLabelCount: number;
+  revision: number;
+  lastChangedAt?: string;
+}
+
+export interface ViewerCaptureResult {
+  image: string;
+  seriesId: string;
+  frameIndex: number;
+  frameCount: number;
+  annotation: AnnotationCaptureSnapshot;
+}
+
+interface ReproducibleViewSnapshotBase {
+  seriesId: string;
+  assetSha256: string;
+  annotation: AnnotationCaptureSnapshot;
+}
+
+export type ReproducibleViewSnapshot = ReproducibleViewSnapshotBase & (
+  | {
+      artifactKind: 'image';
+      frameId?: never;
+      frameIndex: 0;
+      frameCount: 1;
+    }
+  | {
+      artifactKind: 'image-stack';
+      frameId: string;
+      frameIndex: number;
+      frameCount: number;
+    }
+);
+
+export interface CapturedTutorView {
+  image: string;
+  /** One-based frame number retained for learner-facing thumbnail copy. */
+  slice: number;
+  total: number;
+  label: string;
+  viewSnapshot: ReproducibleViewSnapshot;
+}
+
 // Viewer Capability Interface
 export interface ViewerHandle {
-  captureScreenshot: () => string | null;
+  captureCurrentView: () => ViewerCaptureResult | null;
   removeSegment: (id: number) => void;
 }
 
@@ -117,6 +164,7 @@ export interface ChatMessage {
   
   // Image Context Metadata (for UI thumbnails)
   attachedSliceIndex?: number;
+  attachedFrameCount?: number;
   attachedSequenceLabel?: string;
   attachedSliceThumbnailDataUrl?: string;
 

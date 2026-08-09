@@ -17,6 +17,20 @@ Changes that would weaken this are out of scope and will not be merged:
 
 CI enforces this on every pull request.
 
+## Browser-local learning records
+
+CaseAttend's default session event log is metadata-only and browser-local.
+Events are stored in IndexedDB, or in memory when IndexedDB is unavailable.
+Recording, previewing, exporting, and deleting these events must not make a
+network request.
+
+The versioned event schema deliberately has no fields for API keys,
+authorization headers, raw prompts or chat, screenshots, base64 images,
+annotation coordinates, names, or emails. Export validates every event again
+and fails closed if a record does not match the allowlisted schema. Any future
+multi-participant collector requires a separate, explicit, consented research
+deployment and must never receive an OpenRouter credential.
+
 ## Reporting a vulnerability
 
 Please report security issues **privately** via GitHub Security Advisories — use

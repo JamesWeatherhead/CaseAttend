@@ -1,5 +1,5 @@
 
-import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useEffect, useRef, useCallback, useMemo } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 
 export type TourId = 'onboarding' | 'ai-tour' | 'seg-tour';
@@ -9,6 +9,7 @@ interface Step {
   title: string;
   body: string;
   switchTab?: 'ai' | 'segment';
+  requires?: 'segmentation';
 }
 
 const TOURS: Record<TourId, Step[]> = {
@@ -17,13 +18,13 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-panel"]',
       title: 'Welcome to CaseAttend',
-      body: 'Read the case above. You have a patient with a clinical history, and imaging has been ordered. Your job: find the abnormality and interpret it.',
+      body: 'Read the case context and inspect the current visual. A vision-language model (VLM) can discuss what is visible alongside your question. Use it as a tutor, not as a clinical diagnostic system.',
       switchTab: 'ai'
     },
     {
       selector: '[data-tour-id="ai-provider"]',
       title: 'AI Model',
-      body: 'You bring your own OpenRouter key. Choose from a curated list of vision-capable open and frontier models, and swap freely at any time.',
+      body: 'Connect your own OpenRouter key, choose a vision-language model (VLM), and change it at any time. A VLM is an AI model that works with both images and text.',
       switchTab: 'ai'
     },
     {
@@ -36,26 +37,28 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="seg-header"]',
       title: 'Annotation Tools',
-      body: 'Use the Annotate tab to mark findings directly on the image. Pick a label, choose a color, and paint on the slice.',
-      switchTab: 'segment'
+      body: 'Use the Annotate tab to mark findings directly on the current visual. Pick a label, choose a color, and paint where the case supports it.',
+      switchTab: 'segment',
+      requires: 'segmentation'
     },
     {
       selector: '[data-tour-id="seg-controls"]',
       title: 'Brush & Eraser',
       body: 'Select Brush to paint or Eraser to remove. Adjust the brush size with the slider.',
-      switchTab: 'segment'
+      switchTab: 'segment',
+      requires: 'segmentation'
     },
     // Phase 3: Back to AI tutor for the workflow
     {
-      selector: '[data-tour-id="series-rail"]',
-      title: 'Pick a Sequence',
-      body: 'Different MRI sequences show different things. Start on FLAIR, then the tutor will guide you through DWI, T1, and ADC.',
+      selector: '[data-tour-id="viewer-toolbar"]',
+      title: 'Explore the Current View',
+      body: 'Use the available viewing tools to inspect the artifact. CaseAttend shows only the controls that apply, whether the case has one image or many frames.',
       switchTab: 'ai'
     },
     {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
-      body: 'Not sure what to ask? These suggestions adapt to your level. Use them as starting points, or type your own. The AI automatically sees whatever you are looking at when you press Send.',
+      body: 'Not sure what to ask? These suggestions adapt to your level. Use them as starting points, or type your own. When you press Send, CaseAttend captures the current view and includes it with your question.',
       switchTab: 'ai'
     }
   ],
@@ -63,12 +66,12 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-panel"]',
       title: 'Your AI Tutor',
-      body: 'The tutor asks what you see before telling you. This is an educational tool with pre-verified teaching cases, not a clinical diagnostic system.'
+      body: 'The tutor asks what you notice before explaining. This is educational software, not a clinical diagnostic system. Check each case\'s sources and provenance before use.'
     },
     {
       selector: '[data-tour-id="ai-provider"]',
       title: 'AI Model',
-      body: 'You bring your own OpenRouter key. Choose from a curated list of vision-capable open and frontier models, and swap freely at any time.'
+      body: 'Connect your own OpenRouter key and choose a vision-language model (VLM). A VLM is an AI model that can work with both the current visual and your text question.'
     },
     {
       selector: '[data-tour-id="teaching-levels"]',
@@ -78,7 +81,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
-      body: 'These adapt to your level and what you are looking at. Use them as starting points, or type your own questions.'
+      body: 'These adapt to your level and what you are looking at. First navigate or draw, then ask. When you press Send, CaseAttend captures the exact current view, including visible learner annotations, and sends it with your question.'
     },
     {
       selector: '[data-tour-id="ai-trash"]',
@@ -90,17 +93,20 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="seg-header"]',
       title: 'Annotation Tools',
-      body: 'Use annotations to highlight anatomy and mark findings. Paint directly on the image for teaching and practice.'
+      body: 'Use annotations to highlight anatomy and mark findings. Paint directly on the image for teaching and practice.',
+      requires: 'segmentation'
     },
     {
       selector: '[data-tour-id="seg-controls"]',
       title: 'Tools & Opacity',
-      body: 'Switch between Pointer, Brush, and Eraser. Adjust opacity to see your annotations overlaid on the image.'
+      body: 'Switch between Pointer, Brush, and Eraser. Adjust opacity to see your annotations overlaid on the image.',
+      requires: 'segmentation'
     },
     {
       selector: '[data-tour-id="seg-palette"]',
       title: 'Labels',
-      body: 'Create named labels with different colors. Click a label to make it active, then paint on the slice to mark that structure.'
+      body: 'Create named labels with different colors. Click a label to make it active, then paint on the slice to mark that structure.',
+      requires: 'segmentation'
     }
   ]
 };
@@ -109,9 +115,17 @@ interface GuidedTourProps {
   tourId: TourId | null;
   onClose: () => void;
   onSwitchTab?: (tab: 'ai' | 'segment') => void;
+  capabilities?: {
+    segmentation: boolean;
+  };
 }
 
-const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab }) => {
+const GuidedTour: React.FC<GuidedTourProps> = ({
+  tourId,
+  onClose,
+  onSwitchTab,
+  capabilities,
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
@@ -119,18 +133,52 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
   const tooltipRef = useRef<HTMLDivElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
 
+  const segmentationAvailable = capabilities?.segmentation !== false;
+  const steps = useMemo(() => {
+    const tourSteps = tourId ? TOURS[tourId] : [];
+    return segmentationAvailable
+      ? tourSteps
+      : tourSteps.filter((step) => step.requires !== 'segmentation');
+  }, [segmentationAvailable, tourId]);
+
   // Reset tour state when tourId changes
   useEffect(() => {
     if (tourId) {
       setCurrentStep(0);
       // Switch tab for the first step
-      const firstStep = TOURS[tourId]?.[0];
+      const firstStep = steps[0];
       if (firstStep?.switchTab && onSwitchTab) onSwitchTab(firstStep.switchTab);
     }
-  }, [tourId]);
+  }, [onSwitchTab, steps, tourId]);
 
-  const steps = tourId ? TOURS[tourId] : [];
   const isOpen = !!tourId && steps.length > 0;
+
+  // Keep modal focus inside the tour and return it to the control that opened
+  // the tour. This effect intentionally depends only on the open state so a
+  // step change does not restore focus behind the dialog.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previouslyFocused = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    return () => previouslyFocused?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (tourId && steps.length === 0) onClose();
+  }, [onClose, steps.length, tourId]);
+
+  const handleNext = useCallback(() => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((previousStep) => Math.min(previousStep + 1, steps.length - 1));
+    } else {
+      onClose();
+    }
+  }, [currentStep, onClose, steps.length]);
+
+  const handlePrevious = useCallback(() => {
+    setCurrentStep((previousStep) => Math.max(previousStep - 1, 0));
+  }, []);
 
   // Switch tab when step changes
   useEffect(() => {
@@ -144,6 +192,7 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
     if (!isOpen) return;
 
     let rafId = 0;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
     const step = steps[currentStep];
 
     const findTarget = () => step ? document.querySelector(step.selector) as HTMLElement | null : null;
@@ -173,7 +222,7 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
       // Wait for smooth scroll to settle, then measure
-      setTimeout(measureTarget, 350);
+      settleTimer = setTimeout(measureTarget, 350);
     }
     measureTarget();
 
@@ -198,6 +247,7 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
       window.removeEventListener('resize', updateTarget);
       window.removeEventListener('scroll', updateTarget, true);
       ro?.disconnect();
+      if (settleTimer) clearTimeout(settleTimer);
       clearTimeout(timer);
     };
   }, [isOpen, currentStep, steps]);
@@ -214,20 +264,41 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
-        if (e.key === 'ArrowRight') handleNext();
+        if (e.key === 'Tab') {
+          const focusable = tooltipRef.current?.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          );
+          if (!focusable || focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          } else if (!tooltipRef.current?.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          }
+          return;
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          onClose();
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          handleNext();
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          handlePrevious();
+        }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
-
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      onClose();
-    }
-  };
+  }, [handleNext, handlePrevious, isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -307,7 +378,13 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
   }
 
   return (
-    <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true">
+    <div
+        className="fixed inset-0 z-[100]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="guided-tour-title"
+        aria-describedby="guided-tour-body"
+    >
 
         {/* 1. Interaction Blocker */}
         <div className="absolute inset-0 bg-transparent" onClick={(e) => e.stopPropagation()} />
@@ -330,23 +407,24 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
         {/* 3. Tooltip Card */}
         <div
             ref={tooltipRef}
-            className="bg-slate-900 border border-slate-700 rounded-xl p-5 w-[360px] max-w-[90vw] shadow-2xl flex flex-col gap-3 animate-in fade-in zoom-in-95 duration-300 absolute"
+            className="bg-slate-900 border border-slate-700 rounded-xl p-5 w-[360px] max-w-[90vw] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain shadow-2xl flex flex-col gap-3 animate-in fade-in zoom-in-95 duration-300 absolute"
             style={tooltipStyle}
         >
             <div className="flex justify-between items-start">
-                <h3 className="text-base font-bold text-slate-100 leading-tight">
+                <h3 id="guided-tour-title" className="text-base font-bold text-slate-100 leading-tight">
                     {step.title}
                 </h3>
                 <button
+                    type="button"
                     onClick={onClose}
-                    className="text-slate-500 hover:text-white transition-colors"
+                    className="min-h-11 min-w-11 -mr-3 -mt-3 text-slate-500 hover:text-white transition-colors inline-flex items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                     aria-label="Close tour"
                 >
                     <X className="w-4 h-4" />
                 </button>
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p id="guided-tour-body" className="text-sm text-slate-300 leading-relaxed">
                 {step.body}
             </p>
 
@@ -357,15 +435,17 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ tourId, onClose, onSwitchTab })
 
                 <div className="flex items-center gap-3">
                     <button
+                        type="button"
                         onClick={onClose}
-                        className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+                        className="min-h-11 px-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                     >
                         End tour
                     </button>
                     <button
+                        type="button"
                         ref={nextButtonRef}
                         onClick={handleNext}
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20"
+                        className="min-h-11 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                     >
                         {isLast ? 'Done' : 'Next'}
                         {isLast ? <Check className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}

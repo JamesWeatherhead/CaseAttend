@@ -15,13 +15,25 @@
 import { LearnerLevel } from '../constants';
 import { AiPointer } from '../types';
 import type { DomainKey } from '../lib/domains';
-import { getKey, getModel } from './byokStore';
-import { getOpenRouterResponse, fetchSystemPrompt } from './openrouterClient';
-import type { ORChunk } from './openrouterClient';
+import { getModel } from './byokStore';
+import {
+  getOpenRouterResponse,
+  fetchSystemPrompt,
+  SafeInferenceError,
+} from './openrouterClient';
+import type { OpenRouterResponseMetadata, ORChunk } from './openrouterClient';
+
+export { SafeInferenceError } from './openrouterClient';
+export type { InferenceErrorCode } from './openrouterClient';
 
 export type AiMode = 'chat' | 'deep_think' | 'search';
 export type AIProvider = 'gemini' | 'claude' | 'openai' | 'openrouter';
 export type Modality = DomainKey;
+
+export interface AIInferenceResult extends OpenRouterResponseMetadata {
+  /** SHA-256 of the exact verified, browser-composed prompt sent to OpenRouter. */
+  promptSha256: string;
+}
 
 type OnChunk = (
   text: string,
@@ -75,6 +87,12 @@ function getFirstStructuredTagIndex(text: string): number {
   if (p === -1) return s;
   if (s === -1) return p;
   return Math.min(p, s);
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Replay the word-chunks from a browser-direct OpenRouter call through onChunk,
@@ -142,39 +160,52 @@ export const streamChatResponse = async (
   onChunk: OnChunk,
   _provider: AIProvider = 'openrouter',
   modality: Modality = 'radiology',
-  caseId?: string
-) => {
+  caseId?: string,
+  signal?: AbortSignal,
+  requestedModelId?: string,
+): Promise<AIInferenceResult> => {
   try {
-    const key = getKey();
-    if (!key) {
-      throw new Error('Connect your OpenRouter account to start chatting. Your key is stored in this browser and sent only to OpenRouter.');
-    }
     if (!caseId) {
-      throw new Error('This teaching session is missing a Case Package. Return to the case list and open a registered case.');
+      throw new SafeInferenceError({
+        code: 'missing_case',
+        message: 'This teaching session is missing a Case Package. Return to the case list and open a registered case.',
+        retryable: false,
+      });
     }
-    const systemPrompt = await fetchSystemPrompt({
-      modality,
-      caseId,
-      learnerLevel,
-      mode,
-      hasImage: !!imageBase64,
-    });
-    const chunks = await getOpenRouterResponse({
+    let systemPrompt: string;
+    let promptSha256: string;
+    try {
+      systemPrompt = await fetchSystemPrompt({
+        modality,
+        caseId,
+        learnerLevel,
+        mode,
+        hasImage: !!imageBase64,
+      });
+      promptSha256 = await sha256Hex(systemPrompt);
+    } catch {
+      throw new SafeInferenceError({
+        code: 'prompt_resolution_failed',
+        message: 'This case\'s verified teaching prompt could not be prepared. Return to the case list and reopen the case.',
+        retryable: false,
+      });
+    }
+    const response = await getOpenRouterResponse({
       message,
       systemPrompt,
       imageBase64,
       mode,
-      model: getModel(),
-      apiKey: key,
+      model: requestedModelId ?? getModel(),
+      signal,
     });
-    emitOpenRouterChunks(chunks, onChunk);
-  } catch (error: any) {
-    let userMessage = 'Sorry, I encountered an error connecting to the AI service.';
-    if (error.message) {
-      if (error.message.includes('429')) userMessage = 'High traffic (429). Please try again in a moment.';
-      else if (error.message.includes('500') || error.message.includes('503')) userMessage = 'AI service temporarily unavailable. Please try again.';
-      else userMessage = error.message;
-    }
-    throw new Error(userMessage);
+    emitOpenRouterChunks(response.chunks, onChunk);
+    return { ...response.metadata, promptSha256 };
+  } catch (error: unknown) {
+    if (error instanceof SafeInferenceError) throw error;
+    throw new SafeInferenceError({
+      code: 'unexpected_error',
+      message: 'Sorry, I encountered an error connecting to the AI service.',
+      retryable: true,
+    });
   }
 };

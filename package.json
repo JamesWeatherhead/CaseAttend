@@ -1,7 +1,7 @@
 {
   "name": "caseattend",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
@@ -24,6 +24,7 @@
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
     "dotenv": "^17.4.2",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
     "tailwindcss": "^4.1.0",
     "tsx": "^4.23.8",

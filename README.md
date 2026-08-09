@@ -169,6 +169,23 @@ Plan bundle and never includes a key, chat transcript, screenshot, or unrelated
 browser data. An unreviewed plan remains clearly labeled as a draft; the tool
 does not grant clinical, institutional, or IRB approval.
 
+## Browser-local session events
+
+CaseAttend can record a versioned, metadata-only learning event stream in the
+learner's browser. Events bind a session to the exact Case Package, Lesson Plan,
+application version, submitted frame hash, annotation counts, learner level,
+model request metadata, timing, and token usage when the provider returns it.
+The schema has no fields for raw chat, prompts, screenshots, image data,
+annotation coordinates, names, emails, API keys, or authorization headers.
+
+IndexedDB is the default store. If it is unavailable, CaseAttend falls back to
+memory for the current tab and shows that the data will be lost when the page
+closes. The **Session data** panel lets the learner preview, export, or delete
+their own records. JSONL is the canonical event export and CSV is a fixed,
+analysis-friendly table. Recording, preview, export, and deletion make no
+network request. A later institution-managed research collector must remain an
+explicit, separately consented deployment feature.
+
 ## Contributing
 
 PRs welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Case content and
@@ -185,7 +202,7 @@ If CaseAttend is useful in your research or teaching, please cite it. GitHub's *
 ```
 Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
 CaseAttend: a case-based visual reasoning tutor for medical education
-(Version 0.2.0) [Computer software].
+(Version 0.3.0) [Computer software].
 https://github.com/JamesWeatherhead/CaseAttend
 ```
 

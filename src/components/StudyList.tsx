@@ -192,18 +192,50 @@ const FILTERS = [
   { id: 'derm', label: 'Dermatology' },
 ];
 
-const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onOpenLessonBuilder }) => {
+const StudyList: React.FC<StudyListProps> = ({
+  onSelectStudy,
+  dicomConfig,
+  onOpenLessonBuilder,
+}) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
 
+  const loadCases = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      setCasePackages(await searchDicomWebStudies(dicomConfig));
+    } catch {
+      setLoadError('Cases could not be loaded. Your browser-local session data is still available.');
+    } finally {
+      setLoading(false);
+    }
+  }, [dicomConfig]);
+
   useEffect(() => {
-    searchDicomWebStudies(dicomConfig).then((data) => { setCasePackages(data); setLoading(false); });
-  }, []);
+    void loadCases();
+  }, [loadCases]);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-full bg-[#06070a]"><Loader2 className="w-5 h-5 text-[#62666d] animate-spin" /></div>;
+    return <div className="flex items-center justify-center h-full bg-[#06070a]" role="status" aria-label="Loading cases"><Loader2 className="w-5 h-5 text-[#62666d] animate-spin" /></div>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 bg-[#06070a] px-6 text-center">
+        <p className="max-w-md text-sm text-[#c9ced8]" role="alert">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => void loadCases()}
+          className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+        >
+          Try loading cases again
+        </button>
+      </div>
+    );
   }
 
   return (
