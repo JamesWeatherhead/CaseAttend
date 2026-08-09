@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound } from 'lucide-react';
-import { streamChatResponse, preAnalyzeSlice, AiMode, AIProvider } from '../services/aiClient';
+import { streamChatResponse, AiMode, AIProvider } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
 import { ChatMessage, CursorContext, AiPointer } from '../types';
@@ -37,7 +37,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   onJumpToSlice,
   activeSeriesInfo,
   onStartTour,
-  onPointers
+  onPointers,
 }) => {
   // Learner Level State (must be before messages so welcome adapts)
   const [learnerLevel, setLearnerLevel] = useState<LearnerLevel>(() => {
@@ -97,11 +97,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   // Dynamic suggestions cache (pre-fetched for all levels)
   const [dynamicSuggestionsMap, setDynamicSuggestionsMap] = useState<Record<LearnerLevel, string[]> | null>(null);
 
-  // Pre-analysis context: grounding description generated when a slice is first captured.
-  // Prepended to every user prompt so the AI stays grounded in the actual image content.
-  const [sliceAnalysis, setSliceAnalysis] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
   useEffect(() => {
     localStorage.setItem('caseattend_learner_level', learnerLevel);
   }, [learnerLevel]);
@@ -109,49 +104,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   useEffect(() => {
     localStorage.setItem('caseattend_provider', provider);
   }, [provider]);
-
-  // Run whole-slide pre-analysis once when the study loads.
-  // Uses the first image of the first series as the overview.
-  // This grounds ALL subsequent AI responses in the actual slide content,
-  // preventing jailbreaking regardless of what the user captures or segments.
-  useEffect(() => {
-    if (!studyMetadata) return;
-    // BYOK: hold off on grounding until the visitor connects their key.
-    // Re-runs automatically when byokConnected flips true (see deps).
-    if (provider === 'openrouter' && !byokConnected) {
-      setSliceAnalysis(null);
-      setIsAnalyzing(false);
-      return;
-    }
-    setSliceAnalysis(null);
-    setIsAnalyzing(true);
-
-    // Load the overview image for pre-analysis (each domain knows its own image paths)
-    const overviewUrl = domain.overviewImage(studyMetadata.studyId);
-
-    fetch(overviewUrl)
-      .then(r => r.blob())
-      .then(blob => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-          preAnalyzeSlice(
-            base64,
-            provider,
-            domain.key,
-            'Whole slide overview',
-            studyMetadata.description || ''
-          ).then(analysis => {
-            if (analysis) {
-              setSliceAnalysis(analysis);
-              console.log('[Slide Pre-analysis] Grounding context cached:', analysis.substring(0, 120) + '...');
-            }
-          }).finally(() => setIsAnalyzing(false));
-        };
-        reader.readAsDataURL(blob);
-      })
-      .catch(() => setIsAnalyzing(false));
-  }, [studyMetadata?.studyId, provider, byokConnected]);
 
   // Scroll welcome message to top on first render
   const hasScrolledWelcome = useRef(false);
@@ -312,11 +264,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         if (capturedSliceInfo) promptToSend += `, Captured: ${capturedSliceInfo.label || 'slice'} ${capturedSliceInfo.slice}/${capturedSliceInfo.total || '?'}`;
         else if (cursor) promptToSend += `, Current frame: ${cursor.frameIndex + 1}`;
         promptToSend += ']';
-    }
-
-    // Inject pre-analysis grounding context (prevents hallucination and jailbreaking)
-    if (sliceAnalysis) {
-        promptToSend += `\n\n[IMAGE PRE-ANALYSIS (ground truth - base your answers on this factual description of what is actually in the image):\n${sliceAnalysis}]`;
     }
 
     const botMsgId = (Date.now() + 1).toString();
@@ -498,9 +445,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
           <div className="flex items-center gap-1">
                <span className="flex items-center gap-1 text-emerald-400 font-medium">
                    <ImageIcon className="w-3 h-3" />
-                   Current view attached on send
-                   {isAnalyzing && <span className="text-yellow-400 ml-1 animate-pulse">analyzing...</span>}
-                   {sliceAnalysis && !isAnalyzing && <span className="text-emerald-500 ml-1">grounded</span>}
+                   Nothing is sent until Send
                </span>
           </div>
       </div>
@@ -714,11 +659,13 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     disabled={isThinking}
+                    aria-label="Question for the AI tutor"
                 />
                 <button
                     onClick={() => handleSendMessage()}
                     disabled={!input.trim() || isThinking}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors"
+                    aria-label="Send view and question"
                 >
                     <Send className="w-4 h-4" />
                 </button>
@@ -745,7 +692,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     </div>
                 ) : (
                     <div className="w-full">
-                        <span>The AI sees your current view every time you press Send. Scroll, draw, then ask.</span>
+                        <span>Send includes the current view. The image and chat go directly to OpenRouter and the selected model provider. Your key stays in this browser. Do not use identifiable patient data.</span>
                     </div>
                 )}
             </div>
