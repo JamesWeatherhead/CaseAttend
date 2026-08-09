@@ -3,9 +3,22 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+const rawBuildRevision = process.env.CF_PAGES_COMMIT_SHA
+  ?? process.env.GITHUB_SHA
+  ?? process.env.VERCEL_GIT_COMMIT_SHA
+  ?? 'development';
+const buildRevision = /^[a-f0-9]{7,64}$/i.test(rawBuildRevision)
+  ? rawBuildRevision.toLowerCase()
+  : 'development';
+const sourceTreeUrl = `https://github.com/JamesWeatherhead/CaseAttend/tree/${
+  buildRevision === 'development' ? 'main' : buildRevision
+}`;
+
 export default defineConfig({
   define: {
-    __CASEATTEND_APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.3.0'),
+    __CASEATTEND_APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.4.0'),
+    __CASEATTEND_BUILD_REVISION__: JSON.stringify(buildRevision),
+    __CASEATTEND_SOURCE_TREE_URL__: JSON.stringify(sourceTreeUrl),
   },
   server: {
     port: 3000,

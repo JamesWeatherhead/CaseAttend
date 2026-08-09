@@ -15,13 +15,19 @@
 import { LearnerLevel } from '../constants';
 import { AiPointer } from '../types';
 import type { DomainKey } from '../lib/domains';
+import type { CasePackageV1 } from '../core/casePackage';
+import type { LessonPlanV1 } from '../core/lessonPlan';
 import { getModel } from './byokStore';
 import {
   getOpenRouterResponse,
   fetchSystemPrompt,
   SafeInferenceError,
 } from './openrouterClient';
-import type { OpenRouterResponseMetadata, ORChunk } from './openrouterClient';
+import type {
+  LockedOpenRouterPolicy,
+  OpenRouterResponseMetadata,
+  ORChunk,
+} from './openrouterClient';
 
 export { SafeInferenceError } from './openrouterClient';
 export type { InferenceErrorCode } from './openrouterClient';
@@ -33,6 +39,18 @@ export type Modality = DomainKey;
 export interface AIInferenceResult extends OpenRouterResponseMetadata {
   /** SHA-256 of the exact verified, browser-composed prompt sent to OpenRouter. */
   promptSha256: string;
+}
+
+/** Exact content and inference policy used by a frozen participant condition. */
+export interface LockedTutorRuntime {
+  casePackage: CasePackageV1;
+  lessonPlan: LessonPlanV1;
+  /** Hash frozen in the selected research case step. */
+  expectedSystemPromptSha256: string;
+  /** Exact number of prior UI messages included in the learner request. */
+  historyWindowMessages: number;
+  requestTemplateVersion: '1.0';
+  openRouterPolicy: LockedOpenRouterPolicy;
 }
 
 type OnChunk = (
@@ -163,6 +181,7 @@ export const streamChatResponse = async (
   caseId?: string,
   signal?: AbortSignal,
   requestedModelId?: string,
+  lockedRuntime?: LockedTutorRuntime,
 ): Promise<AIInferenceResult> => {
   try {
     if (!caseId) {
@@ -170,6 +189,20 @@ export const streamChatResponse = async (
         code: 'missing_case',
         message: 'This teaching session is missing a Case Package. Return to the case list and open a registered case.',
         retryable: false,
+      });
+    }
+    if (lockedRuntime && (
+      lockedRuntime.requestTemplateVersion !== '1.0'
+      || !Number.isSafeInteger(lockedRuntime.historyWindowMessages)
+      || lockedRuntime.historyWindowMessages < 0
+      || lockedRuntime.historyWindowMessages > 100
+      || !/^[a-f0-9]{64}$/.test(lockedRuntime.expectedSystemPromptSha256)
+    )) {
+      throw new SafeInferenceError({
+        code: 'protocol_deviation',
+        message: 'The learner request template or prompt reference does not match this CaseAttend build. The model request was not sent.',
+        retryable: false,
+        deviation: { code: 'inference_parameter_mismatch' },
       });
     }
     let systemPrompt: string;
@@ -181,9 +214,24 @@ export const streamChatResponse = async (
         learnerLevel,
         mode,
         hasImage: !!imageBase64,
+        ...(lockedRuntime
+          ? {
+              casePackage: lockedRuntime.casePackage,
+              lessonPlan: lockedRuntime.lessonPlan,
+            }
+          : {}),
       });
       promptSha256 = await sha256Hex(systemPrompt);
-    } catch {
+      if (lockedRuntime && promptSha256 !== lockedRuntime.expectedSystemPromptSha256) {
+        throw new SafeInferenceError({
+          code: 'protocol_deviation',
+          message: 'The teaching prompt does not match the frozen research condition. The model request was not sent.',
+          retryable: false,
+          deviation: { code: 'inference_parameter_mismatch' },
+        });
+      }
+    } catch (error) {
+      if (error instanceof SafeInferenceError) throw error;
       throw new SafeInferenceError({
         code: 'prompt_resolution_failed',
         message: 'This case\'s verified teaching prompt could not be prepared. Return to the case list and reopen the case.',
@@ -195,7 +243,8 @@ export const streamChatResponse = async (
       systemPrompt,
       imageBase64,
       mode,
-      model: requestedModelId ?? getModel(),
+      model: lockedRuntime?.openRouterPolicy.model ?? requestedModelId ?? getModel(),
+      ...(lockedRuntime ? { lockedPolicy: lockedRuntime.openRouterPolicy } : {}),
       signal,
     });
     emitOpenRouterChunks(response.chunks, onChunk);

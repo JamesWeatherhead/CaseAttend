@@ -3,6 +3,7 @@ import React from 'react';
 import { ToolMode } from '../types';
 import { TOOLS } from '../constants';
 import type { ArtifactHints } from '../lib/domains';
+import type { ResearchViewerPolicyV1 } from '../core/researchManifest';
 import { GripVertical, GripHorizontal } from 'lucide-react';
 
 interface FloatingToolbarProps {
@@ -14,6 +15,7 @@ interface FloatingToolbarProps {
   isDragging?: boolean;
   instanceCount?: number;
   artifactHints?: ArtifactHints;
+  interactionPolicy?: ResearchViewerPolicyV1;
 }
 
 const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
@@ -24,15 +26,30 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   orientation,
   isDragging,
   instanceCount = 1,
-  artifactHints
+  artifactHints,
+  interactionPolicy,
 }) => {
   const visibleTools = TOOLS.filter(t => {
-    if (t.id === ToolMode.SCROLL && instanceCount <= 1) return false;
-    if (t.id === ToolMode.WINDOW_LEVEL && artifactHints && !artifactHints.showWindowLevel) return false;
+    if (
+      t.id === ToolMode.SCROLL
+      && (instanceCount <= 1 || interactionPolicy?.allowFrameNavigation === false)
+    ) return false;
+    if (
+      t.id === ToolMode.WINDOW_LEVEL
+      && ((artifactHints && !artifactHints.showWindowLevel) || interactionPolicy?.allowWindowLevel === false)
+    ) return false;
+    if (
+      (t.id === ToolMode.PAN || t.id === ToolMode.ZOOM)
+      && interactionPolicy?.allowPanZoom === false
+    ) return false;
+    if (t.id === ToolMode.MEASURE && interactionPolicy?.allowAnnotations === false) return false;
     if (
       (t.id === ToolMode.BRUSH || t.id === ToolMode.ERASER)
-      && artifactHints
-      && !artifactHints.showSegmentation
+      && (
+        (artifactHints && !artifactHints.showSegmentation)
+        || interactionPolicy?.allowAnnotations === false
+        || interactionPolicy?.allowSegmentation === false
+      )
     ) return false;
     return true;
   });

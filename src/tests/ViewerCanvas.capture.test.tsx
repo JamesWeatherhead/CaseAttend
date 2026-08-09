@@ -195,6 +195,18 @@ async function resolveImage(index: number) {
 }
 
 describe('ViewerCanvas captureCurrentView', () => {
+  it('exposes the neutral Case Package description to assistive technology', () => {
+    const view = render(<ViewerCanvas {...viewerProps({
+      accessibleDescription: 'Neutral description of the visible teaching image.',
+    })} />);
+    const canvas = view.getByRole('img');
+    const descriptionId = canvas.getAttribute('aria-describedby');
+    expect(descriptionId).toBeTruthy();
+    expect(document.getElementById(String(descriptionId))?.textContent).toContain(
+      'Neutral description of the visible teaching image.',
+    );
+  });
+
   beforeEach(() => {
     ControlledImage.instances = [];
     exportRecords.length = 0;
@@ -359,6 +371,77 @@ describe('ViewerCanvas captureCurrentView', () => {
       .filter((operation) => operation.name === 'fillText')
       .map((operation) => operation.args[0]);
     expect(exportedText).toContain('Learner lesion: 10.0 mm');
+  });
+
+  it('enforces frozen viewer permissions inside the canvas and omits overlays when configured', async () => {
+    const ref = createRef<ViewerHandle>();
+    const onSliceChange = vi.fn();
+    const onAnnotationMutation = vi.fn();
+    const measurement: Measurement = {
+      id: 'hidden-measurement',
+      start: { x: 20, y: 20 },
+      end: { x: 60, y: 20 },
+      value: 20,
+      sliceIndex: 0,
+      label: 'Must not be submitted',
+      createdAt: 1,
+    };
+    const { container } = render(
+      <ViewerCanvas ref={ref} {...viewerProps({
+        activeTool: ToolMode.BRUSH,
+        measurements: [measurement],
+        onSliceChange,
+        onAnnotationMutation,
+        includeAnnotationsInCapture: false,
+        interactionPolicy: {
+          allowFrameNavigation: false,
+          allowWindowLevel: false,
+          allowPanZoom: false,
+          allowAnnotations: false,
+          allowSegmentation: false,
+        },
+      })} />,
+    );
+    await waitForImage(0);
+    await resolveImage(0);
+
+    const canvas = container.querySelector('canvas')!;
+    expect(canvas.getAttribute('aria-label')).toContain('Viewer keyboard controls are frozen for this study.');
+    expect(canvas.getAttribute('aria-label')).not.toContain('Use arrow keys');
+    expect(canvas.getAttribute('aria-label')).not.toContain('plus or minus');
+    expect(canvas.style.touchAction).toBe('pan-y pinch-zoom');
+    expect(container.querySelector('[data-testid="slice-scrollbar"]')).toBeNull();
+    fireEvent.mouseDown(canvas, { button: 0, clientX: 400, clientY: 300 });
+    fireEvent.mouseUp(canvas);
+    fireEvent.wheel(canvas, { deltaY: 100 });
+    fireEvent.keyDown(canvas, { key: 'ArrowRight' });
+
+    expect(onAnnotationMutation).not.toHaveBeenCalled();
+    expect(onSliceChange).not.toHaveBeenCalled();
+    expect(ref.current?.captureCurrentView()?.annotation.measurementCount).toBe(1);
+    const exportedText = exportRecords.at(-1)?.sourceOperations
+      .filter((operation) => operation.name === 'fillText')
+      .map((operation) => operation.args[0]);
+    expect(exportedText).not.toContain('Must not be submitted');
+  });
+
+  it('announces only the keyboard controls available for the current series and policy', () => {
+    const { getByRole, rerender } = render(<ViewerCanvas {...viewerProps()} />);
+    expect(getByRole('img').getAttribute('aria-label')).toContain('Use arrow keys, Home, or End to change views.');
+    expect(getByRole('img').getAttribute('aria-label')).toContain('Use plus or minus to zoom.');
+
+    rerender(<ViewerCanvas {...viewerProps({
+      isScrollEnabled: false,
+      interactionPolicy: {
+        allowFrameNavigation: false,
+        allowWindowLevel: true,
+        allowPanZoom: true,
+        allowAnnotations: true,
+        allowSegmentation: true,
+      },
+    })} />);
+    expect(getByRole('img').getAttribute('aria-label')).not.toContain('Use arrow keys');
+    expect(getByRole('img').getAttribute('aria-label')).toContain('Use plus or minus to zoom.');
   });
 
   it('keeps series-level segmentation presence valid on a clean current frame', async () => {

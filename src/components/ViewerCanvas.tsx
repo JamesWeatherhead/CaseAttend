@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useRef, useEffect, useId, useLayoutEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Series, ToolMode, ViewportState, Point, Measurement, DicomWebConfig, SegmentationLayer, ViewerHandle, Segment, AiPointer } from '../types';
 import { DEFAULT_VIEWPORT_STATE } from '../constants';
 import { fetchDicomImageBlob, prefetchImage } from '../services/dicomService';
@@ -30,6 +30,18 @@ interface ViewerCanvasProps {
   aiPointers?: AiPointer[];
   getAnnotationAudit?: () => { revision: number; lastChangedAt?: string };
   onAnnotationMutation?: () => void;
+  /** Neutral, answer-safe description exposed to assistive technology. */
+  accessibleDescription?: string;
+  /** Defense-in-depth interaction limits for a frozen participant condition. */
+  interactionPolicy?: {
+    allowFrameNavigation: boolean;
+    allowWindowLevel: boolean;
+    allowPanZoom: boolean;
+    allowAnnotations: boolean;
+    allowSegmentation: boolean;
+  };
+  /** Whether learner overlays are baked into the submitted JPEG. */
+  includeAnnotationsInCapture?: boolean;
 }
 
 function pointToSegmentDistanceSquared(point: Point, start: Point, end: Point): number {
@@ -135,9 +147,13 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   aiPointers,
   getAnnotationAudit,
   onAnnotationMutation,
+  accessibleDescription,
+  interactionPolicy,
+  includeAnnotationsInCapture = true,
 }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const accessibleDescriptionId = useId();
   const hasFittedRef = useRef(false);
   
   // Segmentation Data: Keyed by Series ID -> Slice Index
@@ -216,7 +232,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
       // AI pointers are transient tutor output, not learner-authored evidence.
       // Re-render without them for the export, then immediately restore the
       // visible canvas. Learner measurements and segmentation remain included.
-      renderScene(false);
+      renderScene(false, includeAnnotationsInCapture);
       try {
         const exported = document.createElement('canvas');
         exported.width = canvas.width;
@@ -240,6 +256,10 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
         return {
           image: exported.toDataURL('image/jpeg', 0.9),
+          mimeType: 'image/jpeg' as const,
+          width: exported.width,
+          height: exported.height,
+          capturePipelineVersion: 'caseattend-canvas-jpeg-v1' as const,
           seriesId: series.id,
           frameIndex: sliceIndex,
           frameCount: series.instances.length,
@@ -438,7 +458,10 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   };
 
   // --- MAIN RENDER FUNCTION ---
-  const renderScene = (includeAiPointers = true) => {
+  const renderScene = (
+    includeAiPointers = true,
+    includeLearnerAnnotations = interactionPolicy?.allowAnnotations !== false,
+  ) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -467,12 +490,18 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     ctx.drawImage(currentImageBitmap, 0, 0, w, h);
 
     // --- SEGMENTATION LAYER RENDERING ---
-    if (segmentationLayer.isVisible) {
+    if (
+      includeLearnerAnnotations
+      && interactionPolicy?.allowSegmentation !== false
+      && segmentationLayer.isVisible
+    ) {
        renderLabelMap(ctx, w, h, sliceIndex, segmentationLayer);
     }
 
     // --- MEASUREMENT LAYER RENDERING ---
-    const sliceMeasurements = measurements.filter(m => m.sliceIndex === sliceIndex);
+    const sliceMeasurements = includeLearnerAnnotations
+      ? measurements.filter(m => m.sliceIndex === sliceIndex)
+      : [];
     
     // Track occupied label space to resolve overlaps
     // Stores { x, y, w, h } in world (image) coordinates, but with scale factors accounted for collision
@@ -824,6 +853,21 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     e: React.MouseEvent<HTMLCanvasElement> | React.PointerEvent<HTMLCanvasElement>,
   ) => {
     e.preventDefault(); 
+
+    const annotationTool = activeTool === ToolMode.MEASURE;
+    const segmentationTool = activeTool === ToolMode.BRUSH || activeTool === ToolMode.ERASER;
+    if (
+      (e.button === 1 && interactionPolicy?.allowPanZoom === false)
+      || (activeTool === ToolMode.PAN && interactionPolicy?.allowPanZoom === false)
+      || (activeTool === ToolMode.ZOOM && interactionPolicy?.allowPanZoom === false)
+      || (activeTool === ToolMode.WINDOW_LEVEL && interactionPolicy?.allowWindowLevel === false)
+      || (activeTool === ToolMode.SCROLL && interactionPolicy?.allowFrameNavigation === false)
+      || (annotationTool && interactionPolicy?.allowAnnotations === false)
+      || (segmentationTool && (
+        interactionPolicy?.allowAnnotations === false
+        || interactionPolicy?.allowSegmentation === false
+      ))
+    ) return;
     
     interactionRef.current.isDragging = true;
     interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
@@ -976,7 +1020,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     
     const { activeButton, dragStart } = interactionRef.current;
     
-    if (activeButton === 1 && dragStart) {
+    if (activeButton === 1 && dragStart && interactionPolicy?.allowPanZoom !== false) {
         const dx = e.clientX - dragStart.x;
         const dy = e.clientY - dragStart.y;
         setViewport(p => ({ ...p, pan: { x: p.pan.x + dx, y: p.pan.y + dy }}));
@@ -984,7 +1028,12 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         return;
     }
 
-    if (activeButton === 0 && (activeTool === ToolMode.BRUSH || activeTool === ToolMode.ERASER)) {
+    if (
+      activeButton === 0
+      && interactionPolicy?.allowAnnotations !== false
+      && interactionPolicy?.allowSegmentation !== false
+      && (activeTool === ToolMode.BRUSH || activeTool === ToolMode.ERASER)
+    ) {
         const lastP = interactionRef.current.lastDrawPoint;
         if (lastP) {
            const p = getCanvasPoint(e);
@@ -998,14 +1047,14 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
 
-    if (activeTool === ToolMode.PAN && activeButton === 0) {
+    if (activeTool === ToolMode.PAN && activeButton === 0 && interactionPolicy?.allowPanZoom !== false) {
       setViewport(p => ({ ...p, pan: { x: p.pan.x + dx, y: p.pan.y + dy }}));
       interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
-    } else if (activeTool === ToolMode.ZOOM && activeButton === 0) {
+    } else if (activeTool === ToolMode.ZOOM && activeButton === 0 && interactionPolicy?.allowPanZoom !== false) {
       const zoomFactor = 1 + (dy * -0.005);
       setViewport(p => ({ ...p, scale: Math.max(0.1, Math.min(5, p.scale * zoomFactor)) }));
       interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
-    } else if (activeTool === ToolMode.WINDOW_LEVEL && activeButton === 0) {
+    } else if (activeTool === ToolMode.WINDOW_LEVEL && activeButton === 0 && interactionPolicy?.allowWindowLevel !== false) {
       setViewport(p => ({ 
         ...p, 
         windowWidth: p.windowWidth + dx * 2, 
@@ -1014,7 +1063,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
       interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
     } else if (activeTool === ToolMode.SCROLL && activeButton === 0) {
       // SCROLL BLOCKING for drag gesture
-      if (isScrollEnabled === false) return;
+      if (isScrollEnabled === false || interactionPolicy?.allowFrameNavigation === false) return;
 
       if (Math.abs(dy) > 10) {
         const dir = dy > 0 ? 1 : -1;
@@ -1025,7 +1074,12 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
             interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
         }
       }
-    } else if (activeTool === ToolMode.MEASURE && draftMeasurement && activeButton === 0) {
+    } else if (
+      activeTool === ToolMode.MEASURE
+      && draftMeasurement
+      && activeButton === 0
+      && interactionPolicy?.allowAnnotations !== false
+    ) {
       const p = getCanvasPoint(e);
       const dist = Math.sqrt(Math.pow(p.x - draftMeasurement.start.x, 2) + Math.pow(p.y - draftMeasurement.start.y, 2));
       setDraftMeasurement({ ...draftMeasurement, end: p, value: dist });
@@ -1074,6 +1128,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
      const isZoomAction = e.ctrlKey || e.metaKey || activeTool === ToolMode.ZOOM;
 
      if (isZoomAction) {
+         if (interactionPolicy?.allowPanZoom === false) return;
          const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
          setViewport(p => ({ 
              ...p, 
@@ -1081,7 +1136,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
          }));
      } else {
         // SCROLL BLOCKING for mouse wheel
-        if (isScrollEnabled === false) return;
+        if (isScrollEnabled === false || interactionPolicy?.allowFrameNavigation === false) return;
 
         const dir = e.deltaY > 0 ? 1 : -1;
         const max = series?.instances.length || series?.instanceCount || 0;
@@ -1122,17 +1177,21 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
       nextFrame = 0;
     } else if (e.key === 'End') {
       nextFrame = maxFrame;
-    } else if (e.key === '+' || e.key === '=') {
+    } else if ((e.key === '+' || e.key === '=') && interactionPolicy?.allowPanZoom !== false) {
       e.preventDefault();
       setViewport((previous) => ({ ...previous, scale: Math.min(5, previous.scale * 1.1) }));
       return;
-    } else if (e.key === '-') {
+    } else if (e.key === '-' && interactionPolicy?.allowPanZoom !== false) {
       e.preventDefault();
       setViewport((previous) => ({ ...previous, scale: Math.max(0.1, previous.scale * 0.9) }));
       return;
     }
 
-    if (nextFrame !== null && isScrollEnabled !== false) {
+    if (
+      nextFrame !== null
+      && isScrollEnabled !== false
+      && interactionPolicy?.allowFrameNavigation !== false
+    ) {
       e.preventDefault();
       if (nextFrame !== sliceIndex) onSliceChange(nextFrame);
     }
@@ -1143,6 +1202,33 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   }
 
   const hasMultipleFrames = series.instanceCount > 1;
+  const keyboardFrameNavigationAvailable = hasMultipleFrames
+    && isScrollEnabled !== false
+    && interactionPolicy?.allowFrameNavigation !== false;
+  const keyboardZoomAvailable = interactionPolicy?.allowPanZoom !== false;
+  const activeToolOwnsTouch = (
+    (activeTool === ToolMode.PAN || activeTool === ToolMode.ZOOM)
+      ? interactionPolicy?.allowPanZoom !== false
+      : activeTool === ToolMode.WINDOW_LEVEL
+        ? interactionPolicy?.allowWindowLevel !== false
+        : activeTool === ToolMode.SCROLL
+          ? keyboardFrameNavigationAvailable
+          : activeTool === ToolMode.MEASURE
+            ? interactionPolicy?.allowAnnotations !== false
+            : (activeTool === ToolMode.BRUSH || activeTool === ToolMode.ERASER)
+              ? interactionPolicy?.allowAnnotations !== false
+                && interactionPolicy?.allowSegmentation !== false
+              : false
+  );
+  const keyboardInstructions = [
+    keyboardFrameNavigationAvailable
+      ? 'Use arrow keys, Home, or End to change views.'
+      : '',
+    keyboardZoomAvailable
+      ? 'Use plus or minus to zoom.'
+      : '',
+  ].filter(Boolean).join(' ')
+    || 'Viewer keyboard controls are frozen for this study.';
   const scrollPct = series.instanceCount > 0 ? (sliceIndex / series.instanceCount) * 100 : 0;
   
   let cursorStyle = 'default';
@@ -1157,6 +1243,11 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         onWheel={handleWheel}
         onContextMenu={(e) => e.preventDefault()} 
     >
+      {accessibleDescription && (
+        <span id={accessibleDescriptionId} className="sr-only">
+          {accessibleDescription}
+        </span>
+      )}
       <canvas
         ref={canvasRef}
         width={canvasSize.width}
@@ -1172,16 +1263,19 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         onKeyDown={handleCanvasKeyDown}
         tabIndex={0}
         role="img"
-        aria-label={`${series.description || series.modality}. Current view ${sliceIndex + 1} of ${Math.max(1, series.instanceCount)}. Use arrow keys to change views and plus or minus to zoom.`}
+        aria-describedby={accessibleDescription ? accessibleDescriptionId : undefined}
+        aria-label={`${series.description || series.modality}. Current view ${sliceIndex + 1} of ${Math.max(1, series.instanceCount)}. ${keyboardInstructions}`}
         style={{ 
           cursor: cursorStyle,
           filter: getFilterStyle(),
-          touchAction: 'none',
+          // Pointer mode and frozen controls leave vertical pan/pinch zoom to
+          // the participant page, which is the sole mobile scroll owner.
+          touchAction: activeToolOwnsTouch ? 'none' : 'pan-y pinch-zoom',
         }}
         className="block"
       />
       
-      {hasMultipleFrames && (
+      {keyboardFrameNavigationAvailable && (
         <div
           data-testid="slice-scrollbar"
           className="absolute right-2 top-4 bottom-4 w-1.5 bg-gray-800 rounded-full overflow-hidden opacity-50 hover:opacity-100 transition-opacity pointer-events-none"

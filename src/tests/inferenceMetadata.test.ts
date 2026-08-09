@@ -3,7 +3,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { streamChatResponse } from '../services/aiClient';
 import { setKey, setModel } from '../services/byokStore';
+import { requireCasePackage } from '../data/caseRegistry';
+import { requireLessonPlanForCase } from '../data/lessonRegistry';
 import {
+  fetchSystemPrompt,
   getOpenRouterResponse,
   SafeInferenceError,
 } from '../services/openrouterClient';
@@ -96,6 +99,94 @@ describe('safe browser-direct inference metadata', () => {
     expect(result.metadata.model).toBe('unknown');
     expect(result.metadata).not.toHaveProperty('resolvedModelId');
     expect(result.metadata).not.toHaveProperty('upstreamProviderId');
+  });
+
+  it('sends the exact frozen research routing policy and accepts only the locked route', async () => {
+    setKey('sk-private');
+    const fetchSpy = vi.fn(async (_url: string, init?: RequestInit) => new Response(JSON.stringify({
+      model: 'research/vision-model',
+      provider: 'research-provider',
+      choices: [{ message: { content: 'Locked teaching response' }, finish_reason: 'stop' }],
+    }), { status: 200 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await getOpenRouterResponse({
+      message: 'Question',
+      systemPrompt: 'Verified teaching prompt',
+      imageBase64: null,
+      mode: 'chat',
+      model: 'ignored/by-locked-policy',
+      lockedPolicy: {
+        model: 'research/vision-model',
+        upstreamProviderId: 'research-provider',
+        temperature: 0.2,
+        topP: 0.9,
+        seed: 42,
+        maxTokens: 2048,
+        allowFallbacks: false,
+        requireParameters: true,
+        zeroDataRetention: true,
+        dataCollection: 'deny',
+      },
+    });
+
+    const [, init] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    expect(JSON.parse(String(init.body))).toEqual({
+      model: 'research/vision-model',
+      messages: [
+        { role: 'system', content: 'Verified teaching prompt' },
+        { role: 'user', content: 'Question' },
+      ],
+      max_tokens: 2048,
+      stream: false,
+      temperature: 0.2,
+      top_p: 0.9,
+      seed: 42,
+      provider: {
+        only: ['research-provider'],
+        order: ['research-provider'],
+        allow_fallbacks: false,
+        require_parameters: true,
+        zdr: true,
+        data_collection: 'deny',
+      },
+    });
+  });
+
+  it('discards a response outside the frozen research model or provider', async () => {
+    setKey('sk-private');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
+      model: 'different/model',
+      provider: 'different-provider',
+      choices: [{ message: { content: 'Must not be accepted' }, finish_reason: 'stop' }],
+    }), { status: 200 })));
+
+    await expect(getOpenRouterResponse({
+      message: 'Question',
+      systemPrompt: 'Verified teaching prompt',
+      imageBase64: null,
+      mode: 'chat',
+      model: 'research/vision-model',
+      lockedPolicy: {
+        model: 'research/vision-model',
+        upstreamProviderId: 'research-provider',
+        temperature: 0,
+        topP: 1,
+        maxTokens: 1024,
+        allowFallbacks: false,
+        requireParameters: true,
+        zeroDataRetention: true,
+        dataCollection: 'deny',
+      },
+    })).rejects.toMatchObject({
+      code: 'protocol_deviation',
+      retryable: false,
+      deviation: {
+        code: 'model_mismatch',
+        expectedId: 'research/vision-model',
+        observedId: 'different/model',
+      },
+    });
   });
 
   it('uses typed curated errors without reading or exposing provider bodies', async () => {
@@ -197,5 +288,109 @@ describe('safe browser-direct inference metadata', () => {
     expect(JSON.stringify(result)).not.toContain('sk-test-never-return');
     expect(JSON.stringify(result)).not.toContain('Teaching response');
     expect(onChunk).toHaveBeenCalledWith('Teaching response');
+  });
+
+  it('ignores the mutable browser model when a frozen tutor runtime is supplied', async () => {
+    setKey('sk-test-never-return');
+    setModel('mutable/browser-model');
+    const casePackage = await requireCasePackage('derm-bcc');
+    const lessonPlan = await requireLessonPlanForCase(casePackage);
+    const systemPrompt = await fetchSystemPrompt({
+      modality: casePackage.domain,
+      caseId: casePackage.id,
+      learnerLevel: 'undergrad',
+      mode: 'chat',
+      hasImage: false,
+      casePackage,
+      lessonPlan,
+    });
+    let requestBody: Record<string, any> = {};
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      requestBody = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({
+        model: 'research/locked-model',
+        provider: 'research-provider',
+        choices: [{ message: { content: 'Frozen response' }, finish_reason: 'stop' }],
+      }), { status: 200 });
+    }));
+
+    const result = await streamChatResponse(
+      'What should I inspect?',
+      'chat',
+      'undergrad',
+      null,
+      vi.fn(),
+      'openrouter',
+      casePackage.domain,
+      casePackage.id,
+      undefined,
+      undefined,
+      {
+        casePackage,
+        lessonPlan,
+        expectedSystemPromptSha256: await sha256Hex(systemPrompt),
+        historyWindowMessages: 10,
+        requestTemplateVersion: '1.0',
+        openRouterPolicy: {
+          model: 'research/locked-model',
+          upstreamProviderId: 'research-provider',
+          temperature: 0,
+          topP: 1,
+          maxTokens: 1024,
+          allowFallbacks: false,
+          requireParameters: true,
+          zeroDataRetention: true,
+          dataCollection: 'deny',
+        },
+      },
+    );
+
+    expect(requestBody.model).toBe('research/locked-model');
+    expect(JSON.stringify(requestBody)).not.toContain('mutable/browser-model');
+    expect(result).toMatchObject({
+      model: 'research/locked-model',
+      resolvedModelId: 'research/locked-model',
+      upstreamProviderId: 'research-provider',
+    });
+  });
+
+  it('fails before inference when the composed prompt differs from the frozen hash', async () => {
+    setKey('sk-test-never-return');
+    const casePackage = await requireCasePackage('derm-bcc');
+    const lessonPlan = await requireLessonPlanForCase(casePackage);
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(streamChatResponse(
+      'What should I inspect?',
+      'chat',
+      'undergrad',
+      null,
+      vi.fn(),
+      'openrouter',
+      casePackage.domain,
+      casePackage.id,
+      undefined,
+      undefined,
+      {
+        casePackage,
+        lessonPlan,
+        expectedSystemPromptSha256: '0'.repeat(64),
+        historyWindowMessages: 10,
+        requestTemplateVersion: '1.0',
+        openRouterPolicy: {
+          model: 'research/locked-model',
+          upstreamProviderId: 'research-provider',
+          temperature: 0,
+          topP: 1,
+          maxTokens: 1024,
+          allowFallbacks: false,
+          requireParameters: true,
+          zeroDataRetention: true,
+          dataCollection: 'deny',
+        },
+      },
+    )).rejects.toMatchObject({ code: 'protocol_deviation' });
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

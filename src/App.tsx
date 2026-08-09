@@ -4,21 +4,29 @@ import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMe
 import StudyList from './components/StudyList';
 import LessonBuilder from './components/LessonBuilder';
 import CaseStudio from './components/CaseStudio/CaseStudio';
+import ResearchSetupWizard, {
+  type FrozenResearchSetup,
+  type ResearchMaterialOption,
+} from './components/ResearchSetupWizard/ResearchSetupWizard';
+import ParticipantMode from './components/ParticipantMode/ParticipantMode';
 import ViewerCanvas from './components/ViewerCanvas';
 import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
 import SegmentationPanel from './components/SegmentationPanel';
 import AiAssistantPanel from './components/AiAssistantPanel';
 import SessionDataPanel from './components/SessionDataPanel';
+import ResearchDataPanel from './components/ResearchDataPanel';
 import SafetyModal from './components/SafetyModal';
 import GuidedTour, { TourId } from './components/GuidedTour';
 import FloatingToolbar from './components/FloatingToolbar';
 import { TOOLS, MOCK_SEGMENTATION_DATA } from './constants';
 import type { CasePackageV1 } from './core/casePackage';
 import { primaryCaseModality } from './data/caseRegistry';
+import type { ResearchViewerPolicyV1 } from './core/researchManifest';
 import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer, type CapturedTutorView } from './types';
 import { fetchDicomWebSeries } from './services/dicomService';
 import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
+import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
 import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
 import {
   getPreference,
@@ -28,6 +36,10 @@ import {
 } from './services/preferenceStore';
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap, Database } from 'lucide-react';
 import { createCaseStudioController } from './services/caseStudioController';
+import {
+  researchSetupController,
+  type ResearchParticipantSession,
+} from './services/researchSetupController';
 
 function resolveCapturedArtifact(
   casePackage: CasePackageV1,
@@ -67,24 +79,165 @@ export function normalizeToolForArtifact(
   tool: ToolMode,
   artifactHints: CasePackageV1['artifactHints'],
   instanceCount: number,
+  interactionPolicy?: ResearchViewerPolicyV1,
 ): ToolMode {
-  if (tool === ToolMode.SCROLL && instanceCount <= 1) return ToolMode.POINTER;
-  if (tool === ToolMode.WINDOW_LEVEL && !artifactHints.showWindowLevel) return ToolMode.POINTER;
+  if (
+    tool === ToolMode.SCROLL
+    && (instanceCount <= 1 || interactionPolicy?.allowFrameNavigation === false)
+  ) return ToolMode.POINTER;
+  if (
+    tool === ToolMode.WINDOW_LEVEL
+    && (!artifactHints.showWindowLevel || interactionPolicy?.allowWindowLevel === false)
+  ) return ToolMode.POINTER;
+  if (
+    (tool === ToolMode.PAN || tool === ToolMode.ZOOM)
+    && interactionPolicy?.allowPanZoom === false
+  ) return ToolMode.POINTER;
+  if (tool === ToolMode.MEASURE && interactionPolicy?.allowAnnotations === false) {
+    return ToolMode.POINTER;
+  }
   if (
     (tool === ToolMode.BRUSH || tool === ToolMode.ERASER)
-    && !artifactHints.showSegmentation
+    && (
+      !artifactHints.showSegmentation
+      || interactionPolicy?.allowAnnotations === false
+      || interactionPolicy?.allowSegmentation === false
+    )
   ) return ToolMode.POINTER;
   return tool;
 }
 
 const App: React.FC = () => {
-  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio'>('cases');
+  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
   const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
   const caseStudioController = useMemo(() => createCaseStudioController(), []);
+  const [researchMaterials, setResearchMaterials] = useState<readonly ResearchMaterialOption[]>([]);
+  const [researchMaterialsLoading, setResearchMaterialsLoading] = useState(false);
+  const [researchMaterialsError, setResearchMaterialsError] = useState('');
+  const [researchStorageStatus, setResearchStorageStatus] = useState(
+    researchSetupController.getStorageStatus(),
+  );
+  const [participantFrozen, setParticipantFrozen] = useState<FrozenResearchSetup | null>(null);
+  const [participantSession, setParticipantSession] = useState<ResearchParticipantSession | null>(null);
+  const [participantInferenceReady, setParticipantInferenceReady] = useState(() => hasKey());
+  const [participantInferenceBusy, setParticipantInferenceBusy] = useState(false);
+  const participantCancelInferenceRef = useRef<(() => Promise<void>) | null>(null);
+  const researchSetupRequestRef = useRef(0);
+
+  useEffect(() => {
+    let mounted = true;
+    const unsubscribe = researchSetupController.subscribeStorageStatus((status) => {
+      if (mounted) setResearchStorageStatus(status);
+    });
+    return () => {
+      mounted = false;
+      unsubscribe();
+      researchSetupRequestRef.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncInferenceReadiness = () => setParticipantInferenceReady(hasKey());
+    syncInferenceReadiness();
+    window.addEventListener(BYOK_CHANGED_EVENT, syncInferenceReadiness);
+    return () => window.removeEventListener(BYOK_CHANGED_EVENT, syncInferenceReadiness);
+  }, []);
+
+  const registerParticipantInferenceCancellation = useCallback(
+    (cancelAndWait: (() => Promise<void>) | null) => {
+      participantCancelInferenceRef.current = cancelAndWait;
+    },
+    [],
+  );
+
+  const openResearchSetup = useCallback(() => {
+    const requestId = ++researchSetupRequestRef.current;
+    setHomeView('research-setup');
+    setResearchMaterialsLoading(true);
+    setResearchMaterialsError('');
+    void Promise.all([
+      researchSetupController.initialize(),
+      researchSetupController.listMaterials(),
+    ]).then(([status, materials]) => {
+      if (requestId !== researchSetupRequestRef.current) return;
+      setResearchStorageStatus(status);
+      setResearchMaterials(materials);
+    }).catch(() => {
+      if (requestId === researchSetupRequestRef.current) {
+        setResearchMaterialsError('Research materials could not be verified. Reload before setting up a study.');
+      }
+    }).finally(() => {
+      if (requestId === researchSetupRequestRef.current) setResearchMaterialsLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!participantSession) return undefined;
+    return () => participantSession.releaseAssets();
+  }, [participantSession]);
+
+  const exitParticipantMode = useCallback(async () => {
+    const session = participantSession;
+    if (session) {
+      const cancelAndWait = participantCancelInferenceRef.current;
+      if (cancelAndWait) {
+        await cancelAndWait();
+      } else if (participantInferenceBusy) {
+        throw new Error('The active AI request cannot be stopped safely yet. Wait for it to finish, then try Exit study again.');
+      }
+    }
+    if (session && !session.recorder.isEnded) {
+      try {
+        await session.recorder.end('withdrawn');
+      } catch {
+        throw new Error('The withdrawn run could not be finalized in browser research storage. The study remains open; try Exit study again.');
+      }
+    }
+    setParticipantSession(null);
+    setParticipantFrozen(null);
+    setSelectedStudy(null);
+    setStudySeries([]);
+    setActiveSeries(null);
+    setAiPointers([]);
+    setParticipantInferenceBusy(false);
+    participantCancelInferenceRef.current = null;
+    setHomeView('cases');
+  }, [participantInferenceBusy, participantSession]);
+  const participantConfig = useMemo(
+    () => participantFrozen
+      ? researchSetupController.createParticipantLaunchConfig(participantFrozen)
+      : null,
+    [participantFrozen],
+  );
+  const startParticipantSession = useCallback(async (participantCode: string) => {
+    if (!participantFrozen) throw new Error('The frozen research configuration is no longer available.');
+    if (!hasKey()) {
+      setParticipantInferenceReady(false);
+      throw new Error('Participant launch is blocked because this browser does not have an OpenRouter key. Exit Participant Mode and ask the study team how to connect an approved key before returning.');
+    }
+    const session = await researchSetupController.startParticipant(participantFrozen, participantCode);
+    setParticipantInferenceBusy(false);
+    setParticipantSession(session);
+    setSelectedStudy(session.portableCase.casePackage);
+    setStudySeries([...session.series]);
+    setActiveSeries(session.series[0] ?? null);
+    setActiveRightTab('ai');
+    setActiveToolRaw(ToolMode.POINTER);
+    setAiPointers([]);
+    return {
+      participantReference: session.participantReference,
+      armId: session.armId,
+      taskFlow: {
+        tasks: session.bundle.researchManifest.tasks,
+        recorder: session.recorder,
+      },
+    };
+  }, [participantFrozen]);
   // Default to DICOMWEB (which is now effectively Local Mode via the service swap)
   const [connectionType, setConnectionType] = useState<ConnectionType>('DICOMWEB');
   const [showSafetyModal, setShowSafetyModal] = useState(false);
   const [showSessionData, setShowSessionData] = useState(false);
+  const [showResearchData, setShowResearchData] = useState(false);
   const openSessionData = useCallback(() => setShowSessionData(true), []);
   const closeSessionData = useCallback(() => setShowSessionData(false), []);
   const [showTourMenu, setShowTourMenu] = useState(false);
@@ -98,6 +251,17 @@ const App: React.FC = () => {
   });
 
   const [selectedStudy, setSelectedStudy] = useState<CasePackageV1 | null>(null);
+  const participantViewerPolicy = participantSession?.arm.viewerPolicy;
+  const participantCapturePolicy = participantSession?.arm.capturePolicy;
+  const effectiveArtifactHints = useMemo(() => selectedStudy ? ({
+    showWindowLevel: selectedStudy.artifactHints.showWindowLevel
+      && participantViewerPolicy?.allowWindowLevel !== false,
+    showSeriesSelector: selectedStudy.artifactHints.showSeriesSelector
+      && participantViewerPolicy?.allowSeriesSwitch !== false,
+    showSegmentation: selectedStudy.artifactHints.showSegmentation
+      && participantViewerPolicy?.allowAnnotations !== false
+      && participantViewerPolicy?.allowSegmentation !== false,
+  }) : null, [participantViewerPolicy, selectedStudy]);
   const handleBackToCases = useCallback(() => {
     window.dispatchEvent(new Event(CASE_SESSION_EXIT_EVENT));
     setSelectedStudy(null);
@@ -112,6 +276,7 @@ const App: React.FC = () => {
           tool,
           selectedStudy.artifactHints,
           activeSeries?.instanceCount ?? 1,
+          participantViewerPolicy,
         )
       : tool;
     setActiveToolRaw(allowedTool);
@@ -349,6 +514,18 @@ const App: React.FC = () => {
       setStudySeries([]);
       setActiveSeries(null);
 
+      if (
+        participantSession
+        && participantSession.portableCase.casePackage.manifest.sha256 === selectedStudy.manifest.sha256
+      ) {
+        const exactSeries = [...participantSession.series];
+        if (cancelled || requestId !== seriesLoadRequestRef.current) return;
+        setStudySeries(exactSeries);
+        setActiveSeries(exactSeries[0] ?? null);
+        setActiveRightTab('ai');
+        return;
+      }
+
       try {
         const seriesData = await fetchDicomWebSeries(dicomConfig, selectedStudy.id);
         if (cancelled || requestId !== seriesLoadRequestRef.current) return;
@@ -371,7 +548,7 @@ const App: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedStudy, connectionType, dicomConfig]);
+  }, [selectedStudy, connectionType, dicomConfig, participantSession]);
 
   useEffect(() => {
     if (activeSeries) {
@@ -395,11 +572,15 @@ const App: React.FC = () => {
     if (!selectedStudy) return;
     const allowedTool = normalizeToolForArtifact(
       activeTool,
-      selectedStudy.artifactHints,
+      effectiveArtifactHints ?? selectedStudy.artifactHints,
       activeSeries?.instanceCount ?? 1,
+      participantViewerPolicy,
     );
     if (allowedTool !== activeTool) setActiveToolRaw(allowedTool);
-    if (!selectedStudy.artifactHints.showSegmentation && activeRightTab === 'segment') {
+    if (!(effectiveArtifactHints?.showSegmentation ?? false) && activeRightTab === 'segment') {
+      setActiveRightTab('ai');
+    }
+    if (participantViewerPolicy?.allowAnnotations === false && activeRightTab === 'measure') {
       setActiveRightTab('ai');
     }
   }, [
@@ -408,6 +589,8 @@ const App: React.FC = () => {
     activeSeries?.instanceCount,
     activeTool,
     selectedStudy,
+    effectiveArtifactHints,
+    participantViewerPolicy,
   ]);
 
   const handleMeasurementAdd = useCallback((m: Measurement) => {
@@ -463,6 +646,10 @@ const App: React.FC = () => {
     if (!artifact || artifact.frameCount !== capture.frameCount) return null;
     return {
       image: capture.image,
+      mimeType: capture.mimeType,
+      width: capture.width,
+      height: capture.height,
+      capturePipelineVersion: capture.capturePipelineVersion,
       slice: capture.frameIndex + 1,
       total: capture.frameCount,
       label: activeSeries?.description || selectedStudy.neutralDescription,
@@ -518,7 +705,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen bg-black text-gray-200 font-sans overflow-hidden flex-col">
+    <div className={`flex w-screen bg-black text-gray-200 font-sans flex-col ${homeView === 'participant' ? 'h-[100dvh] overflow-x-hidden overflow-y-auto' : 'h-screen overflow-hidden'}`}>
       {connectNotice && (
         <div
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2.5 rounded-lg text-xs font-medium shadow-xl border ${
@@ -531,7 +718,7 @@ const App: React.FC = () => {
         </div>
       )}
       {/* Top Main Header - only shown when a case is open */}
-      {selectedStudy && <header className="w-full bg-[#0f1011] border-b border-white/[0.06] flex-shrink-0 relative z-30">
+      {selectedStudy && homeView !== 'participant' && <header className="w-full bg-[#0f1011] border-b border-white/[0.06] flex-shrink-0 relative z-30">
         <div className="mx-auto flex items-center justify-between px-4 h-14 relative">
           {/* Left: Branding + Back */}
           <div className="flex items-center gap-3">
@@ -587,7 +774,7 @@ const App: React.FC = () => {
                              <button onClick={() => { setActiveRightTab('ai'); handleStartTour('ai-tour'); }} className="min-h-11 text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-blue-400" /> AI Tutor Tour
                              </button>
-                             {selectedStudy.artifactHints.showSegmentation && (
+                             {effectiveArtifactHints?.showSegmentation && (
                                <button onClick={() => { setActiveRightTab('segment'); handleStartTour('seg-tour'); }} className="min-h-11 text-left px-3 py-2 text-xs text-[#d0d6e0] hover:text-white hover:bg-[#1e1f21] rounded-lg transition-colors flex items-center gap-2">
                                   <Activity className="w-3.5 h-3.5 text-emerald-400" /> Annotation Tour
                                </button>
@@ -621,8 +808,9 @@ const App: React.FC = () => {
 
       {showSafetyModal && <SafetyModal onClose={() => setShowSafetyModal(false)} />}
       {showSessionData && <SessionDataPanel onClose={closeSessionData} />}
+      {showResearchData && <ResearchDataPanel onClose={() => setShowResearchData(false)} />}
 
-      {!selectedStudy && homeView === 'cases' && (
+      {!selectedStudy && (homeView === 'cases' || homeView === 'research-setup') && (
         <button
           type="button"
           onClick={openSessionData}
@@ -633,20 +821,236 @@ const App: React.FC = () => {
           <span className="hidden sm:inline">Session data</span>
         </button>
       )}
+      {!selectedStudy && (homeView === 'cases' || homeView === 'research-setup') && (
+        <button
+          type="button"
+          onClick={() => setShowResearchData(true)}
+          className="fixed bottom-4 left-4 z-30 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-[#161718] px-3 text-xs font-semibold text-violet-100 shadow-lg hover:bg-[#202226] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+          aria-label="Open restricted research data"
+        >
+          <Database className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline">Research data</span>
+        </button>
+      )}
       
       {/* Guided Tour Overlay */}
-      {activeTour && (
+      {activeTour && homeView !== 'participant' && (
         <GuidedTour
           tourId={activeTour}
           onClose={handleCloseTour}
           onSwitchTab={setActiveRightTab}
           capabilities={{
-            segmentation: selectedStudy?.artifactHints.showSegmentation ?? false,
+            segmentation: effectiveArtifactHints?.showSegmentation ?? false,
           }}
         />
       )}
 
-      {!selectedStudy && homeView === 'lesson-builder' ? (
+      {homeView === 'participant' && participantFrozen && participantConfig ? (
+        <ParticipantMode
+          config={participantConfig}
+          storageStatus={researchStorageStatus}
+          inferenceReady={participantInferenceReady}
+          inferenceBusy={participantInferenceBusy}
+          cancelInferenceAndWait={participantCancelInferenceRef.current ?? undefined}
+          onStart={startParticipantSession}
+          onExit={exitParticipantMode}
+          renderActivity={() => participantSession && selectedStudy ? (
+            <div data-testid="research-participant-workspace" className="flex min-h-[56rem] w-full flex-col bg-black text-gray-200 md:h-[calc(100dvh-9rem)] md:min-h-[36rem] md:flex-row md:overflow-hidden">
+              <div
+                ref={viewerContainerRef}
+                className="relative flex h-[50dvh] min-h-[20rem] min-w-0 flex-none flex-col md:h-auto md:min-h-0 md:flex-1"
+              >
+                <FloatingToolbar
+                  activeTool={activeTool}
+                  onSelectTool={setActiveTool}
+                  position={toolbarPos}
+                  onDragStart={handleToolbarDragStart}
+                  orientation={toolbarOrientation}
+                  isDragging={isDraggingToolbar}
+                  instanceCount={activeSeries?.instanceCount ?? 1}
+                  artifactHints={effectiveArtifactHints ?? selectedStudy.artifactHints}
+                  interactionPolicy={participantViewerPolicy}
+                />
+                <ViewerCanvas
+                  ref={viewerRef}
+                  series={activeSeries}
+                  activeTool={activeTool}
+                  dicomConfig={dicomConfig}
+                  connectionType={connectionType}
+                  sliceIndex={sliceIndex}
+                  onSliceChange={setSliceIndex}
+                  measurements={measurements}
+                  onMeasurementAdd={handleMeasurementAdd}
+                  onMeasurementUpdate={onMeasurementUpdateStable}
+                  activeMeasurementId={activeMeasurementId}
+                  segmentationLayer={effectiveArtifactHints?.showSegmentation
+                    ? segmentationLayer
+                    : { ...segmentationLayer, isVisible: false }}
+                  onSegmentedSliceUpdate={handleSegmentedSliceUpdate}
+                  isScrollEnabled={
+                    participantViewerPolicy?.allowFrameNavigation !== false
+                    && (activeSeries?.instanceCount ?? 0) > 1
+                  }
+                  aiPointers={aiPointers}
+                  getAnnotationAudit={getAnnotationAudit}
+                  onAnnotationMutation={bumpAnnotationAudit}
+                  accessibleDescription={selectedStudy.neutralDescription}
+                  interactionPolicy={participantViewerPolicy}
+                  includeAnnotationsInCapture={participantCapturePolicy?.includeVisibleAnnotations ?? true}
+                />
+                {effectiveArtifactHints?.showSeriesSelector && (
+                  <div className="z-10 flex-shrink-0">
+                    <SeriesSelector
+                      seriesList={studySeries}
+                      activeSeriesId={activeSeries?.id}
+                      onSelectSeries={setActiveSeries}
+                      dicomConfig={dicomConfig}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex h-[52rem] min-h-[36rem] w-full flex-none flex-col border-t border-white/[0.06] bg-[#0f1011] md:h-full md:w-[24rem] md:border-l md:border-t-0">
+                <div className="flex border-b border-white/[0.06]">
+                  {effectiveArtifactHints?.showSegmentation && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveRightTab('segment');
+                        if (!segmentationLayer.activeSegmentId) {
+                          setSegmentationLayer((previous) => ({ ...previous, activeSegmentId: 1 }));
+                        }
+                        setActiveTool(ToolMode.BRUSH);
+                      }}
+                      className={`min-h-11 flex-1 px-3 py-3 text-xs font-bold uppercase tracking-wide ${activeRightTab === 'segment' ? 'border-b-2 border-emerald-500 bg-[#161718] text-emerald-400' : 'text-[#8a8f98]'}`}
+                    >
+                      Annotate
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setActiveRightTab('ai')}
+                    className={`min-h-11 flex-1 px-3 py-3 text-xs font-bold uppercase tracking-wide ${activeRightTab === 'ai' ? 'border-b-2 border-blue-500 bg-[#161718] text-blue-400' : 'text-[#8a8f98]'}`}
+                  >
+                    Tutor
+                  </button>
+                </div>
+                <div className="relative min-h-0 flex-1 overflow-hidden">
+                  {effectiveArtifactHints?.showSegmentation && (
+                    <div className={`absolute inset-0 bg-[#0f1011] ${activeRightTab === 'segment' ? 'z-10 block' : 'hidden'}`}>
+                      <SegmentationPanel
+                        layer={segmentationLayer}
+                        onChange={setSegmentationLayer}
+                        activeTool={activeTool}
+                        onSelectTool={setActiveTool}
+                        onClearSegment={handleClearSegment}
+                        onJumpToSlice={setSliceIndex}
+                        onStartTour={() => undefined}
+                      />
+                    </div>
+                  )}
+                  <div className={`absolute inset-0 bg-[#0f1011] ${activeRightTab === 'ai' ? 'z-10 block' : 'hidden'}`}>
+                    <AiAssistantPanel
+                      captureCurrentView={captureCurrentView}
+                      sessionContext={{
+                        casePackageRef: {
+                          id: selectedStudy.id,
+                          schemaVersion: selectedStudy.schemaVersion,
+                          sha256: selectedStudy.manifest.sha256,
+                        },
+                        lessonPlanRef: selectedStudy.lessonPlanRef,
+                      }}
+                      studyMetadata={{
+                        studyId: selectedStudy.id,
+                        description: selectedStudy.teachingNotes.join(' '),
+                        modality: primaryCaseModality(selectedStudy),
+                        domain: selectedStudy.domain,
+                      }}
+                      cursor={{
+                        seriesInstanceUID: activeSeries?.id || '',
+                        frameIndex: sliceIndex,
+                        activeMeasurementId,
+                      }}
+                      onJumpToSlice={setSliceIndex}
+                      activeSeriesInfo={activeSeries ? {
+                        description: activeSeries.description,
+                        instanceCount: activeSeries.instanceCount,
+                      } : undefined}
+                      onPointers={setAiPointers}
+                      onInferenceBusyChange={setParticipantInferenceBusy}
+                      onCancelInferenceReady={registerParticipantInferenceCancellation}
+                      lockedTutor={{
+                        manifestSha256: participantSession.bundle.researchManifest.manifest.sha256,
+                        learnerLevel: participantSession.step.learnerLevel,
+                        mode: participantSession.step.mode,
+                        runtime: {
+                          casePackage: participantSession.portableCase.casePackage,
+                          lessonPlan: participantSession.portableCase.lessonPlan,
+                          expectedSystemPromptSha256: participantSession.step.systemPromptSha256,
+                          historyWindowMessages: participantSession.arm.inferencePolicy.historyWindowMessages,
+                          requestTemplateVersion: participantSession.step.requestTemplateVersion,
+                          openRouterPolicy: {
+                            model: participantSession.arm.inferencePolicy.requestedModelId,
+                            upstreamProviderId: participantSession.arm.inferencePolicy.provider.only[0],
+                            temperature: participantSession.arm.inferencePolicy.temperature,
+                            topP: participantSession.arm.inferencePolicy.topP,
+                            ...(participantSession.arm.inferencePolicy.seed === undefined
+                              ? {}
+                              : { seed: participantSession.arm.inferencePolicy.seed }),
+                            maxTokens: participantSession.arm.inferencePolicy.maxTokens,
+                            allowFallbacks: false,
+                            requireParameters: true,
+                            zeroDataRetention: true,
+                            dataCollection: 'deny',
+                          },
+                        },
+                        research: {
+                          recorder: participantSession.recorder,
+                          caseStepId: participantSession.step.id,
+                          inferenceConfigSha256: participantSession.inferenceConfigSha256,
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <main className="flex min-h-[20rem] flex-1 flex-col items-center justify-center gap-3 bg-[#08090b] p-6 text-center" aria-busy="true">
+              <Loader2 className="h-6 w-6 animate-spin text-violet-300" aria-hidden="true" />
+              <h2 className="text-xl font-semibold text-white">Loading the assigned activity</h2>
+              <p className="max-w-xl text-sm text-[#9ca3af]">The exact case, lesson, viewer policy, and model route are being verified.</p>
+            </main>
+          )}
+        />
+      ) : !selectedStudy && homeView === 'research-setup' ? (
+        researchMaterialsLoading ? (
+          <main className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 bg-[#08090b] p-6 text-center" aria-busy="true">
+            <Loader2 className="h-6 w-6 animate-spin text-violet-300" aria-hidden="true" />
+            <h1 className="text-xl font-semibold text-white">Verifying exact research materials</h1>
+            <p className="max-w-xl text-sm text-[#9ca3af]">CaseAttend is checking the available Case Packages and Lesson Plans before Research Setup opens.</p>
+          </main>
+        ) : researchMaterialsError ? (
+          <main className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 bg-[#08090b] p-6 text-center">
+            <h1 className="text-xl font-semibold text-white">Research Setup is unavailable</h1>
+            <p role="alert" className="max-w-xl text-sm text-red-200">{researchMaterialsError}</p>
+            <button type="button" className="min-h-11 rounded-xl border border-white/15 px-4 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300" onClick={() => setHomeView('cases')}>Back to cases</button>
+          </main>
+        ) : (
+          <ResearchSetupWizard
+            materials={researchMaterials}
+            storageStatus={researchStorageStatus}
+            onExit={() => setHomeView('cases')}
+            onSaveDraft={(draft) => researchSetupController.saveDraft(draft)}
+            onExportSupportPacket={async (draft, frozen) => { await researchSetupController.exportSupportPacket(draft, frozen); }}
+            onFreeze={(draft) => researchSetupController.freeze(draft)}
+            onLaunchParticipant={(frozen) => {
+              setParticipantSession(null);
+              setParticipantFrozen(frozen);
+              setHomeView('participant');
+            }}
+          />
+        )
+      ) : !selectedStudy && homeView === 'lesson-builder' ? (
         <LessonBuilder
           onExit={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('cases'); }}
           initialCaseId={lessonBuilderInitialCaseId}
@@ -683,6 +1087,7 @@ const App: React.FC = () => {
             onShowSafety={() => setShowSafetyModal(true)}
             onOpenLessonBuilder={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('lesson-builder'); }}
             onOpenCaseStudio={() => setHomeView('case-studio')}
+            onOpenResearchSetup={openResearchSetup}
             onDeleteLocalCase={caseStudioController.deleteCase}
           />
         </div>
@@ -725,6 +1130,7 @@ const App: React.FC = () => {
                     aiPointers={aiPointers}
                     getAnnotationAudit={getAnnotationAudit}
                     onAnnotationMutation={bumpAnnotationAudit}
+                    accessibleDescription={selectedStudy.neutralDescription}
                   />
                   {selectedStudy.artifactHints.showSeriesSelector && (
                     <div className="flex-shrink-0 z-10">

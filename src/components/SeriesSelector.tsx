@@ -97,13 +97,17 @@ const SeriesThumbnail: React.FC<SeriesThumbnailProps> = ({ series, isActive, onC
   const tooltip = SERIES_DESCRIPTIONS[series.description] || series.description;
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => onClick(series)}
+      aria-pressed={isActive}
+      aria-label={`${series.description}, ${series.instanceCount} image${series.instanceCount === 1 ? '' : 's'}`}
+      title={tooltip}
       className={`flex-shrink-0 w-24 h-24 bg-gray-950 border rounded-lg cursor-pointer relative group overflow-hidden transition-all ${
         isActive
           ? 'border-blue-500 ring-1 ring-blue-500/50 shadow-lg shadow-blue-900/20'
           : 'border-gray-800 hover:border-gray-600'
-      }`}
+      } focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
     >
 
         {thumbUrl && !hasError ? (
@@ -138,7 +142,7 @@ const SeriesThumbnail: React.FC<SeriesThumbnailProps> = ({ series, isActive, onC
         {isActive && (
            <div className="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-bl shadow-lg shadow-blue-500/50 z-20" />
         )}
-    </div>
+    </button>
   );
 }
 
