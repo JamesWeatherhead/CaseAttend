@@ -8,6 +8,7 @@ import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
 import { casePackageStore } from '../services/casePackageStore';
+import { matchesStudyFilter, STUDY_FILTERS } from './studyFilters';
 
 interface StudyListProps {
   onSelectStudy: (casePackage: CasePackageV1) => void;
@@ -45,15 +46,14 @@ const CasePreviewBackdrop: React.FC<{
   }, [casePackage.preview.src]);
 
   return (
-    <div
+    <img
       role="img"
-      aria-label={casePackage.preview.alt}
-      className="absolute inset-0 transition-all duration-700 ease-out"
+      src={src || undefined}
+      alt={casePackage.preview.alt}
+      loading="lazy"
+      decoding="async"
+      className="absolute inset-0 h-full w-full object-contain transition-all duration-700 ease-out"
       style={{
-        backgroundImage: src ? `url(${src})` : 'none',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
         opacity: active ? 0.8 : 0.6,
         imageRendering: 'auto',
         transition: 'opacity 500ms ease',
@@ -232,15 +232,6 @@ const ConnectCallout: React.FC = () => {
   );
 };
 
-const FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'xray', label: 'X-ray' },
-  { id: 'ct', label: 'CT' },
-  { id: 'mri', label: 'MRI' },
-  { id: 'path', label: 'Pathology' },
-  { id: 'derm', label: 'Dermatology' },
-];
-
 const StudyList: React.FC<StudyListProps> = ({
   onSelectStudy,
   dicomConfig,
@@ -308,7 +299,7 @@ const StudyList: React.FC<StudyListProps> = ({
             Case-based visual reasoning tutor for medical education.
           </p>
           <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
-            Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level, from high school to resident. Radiology, pathology, dermatology.
+            Read the case. Inspect the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level, from high school to resident.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
             {onOpenLessonBuilder && (
@@ -372,7 +363,7 @@ const StudyList: React.FC<StudyListProps> = ({
         <div className="w-full max-w-[1100px] mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em]">Cases</p>
           <div className="flex w-full max-w-full gap-1 overflow-x-auto pb-1 sm:w-auto" aria-label="Filter cases">
-            {FILTERS.map(f => (
+            {STUDY_FILTERS.map(f => (
               <button
                 key={f.id}
                 type="button"
@@ -392,7 +383,7 @@ const StudyList: React.FC<StudyListProps> = ({
 
         {/* Case grid: 1 col mobile, 2 col tablet, 3 col desktop */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-[1100px]">
-          {casePackages.filter((casePackage) => activeFilter === 'all' || casePackage.presentation.category === activeFilter).map((casePackage) => {
+          {casePackages.filter((casePackage) => matchesStudyFilter(casePackage, activeFilter)).map((casePackage) => {
             const active = hovered === casePackage.id;
             const { presentation } = casePackage;
 
@@ -520,7 +511,7 @@ const StudyList: React.FC<StudyListProps> = ({
               </div>
               <h3 className="text-[15px] font-bold text-white mb-2">Domain plugin architecture</h3>
               <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module. No viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
+                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology, ECG, ultrasound, and ophthalmology use registered domain plugins. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
               </p>
             </div>
 

@@ -65,6 +65,24 @@ const PRESENTATION = {
     accentBorder: 'rgba(217,70,239,0.3)',
     textClass: 'text-fuchsia-400',
   },
+  ecg: {
+    accentColor: 'rgba(16,185,129,1)',
+    accentGlow: 'rgba(16,185,129,0.15)',
+    accentBorder: 'rgba(16,185,129,0.3)',
+    textClass: 'text-emerald-400',
+  },
+  ultrasound: {
+    accentColor: 'rgba(6,182,212,1)',
+    accentGlow: 'rgba(6,182,212,0.15)',
+    accentBorder: 'rgba(6,182,212,0.3)',
+    textClass: 'text-cyan-400',
+  },
+  ophthalmology: {
+    accentColor: 'rgba(245,158,11,1)',
+    accentGlow: 'rgba(245,158,11,0.15)',
+    accentBorder: 'rgba(245,158,11,0.3)',
+    textClass: 'text-amber-400',
+  },
 } as const;
 
 function lines(value: string): string[] {
@@ -74,6 +92,9 @@ function lines(value: string): string[] {
 function categoryFor(domain: CaseStudioSubmission['form']['domain'], modality: string): string {
   if (domain === 'pathology') return 'path';
   if (domain === 'dermatology') return 'derm';
+  if (domain === 'ecg') return 'ecg';
+  if (domain === 'ultrasound') return 'ultrasound';
+  if (domain === 'ophthalmology') return 'ophthalmology';
   const normalized = modality.trim().toUpperCase();
   if (normalized === 'CT') return 'ct';
   if (normalized === 'MR' || normalized === 'MRI') return 'mri';

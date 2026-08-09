@@ -154,12 +154,22 @@ describe('StudyList case loading', () => {
     const filterGroup = screen.getByLabelText('Filter cases');
     expect(filterGroup.className).toContain('overflow-x-auto');
     const filterButtons = Array.from(filterGroup.querySelectorAll('button'));
-    expect(filterButtons.length).toBeGreaterThan(1);
+    expect(filterButtons.map((button) => button.textContent)).toEqual(expect.arrayContaining([
+      'Step 1',
+      'Step 2',
+      'Clerkship',
+      'ECG',
+      'Ultrasound',
+      'Ophthalmology',
+    ]));
     expect(filterButtons.every((button) => button.className.includes('min-h-11'))).toBe(true);
     expect(screen.getByRole('button', { name: 'All' }).getAttribute('aria-pressed')).toBe('true');
 
     const preview = screen.getByRole('img', { name: localCase.preview.alt });
-    await waitFor(() => expect(preview.getAttribute('style')).toContain('blob:resolved-local-preview'));
+    expect(preview.tagName).toBe('IMG');
+    expect(preview.getAttribute('loading')).toBe('lazy');
+    expect(preview.getAttribute('decoding')).toBe('async');
+    await waitFor(() => expect(preview.getAttribute('src')).toBe('blob:resolved-local-preview'));
     expect(mocks.resolveAssetUri).toHaveBeenCalledWith(localCase.preview.src);
 
     fireEvent.click(screen.getByRole('button', { name: `Start case: ${localCase.title}` }));

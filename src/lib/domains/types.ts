@@ -1,6 +1,12 @@
 import type { LearnerLevel } from '../../constants';
 
-export type DomainKey = 'radiology' | 'pathology' | 'dermatology';
+export type DomainKey =
+  | 'radiology'
+  | 'pathology'
+  | 'dermatology'
+  | 'ecg'
+  | 'ultrasound'
+  | 'ophthalmology';
 
 export interface ArtifactHints {
   showWindowLevel: boolean;
