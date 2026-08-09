@@ -88,6 +88,11 @@ export async function completeOpenRouterOAuth(): Promise<{ ok: boolean; error?: 
   const code = pendingOAuthCode();
   if (!code) return { ok: false, error: 'No authorization code in URL.' };
 
+  // The authorization code is a short-lived credential. Remove it before the
+  // first await so a slow or failed exchange cannot leave it in the address
+  // bar, browser history, screenshots, or a later navigation's referrer.
+  scrubUrl();
+
   let verifier: string | null = null;
   try {
     verifier = sessionStorage.getItem(VERIFIER_STORAGE);
@@ -107,13 +112,12 @@ export async function completeOpenRouterOAuth(): Promise<{ ok: boolean; error?: 
       }),
     });
 
-    scrubUrl();
-
     if (!res.ok) {
-      const detail = await res.text().catch(() => '');
       return {
         ok: false,
-        error: `OpenRouter sign-in failed (${res.status}). ${detail.slice(0, 140)}`.trim(),
+        // Provider bodies can echo authorization material or internal details.
+        // Status alone selects a bounded, display-safe outcome.
+        error: `OpenRouter sign-in failed (${res.status}). Please try connecting again.`,
       };
     }
 
@@ -126,7 +130,6 @@ export async function completeOpenRouterOAuth(): Promise<{ ok: boolean; error?: 
     setKey(key);
     return { ok: true };
   } catch {
-    scrubUrl();
     return { ok: false, error: 'Could not reach OpenRouter to finish sign-in. Check your connection and retry.' };
   }
 }

@@ -102,6 +102,7 @@ const mocks = vi.hoisted(() => {
     viewerProps: vi.fn(),
     toolbarProps: vi.fn(),
     hasKey: vi.fn(() => true),
+    browserTeachingEngine: { runTurn: vi.fn() },
   };
 });
 
@@ -125,6 +126,9 @@ vi.mock('../services/openrouterAuth', () => ({
 vi.mock('../services/byokStore', () => ({
   BYOK_CHANGED_EVENT: 'caseattend:byok-changed',
   hasKey: mocks.hasKey,
+}));
+vi.mock('../services/browserTeachingEngine', () => ({
+  browserTeachingEngine: mocks.browserTeachingEngine,
 }));
 vi.mock('../services/dicomService', () => ({ fetchDicomWebSeries: vi.fn() }));
 vi.mock('../data/caseRegistry', () => ({ primaryCaseModality: () => 'XC' }));
@@ -223,6 +227,7 @@ describe('App Research Setup integration', () => {
     );
     await waitFor(() => expect(mocks.aiProps).toHaveBeenCalled());
     expect(mocks.aiProps.mock.lastCall?.[0]).toMatchObject({
+      teachingEngine: mocks.browserTeachingEngine,
       lockedTutor: {
         manifestSha256: 'a'.repeat(64),
         learnerLevel: 'undergrad',

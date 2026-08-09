@@ -42,11 +42,17 @@ const mocks = vi.hoisted(() => {
       },
     },
     fetchDicomWebSeries: vi.fn(),
+    aiProps: vi.fn(),
+    browserTeachingEngine: { runTurn: vi.fn() },
   };
 });
 
 vi.mock('../services/dicomService', () => ({
   fetchDicomWebSeries: mocks.fetchDicomWebSeries,
+}));
+
+vi.mock('../services/browserTeachingEngine', () => ({
+  browserTeachingEngine: mocks.browserTeachingEngine,
 }));
 
 vi.mock('../data/caseRegistry', () => ({
@@ -110,7 +116,12 @@ vi.mock('../components/SeriesSelector', () => ({
   ),
 }));
 
-vi.mock('../components/AiAssistantPanel', () => ({ default: () => <div>AI panel</div> }));
+vi.mock('../components/AiAssistantPanel', () => ({
+  default: (props: unknown) => {
+    mocks.aiProps(props);
+    return <div>AI panel</div>;
+  },
+}));
 vi.mock('../components/FloatingToolbar', () => ({
   default: ({
     activeTool,
@@ -189,6 +200,16 @@ describe('App study-series loading', () => {
     expect(screen.getByRole('button', {
       name: 'Open browser-local session data',
     })).toBeTruthy();
+  });
+
+  it('supplies the public-core browser engine to the ordinary tutor panel', async () => {
+    mocks.fetchDicomWebSeries.mockResolvedValueOnce([series('series-a', mocks.caseA.id)]);
+    render(<App />);
+    await openCase('Open Case A');
+    await waitFor(() => expect(mocks.aiProps).toHaveBeenCalled());
+    expect(mocks.aiProps.mock.lastCall?.[0]).toMatchObject({
+      teachingEngine: mocks.browserTeachingEngine,
+    });
   });
 
   it('renders in hardened browser contexts where preference storage throws', () => {

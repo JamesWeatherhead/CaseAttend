@@ -15,7 +15,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm exec -- tsc --noEmit --pretty false
+      - run: npm run typecheck
       - run: npm test
       - run: npm run build
 
@@ -46,27 +46,193 @@ jobs:
           fi
           echo "OK: connect-src has the exact self + OpenRouter allowlist."
       - name: No off-origin key persistence (state stays in localStorage)
+        shell: bash
         run: |
-          if grep -rInE "document\.cookie[[:space:]]*=" src/; then
+          roots=(src)
+          for candidate in packages examples; do
+            [ -d "$candidate" ] && roots+=("$candidate")
+          done
+          if grep -rInE --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' \
+            "document\.cookie[[:space:]]*=" "${roots[@]}"; then
             echo "::error::Writing document.cookie is not allowed; the key/state must stay in localStorage."
             exit 1
           fi
-          echo "OK: no cookie writes in src/."
+          echo "OK: no cookie writes in application, SDK, or example sources."
       - name: Raw key access stays inside the OpenRouter boundary
+        shell: bash
         run: |
-          unexpected=$(grep -rInE '\bgetKey\b|caseattend_openrouter_key' src \
+          roots=(src)
+          for candidate in packages examples; do
+            [ -d "$candidate" ] && roots+=("$candidate")
+          done
+          unexpected=$(grep -rInE '\bgetKey\b|caseattend_openrouter_key' "${roots[@]}" \
             --include='*.ts' --include='*.tsx' \
             | grep -v '^src/services/byokStore.ts:' \
             | grep -v '^src/services/openrouterClient.ts:' \
-            | grep -v '^src/tests/' || true)
+            | grep -vE '(^|/)(tests|__tests__)/|\.test\.[cm]?[jt]sx?:' || true)
           if [ -n "$unexpected" ]; then
             echo "::error::Raw key access exists outside byokStore/openrouterClient:"
             echo "$unexpected"
             exit 1
           fi
           echo "OK: only the OpenRouter boundary can read the raw key."
+      - name: Headless core has no app, DOM, storage, network, or provider coupling
+        shell: bash
+        run: |
+          core_source=packages/core/src
+          if [ ! -d "$core_source" ]; then
+            echo "SDK core has not been added on this revision; boundary scan skipped."
+            exit 0
+          fi
+
+          source_lines=$(grep -rInE --include='*.ts' --include='*.tsx' '.' "$core_source" \
+            | grep -vE '(^|/)(tests|__tests__)/|\.test\.[cm]?[jt]sx?:' || true)
+
+          forbidden_imports=$(printf '%s\n' "$source_lines" \
+            | grep -E "(from|import[[:space:]]*\()[[:space:]]*['\"][^'\"]*(react|react-dom|node:|/components/|/services/|/data/|@caseattend/react)" || true)
+          if [ -n "$forbidden_imports" ]; then
+            echo "::error::@caseattend/core imports an app, React, storage, or provider layer:"
+            echo "$forbidden_imports"
+            exit 1
+          fi
+
+          forbidden_globals=$(printf '%s\n' "$source_lines" \
+            | grep -E '\b(window|document|navigator|localStorage|sessionStorage|indexedDB|BroadcastChannel|fetch|XMLHttpRequest|WebSocket|EventSource|process|Buffer|require|crypto)[[:space:]]*([.(\[])|typeof[[:space:]]+(window|document|navigator|localStorage|sessionStorage|indexedDB|BroadcastChannel|fetch|process|Buffer|require|crypto)\b' || true)
+          if [ -n "$forbidden_globals" ]; then
+            echo "::error::@caseattend/core references a forbidden DOM, storage, or network global:"
+            echo "$forbidden_globals"
+            exit 1
+          fi
+
+          provider_literals=$(printf '%s\n' "$source_lines" \
+            | grep -iE 'openrouter|openai|anthropic|gemini|authorization|bearer[[:space:]]|api[_-]?key|openrouter\.ai|api\.openai\.com' || true)
+          if [ -n "$provider_literals" ]; then
+            echo "::error::@caseattend/core contains a provider or credential literal:"
+            echo "$provider_literals"
+            exit 1
+          fi
+          echo "OK: standalone core remains headless and provider-neutral."
+      - name: Packed SDK works in hostile Node and SSR consumers
+        shell: bash
+        run: |
+          npm run build --workspace @caseattend/core
+          npm run build --workspace @caseattend/react
+          pack_dir=$(mktemp -d)
+          trap 'rm -rf "$pack_dir"' EXIT
+          export NPM_CONFIG_CACHE="$pack_dir/npm-cache"
+          core_name=$(npm pack --workspace @caseattend/core --pack-destination "$pack_dir" | tail -n 1)
+          react_name=$(npm pack --workspace @caseattend/react --pack-destination "$pack_dir" | tail -n 1)
+          core_tar="$pack_dir/$core_name"
+          react_tar="$pack_dir/$react_name"
+
+          tar -tzf "$core_tar" > "$pack_dir/core-files.txt"
+          unexpected_files=$(grep -Ei '(^|/)(src|tests?|examples|node_modules|\.env)(/|$)|package-lock|tsconfig' "$pack_dir/core-files.txt" || true)
+          if [ -n "$unexpected_files" ]; then
+            echo "::error::Packed core contains source, test, environment, or workspace-only files:"
+            echo "$unexpected_files"
+            exit 1
+          fi
+
+          mkdir "$pack_dir/core-unpacked"
+          tar -xzf "$core_tar" -C "$pack_dir/core-unpacked"
+          forbidden_types=$(grep -rInEi --include='*.d.ts' \
+            '\b(Window|Document|HTMLElement|HTMLCanvasElement|Storage|IDBDatabase|WebSocket|EventSource|XMLHttpRequest|Blob|File|React)\b|openrouter|openai|anthropic|gemini|authorization|api[_-]?key' \
+            "$pack_dir/core-unpacked/package/dist" || true)
+          if [ -n "$forbidden_types" ]; then
+            echo "::error::Packed core declarations expose a DOM, provider, credential, or React boundary:"
+            echo "$forbidden_types"
+            exit 1
+          fi
+          forbidden_dist=$(grep -rInEi \
+            'openrouter|openai|anthropic|gemini|authorization|bearer[[:space:]]|api[_-]?key|caseattend_openrouter_key' \
+            "$pack_dir/core-unpacked/package/dist" || true)
+          if [ -n "$forbidden_dist" ]; then
+            echo "::error::Packed core contains a provider or credential literal:"
+            echo "$forbidden_dist"
+            exit 1
+          fi
+
+          mkdir "$pack_dir/consumer"
+          cd "$pack_dir/consumer"
+          npm init --yes >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund "$core_tar" "$react_tar" react@19.2.8 react-dom@19.2.8 >/dev/null
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+
+          const browserAndNodeGlobals = [
+            'window', 'document', 'navigator', 'localStorage', 'sessionStorage',
+            'indexedDB', 'BroadcastChannel', 'fetch', 'XMLHttpRequest',
+            'WebSocket', 'EventSource', 'crypto', 'process', 'Buffer',
+          ];
+          const saved = new Map();
+          for (const name of browserAndNodeGlobals) {
+            const descriptor = Object.getOwnPropertyDescriptor(globalThis, name);
+            saved.set(name, descriptor);
+            if (!descriptor || descriptor.configurable) {
+              Object.defineProperty(globalThis, name, {
+                configurable: true,
+                get() { throw new Error(`@caseattend/core touched forbidden global ${name}`); },
+              });
+            }
+          }
+          const core = await import('@caseattend/core');
+          assert.deepEqual(Object.keys(core).sort(), [
+            'CORE_CONTRACT_VERSION',
+            'CORE_EVENT_SCHEMA',
+            'CORE_MAX_ARTIFACT_BYTES',
+            'CaseAttendCoreError',
+            'assertCoreEventV1',
+            'createCaseAttendEngine',
+            'encodeUtf8',
+          ]);
+          assert.equal(core.CORE_CONTRACT_VERSION, '1.0');
+          for (const name of ['crypto', 'process', 'Buffer']) {
+            const descriptor = saved.get(name);
+            if (descriptor) Object.defineProperty(globalThis, name, descriptor);
+            else delete globalThis[name];
+          }
+
+          for (const specifier of ['@caseattend/core/engine', '@caseattend/core/adapters', '@caseattend/react/TutorComposer']) {
+            await assert.rejects(import(specifier), (error) => error?.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED');
+          }
+
+          const React = await import('react');
+          const { renderToString } = await import('react-dom/server');
+          const { TutorComposer } = await import('@caseattend/react');
+          const html = renderToString(React.createElement(TutorComposer, {
+            engine: { runTurn: async () => { throw new Error('not called during SSR'); } },
+            material: { id: 'ssr-case', title: 'SSR case', domainId: 'ssr-domain', casePackage: {} },
+            captureCurrentView: () => null,
+          }));
+          assert.match(html, /role="log"/);
+          assert.match(html, /Send with current view/);
+          NODE
+          echo "OK: packed core and React exports pass hostile Node, deep-import, declaration, and SSR gates."
+      - name: SDK and examples cannot reach app-private inference clients
+        shell: bash
+        run: |
+          roots=()
+          for candidate in packages/core packages/react examples; do
+            [ -d "$candidate" ] && roots+=("$candidate")
+          done
+          if [ "${#roots[@]}" -eq 0 ]; then
+            echo "No standalone SDK/example directories on this revision; import scan skipped."
+            exit 0
+          fi
+          unexpected=$(grep -rInE --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' \
+            "from[[:space:]]+['\"][^'\"]*(byokStore|openrouterClient|openrouterAuth|aiClient)['\"]|import[[:space:]]*\([[:space:]]*['\"][^'\"]*(byokStore|openrouterClient|openrouterAuth|aiClient)['\"]" \
+            "${roots[@]}" \
+            | grep -vE '(^|/)(tests|__tests__)/|\.test\.[cm]?[jt]sx?:' || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::SDK or example code imports an app-private credential/inference client:"
+            echo "$unexpected"
+            exit 1
+          fi
+          echo "OK: SDK and examples use capability ports, not app-private clients."
       - name: Browser credential and session export sentinel test
         run: npm exec -- vitest run src/tests/securityBoundary.test.ts
+      - name: OAuth and hostile inference errors stay sanitized
+        run: npm exec -- vitest run src/tests/openrouterAuth.test.ts src/tests/AiAssistantPanel.privacy.test.tsx
       - name: Case Studio stays outside the credential and inference boundary
         run: |
           unexpected=$(grep -rInE "from ['\"].*(byokStore|openrouterClient|aiClient)['\"]" \

@@ -1,9 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound, LockKeyhole } from 'lucide-react';
-import { streamChatResponse, AiMode, AIProvider } from '../services/aiClient';
-import type { LockedTutorRuntime } from '../services/aiClient';
-import type { SafeInferenceError } from '../services/aiClient';
+import type { AiMode, AIProvider, LockedTutorRuntime } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
 import { ChatMessage, CursorContext, AiPointer, type CapturedTutorView } from '../types';
@@ -32,8 +30,13 @@ import { getPreference, PREFERENCE_KEYS, setPreference } from '../services/prefe
 import { fingerprintResearchCapture } from '../core/researchCapture';
 import type { ResearchRecorder } from '../services/researchRecorder';
 import type { ResearchInferenceErrorCode } from '../services/researchStore';
+import {
+  compatibilityTeachingEngine,
+  type TeachingEnginePort,
+} from '../services/browserTeachingEngine';
 
 interface AiAssistantPanelProps {
+  teachingEngine?: TeachingEnginePort;
   captureCurrentView: () => CapturedTutorView | null;
   sessionContext?: SessionRecorderContext;
   sessionEventStore?: Pick<SessionStore, 'append'>;
@@ -79,10 +82,121 @@ function safeSessionModelId(value: string): string {
     : 'unknown';
 }
 
-function isSafeInferenceError(value: unknown): value is SafeInferenceError {
-  if (!(value instanceof Error)) return false;
-  const candidate = value as Partial<SafeInferenceError>;
-  return typeof candidate.code === 'string' && typeof candidate.retryable === 'boolean';
+const INFERENCE_FAILURE_MESSAGES: Readonly<Record<ResearchInferenceErrorCode, string>> = Object.freeze({
+  missing_key: 'Connect your OpenRouter account, then try again.',
+  missing_case: 'This teaching session is missing a registered case. Return to the case list and reopen it.',
+  prompt_resolution_failed: 'The verified teaching prompt could not be prepared. Return to the case list and reopen the case.',
+  request_aborted: 'The AI request was cancelled.',
+  timeout: 'The AI request timed out. Try again or choose a faster model.',
+  network_error: 'The AI service could not be reached. Check your connection and try again.',
+  unauthorized: 'OpenRouter rejected this browser\'s key. Reconnect your OpenRouter account.',
+  payment_required: 'The connected OpenRouter account is out of credit. Choose a free model or add credit.',
+  forbidden: 'The selected model is not available to the connected OpenRouter account.',
+  rate_limited: 'The AI service is busy. Please try again in a moment.',
+  provider_unavailable: 'The AI service is temporarily unavailable. Please try again.',
+  provider_error: 'The AI service could not complete this request. Try again or choose another model.',
+  invalid_response: 'The AI service returned an unreadable response. Please try again.',
+  empty_response: 'The AI service returned an empty response. Try again or choose another model.',
+  protocol_deviation: 'The model response did not match the frozen study condition and was discarded.',
+  unexpected_error: 'The AI request could not be completed. Please try again.',
+});
+
+type InferenceProtocolDeviationCode =
+  | 'case_mismatch'
+  | 'lesson_mismatch'
+  | 'model_mismatch'
+  | 'provider_mismatch'
+  | 'inference_parameter_mismatch'
+  | 'storage_unavailable';
+
+interface NormalizedInferenceFailure {
+  code: ResearchInferenceErrorCode;
+  retryable: boolean;
+  httpStatus?: number;
+  deviation?: {
+    code: InferenceProtocolDeviationCode;
+    expectedId?: string;
+    observedId?: string;
+  };
+  displayMessage: string;
+}
+
+function ownDataProperty(value: unknown, key: string): unknown {
+  if ((typeof value !== 'object' && typeof value !== 'function') || value === null) {
+    return undefined;
+  }
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    // Never invoke an accessor supplied by an adapter error object.
+    return descriptor && 'value' in descriptor ? descriptor.value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function safeInferenceIdentifier(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0
+    && trimmed.length <= 200
+    && !trimmed.includes('://')
+    && !/\bBearer\b/i.test(trimmed)
+    && !/\bsk-[A-Za-z0-9_-]{8,}/i.test(trimmed)
+    && /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/.test(trimmed)
+    ? trimmed
+    : undefined;
+}
+
+function normalizedDeviation(value: unknown): NormalizedInferenceFailure['deviation'] {
+  const code = ownDataProperty(value, 'code');
+  const supported = new Set<InferenceProtocolDeviationCode>([
+    'case_mismatch',
+    'lesson_mismatch',
+    'model_mismatch',
+    'provider_mismatch',
+    'inference_parameter_mismatch',
+    'storage_unavailable',
+  ]);
+  if (typeof code !== 'string' || !supported.has(code as InferenceProtocolDeviationCode)) {
+    return undefined;
+  }
+  const expectedId = safeInferenceIdentifier(ownDataProperty(value, 'expectedId'));
+  const observedId = safeInferenceIdentifier(ownDataProperty(value, 'observedId'));
+  return {
+    code: code as InferenceProtocolDeviationCode,
+    ...(expectedId && observedId ? { expectedId, observedId } : {}),
+  };
+}
+
+/**
+ * Rebuild a closed, display-safe failure instead of trusting an adapter's
+ * Error.message, cause, response body, headers, or enumerable properties.
+ */
+function normalizeInferenceFailure(value: unknown): NormalizedInferenceFailure {
+  const code = ownDataProperty(value, 'code');
+  const retryable = ownDataProperty(value, 'retryable');
+  const supportedCode = typeof code === 'string'
+    && Object.prototype.hasOwnProperty.call(INFERENCE_FAILURE_MESSAGES, code)
+    ? code as ResearchInferenceErrorCode
+    : 'unexpected_error';
+  const httpStatusValue = ownDataProperty(value, 'httpStatus');
+  const httpStatus = Number.isSafeInteger(httpStatusValue)
+    && (httpStatusValue as number) >= 100
+    && (httpStatusValue as number) <= 599
+    ? httpStatusValue as number
+    : undefined;
+  const deviation = supportedCode === 'protocol_deviation'
+    ? normalizedDeviation(ownDataProperty(value, 'deviation'))
+    : undefined;
+  return {
+    code: supportedCode,
+    retryable: supportedCode === 'unexpected_error'
+      ? true
+      : typeof retryable === 'boolean' ? retryable : false,
+    ...(httpStatus === undefined ? {} : { httpStatus }),
+    ...(deviation ? { deviation } : {}),
+    displayMessage: INFERENCE_FAILURE_MESSAGES[supportedCode],
+  };
 }
 
 function sessionContextIdentity(context?: SessionRecorderContext): string {
@@ -99,6 +213,7 @@ function sessionContextIdentity(context?: SessionRecorderContext): string {
 }
 
 const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
+  teachingEngine = compatibilityTeachingEngine,
   captureCurrentView,
   sessionContext,
   sessionEventStore,
@@ -1004,7 +1119,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
     try {
         let fullText = '';
-        const inferenceResult = await streamChatResponse(
+        const inferenceResult = await teachingEngine.runTurn(
             promptToSend,
             mode,
             learnerLevel,
@@ -1102,11 +1217,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             });
           }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         // If cancelled, do not render error
         if (!isCurrentRequest(request)) return;
 
-        const safeError = isSafeInferenceError(error) ? error : null;
+        const safeError = normalizeInferenceFailure(error);
         if (!request.terminalRecorded) {
           if (request.research) {
             if (safeError?.deviation) {
@@ -1126,8 +1241,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               request,
               () => recordResearchFailure(
                 request,
-                (safeError?.code ?? 'unexpected_error') as ResearchInferenceErrorCode,
-                safeError?.retryable ?? true,
+                safeError.code,
+                safeError.retryable,
                 safeError?.httpStatus,
               ),
             ).catch(() => undefined);
@@ -1138,16 +1253,13 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               turnId: request.turnId,
               gateway: 'openrouter',
               requestedModelId: request.requestedModelId,
-              errorCode: safeError?.code ?? 'unexpected_error',
+              errorCode: safeError.code,
               ...(safeError?.httpStatus ? { httpStatus: safeError.httpStatus } : {}),
               latencyMs: Math.max(0, Date.now() - request.startedAt),
-              retryable: safeError?.retryable ?? true,
+              retryable: safeError.retryable,
             });
           }
         }
-
-        // ERROR HANDLING
-        if (!request.research) console.error("Chat Error Caught in Component:", error);
 
         // 1. Remove the placeholder bot message
         setMessages(prev => prev.filter(m => m.id !== botMsgId));
@@ -1161,7 +1273,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         const errorMessage: ChatMessage = {
             id: Date.now().toString(),
             role: 'error',
-            text: error.message || "An unexpected error occurred.",
+            text: safeError.displayMessage,
             originalPrompt: finalText,
             lessonPlanRef: activeLessonRef,
         };
