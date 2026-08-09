@@ -9,9 +9,11 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 
-# Content-hashed build output (vite renames on every change) — cache forever.
+# Content-hashed build output (vite renames on every change) — cache a year, but
+# NOT immutable: if an edge blip during a deploy poisons a cache entry, dropping
+# immutable lets it self-heal on the next reload instead of sticking for a year.
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=31536000
 
 # Case images live at stable paths — cache a week.
 /images/*

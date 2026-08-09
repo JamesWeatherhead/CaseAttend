@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* Build stamp. Also guarantees the emitted stylesheet bytes change on this
+   deploy, so a poisoned edge/browser cache entry for the old stylesheet URL
+   cannot persist (2026-08-09 unstyled-site incident). */
+:root {
+  --ca-build: "0.5.0+cachebust-20260809";
+}
