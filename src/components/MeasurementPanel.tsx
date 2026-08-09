@@ -12,13 +12,6 @@ interface MeasurementPanelProps {
   onJumpToSlice: (index: number) => void;
   pixelSpacing?: number; // mm per pixel
   
-  // Context for AI
-  studyMetadata?: {
-    studyId: string;
-    patientName: string;
-    description: string;
-    modality: string;
-  };
   onStartTour?: () => void;
 }
 
@@ -30,7 +23,6 @@ const MeasurementPanel: React.FC<MeasurementPanelProps> = ({
   onDelete,
   onJumpToSlice,
   pixelSpacing = 0.5, // Default approx if not provided
-  studyMetadata,
   onStartTour
 }) => {
   return (

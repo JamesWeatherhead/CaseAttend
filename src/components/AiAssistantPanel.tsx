@@ -15,7 +15,6 @@ interface AiAssistantPanelProps {
 
   studyMetadata?: {
     studyId: string;
-    patientName: string;
     description: string;
     modality: string;
     domain: DomainKey;

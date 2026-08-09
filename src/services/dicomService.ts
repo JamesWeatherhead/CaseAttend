@@ -1,33 +1,40 @@
 
-import { Study, Series, DicomWebConfig, DiagnosticStep } from "../types";
-import { LOCAL_STUDY, LOCAL_SERIES } from "../data/localData";
-import { PATHOLOGY_STUDY, PATHOLOGY_SERIES, PATHOLOGY_STUDY_ID } from "../data/pathologyData";
-import { CXR_STUDIES, CXR_SERIES_MAP, CXR_STUDY_IDS } from "../data/cxrData";
-import { DERM_STUDIES, DERM_SERIES_MAP, DERM_STUDY_IDS } from "../data/dermatologyData";
+import type { CasePackageV1 } from '../core/casePackage';
+import {
+  casePackageToSeries,
+  listCasePackages,
+  requireCasePackage,
+} from '../data/caseRegistry';
+import type { Series, DicomWebConfig, DiagnosticStep } from '../types';
 
 /**
  * FETCH STUDIES
  * Returns studies for the selected modality.
  */
-export const searchDicomWebStudies = async (config: DicomWebConfig, query?: string): Promise<Study[]> => {
-  return [LOCAL_STUDY, PATHOLOGY_STUDY, ...CXR_STUDIES, ...DERM_STUDIES];
+export const searchDicomWebStudies = async (
+  _config: DicomWebConfig,
+  query?: string,
+): Promise<readonly CasePackageV1[]> => {
+  const packages = await listCasePackages();
+  const normalizedQuery = query?.trim().toLowerCase();
+  if (!normalizedQuery) return packages;
+  return packages.filter((casePackage) =>
+    `${casePackage.title} ${casePackage.vignette} ${casePackage.presentation.subtitle}`
+      .toLowerCase()
+      .includes(normalizedQuery),
+  );
 };
 
 /**
  * FETCH SERIES
  * Returns series for the given study.
  */
-export const fetchDicomWebSeries = async (config: DicomWebConfig, studyUid: string): Promise<Series[]> => {
-  if (studyUid === PATHOLOGY_STUDY_ID) {
-    return PATHOLOGY_SERIES;
-  }
-  if (CXR_STUDY_IDS.includes(studyUid)) {
-    return CXR_SERIES_MAP[studyUid] || [];
-  }
-  if (DERM_STUDY_IDS.includes(studyUid)) {
-    return DERM_SERIES_MAP[studyUid] || [];
-  }
-  return LOCAL_SERIES;
+export const fetchDicomWebSeries = async (
+  _config: DicomWebConfig,
+  studyUid: string,
+): Promise<Series[]> => {
+  const casePackage = await requireCasePackage(studyUid);
+  return casePackageToSeries(casePackage);
 };
 
 // IN-MEMORY CACHE
@@ -94,19 +101,18 @@ export const prefetchImage = (url: string) => {
  * Check if the assets are accessible.
  */
 export const runConnectionDiagnostics = async (
-  config: DicomWebConfig, 
+  _config: DicomWebConfig,
   onStepUpdate: (stepId: string, status: DiagnosticStep['status'], message?: string) => void
 ): Promise<boolean> => {
   
   onStepUpdate('1-local-check', 'RUNNING');
   
   try {
-    // Check if we can load the first image of the first series
-    if (!LOCAL_SERIES.length || !LOCAL_SERIES[0].instances.length) {
-         throw new Error("No series configured in data/localData.ts.");
-    }
-
-    const testUrl = LOCAL_SERIES[0].instances[0];
+    const firstCase = (await listCasePackages())[0];
+    if (!firstCase) throw new Error('The Case Package registry is empty.');
+    const firstSeries = casePackageToSeries(firstCase)[0];
+    const testUrl = firstSeries?.instances[0];
+    if (!testUrl) throw new Error(`Case Package ${firstCase.id} has no viewer artifact.`);
     const response = await fetch(testUrl);
     
     if (response.ok) {
@@ -116,7 +122,7 @@ export const runConnectionDiagnostics = async (
        throw new Error(`HTTP ${response.status} fetching ${testUrl}`);
     }
   } catch (e: any) {
-    onStepUpdate('1-local-check', 'FAIL', `Assets missing. Check URL in data/localData.ts. Error: ${e.message}`);
+    onStepUpdate('1-local-check', 'FAIL', `Built-in Case Package asset check failed. Error: ${e.message}`);
     return false;
   }
 };

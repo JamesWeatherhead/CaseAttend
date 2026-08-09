@@ -1,21 +1,6 @@
 
 
-// Domain Models
-
-import type { DomainKey } from './lib/domains/types';
-
-export interface Study {
-  id: string;
-  patientName: string;
-  patientId: string;
-  accessionNumber: string;
-  studyDate: string;
-  modality: string;
-  domain: DomainKey;
-  description: string;
-  seriesCount: number;
-  instanceCount: number;
-}
+// Viewer adapter model. Portable case metadata lives in core/casePackage.ts.
 
 export interface Series {
   id: string;

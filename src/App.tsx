@@ -11,10 +11,11 @@ import SafetyModal from './components/SafetyModal';
 import GuidedTour, { TourId } from './components/GuidedTour';
 import FloatingToolbar from './components/FloatingToolbar';
 import { TOOLS, MOCK_SEGMENTATION_DATA } from './constants';
-import { Study, Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer } from './types';
+import type { CasePackageV1 } from './core/casePackage';
+import { primaryCaseModality } from './data/caseRegistry';
+import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer } from './types';
 import { fetchDicomWebSeries } from './services/dicomService';
 import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
-import { getDomain } from './lib/domains';
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -31,7 +32,7 @@ const App: React.FC = () => {
     name: 'Local Dataset (CC0)'
   });
 
-  const [selectedStudy, setSelectedStudy] = useState<Study | null>(null);
+  const [selectedStudy, setSelectedStudy] = useState<CasePackageV1 | null>(null);
   const [studySeries, setStudySeries] = useState<Series[]>([]);
   const [activeSeries, setActiveSeries] = useState<Series | null>(null);
   const [activeTool, setActiveToolRaw] = useState<ToolMode>(ToolMode.SCROLL);
@@ -282,6 +283,12 @@ const App: React.FC = () => {
     }
   }, [activeSeries?.id]);
 
+  useEffect(() => {
+    if ((activeSeries?.instanceCount ?? 0) <= 1 && activeTool === ToolMode.SCROLL) {
+      setActiveToolRaw(ToolMode.POINTER);
+    }
+  }, [activeSeries?.id, activeSeries?.instanceCount, activeTool]);
+
   const handleMeasurementAdd = useCallback((m: Measurement) => {
     if (!activeSeriesId) return;
     setMeasurementsBySeries(prev => ({
@@ -326,7 +333,7 @@ const App: React.FC = () => {
       image,
       slice: sliceIndex + 1,
       total: activeSeries?.instanceCount,
-      label: activeSeries?.description || selectedStudy?.description,
+      label: activeSeries?.description || selectedStudy?.neutralDescription,
     };
   }, [sliceIndex, activeSeries, selectedStudy]);
 
@@ -364,7 +371,7 @@ const App: React.FC = () => {
       if (cancelled) return;
       setConnectNotice(
         result.ok
-          ? { ok: true, msg: 'OpenRouter connected — your key stays in your browser.' }
+          ? { ok: true, msg: 'OpenRouter connected. Your key is stored in this browser and sent only to OpenRouter.' }
           : { ok: false, msg: result.error || 'Could not finish connecting to OpenRouter.' }
       );
       setTimeout(() => setConnectNotice(null), 6000);
@@ -491,7 +498,7 @@ const App: React.FC = () => {
                     orientation={toolbarOrientation}
                     isDragging={isDraggingToolbar}
                     instanceCount={activeSeries?.instanceCount ?? 1}
-                    artifactHints={getDomain(selectedStudy.domain).artifactHints}
+                    artifactHints={selectedStudy.artifactHints}
                   />
 
                   <ViewerCanvas
@@ -511,7 +518,7 @@ const App: React.FC = () => {
                     isScrollEnabled={activeTour === null && (activeSeries?.instanceCount ?? 0) > 1}
                     aiPointers={aiPointers}
                   />
-                  {getDomain(selectedStudy.domain).artifactHints.showSeriesSelector && (
+                  {selectedStudy.artifactHints.showSeriesSelector && (
                     <div className="flex-shrink-0 z-10">
                       <SeriesSelector
                         seriesList={studySeries}
@@ -558,7 +565,6 @@ const App: React.FC = () => {
                             onDelete={handleMeasurementDelete}
                             onJumpToSlice={setSliceIndex}
                             onStartTour={() => {}}
-                            studyMetadata={{ studyId: selectedStudy.id, patientName: selectedStudy.patientName, description: selectedStudy.description, modality: selectedStudy.modality }}
                           />
                      </div>
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'segment' ? 'block z-10' : 'hidden'}`}>
@@ -575,7 +581,12 @@ const App: React.FC = () => {
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'ai' ? 'block z-10' : 'hidden'}`}>
                          <AiAssistantPanel
                             captureCurrentView={captureCurrentView}
-                            studyMetadata={{ studyId: selectedStudy.id, patientName: selectedStudy.patientName, description: selectedStudy.description, modality: selectedStudy.modality, domain: selectedStudy.domain }}
+                            studyMetadata={{
+                              studyId: selectedStudy.id,
+                              description: selectedStudy.teachingNotes.join(' '),
+                              modality: primaryCaseModality(selectedStudy),
+                              domain: selectedStudy.domain,
+                            }}
                             cursor={{ seriesInstanceUID: activeSeries?.id || '', frameIndex: sliceIndex, activeMeasurementId: activeMeasurementId }}
                             onJumpToSlice={setSliceIndex}
                             activeSeriesInfo={activeSeries ? { description: activeSeries.description, instanceCount: activeSeries.instanceCount } : undefined}

@@ -1,218 +1,21 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Study, ConnectionType, DicomWebConfig } from '../types';
+import type { CasePackageV1 } from '../core/casePackage';
+import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
 
 interface StudyListProps {
-  onSelectStudy: (study: Study) => void;
+  onSelectStudy: (casePackage: CasePackageV1) => void;
   connectionType: ConnectionType;
   setConnectionType: (type: ConnectionType) => void;
   dicomConfig: DicomWebConfig;
   setDicomConfig: (config: DicomWebConfig) => void;
   onShowSafety?: () => void;
 }
-
-const CARDS = [
-  {
-    studyId: 'local-study-sub1',
-    modality: 'MR',
-    label: '72F, progressive memory decline',
-    subtitle: 'Brain MRI',
-    detail: 'Forgetting words and getting lost in familiar places. History of irregular heartbeat, high blood pressure, and diabetes.',
-    icon: Scan,
-    preview: '/images/sub-1/FLAIR/14.png',
-    accentColor: 'rgba(59,130,246,1)',
-    accentGlow: 'rgba(59,130,246,0.15)',
-    accentBorder: 'rgba(59,130,246,0.3)',
-    textClass: 'text-blue-400',
-  },
-  {
-    studyId: 'patho-study-breast',
-    modality: 'PATH',
-    label: '62F, suspicious breast mass',
-    subtitle: 'Pathology',
-    detail: 'Lump found during routine exam. Imaging showed a suspicious mass. Biopsy taken for microscopic review.',
-    icon: Microscope,
-    preview: '/images/patho-1/HE_10x/1.webp',
-    accentColor: 'rgba(244,63,94,1)',
-    accentGlow: 'rgba(244,63,94,0.15)',
-    accentBorder: 'rgba(244,63,94,0.3)',
-    textClass: 'text-rose-400',
-  },
-  {
-    studyId: 'cxr-pneumothorax',
-    modality: 'CR',
-    label: '21M, sudden chest pain',
-    subtitle: 'Chest X-ray',
-    detail: 'A tall, thin young man struggling to breathe after sudden stabbing chest pain.',
-    icon: Scan,
-    preview: '/images/cxr-pneumothorax/1.jpg',
-    accentColor: 'rgba(245,158,11,1)',
-    accentGlow: 'rgba(245,158,11,0.15)',
-    accentBorder: 'rgba(245,158,11,0.3)',
-    textClass: 'text-amber-400',
-  },
-  {
-    studyId: 'cxr-pneumonia',
-    modality: 'CR',
-    label: '67M, cough and fever',
-    subtitle: 'Chest X-ray',
-    detail: 'Three days of worsening cough with thick sputum, fever, and chills.',
-    icon: Scan,
-    preview: '/images/cxr-pneumonia/1.jpg',
-    accentColor: 'rgba(34,197,94,1)',
-    accentGlow: 'rgba(34,197,94,0.15)',
-    accentBorder: 'rgba(34,197,94,0.3)',
-    textClass: 'text-green-400',
-  },
-  {
-    studyId: 'cxr-chf',
-    modality: 'CR',
-    label: '68M, shortness of breath',
-    subtitle: 'Chest X-ray',
-    detail: 'Cannot lie flat, coughing up pink frothy sputum. Classic signs of fluid in the lungs.',
-    icon: Scan,
-    preview: '/images/cxr-chf/1.jpg',
-    accentColor: 'rgba(139,92,246,1)',
-    accentGlow: 'rgba(139,92,246,0.15)',
-    accentBorder: 'rgba(139,92,246,0.3)',
-    textClass: 'text-violet-400',
-  },
-  {
-    studyId: 'cxr-effusion',
-    modality: 'CR',
-    label: '58M, progressive dyspnea',
-    subtitle: 'Chest X-ray',
-    detail: 'Weight loss and worsening shortness of breath over several weeks. One side looks dramatically different.',
-    icon: Scan,
-    preview: '/images/cxr-effusion/1.jpg',
-    accentColor: 'rgba(6,182,212,1)',
-    accentGlow: 'rgba(6,182,212,0.15)',
-    accentBorder: 'rgba(6,182,212,0.3)',
-    textClass: 'text-cyan-400',
-  },
-  {
-    studyId: 'axr-sbo',
-    modality: 'CR',
-    label: '45F, abdominal pain and vomiting',
-    subtitle: 'Abdominal X-ray',
-    detail: 'Two days of worsening belly pain, bloating, and vomiting. She had her appendix removed years ago.',
-    icon: Scan,
-    preview: '/images/axr-sbo/1.jpg',
-    accentColor: 'rgba(251,146,60,1)',
-    accentGlow: 'rgba(251,146,60,0.15)',
-    accentBorder: 'rgba(251,146,60,0.3)',
-    textClass: 'text-orange-400',
-  },
-  {
-    studyId: 'ct-epidural',
-    modality: 'CT',
-    label: '87F, fall with head injury',
-    subtitle: 'Head CT',
-    detail: 'An elderly woman found on the floor after a fall. She was initially alert but is now becoming drowsy.',
-    icon: Scan,
-    preview: '/images/ct-epidural/1.jpg',
-    accentColor: 'rgba(20,184,166,1)',
-    accentGlow: 'rgba(20,184,166,0.15)',
-    accentBorder: 'rgba(20,184,166,0.3)',
-    textClass: 'text-teal-400',
-  },
-  {
-    studyId: 'ct-subdural',
-    modality: 'CT',
-    label: '80F, progressive headache',
-    subtitle: 'Head CT',
-    detail: 'Worsening headache and confusion over several days. She takes blood thinners for her heart.',
-    icon: Scan,
-    preview: '/images/ct-subdural/1.jpg',
-    accentColor: 'rgba(236,72,153,1)',
-    accentGlow: 'rgba(236,72,153,0.15)',
-    accentBorder: 'rgba(236,72,153,0.3)',
-    textClass: 'text-pink-400',
-  },
-  {
-    studyId: 'cxr-pneumoperitoneum',
-    modality: 'CR',
-    label: '71F, acute abdominal pain',
-    subtitle: 'Upright X-ray',
-    detail: 'Sudden severe belly pain with a rigid, board-like abdomen. This is a surgical emergency.',
-    icon: Scan,
-    preview: '/images/cxr-pneumoperitoneum/1.jpg',
-    accentColor: 'rgba(239,68,68,1)',
-    accentGlow: 'rgba(239,68,68,0.15)',
-    accentBorder: 'rgba(239,68,68,0.3)',
-    textClass: 'text-red-400',
-  },
-  {
-    studyId: 'axr-nec',
-    modality: 'CR',
-    label: 'Neonate, feeding intolerance',
-    subtitle: 'Neonatal X-ray',
-    detail: 'A premature baby with bloody stools, abdominal distension, and bilious vomiting.',
-    icon: Scan,
-    preview: '/images/axr-nec/1.jpg',
-    accentColor: 'rgba(234,179,8,1)',
-    accentGlow: 'rgba(234,179,8,0.15)',
-    accentBorder: 'rgba(234,179,8,0.3)',
-    textClass: 'text-yellow-400',
-  },
-  {
-    studyId: 'xr-colles',
-    modality: 'CR',
-    label: 'Adult, wrist injury after fall',
-    subtitle: 'Wrist X-ray',
-    detail: 'Fell on an outstretched hand. The wrist looks deformed with a visible bump on the back.',
-    icon: Scan,
-    preview: '/images/xr-colles/1.jpg',
-    accentColor: 'rgba(132,204,22,1)',
-    accentGlow: 'rgba(132,204,22,0.15)',
-    accentBorder: 'rgba(132,204,22,0.3)',
-    textClass: 'text-lime-400',
-  },
-  {
-    studyId: 'derm-melanoma',
-    modality: 'XC',
-    label: '55M, evolving pigmented lesion',
-    subtitle: 'Dermatology',
-    detail: 'A dark spot on the back that has been changing over the past year. Partner-noticed evolution, irregular border.',
-    icon: Scan,
-    preview: '/images/derm-melanoma/1.jpg',
-    accentColor: 'rgba(217,70,239,1)',
-    accentGlow: 'rgba(217,70,239,0.15)',
-    accentBorder: 'rgba(217,70,239,0.3)',
-    textClass: 'text-fuchsia-400',
-  },
-  {
-    studyId: 'derm-bcc',
-    modality: 'XC',
-    label: '72M, slow-growing nasal lesion',
-    subtitle: 'Dermatology',
-    detail: 'A shiny bump on the nose that occasionally bleeds. Chronic sun exposure history.',
-    icon: Scan,
-    preview: '/images/derm-bcc/1.jpg',
-    accentColor: 'rgba(20,184,166,1)',
-    accentGlow: 'rgba(20,184,166,0.15)',
-    accentBorder: 'rgba(20,184,166,0.3)',
-    textClass: 'text-teal-400',
-  },
-  {
-    studyId: 'derm-sebk',
-    modality: 'XC',
-    label: '65F, long-standing brown lesions',
-    subtitle: 'Dermatology',
-    detail: 'Multiple waxy, stuck-on-looking brown spots on the trunk. Present for years, no change, no symptoms.',
-    icon: Scan,
-    preview: '/images/derm-sebk/1.jpg',
-    accentColor: 'rgba(168,85,247,1)',
-    accentGlow: 'rgba(168,85,247,0.15)',
-    accentBorder: 'rgba(168,85,247,0.3)',
-    textClass: 'text-purple-400',
-  },
-];
 
 const TESTIMONIALS = [
   { quote: "I thought I had a good grasp on tension pneumothorax. Then it asked me to explain exactly how it causes hypotension and low preload. Turns out I didn't.", author: "PGY-1, General Surgery" },
@@ -260,6 +63,9 @@ const TestimonialRotator: React.FC = () => {
         {TESTIMONIALS.map((_, i) => (
           <button
             key={i}
+            type="button"
+            aria-label={`Show testimonial ${i + 1} of ${TESTIMONIALS.length}`}
+            aria-pressed={i === idx}
             onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 400); }}
             className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === idx ? 'bg-[#8a8f98] w-4' : 'bg-[#2a2d35] hover:bg-[#4a4e58]'}`}
           />
@@ -367,7 +173,7 @@ const ConnectCallout: React.FC = () => {
             </li>
             <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
               <ShieldCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
-              <span>Your credentials stay with OpenRouter</span>
+              <span>Your key is sent only to OpenRouter</span>
             </li>
           </ul>
         </div>
@@ -385,22 +191,14 @@ const FILTERS = [
   { id: 'derm', label: 'Dermatology' },
 ];
 
-const getFilterForStudy = (studyId: string): string => {
-  if (studyId.startsWith('ct-')) return 'ct';
-  if (studyId.startsWith('local-study')) return 'mri';
-  if (studyId.startsWith('patho-')) return 'path';
-  if (studyId.startsWith('derm-')) return 'derm';
-  return 'xray'; // cxr-, axr-, xr- all count as x-ray
-};
-
-const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onShowSafety }) => {
-  const [studies, setStudies] = useState<Study[]>([]);
+const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig }) => {
+  const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
-    searchDicomWebStudies(dicomConfig).then((data) => { setStudies(data); setLoading(false); });
+    searchDicomWebStudies(dicomConfig).then((data) => { setCasePackages(data); setLoading(false); });
   }, []);
 
   if (loading) {
@@ -470,22 +268,21 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
 
         {/* Case grid: 1 col mobile, 2 col tablet, 3 col desktop */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-[1100px]">
-          {studies.filter(s => activeFilter === 'all' || getFilterForStudy(s.id) === activeFilter).map((study) => {
-            const card = CARDS.find(c => c.studyId === study.id) || CARDS.find(c => c.modality === study.modality) || CARDS[0];
-            const Icon = card.icon;
-            const active = hovered === study.id;
+          {casePackages.filter((casePackage) => activeFilter === 'all' || casePackage.presentation.category === activeFilter).map((casePackage) => {
+            const active = hovered === casePackage.id;
+            const { presentation } = casePackage;
 
             return (
               <button
-                key={study.id}
-                onClick={() => onSelectStudy(study)}
-                onMouseEnter={() => setHovered(study.id)}
+                key={casePackage.id}
+                onClick={() => onSelectStudy(casePackage)}
+                onMouseEnter={() => setHovered(casePackage.id)}
                 onMouseLeave={() => setHovered(null)}
                 className="group relative rounded-2xl overflow-hidden text-left outline-none aspect-[4/5] sm:aspect-[4/5]"
                 style={{
                   transition: 'transform 250ms cubic-bezier(0.16,1,0.3,1), box-shadow 250ms ease',
                   transform: active ? 'scale(1.02)' : 'scale(1)',
-                  boxShadow: active ? `0 0 40px 8px ${card.accentGlow}` : 'none',
+                  boxShadow: active ? `0 0 40px 8px ${presentation.accentGlow}` : 'none',
                 }}
               >
                 {/* Background image: fills the card */}
@@ -493,7 +290,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                   <div
                     className="absolute inset-0 transition-all duration-700 ease-out"
                     style={{
-                      backgroundImage: `url(${card.preview})`,
+                      backgroundImage: `url(${casePackage.preview.src})`,
                       backgroundSize: 'contain',
                       backgroundPosition: 'center',
                       backgroundRepeat: 'no-repeat',
@@ -513,7 +310,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                   <div
                     className="absolute inset-0 transition-opacity duration-500"
                     style={{
-                      background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${card.accentGlow}, transparent 70%)`,
+                      background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${presentation.accentGlow}, transparent 70%)`,
                       opacity: active ? 1 : 0.5,
                     }}
                   />
@@ -522,33 +319,33 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                 {/* Border */}
                 <div className="absolute inset-0 rounded-2xl transition-all duration-200" style={{
                   boxShadow: active
-                    ? `inset 0 0 0 1px ${card.accentBorder}`
+                    ? `inset 0 0 0 1px ${presentation.accentBorder}`
                     : 'inset 0 0 0 1px rgba(255,255,255,0.04)',
                 }} />
 
                 {/* Content pinned to bottom */}
                 <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-5 pt-8">
                   {/* Modality tag */}
-                  <div className={`text-[10px] font-bold uppercase tracking-wider ${card.textClass} mb-2 opacity-80`}>
-                    {card.subtitle}
+                  <div className={`text-[10px] font-bold uppercase tracking-wider ${presentation.textClass} mb-2 opacity-80`}>
+                    {presentation.subtitle}
                   </div>
 
                   {/* Case title */}
                   <div className="text-[16px] sm:text-[17px] font-bold text-white leading-tight mb-2">
-                    {card.label}
+                    {casePackage.title}
                   </div>
 
                   {/* Clinical vignette */}
                   <p className="text-[11px] sm:text-[12px] text-[#6b7080] leading-relaxed mb-3 group-hover:text-[#8a8f98] transition-colors duration-300 line-clamp-3">
-                    {card.detail}
+                    {casePackage.vignette}
                   </p>
 
                   {/* CTA */}
                   <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-bold ${card.textClass} uppercase tracking-[0.08em] opacity-70 group-hover:opacity-100 transition-opacity`}>
+                    <span className={`text-[10px] font-bold ${presentation.textClass} uppercase tracking-[0.08em] opacity-70 group-hover:opacity-100 transition-opacity`}>
                       Start Case
                     </span>
-                    <ArrowRight className={`w-3.5 h-3.5 ${card.textClass} opacity-0 group-hover:opacity-70 transition-all duration-200 group-hover:translate-x-0.5`} />
+                    <ArrowRight className={`w-3.5 h-3.5 ${presentation.textClass} opacity-0 group-hover:opacity-70 transition-all duration-200 group-hover:translate-x-0.5`} />
                   </div>
                 </div>
               </button>
