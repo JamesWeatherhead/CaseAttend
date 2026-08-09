@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Study, ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Microscope, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound } from 'lucide-react';
+import { ArrowRight, Scan, Microscope, Loader2, Award, Check, Github, Layers, KeyRound, BookOpen, FlaskConical, Code2 } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
@@ -239,7 +239,7 @@ const TestimonialRotator: React.FC = () => {
   const t = TESTIMONIALS[idx];
 
   return (
-    <div className="w-full max-w-[560px] mb-8 flex flex-col items-center text-center px-4">
+    <div className="w-full max-w-[560px] flex flex-col items-center text-center px-4">
       <div
         className="transition-all duration-400 ease-in-out"
         style={{
@@ -269,36 +269,7 @@ const TestimonialRotator: React.FC = () => {
   );
 };
 
-/** Multi-colour Google "G", for the sign-in method chip. */
-const GoogleG: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
-  <svg viewBox="0 0 48 48" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
-    <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
-    <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z" />
-    <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
-  </svg>
-);
-
-/** One sign-in-method chip; every route goes through OpenRouter's own sign-in. */
-const ProviderChip: React.FC<{ label: string; icon: React.ReactNode; onClick: () => void; disabled?: boolean }> = ({ label, icon, onClick, disabled }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={disabled}
-    aria-label={`Continue with OpenRouter using ${label}`}
-    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-60 px-3.5 py-2 text-[13px] text-[#c9ced8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
-  >
-    {icon}
-    <span>{label}</span>
-  </button>
-);
-
-/**
- * Landing-page activation band: a two-column OpenRouter sign-in. The left states
- * the offer (free, no card, sign-in methods); the right is the single blue
- * "Continue with OpenRouter" action and its two reassurances. Once connected it
- * collapses to a quiet confirmation instead of nagging.
- */
+/** Compact provider connection band. The platform and cases explain themselves first. */
 const ConnectCallout: React.FC = () => {
   const [connected, setConnected] = useState<boolean>(hasKey());
   const [connecting, setConnecting] = useState(false);
@@ -320,7 +291,7 @@ const ConnectCallout: React.FC = () => {
 
   if (connected) {
     return (
-      <div className="w-full max-w-[1100px] mb-12 flex justify-center">
+      <div className="w-full max-w-[1100px] mb-10 flex justify-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/30 px-4 py-2 text-[13px] text-emerald-300/90">
           <Check className="w-4 h-4 flex-shrink-0" />
           <span>Connected to OpenRouter. Pick a case below to begin.</span>
@@ -330,47 +301,30 @@ const ConnectCallout: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-[1100px] mb-12 rounded-[20px] border border-white/[0.07] bg-white/[0.02] p-6 sm:p-9">
-      <div className="grid grid-cols-1 md:grid-cols-2">
-
-        {/* Left: the offer */}
-        <div className="md:pr-10">
-          <OpenRouterLockup className="h-[26px] w-auto" />
-          <h2 className="mt-5 text-[22px] sm:text-[24px] font-semibold text-white tracking-[-0.02em]">
-            Start free with OpenRouter
-          </h2>
-          <p className="mt-2.5 max-w-[420px] text-[14px] leading-relaxed text-[#9096a0]">
-            Use Google, GitHub, or email to sign in in seconds. No credit card required.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            <ProviderChip label="Google" onClick={connect} disabled={connecting} icon={<GoogleG className="w-[15px] h-[15px]" />} />
-            <ProviderChip label="GitHub" onClick={connect} disabled={connecting} icon={<Github className="w-[15px] h-[15px]" />} />
-            <ProviderChip label="Email" onClick={connect} disabled={connecting} icon={<Mail className="w-[15px] h-[15px]" />} />
+    <div className="w-full max-w-[1100px] mb-10 rounded-2xl border border-white/[0.07] bg-[#0b0c0f] px-5 py-4 sm:px-6 sm:py-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start sm:items-center gap-4">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
+            <OpenRouterMark className="h-[19px] w-[19px]" />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="text-[14px] font-semibold text-white">Bring a vision model when you are ready</h2>
+              <OpenRouterLockup className="h-[17px] w-auto opacity-60" />
+            </div>
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#737985]">
+              Two free models, no credit card, and your credentials stay with OpenRouter.
+            </p>
           </div>
         </div>
-
-        {/* Right: the action */}
-        <div className="mt-8 pt-8 border-t border-white/[0.07] md:mt-0 md:pt-0 md:border-t-0 md:border-l md:border-white/[0.07] md:pl-10 flex flex-col justify-center">
-          <button
-            onClick={connect}
-            disabled={connecting}
-            className="w-full inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 h-[52px] px-4 sm:px-6 text-[15px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
-          >
-            <OpenRouterMark className="w-[18px] h-[18px]" />
-            <span>{connecting ? 'Redirecting to OpenRouter…' : 'Continue with OpenRouter'}</span>
-            {!connecting && <ArrowRight className="w-4 h-4" />}
-          </button>
-          <ul className="mt-5 space-y-3">
-            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
-              <CircleCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
-              <span>Two free Gemma vision models included</span>
-            </li>
-            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
-              <ShieldCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
-              <span>Your credentials stay with OpenRouter</span>
-            </li>
-          </ul>
-        </div>
+        <button
+          onClick={connect}
+          disabled={connecting}
+          className="inline-flex h-10 flex-shrink-0 items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-4 text-[13px] font-semibold text-blue-200 transition-colors hover:bg-blue-500/20 hover:text-white disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
+        >
+          <span>{connecting ? 'Redirecting...' : 'Connect OpenRouter'}</span>
+          {!connecting && <ArrowRight className="h-3.5 w-3.5" />}
+        </button>
       </div>
     </div>
   );
@@ -411,45 +365,99 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
     <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto select-none">
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-12 sm:pt-20 pb-12">
+      <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-8 sm:pt-12 pb-12">
 
-        {/* Brand */}
-        <div className="flex flex-col items-center mb-6 sm:mb-8">
-          <div className="flex items-center gap-4 sm:gap-5 mb-4">
-            <img src="/logo.svg" alt="CaseAttend" className="w-12 h-12 sm:w-16 sm:h-16 rounded-[14px]" />
-            <h1 className="text-[38px] sm:text-[56px] font-bold text-white tracking-[-0.03em]">
-              CaseAttend
-            </h1>
+        {/* Platform-first hero */}
+        <section className="w-full max-w-[960px] flex flex-col items-center text-center">
+          <div className="flex items-center gap-3 mb-8">
+            <img src="/logo.svg" alt="" className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl" />
+            <span className="text-[22px] sm:text-[25px] font-bold text-white tracking-[-0.025em]">CaseAttend</span>
           </div>
-          <p className="text-[18px] sm:text-[22px] text-[#d0d6e0] font-medium mb-3 text-center max-w-[720px] leading-snug tracking-[-0.01em]">
-            Case-based visual reasoning tutor for medical education.
-          </p>
-          <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
-            Read the case. Scroll the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level — from high school to resident. Radiology, pathology, dermatology.
-          </p>
-          <a href="#how-it-works" className="mt-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors">
-            How it works
-          </a>
-        </div>
 
-        {/* Testimonial — social proof up top, before the ask */}
-        <div className="w-full flex justify-center mb-6 sm:mb-8">
-          <TestimonialRotator />
-        </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/[0.07] px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/90">
+            <Github className="h-3.5 w-3.5" />
+            Open source platform for VLM education
+          </div>
 
-        {/* Trust signals */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 mb-8">
-          <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[13px] sm:text-[14px] text-amber-400/90 font-medium hover:text-amber-300 transition-colors">
-            <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+          <h1 className="mt-5 max-w-[900px] text-[36px] sm:text-[52px] lg:text-[60px] font-bold leading-[1.05] text-white tracking-[-0.045em]">
+            Build and study tutors that can see what students see.
+          </h1>
+
+          <p className="mt-5 max-w-[760px] text-[14px] sm:text-[17px] leading-relaxed text-[#969ca7]">
+            CaseAttend is an open foundation for case-based visual education. Compare vision-language models, study teaching behavior, add a specialty, or build a product on the same engine used across radiology, pathology, and dermatology.
+          </p>
+
+          <div className="mt-7 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <a href="#cases" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50">
+              Try a case
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+            <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.025] px-5 text-[13px] font-semibold text-[#d0d6e0] transition-colors hover:border-white/[0.18] hover:bg-white/[0.05] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30">
+              <Github className="h-4 w-4" />
+              Build with CaseAttend
+            </a>
+          </div>
+
+          <div className="mt-6 flex max-w-[760px] flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-[#656b76]">
+            <span>AGPL-3.0</span>
+            <span>Domain plugins</span>
+            <span>Browser-direct BYOK</span>
+            <span>Reproducible cases</span>
+            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[#aeb4bf]">Citation-ready</a>
+          </div>
+        </section>
+
+        {/* Recognition and learner proof */}
+        <div className="mt-10 grid w-full max-w-[1000px] grid-cols-1 items-center gap-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-6 sm:px-8 md:grid-cols-[0.72fr_1.28fr] md:gap-8">
+          <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2.5 text-[12px] sm:text-[13px] text-amber-400/90 font-medium transition-colors hover:text-amber-300 md:border-r md:border-white/[0.07] md:py-2">
+            <Award className="w-4 h-4 text-amber-400" />
             <span>Google DeepMind Hackathon Winner</span>
           </a>
+          <div className="flex justify-center">
+            <TestimonialRotator />
+          </div>
         </div>
 
-        {/* Sign in with OpenRouter — free, no card, credentials stay with OpenRouter */}
-        <ConnectCallout />
+        {/* Three clear ways into the project */}
+        <section aria-labelledby="paths-heading" className="mt-10 w-full max-w-[1100px]">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4f5560]">One open engine</p>
+              <h2 id="paths-heading" className="mt-1.5 text-[20px] sm:text-[24px] font-semibold tracking-[-0.025em] text-white">Learn with it. Research it. Build on it.</h2>
+            </div>
+            <a href="#how-it-works" className="hidden text-[11px] text-blue-400/80 transition-colors hover:text-blue-300 sm:block">How it works</a>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <a href="#cases" className="group rounded-2xl border border-white/[0.06] bg-[#0d0e11] p-5 transition-colors hover:border-blue-500/25 hover:bg-blue-500/[0.035]">
+              <BookOpen className="h-5 w-5 text-blue-400" />
+              <h3 className="mt-4 text-[14px] font-semibold text-white">Learn with it</h3>
+              <p className="mt-2 text-[12.5px] leading-relaxed text-[#777d88]">Work through visual cases with a question-first tutor that adapts to the learner.</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium text-blue-300/80 group-hover:text-blue-300">Open a case <ArrowRight className="h-3 w-3" /></span>
+            </a>
+
+            <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="group rounded-2xl border border-white/[0.06] bg-[#0d0e11] p-5 transition-colors hover:border-fuchsia-500/25 hover:bg-fuchsia-500/[0.035]">
+              <FlaskConical className="h-5 w-5 text-fuchsia-400" />
+              <h3 className="mt-4 text-[14px] font-semibold text-white">Research with it</h3>
+              <p className="mt-2 text-[12.5px] leading-relaxed text-[#777d88]">Study grounding, multimodal pedagogy, model behavior, annotation, adaptation, and safety.</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium text-fuchsia-300/80 group-hover:text-fuchsia-300">Explore the source <ArrowRight className="h-3 w-3" /></span>
+            </a>
+
+            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="group rounded-2xl border border-white/[0.06] bg-[#0d0e11] p-5 transition-colors hover:border-emerald-500/25 hover:bg-emerald-500/[0.035]">
+              <Code2 className="h-5 w-5 text-emerald-400" />
+              <h3 className="mt-4 text-[14px] font-semibold text-white">Build on it</h3>
+              <p className="mt-2 text-[12.5px] leading-relaxed text-[#777d88]">Add a visual domain through the plugin architecture or turn the engine into a new product.</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-300/80 group-hover:text-emerald-300">Read the contributor guide <ArrowRight className="h-3 w-3" /></span>
+            </a>
+          </div>
+        </section>
+
+        <div className="mt-8 w-full flex justify-center">
+          <ConnectCallout />
+        </div>
 
         {/* Section label + filters */}
-        <div className="w-full max-w-[1100px] mb-4 flex items-center justify-between">
+        <div id="cases" className="w-full max-w-[1100px] mb-4 flex scroll-mt-6 flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
           <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em]">Cases</p>
           <div className="flex gap-1">
             {FILTERS.map(f => (
@@ -556,7 +564,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
           })}
         </div>
 
-        {/* How it works — anchor target for the hero link, and depth for scroll-down readers */}
+        {/* How it works: depth for visitors who scroll beyond the cases. */}
         <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
           <div className="text-center mb-10">
             <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-3">How it works</p>
@@ -585,7 +593,7 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
               </div>
               <h3 className="text-[15px] font-bold text-white mb-2">Domain plugin architecture</h3>
               <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module — no viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
+                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology today. A fourth domain is a plugin file plus a prompt module, with no viewer edits. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
               </p>
             </div>
 
@@ -620,6 +628,19 @@ const StudyList: React.FC<StudyListProps> = ({ onSelectStudy, dicomConfig, onSho
                 <span>Auto-capture on send: the AI sees whatever you're looking at (and any drawings you just made) the moment you press Enter. No manual capture step.</span>
               </li>
             </ul>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-[690px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f5560]">Open by default</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-[#8a8f98]">
+                Use, study, and extend CaseAttend under AGPL-3.0. Modified network services must publish their source. Commercial licensing is available for closed-source products.
+              </p>
+            </div>
+            <div className="flex flex-shrink-0 gap-3 text-[12px]">
+              <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="rounded-lg border border-white/[0.08] px-3 py-2 text-[#aab0ba] transition-colors hover:border-white/[0.16] hover:text-white">Read the license</a>
+              <a href="https://github.com/JamesWeatherhead" target="_blank" rel="noopener noreferrer" className="rounded-lg border border-white/[0.08] px-3 py-2 text-[#aab0ba] transition-colors hover:border-white/[0.16] hover:text-white">Commercial contact</a>
+            </div>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#6b7080]">
