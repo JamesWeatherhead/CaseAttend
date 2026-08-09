@@ -1,6 +1,9 @@
 import type { ContentPackDefinition } from './contentPack';
 import { chestRadiographOpenPack } from './packs/chestRadiographOpenPack';
 import { ecgSignalsPack } from './packs/ecgSignalsPack';
+import { mriNeuroOpenPack } from './packs/mriNeuroOpenPack';
+import { ophthalmologyFundusPack } from './packs/ophthalmologyFundusPack';
+import { pathologyMicroOpenPack } from './packs/pathologyMicroOpenPack';
 import { ultrasoundPocusPack } from './packs/ultrasoundPocusPack';
 
 /**
@@ -11,4 +14,7 @@ export const BUILTIN_CONTENT_PACKS: readonly ContentPackDefinition[] = [
   ultrasoundPocusPack,
   ecgSignalsPack,
   chestRadiographOpenPack,
+  ophthalmologyFundusPack,
+  mriNeuroOpenPack,
+  pathologyMicroOpenPack,
 ];

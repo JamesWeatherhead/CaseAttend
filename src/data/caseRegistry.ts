@@ -221,7 +221,7 @@ const MRI_CASE: BuiltinCaseDraft = {
   contentWarnings: ['Medical imaging'],
   neutralDescription: 'Axial grayscale brain MRI images across FLAIR, T1, DWI, and ADC sequences.',
   teachingNotes: ['Brain MRI stroke protocol teaching case.'],
-  presentation: theme('Brain MRI', 'mri', '59,130,246', 'text-blue-400'),
+  presentation: theme('Brain MRI | Step 2', 'mri', '59,130,246', 'text-blue-400'),
 };
 
 const PATHOLOGY_PREVIEW = '/images/patho-1/HE_10x/1.webp' as BuiltinAssetPath;
@@ -254,7 +254,7 @@ const PATHOLOGY_CASE: BuiltinCaseDraft = {
   contentWarnings: ['Histopathology image'],
   neutralDescription: 'H&E stained breast tissue images at 4x, 10x, and 40x magnification.',
   teachingNotes: ['Breast invasive ductal carcinoma teaching case.'],
-  presentation: theme('Pathology', 'path', '244,63,94', 'text-rose-400'),
+  presentation: theme('Pathology | Step 1', 'path', '244,63,94', 'text-rose-400'),
 };
 
 const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
@@ -273,7 +273,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_4,
-    presentation: theme('Chest X-ray', 'xray', '245,158,11', 'text-amber-400'),
+    presentation: theme('Chest X-ray | Step 2', 'xray', '245,158,11', 'text-amber-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -291,7 +291,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Mikael Haggstrom, MD',
     license: CC0,
-    presentation: theme('Chest X-ray', 'xray', '34,197,94', 'text-green-400'),
+    presentation: theme('Chest X-ray | Step 2', 'xray', '34,197,94', 'text-green-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -309,7 +309,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_3,
-    presentation: theme('Chest X-ray', 'xray', '139,92,246', 'text-violet-400'),
+    presentation: theme('Chest X-ray | Step 2', 'xray', '139,92,246', 'text-violet-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -327,7 +327,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'James Heilman, MD',
     license: CC_BY_SA_3,
-    presentation: theme('Chest X-ray', 'xray', '6,182,212', 'text-cyan-400'),
+    presentation: theme('Chest X-ray | Clerkship', 'xray', '6,182,212', 'text-cyan-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -345,7 +345,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'James Heilman, MD',
     license: CC_BY_SA_3,
-    presentation: theme('Abdominal X-ray', 'xray', '251,146,60', 'text-orange-400'),
+    presentation: theme('Abdominal X-ray | Clerkship', 'xray', '251,146,60', 'text-orange-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -363,7 +363,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_4,
-    presentation: theme('Head CT', 'ct', '20,184,166', 'text-teal-400'),
+    presentation: theme('Head CT | Step 2', 'ct', '20,184,166', 'text-teal-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -381,7 +381,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_4,
-    presentation: theme('Head CT', 'ct', '236,72,153', 'text-pink-400'),
+    presentation: theme('Head CT | Step 2', 'ct', '236,72,153', 'text-pink-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -399,7 +399,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_4,
-    presentation: theme('Upright X-ray', 'xray', '239,68,68', 'text-red-400'),
+    presentation: theme('Upright X-ray | Clerkship', 'xray', '239,68,68', 'text-red-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -417,7 +417,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Hellerhoff',
     license: CC_BY_SA_4,
-    presentation: theme('Neonatal X-ray', 'xray', '234,179,8', 'text-yellow-400'),
+    presentation: theme('Neonatal X-ray | Clerkship', 'xray', '234,179,8', 'text-yellow-400'),
     contentWarnings: ['Medical imaging', 'Neonatal case'],
   },
   {
@@ -436,7 +436,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Collesfracture.jpg',
     attribution: 'Lucien Monfils',
     license: CC_BY_SA_3,
-    presentation: theme('Wrist X-ray', 'xray', '132,204,22', 'text-lime-400'),
+    presentation: theme('Wrist X-ray | Step 2', 'xray', '132,204,22', 'text-lime-400'),
     contentWarnings: ['Medical imaging'],
   },
   {
@@ -454,7 +454,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons and National Cancer Institute',
     attribution: 'National Cancer Institute',
     license: PUBLIC_DOMAIN,
-    presentation: theme('Dermatology', 'derm', '217,70,239', 'text-fuchsia-400'),
+    presentation: theme('Dermatology | Step 2', 'derm', '217,70,239', 'text-fuchsia-400'),
     contentWarnings: ['Clinical photograph of skin'],
   },
   {
@@ -472,7 +472,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'James Heilman, MD',
     license: CC_BY_3,
-    presentation: theme('Dermatology', 'derm', '20,184,166', 'text-teal-400'),
+    presentation: theme('Dermatology | Step 2', 'derm', '20,184,166', 'text-teal-400'),
     contentWarnings: ['Clinical photograph of skin'],
   },
   {
@@ -490,7 +490,7 @@ const SINGLE_IMAGE_CASES: readonly SingleImageDefinition[] = [
     sourceName: 'Wikimedia Commons',
     attribution: 'Assafn',
     license: CC_BY_SA_4,
-    presentation: theme('Dermatology', 'derm', '168,85,247', 'text-purple-400'),
+    presentation: theme('Dermatology | Clerkship', 'derm', '168,85,247', 'text-purple-400'),
     contentWarnings: ['Clinical photograph of skin'],
   },
 ];
