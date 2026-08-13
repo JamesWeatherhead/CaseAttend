@@ -1,0 +1,73 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-pneumothorax",
+  "lessonPlanSha256": "1028f0859be97e1526c9169af4c171f3228a793ad1f332bfd604b718c546108c",
+  "provenance": {
+    "modelId": "human-authored (pipeline-validated seed)",
+    "systemPromptSha256": "f12643a613b503fc0a081ed8d96e105c3a32675f31a4a9479d8f0f3719f4c70c",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "948447ce4e6829c271f5b910fce034840c15360c974a0713304aaa6df172201d",
+    "generatedAt": "2026-08-13T13:39:56.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "**21-year-old man, sudden chest pain**\n\nHe is tall and thin. Out of nowhere he felt a sharp stab in his chest and could not catch his breath. His doctor took an X-ray to look inside.\n\nYou are looking at his chest X-ray. On an X-ray, bones show up bright white, and air shows up black. Healthy lungs are full of air, so they normally look dark on both sides of the chest.\n\nCompare the left side of the image to the right side. Do they look the same, or is one side different?",
+      "introQuestions": [
+        {
+          "id": "why-different",
+          "label": "Why do the sides look different?",
+          "prompt": "Why does one side of the chest look different from the other on this X-ray?",
+          "cachedAnswer": "On this X-ray, one side of the chest looks darker and emptier than the other. That happens because air has escaped from the lung into the space around it. Normally the lung fills that space, so you see the branching lines of blood vessels going all the way to the edges. When air leaks out and gets trapped between the lung and the chest wall, the lung shrinks toward the middle and the outer part of the chest looks like a very dark, empty pocket. That trapped air is called a pneumothorax. It is why he suddenly cannot breathe well: one of his lungs is not doing its job.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "**21M, sudden pleuritic chest pain and dyspnea**\n\nTall, thin, no prior medical history. Onset was sudden and one-sided. Vitals show tachycardia and hypoxia. A frontal chest radiograph was obtained.\n\nOn a normal chest X-ray both lung fields should look symmetric and dark because the lungs are air-filled. Branching pulmonary vessels should extend from the hila all the way to the periphery, and the mediastinum should sit near the midline.\n\nCompare the two hemithoraces. Look at lung markings, the position of the trachea and heart, and whether one side looks abnormally lucent (dark) at its edge.",
+      "introQuestions": [
+        {
+          "id": "identify-pleural-air",
+          "label": "How do I identify pleural air?",
+          "prompt": "How do I identify pleural air on this chest X-ray?",
+          "cachedAnswer": "Pleural air produces a thin, curved white line at the visceral pleural edge, with black lucency lateral to it and no vascular markings past that line. On this film you can see that on the left the lung silhouette is pulled inward and there are no vascular markings in the lateral hemithorax. The absence of peripheral lung markings, combined with a visible visceral pleural line, is the classic signature of a pneumothorax. Compare it to the right side, where the vessels extend all the way to the chest wall. In a tension pneumothorax you would additionally see mediastinal shift away from the affected side and diaphragmatic depression, both of which raise the urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "**21M, no PMH, sudden left-sided pleuritic chest pain and progressive dyspnea**\n\nAsthenic body habitus, BMI 19. HR 118, BP 102/68, RR 28, SpO2 91% on room air. Left breath sounds are diminished; the trachea may be deviated. A PA chest radiograph was obtained.\n\nA sudden pleuritic presentation in a tall thin young male with tachycardia, hypoxia, and unilateral diminished breath sounds already narrows the differential before you look at the film.\n\nRead the image systematically: lung markings out to the pleura, mediastinal contours, tracheal position, diaphragms, costophrenic angles, and any asymmetry. Where do you see the abnormality, and what visible features distinguish a simple pneumothorax from a tension pneumothorax?",
+      "introQuestions": [
+        {
+          "id": "tension-vs-simple",
+          "label": "Simple vs. tension pneumothorax on this film",
+          "prompt": "How does this radiograph help me distinguish a simple pneumothorax from a tension pneumothorax?",
+          "cachedAnswer": "A simple pneumothorax shows a visible visceral pleural line with black lucency and absent vessels beyond it, but the mediastinum, trachea, and diaphragm stay in their normal positions. A tension pneumothorax accumulates air under pressure and produces mediastinal shift AWAY from the affected side, ipsilateral hemidiaphragm depression, and (with time) rib splaying. On this film, look at where the trachea sits relative to the spinous processes, whether the mediastinal silhouette is displaced to the right, and whether the left hemidiaphragm is pushed inferiorly. Physiologically, tension arises when pleural air cannot escape and rising intrathoracic pressure impedes venous return, which is why the patient becomes hypotensive and tachycardic. The teaching point is that tension pneumothorax is a clinical diagnosis: if the exam and vitals fit, decompression should not wait on imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "**21M, no PMH, sudden left-sided pleuritic chest pain and progressive dyspnea**\n\nTall, thin (BMI 19). HR 118, BP 102/68, RR 28, SpO2 91% RA. Left breath sounds diminished; trachea possibly deviated. A PA chest radiograph was obtained.\n\nBuild your differential first, then use the imaging to narrow it. Sudden pleuritic pain, tachycardia, hypoxia, and unilateral diminished breath sounds in a young, tall, thin male.\n\nRead the film for pneumothorax features, then plan your immediate management assuming this is spontaneous. What are the exam and imaging thresholds that push you toward observation, aspiration, small-bore chest tube, or urgent decompression?",
+      "introQuestions": [
+        {
+          "id": "next-steps-management",
+          "label": "What are my next steps?",
+          "prompt": "Given the imaging and vitals, what are my next management steps for this patient?",
+          "cachedAnswer": "First, decide whether this is a tension pneumothorax. Persistent hypotension, worsening hypoxia, and tracheal deviation with unilateral absent breath sounds justify emergent needle decompression at the 4th or 5th intercostal space in the anterior axillary line, followed by tube thoracostomy — imaging should not delay it. If the patient is hemodynamically stable, the next-step decision is guided by size (BTS uses a 2 cm rim at the hilum; ACCP uses 3 cm at the apex) and symptoms. A small, stable, minimally symptomatic primary spontaneous pneumothorax can be observed with high-flow oxygen; a larger or symptomatic one is typically managed with needle aspiration or a small-bore pigtail catheter. Regardless of size, admit for observation if aspiration was performed, and counsel about recurrence risk (roughly 30 percent) and lifestyle triggers such as flying and diving.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "**21M, PSP suspected. Tall, asthenic. HR 124, BP 94/62, RR 32, SpO2 88% on 15L NRB. JVD present. Trachea deviated right. Left hemithorax hyperresonant, breath sounds absent left. A portable PA radiograph was obtained.**\n\nIn a real scenario with these vitals and exam findings, decompression should precede imaging; this film exists for educational review.\n\nWalk through the ATLS algorithm end to end: recognition, needle decompression landmarks (2nd ICS MCL vs 4th/5th ICS AAL — ATLS 10th changed the recommendation), definitive tube thoracostomy technique, indications for VATS/pleurodesis, and how you would counsel this patient about recurrence and airspace precautions.",
+      "introQuestions": [
+        {
+          "id": "atls-decompression",
+          "label": "Walk me through decompression",
+          "prompt": "Walk me through decompression for tension pneumothorax at the resident level, including the ATLS 10th edition site change.",
+          "cachedAnswer": "The clinical criteria for tension pneumothorax are unilateral absent breath sounds, hyperresonance, tracheal deviation, and hemodynamic compromise: acting before imaging is correct. Needle decompression is temporizing. ATLS 10th edition moved the primary adult site from 2nd ICS MCL to 4th or 5th ICS in the anterior axillary line, because measured chest wall thickness at the 2nd ICS MCL exceeds needle length in a meaningful fraction of adults, especially those with higher BMI. Use a 14G, at least 8 cm angiocath, perpendicular to the chest wall over the superior rib margin to avoid the neurovascular bundle. Follow immediately with definitive tube thoracostomy — for a 21-year-old asthenic male, a 20 to 28 French tube in the 4th or 5th ICS AAL under conscious sedation with local anesthesia. Post-placement management includes water-seal drainage, daily imaging, and criteria for removal (no air leak on cough, resolved on imaging). Recurrence risk after a first primary spontaneous pneumothorax is roughly 30 percent, so counsel about smoking cessation, avoidance of scuba diving, and airline travel precautions; refer to thoracic surgery for VATS with pleurodesis or bleb resection if there is a persistent air leak beyond a few days or a second event.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

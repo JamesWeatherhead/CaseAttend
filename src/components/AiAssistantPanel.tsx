@@ -10,6 +10,8 @@ import { LearnerLevel } from '../constants';
 import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains';
 import { getLessonPlanRef, getLessonSocraticOpening, type LessonPlanV1 } from '../core/lessonPlan';
+import type { IntroCacheV1 } from '../core/introCache';
+import { loadIntroCache } from '../services/introCacheStore';
 import {
   computeLessonProgressFromCounts,
   formatSilentLessonProgressSteer,
@@ -257,9 +259,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
   const [lessonPlan, setLessonPlan] = useState<LessonPlanV1 | null>(null);
   const [lessonLoadError, setLessonLoadError] = useState<string | null>(null);
-  const welcomeText = lessonPlan
-    ? getLessonSocraticOpening(lessonPlan, learnerLevel)
-    : domain.welcomeMessage(learnerLevel, studyMetadata?.studyId);
+  const [introCache, setIntroCache] = useState<IntroCacheV1 | null>(null);
+  const introPromptForLevel = introCache?.levels[learnerLevel]?.introPrompt;
+  const welcomeText = introPromptForLevel
+    ?? (lessonPlan
+      ? getLessonSocraticOpening(lessonPlan, learnerLevel)
+      : domain.welcomeMessage(learnerLevel, studyMetadata?.studyId));
 
   const initMsg: ChatMessage[] = [
     { id: 'welcome', role: 'model', text: welcomeText }
@@ -331,6 +336,22 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     })();
     return () => { active = false; };
   }, [lockedTutorKey, sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
+
+  // Intro cache lives outside the research/lockedTutor code path: research uses
+  // the pinned live model. For public-education mode, fetch the shipped cache
+  // for this lesson so a no-key learner sees a per-level opening + at least
+  // one clickable, pre-answered question with no network at click time.
+  useEffect(() => {
+    let active = true;
+    setIntroCache(null);
+    if (lockedTutor) return () => { active = false; };
+    const caseId = studyMetadata?.studyId;
+    if (!caseId || !lessonPlan) return () => { active = false; };
+    void loadIntroCache(caseId, { lessonPlanSha256: lessonPlan.manifest.sha256 })
+      .then((cache) => { if (active) setIntroCache(cache); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [lockedTutorKey, lessonPlan, studyMetadata?.studyId]);
 
   // A case switch starts a new versioned teaching session. Never retain another
   // case's welcome, dynamic suggestions, or transcript in the next case.
@@ -756,19 +777,74 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setIsPinnedToBottom(true);
   };
 
-  // Derived suggestions: Use Dynamic if available, else Static Initial.
+  // Derived suggestions: prefer pre-cached intro Q&A (free, instant, no key),
+  // else dynamic model suggestions, else lesson hints, else the domain default.
   // Auto-capture means the panel always has a view to reference, so the
   // with-image suggestions are always the right starting set when a study is loaded.
-  const currentSuggestions = (dynamicSuggestionsMap
-      ? dynamicSuggestionsMap[learnerLevel]
+  type IntroSuggestion = {
+    key: string;
+    label: string;
+    prompt: string;
+    cachedAnswer?: string;
+    source: 'intro-cache' | 'lesson-hint' | 'domain' | 'dynamic';
+  };
+  const introQuestionsForLevel = introCache?.levels[learnerLevel]?.introQuestions;
+  const currentSuggestions: IntroSuggestion[] = (introQuestionsForLevel && introQuestionsForLevel.length > 0)
+    ? introQuestionsForLevel.map((q) => ({
+        key: `intro-cache:${q.id}`,
+        label: q.label,
+        prompt: q.prompt,
+        cachedAnswer: q.cachedAnswer,
+        source: 'intro-cache' as const,
+      }))
+    : dynamicSuggestionsMap
+      ? (dynamicSuggestionsMap[learnerLevel] ?? []).map((s, i) => ({
+          key: `dynamic:${i}`, label: s, prompt: s, source: 'dynamic' as const,
+        }))
       : lessonPlan
-        ? lessonPlan.allowedHints.slice(0, 3).map((hint) => hint.text)
-        : domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId)) ?? [];
+        ? lessonPlan.allowedHints.slice(0, 3).map((hint) => ({
+            key: `hint:${hint.id}`, label: hint.text, prompt: hint.text, source: 'lesson-hint' as const,
+          }))
+        : (domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId) ?? []).map((s, i) => ({
+            key: `domain:${i}`, label: s, prompt: s, source: 'domain' as const,
+          }));
 
-  const sendSuggestion = (suggestion: string) => {
-    const lessonHint = lessonPlan?.allowedHints.find((hint) => hint.text === suggestion);
+  const renderCachedIntroAnswer = (suggestion: IntroSuggestion): void => {
+    if (suggestion.cachedAnswer === undefined) return;
+    const requestId = ++requestSequenceRef.current;
+    const userMessageId = `intro-cache-${requestId}-user`;
+    const botMessageId = `intro-cache-${requestId}-model`;
+    const knownLessonRef = lessonPlan ? getLessonPlanRef(lessonPlan) : undefined;
+    setMessages((previous) => [
+      ...previous,
+      {
+        id: userMessageId,
+        role: 'user',
+        text: suggestion.prompt,
+        lessonPlanRef: knownLessonRef,
+      },
+      {
+        id: botMessageId,
+        role: 'model',
+        text: suggestion.cachedAnswer!,
+        lessonPlanRef: knownLessonRef,
+      },
+    ]);
+    setIsPinnedToBottom(true);
+  };
+
+  const sendSuggestion = (suggestion: IntroSuggestion) => {
+    // Pre-cached intro questions render instantly with zero network and no
+    // OpenRouter key. This is the free path documented in issue #68.
+    if (suggestion.cachedAnswer !== undefined) {
+      renderCachedIntroAnswer(suggestion);
+      return;
+    }
+    const lessonHint = suggestion.source === 'lesson-hint'
+      ? lessonPlan?.allowedHints.find((hint) => hint.text === suggestion.prompt)
+      : undefined;
     void handleSendMessage(
-      suggestion,
+      suggestion.prompt,
       undefined,
       lessonHint ? 'lesson_hint' : 'typed',
       lessonHint?.id,
@@ -1577,19 +1653,30 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
                 {!isThinking && currentSuggestions.length > 0 && (
                     <div data-tour-id="ai-suggestions" className="mt-3 animate-in fade-in duration-300">
-                        <div className="mb-2 text-[10px] text-slate-500 uppercase font-bold ml-1">
-                            Suggested Follow-ups
+                        <div className="mb-2 text-[10px] text-slate-500 uppercase font-bold ml-1 flex items-center gap-2">
+                            <span>Suggested Follow-ups</span>
+                            {introQuestionsForLevel && introQuestionsForLevel.length > 0 && (
+                                <span
+                                    className="text-emerald-400 normal-case font-medium"
+                                    title="These are pre-cached, human-reviewed answers. Clicking is free and instant."
+                                >
+                                    Free · instant · no key
+                                </span>
+                            )}
                         </div>
-                        {/* Dynamic Suggestion Chips */}
                         <div className="flex flex-wrap gap-2 mb-4">
-                            {currentSuggestions.map((sugg, idx) => (
+                            {currentSuggestions.map((sugg) => (
                                 <button
-                                    key={idx}
+                                    key={sugg.key}
                                     onClick={() => sendSuggestion(sugg)}
                                     className="min-h-11 text-left text-xs bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-                                    aria-label={`Send suggested question with current view: ${sugg}`}
+                                    aria-label={
+                                        sugg.cachedAnswer !== undefined
+                                            ? `Show pre-cached answer for: ${sugg.label}`
+                                            : `Send suggested question with current view: ${sugg.label}`
+                                    }
                                 >
-                                    {sugg}
+                                    {sugg.label}
                                 </button>
                             ))}
                         </div>
@@ -1650,20 +1737,37 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
 
             {/* Input Area */}
             <div className="relative flex-1">
-                <input
-                    className="w-full min-h-11 bg-[#0f1011] border border-white/[0.08] rounded-lg pr-12 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner"
-                    placeholder={mode === 'deep_think' ? "Ask complex question..." : "Ask a question..."}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        void handleSendMessage();
-                      }
-                    }}
-                    disabled={isThinking}
-                    aria-label="Question for the AI tutor"
-                />
+                {(() => {
+                    const freeTypingLocked = !lockedTutor && !byokConnected;
+                    const placeholder = freeTypingLocked
+                        ? 'Connect OpenRouter to type a new question'
+                        : mode === 'deep_think'
+                            ? 'Ask complex question...'
+                            : 'Ask a question...';
+                    return (
+                        <input
+                            className="w-full min-h-11 bg-[#0f1011] border border-white/[0.08] rounded-lg pr-12 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner disabled:opacity-60 disabled:cursor-not-allowed"
+                            placeholder={placeholder}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (freeTypingLocked) {
+                                  setShowConnectModal(true);
+                                  return;
+                                }
+                                void handleSendMessage();
+                              }
+                            }}
+                            onFocus={() => {
+                                if (freeTypingLocked) setShowConnectModal(true);
+                            }}
+                            disabled={isThinking}
+                            aria-label="Question for the AI tutor"
+                        />
+                    );
+                })()}
                 <button
                     onClick={() => handleSendMessage()}
                     disabled={!input.trim() || isThinking}
