@@ -1,0 +1,73 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "derm-melanoma",
+  "lessonPlanSha256": "af38ef8f7737e62d09c153b85ef40d8dca40d40d2211c600b62caa0a90390939",
+  "provenance": {
+    "modelId": "human-authored (pipeline-validated seed)",
+    "systemPromptSha256": "f12643a613b503fc0a081ed8d96e105c3a32675f31a4a9479d8f0f3719f4c70c",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "0c38b3b26b3ff9a1af95fd63e4908e0b893dd4e650c1b8c7a51ccda1f376c3ec",
+    "generatedAt": "2026-08-13T13:39:56.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "**55-year-old man, a changing spot on his back**\n\nHe has a dark mark on his back that his partner has been watching for the last year. It has changed shape and gotten darker.\n\nThe photo you see is a close-up of the skin lesion and the skin around it. When doctors look at a mole they pay attention to a few simple things: is one half shaped like the other, does it have a clean edge, is the color the same throughout, and is it changing over time.\n\nBefore trying to name what it is, just describe what you see. What features stand out first?",
+      "introQuestions": [
+        {
+          "id": "describe-the-spot",
+          "label": "Help me describe this spot",
+          "prompt": "How should I describe this spot in simple, careful words?",
+          "cachedAnswer": "Start with the outline: is the mole roughly circular with a smooth edge, or is one side different from the other and does the border look jagged or fuzzy? Then look at color: is it one shade of brown, or are there several shades — including very dark, black, or reddish patches? Next, size: guess whether it is smaller than a pencil eraser or bigger. Finally, take note of anything that seems raised, bumpy, or shiny, and remember that his partner has noticed it changing. Doctors use the letters A, B, C, D, E to help remember these features: Asymmetry, Border, Color, Diameter, and Evolving. The point is not to make a diagnosis from a photograph but to describe the lesion carefully so a clinician knows what to look at.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "**55M, evolving pigmented lesion on the back**\n\nPartner-noticed evolution over ~12 months, with irregular border reported. A close clinical photograph is shown.\n\nApproach the lesion using the ABCDE framework: Asymmetry, Border irregularity, Color variegation, Diameter, and Evolving features. Describe what you see before naming a diagnosis, and note that ABCDE increases sensitivity but is not specific: it is a triage tool for who needs a dermatologic evaluation, not a diagnosis.\n\nStart by describing the lesion in structured terms — shape, edge, color pattern, and how it compares to nearby skin.",
+      "introQuestions": [
+        {
+          "id": "abcde-walkthrough",
+          "label": "Walk me through ABCDE",
+          "prompt": "Walk me through the ABCDE framework on this lesion.",
+          "cachedAnswer": "Asymmetry: fold the lesion mentally along any axis — the two halves do not mirror each other, which is a concerning ABCDE feature. Border: an irregular, notched, or ill-defined edge suggests atypia. Color: the lesion shows multiple shades of brown with darker central areas; more than two distinct colors is another red flag. Diameter: pigmented lesions above six millimeters warrant scrutiny, although melanomas can be smaller. Evolving: the partner-noted change over the past year is by itself a strong indication to escalate. ABCDE increases sensitivity for melanoma but is not diagnostic; it identifies lesions that a dermatologist should evaluate, ideally with dermoscopy and, when indicated, biopsy. Do not attempt to diagnose a skin lesion from a photograph.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "**55M, changing pigmented lesion on the back, ~12 months of evolution reported**\n\nA close clinical photograph shows a pigmented lesion and surrounding skin. Describe the morphology in structured terms (shape, border, surface texture, color distribution) before naming a diagnosis.\n\nConnect the visible features to what is happening in the epidermis: melanocytic proliferation, the difference between junctional, compound, and dermal nevi, and the concept of radial versus vertical growth phase. What visible features would push you from a benign nevus toward a suspicious lesion, and why?",
+      "introQuestions": [
+        {
+          "id": "radial-vs-vertical",
+          "label": "Radial vs. vertical growth phase",
+          "prompt": "How does the concept of radial vs. vertical growth phase change what I look for on this lesion?",
+          "cachedAnswer": "In the radial growth phase, atypical melanocytes proliferate horizontally within the epidermis and papillary dermis. The lesion looks flat or minimally raised, with irregular pigment and an ill-defined edge — an ABCDE-positive pattern. In the vertical growth phase, cells acquire the ability to grow downward into the reticular dermis, and clinically that shows up as a raised nodule, a bleeding or crusted focus, or a firm palpable component within an otherwise flat lesion. The vertical component is what determines Breslow thickness, which is the strongest prognostic factor in cutaneous melanoma. So when you look at the photograph, note not just asymmetry and color, but any papule, nodule, or asymmetric elevation within the lesion — that is where invasion is most likely to be brewing. The clinical implication is that vertical-phase features escalate the biopsy decision to excisional (or incisional to the deepest area) rather than shave, so pathology can measure the true depth.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "**55M, evolving pigmented lesion on the back**\n\nPartner-noticed change and irregular border over ~12 months. A close clinical photograph is available. Describe the lesion structurally, then plan the workup: dermoscopy considerations, biopsy technique (excisional vs. incisional vs. shave), and how the pathology findings would drive staging.\n\nRemember: the goal at this stage is a diagnostic biopsy that preserves Breslow thickness measurement, not to make a photographic diagnosis. What features on this image would inform your biopsy choice, and what post-biopsy staging steps are appropriate?",
+      "introQuestions": [
+        {
+          "id": "biopsy-and-staging",
+          "label": "Biopsy technique + staging steps",
+          "prompt": "Given these features, how do I choose a biopsy technique and what are the initial staging steps?",
+          "cachedAnswer": "The biopsy that best supports melanoma staging is a narrow-margin excisional biopsy through the subcutaneous fat, ideally with 1 to 3 mm of clinically normal skin around the lesion. For an anatomically constrained site or a large lesion, an incisional or punch biopsy targeting the most clinically suspicious area (the darkest, thickest, or most irregular focus) is acceptable but risks under-sampling. A superficial shave is discouraged for pigmented lesions with vertical-phase features because it can transect the tumor and give an inaccurate Breslow thickness, which is the single most important prognostic variable. Once pathology confirms melanoma, the AJCC 8th edition staging uses Breslow thickness, ulceration, mitotic rate for thin lesions, and nodal and distant disease. Sentinel lymph node biopsy is discussed for tumors around 0.8 to 1.0 mm thick or thinner with ulceration, and for all thicker tumors. Baseline imaging (CT chest/abdomen/pelvis and MRI brain, or PET-CT) is stage-guided rather than reflexive, and dermatology and surgical oncology should be involved early.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "**55M, evolving pigmented lesion, ABCDE-positive on presentation**\n\nA close clinical photograph is available. Do not treat this as a diagnostic image; use it to plan pattern-based reasoning and biopsy strategy.\n\nDiscuss: dermoscopic patterns to look for (atypical network, blue-white veil, irregular vascular pattern, regression), pitfalls (nodular melanoma is often ABCDE-negative), biopsy strategy that preserves Breslow thickness, and how the AJCC 8th edition dictates SLNB decisions and adjuvant therapy conversations. What dermoscopic features would meaningfully shift your differential toward or away from melanoma?",
+      "introQuestions": [
+        {
+          "id": "dermoscopy-patterns",
+          "label": "Dermoscopic patterns that matter",
+          "prompt": "At a resident level, which dermoscopic patterns would meaningfully shift my differential here?",
+          "cachedAnswer": "The most useful melanoma-specific dermoscopic features are an atypical pigment network (asymmetric thickening, abrupt cutoff), an irregular globular or streaked pigment pattern, a blue-white veil (representing acanthosis and orthokeratosis over dermal melanin), regression structures (peppering or scar-like white areas), and an atypical vascular pattern (dotted or polymorphous vessels). Any one of these has a modest LR+, but combinations (via the 7-point checklist or Menzies method) markedly increase pretest-to-posttest probability. Reassuring dermoscopic patterns include a symmetric reticular network, uniform globules, and homogeneous pigmentation. Nodular and amelanotic melanomas are notorious for ABCDE-negative presentations and often lack a classic network; a firm, elevated, ulcerated, or rapidly changing lesion (\"EFG\" — Elevated, Firm, Growing) should not be dismissed because it fails ABCDE. The correct next step for a suspicious lesion is excisional biopsy with 1 to 3 mm margins and orientation for staging, with SLNB discussion once Breslow thickness is known.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}
