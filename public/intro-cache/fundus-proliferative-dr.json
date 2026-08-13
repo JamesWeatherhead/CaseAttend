@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-proliferative-dr",
+  "lessonPlanSha256": "a36f334dc8a63fe9a0a068b6f35d226fc43212deccd317f48053d29c74f1af84",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "5f562bed478e3b9739a0d3edca6e8e9613942836038712d23583b9b10167c0ef",
+    "generatedAt": "2026-08-13T15:01:57.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph of the inside of the back of the eye, called the retina. It works like the film in a camera, catching light so we can see. The person in this case has had **diabetes** (high blood sugar) for many years, and now sees new 'floaters' — tiny specks or cobwebs drifting across their vision. In this picture you can see a tangle of thin blood vessels and some pale and dark patches that are not part of a healthy retina. If you were looking at this picture, what unusual things would you point out first?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at in this eye photo?",
+          "prompt": "What am I looking at in this photograph of the back of the eye, and what looks unusual?",
+          "cachedAnswer": "This is a **fundus photo** — a picture of the retina, the light-sensing layer at the back of the eye. The bright pale circle is the **optic disc**, where the nerve and blood vessels enter the eye, like the plug in the back of a camera. You can see many red blood vessels branching out, and near the disc they look extra tangled and messy. There are also a few small pale-yellow spots and reddish smudges scattered around. In a healthy eye the vessels are neat and evenly spread, so this crowded, disorganized look is what stands out.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-floaters",
+          "label": "Why does diabetes cause floaters?",
+          "prompt": "Why would someone with long-term diabetes suddenly start seeing floaters?",
+          "cachedAnswer": "High blood sugar over many years slowly damages the tiny blood vessels in the retina, making them weak and leaky — a bit like old pipes that start to crack. The eye tries to fix the problem by growing brand-new vessels, but these new ones are fragile and grow in the wrong places. When one of these weak vessels leaks or breaks, a little blood spills into the clear jelly that fills the eye. The floating specks of blood cast shadows that the person sees as **floaters** or haze drifting across their view. So new floaters can be a warning sign that something has started to bleed inside the eye.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-urgent",
+          "label": "How quickly should this person see a doctor?",
+          "prompt": "If someone with diabetes has new floaters and this kind of eye photo, how urgently should they be seen?",
+          "cachedAnswer": "New floaters plus a history of long-term diabetes is treated as an **urgent** situation, not something to wait weeks on. It could mean fragile new vessels are bleeding inside the eye, and untreated bleeding can seriously threaten vision. An eye specialist (an ophthalmologist) would want to examine this person very soon — ideally the same day or within a few days. The good news is that when caught early, doctors have laser treatments and injections that can protect the eye. The key lesson: new floaters in a diabetic person means 'get checked quickly.'\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This color fundus photograph shows the retina of a patient with longstanding, poorly controlled **diabetes** who now reports new floaters and visual haze. The retina is the neural tissue that converts light into signals for the brain, and its blood supply is very sensitive to chronically high glucose. Notice the bright **optic disc**, the branching retinal vessels, and some scattered pale and reddish spots. In healthy retinas the vasculature is orderly, so abnormal fine vessels and hemorrhages are important clues. What features in this image tell you the disease has moved beyond simple blood-vessel leakage?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What are the normal and abnormal parts here?",
+          "prompt": "Can you identify the normal retinal structures and the abnormal features in this fundus photo?",
+          "cachedAnswer": "The bright, roughly circular pale region is the **optic disc**, where the optic nerve exits and the central retinal artery and vein enter. Radiating from it are the retinal arteries (thinner, brighter red) and veins (broader, darker). Normally these vessels taper smoothly and are evenly spaced. In this image the vessels near the disc look unusually crowded and tortuous, and there are a few pale-yellow deposits and reddish patches in the retina. Those pale spots and blood smudges, along with the disorganized vessels, are the abnormal findings that suggest disease.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "new-vessel-mechanism",
+          "label": "How do fragile new vessels form?",
+          "prompt": "Why does chronic diabetes lead the retina to grow new, fragile blood vessels?",
+          "cachedAnswer": "Chronically high blood glucose damages the small retinal capillaries, causing some to close off. When areas of retina lose their blood supply they become **ischemic** (starved of oxygen) and release growth signals — most importantly **vascular endothelial growth factor (VEGF)**. VEGF stimulates the growth of new vessels to try to restore oxygen delivery, a process called **neovascularization**. Unfortunately these new vessels are structurally weak and grow in abnormal places along the retinal surface and toward the vitreous jelly. Because they are fragile, they bleed easily, which can produce the floaters this patient describes.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-urgent-floaters",
+          "label": "Why do new floaters matter?",
+          "prompt": "Why are new floaters a warning sign in a diabetic patient with these retinal findings?",
+          "cachedAnswer": "Floaters are shadows cast on the retina by material suspended in the clear vitreous gel. In a diabetic patient with abnormal fragile vessels, sudden new floaters often mean that some of those vessels have **bled** into the vitreous or in front of the retina. A small bleed can worsen, and repeated bleeding or scar formation can pull on the retina and threaten vision. Because of this risk, the combination of new floaters and signs of advanced retinopathy is considered urgent. Prompt specialist evaluation allows early treatment before vision is lost.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This fundus photograph belongs to a patient with longstanding, poorly controlled diabetes mellitus presenting with new floaters and visual haze. The **optic disc** is visible centrally with vessels emanating from it; note the tortuous, disorganized vessels near the disc and scattered intraretinal pale exudate-like and hemorrhagic lesions. The teaching goal is to distinguish nonproliferative from proliferative diabetic retinopathy on the basis of visible pathology. Recall the ischemia–VEGF axis that drives retinal neovascularization. Which features here would you weigh toward a proliferative rather than nonproliferative process?",
+      "introQuestions": [
+        {
+          "id": "npdr-vs-pdr",
+          "label": "NPDR vs PDR — what distinguishes them?",
+          "prompt": "What morphological features distinguish proliferative from nonproliferative diabetic retinopathy on a fundus photo?",
+          "cachedAnswer": "**Nonproliferative diabetic retinopathy (NPDR)** is defined by intraretinal changes: microaneurysms, dot-and-blot hemorrhages, hard exudates, cotton-wool spots, venous beading, and intraretinal microvascular abnormalities (IRMA). The defining step to **proliferative diabetic retinopathy (PDR)** is **neovascularization** — new vessels arising at the disc (NVD) or elsewhere (NVE) that extend along the retinal surface or into the vitreous. Preretinal or vitreous hemorrhage and fibrovascular proliferation also indicate proliferative disease. In this image, tortuous crowded vessels near the disc raise concern for neovascularization, distinguishing it from purely intraretinal NPDR. The key discriminator is whether abnormal vessels break the internal limiting membrane rather than staying within retinal layers.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vegf-pathophysiology",
+          "label": "Pathophysiology of neovascularization",
+          "prompt": "Walk through the pathophysiology linking chronic hyperglycemia to retinal neovascularization.",
+          "cachedAnswer": "Chronic hyperglycemia drives several injurious pathways — increased polyol flux, advanced glycation end-product formation, protein kinase C activation, and oxidative stress — that damage retinal capillary endothelium and pericytes. Pericyte loss and basement membrane thickening lead to microaneurysm formation, capillary nonperfusion, and progressive **retinal ischemia**. Ischemic retina upregulates hypoxia-inducible factor and secretes **VEGF** and other angiogenic mediators. VEGF promotes endothelial proliferation and increased vascular permeability, producing neovascularization at the disc or periphery and macular edema. These neovessels lack tight junctions and mature support, so they leak and hemorrhage, generating preretinal or vitreous bleeds.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "floaters-correlate",
+          "label": "What does 'new floaters' localize to?",
+          "prompt": "Anatomically, what does the symptom of new floaters correspond to in this scenario?",
+          "cachedAnswer": "Floaters represent opacities within the normally clear **vitreous** that cast shadows on the retina. In advanced diabetic retinopathy, new floaters most often reflect **vitreous or preretinal hemorrhage** from fragile neovascular tufts bleeding across the internal limiting membrane and into the pre-retinal or vitreous space. Blood cells and fibrin suspended in the vitreous gel produce the mobile specks and haze the patient perceives. Floaters can also arise from vitreous syneresis and posterior vitreous detachment, which in a diabetic eye can mechanically avulse neovascular fronds and provoke bleeding. Correlating the symptom with a proliferative fundus therefore strongly implicates neovascular hemorrhage.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with longstanding, poorly controlled diabetes reports **new floaters** and intermittent visual haze; the fundus photograph shows disorganized peripapillary vessels and scattered hemorrhagic and exudate-like lesions beyond simple microvascular change. Your task is to grade the retinopathy, decide which findings suggest neovascularization or a preretinal/vitreous bleed, and determine the appropriate urgency of referral. Note that the source label for this teaching image is unadjudicated, so treat the appearance as illustrative. Given the history and image, how urgently should this patient be seen and why?",
+      "introQuestions": [
+        {
+          "id": "clinical-features",
+          "label": "Which findings suggest proliferative disease?",
+          "prompt": "Which clinical features on this fundus image and history push toward proliferative diabetic retinopathy?",
+          "cachedAnswer": "Toward **proliferative** disease, look for neovascularization at the disc (NVD) or elsewhere (NVE) — fine, disorganized, often lacy vessels that do not respect normal branching, seen here as tortuous crowded vessels near the disc. Preretinal (boat-shaped) or vitreous hemorrhage, fibrovascular membranes, and traction are additional hallmarks. The clinical history is decisive: longstanding poorly controlled diabetes plus **acute new floaters** strongly suggests a fresh neovascular vitreous bleed. Compared with NPDR, which is limited to intraretinal microaneurysms, dot-blot hemorrhages, exudates, and cotton-wool spots, these features indicate the ischemic, VEGF-driven proliferative stage. Remember this photo's label is unverified, so the reasoning matters more than the label.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-floaters",
+          "label": "Differential for new floaters",
+          "prompt": "What is the differential diagnosis for acute new floaters in this patient, and how do you prioritize it?",
+          "cachedAnswer": "The differential for acute floaters includes **posterior vitreous detachment (PVD)**, **vitreous hemorrhage**, **retinal tear or rhegmatogenous retinal detachment**, and less commonly vitritis/uveitis. In a diabetic with signs of proliferative retinopathy, **neovascular vitreous hemorrhage** rises to the top of the list. However, PVD in a diabetic eye can precipitate a tractional or combined retinal detachment, which is vision-threatening and must be excluded. A dense hemorrhage can obscure the fundus, so ultrasound (B-scan) may be needed to rule out detachment. Prioritize excluding retinal detachment and active bleeding because both change management urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "referral-urgency",
+          "label": "How urgent is the referral?",
+          "prompt": "How urgently should this patient be referred to ophthalmology, and what is the management principle?",
+          "cachedAnswer": "New floaters with suspected proliferative diabetic retinopathy warrants **same-day to same-week** ophthalmology evaluation; if there is sudden vision loss, a curtain/shadow, or many new floaters and flashes, treat as **same-day urgent** to exclude retinal detachment or significant vitreous hemorrhage. The specialist confirms the diagnosis with dilated exam, OCT for macular edema, and B-scan if the view is obscured. Management principles for confirmed PDR include **panretinal photocoagulation (PRP)** and/or **anti-VEGF injections**, with vitrectomy reserved for non-clearing hemorrhage or tractional detachment. Systemic optimization of glycemia, blood pressure, and lipids is essential adjunctive care. Communicate the urgency clearly and arrange definite follow-up rather than routine scheduling.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Longstanding poorly controlled diabetic with new floaters and visual haze; the fundus shows peripapillary vascular disorganization with intraretinal hemorrhage and exudate-like lesions on a background suggestive of advanced retinopathy. The teaching point is pattern recognition of neovascularization versus IRMA, recognizing preretinal/vitreous hemorrhage, and triaging to same-day versus same-week review. Note the NEI source label is unadjudicated for this teaching case, so specialist review is required before any clinical use. What is your read, and what pitfalls would you flag in distinguishing NVD/NVE from mimics here?",
+      "introQuestions": [
+        {
+          "id": "nvd-vs-irma",
+          "label": "NVD/NVE vs IRMA — the read",
+          "prompt": "How do you distinguish disc/elsewhere neovascularization from IRMA on this image, and what are the pitfalls?",
+          "cachedAnswer": "**NVD/NVE** are new vessels that arise on or within one disc-diameter of the optic disc (NVD) or elsewhere (NVE), classically forming a fine, lacy, disorganized network that crosses over the retinal surface and does not respect normal arteriovenous distribution; they leak profusely on fluorescein angiography. **IRMA** are dilated, tortuous intraretinal shunt vessels within areas of nonperfusion that remain within the retina and do not leak significantly. The pitfall is that on a single color photo the tortuous peripapillary vessels here can mimic either; FA is the discriminator, showing frond leakage in true neovascularization versus staining without leak in IRMA. Do not over-call from a photo alone, and remember this image's label is unverified. Venous beading and multiple quadrant hemorrhages (the 4-2-1 rule) also flag high-risk progression to PDR.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "high-risk-pdr",
+          "label": "High-risk PDR features and workup",
+          "prompt": "What defines high-risk PDR here, and how would you complete the workup when the view is obscured by hemorrhage?",
+          "cachedAnswer": "**High-risk PDR** (from DRS criteria) includes NVD ≥1/4–1/3 disc area, any NVD with vitreous/preretinal hemorrhage, or NVE ≥1/2 disc area with vitreous/preretinal hemorrhage — thresholds that mandate prompt treatment. New floaters here raise concern for **preretinal or vitreous hemorrhage**, a high-risk feature. When media opacity obscures the fundus, obtain a **B-scan ultrasound** to exclude tractional or combined retinal detachment and to assess vitreous status. Widefield imaging, OCT for coexisting DME, and FA (if view permits) refine the assessment. Correlate with systemic control, renal function, pregnancy status, and any recent rapid glycemic normalization that can transiently worsen retinopathy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "triage-management",
+          "label": "Triage and guideline-aware management",
+          "prompt": "What is your triage timeline and guideline-aware management plan for suspected high-risk PDR with new hemorrhagic symptoms?",
+          "cachedAnswer": "Triage this presentation as **urgent**: same-day evaluation if there is sudden dense vision loss, a Weiss ring plus shadow, or suspicion of retinal detachment; otherwise same-day to same-week ophthalmology review given proliferative features with new floaters. Management for confirmed high-risk PDR centers on **PRP** and/or **anti-VEGF** therapy; anti-VEGF (e.g., per Protocol S) is a durable alternative or adjunct but demands reliable follow-up because loss to follow-up risks catastrophic regression. **Pars plana vitrectomy** is indicated for non-clearing vitreous hemorrhage, tractional retinal detachment threatening the macula, or combined mechanisms. Coordinate systemic optimization (HbA1c, BP, lipids, renal care) and counsel on the vision-threatening nature and the importance of adherence. Document that the teaching image label is unadjudicated and requires specialist confirmation before clinical extrapolation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

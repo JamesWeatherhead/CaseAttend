@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-echo-asd",
+  "lessonPlanSha256": "57ba955c86a2488335295cc0f1dc5840238173698d07a22ade59db4f69a7cea5",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "94b26ff7fe634caf3f913503d6af0d744d42eb0bd84034aaa2ed0926f2ea5af9",
+    "generatedAt": "2026-08-13T14:44:37.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture from an ultrasound of the heart, called an echocardiogram. The heart has walls that separate its chambers, and here there is a gap in the wall between the two upper chambers (the atria). Doctors sometimes hear an unusual heart sound in people with this kind of gap. Think of the heart wall like a fence with a hole in it that lets blood cross where it normally wouldn't. What might happen if blood can flow through a hole between the two top chambers of the heart?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What does this echocardiogram image show?",
+          "cachedAnswer": "This is a moving-picture snapshot of the heart made using sound waves, called an echocardiogram. The dark areas are the hollow chambers where blood collects, and the bright lines are the walls of the heart. In this teaching image, the wall that normally separates the two top chambers has a gap in the middle of it. That gap is what this case is about. The little wiggly line at the bottom left is the heartbeat tracing (an ECG) that helps time the pictures.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-hole-matters",
+          "label": "Why does a hole matter?",
+          "prompt": "Why is a hole in the wall between the heart chambers important?",
+          "cachedAnswer": "Normally the wall keeps blood on the correct side so it flows in a neat one-way path. If there is a hole between the two top chambers, some blood can sneak from the side with higher pressure to the side with lower pressure. This means extra blood gets pushed toward the lungs instead of out to the body. Over many years, the extra work can make part of the heart stretch and enlarge. That is why doctors pay attention to even a small hole.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-doctors-hear",
+          "label": "What do doctors hear?",
+          "prompt": "How can a doctor tell there might be a hole just by listening?",
+          "cachedAnswer": "When a doctor listens with a stethoscope, they hear the heart valves close, making the 'lub-dub' sound. With this kind of hole, the second sound ('dub') can split into two closely spaced clicks that stay split no matter whether the person breathes in or out. Doctors call this a 'fixed split.' It is a clue that extra blood is flowing through the right side of the heart. Special ultrasound tests are needed to confirm what is really happening.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This echocardiogram shows the wall (septum) between the heart's two upper chambers, the atria, with a visible gap in its middle portion. In a healthy heart this septum is continuous and keeps left and right blood separate. The left atrium normally runs at higher pressure than the right, which matters for predicting which way blood would move through a gap. On exam, this patient has a 'fixed split S2,' a persistent splitting of the second heart sound. Given the pressure difference between the atria, which direction do you think blood would flow through this defect?",
+      "introQuestions": [
+        {
+          "id": "locate-septum",
+          "label": "Where is the atrial septum?",
+          "prompt": "Where is the atrial septum in this image and how do I find it?",
+          "cachedAnswer": "The atrial septum is the wall separating the left and right atria, the two upper receiving chambers of the heart. On this echocardiogram, it appears as a thin bright line running between the two dark atrial spaces near the center of the image. In this teaching frame there is a break, or discontinuity, in the middle of that line where the tissue is missing. Following the bright walls of the heart helps you trace where the septum should be continuous but is interrupted. Recognizing normal anatomy first makes the abnormal gap easier to spot.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "shunt-direction",
+          "label": "Which way does blood flow?",
+          "prompt": "Why does blood flow from left to right through an atrial septal defect?",
+          "cachedAnswer": "Blood moves from areas of higher pressure to lower pressure. The left atrium normally has a slightly higher pressure than the right atrium, so when there is a hole between them, blood tends to flow from left to right. This is called a left-to-right shunt. Because oxygen-rich blood from the left side crosses back to the right, it gets sent to the lungs a second time rather than out to the body. The amount of this extra flow depends on the size of the hole and the pressure difference.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "volume-load",
+          "label": "What is right-sided volume load?",
+          "prompt": "How does a chronic shunt lead to right-sided volume load?",
+          "cachedAnswer": "When extra blood repeatedly crosses from the left atrium into the right atrium, the right side of the heart has to handle more volume than normal on every beat. Over time this constant extra load can cause the right atrium and right ventricle to enlarge. The extra blood also increases flow to the lungs. This chronic overload is what eventually produces symptoms and the characteristic heart-sound changes. Understanding the flow direction explains why it is the right side, not the left, that enlarges.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This still echocardiogram demonstrates a discontinuity in the mid portion of the interatrial septum, in the region of the fossa ovalis. The clinical anchor is a fixed split S2, which follows mechanically from a left-to-right shunt at the atrial level. Consider how atrial-level pressure gradients, right heart compliance, and pulmonary flow interact to produce both the shunt and the auscultatory finding. A full study with Doppler would be needed to quantify shunt magnitude. Given the location of the defect, how does the physiology connect to the fixed splitting of S2?",
+      "introQuestions": [
+        {
+          "id": "identify-defect-location",
+          "label": "Locate and name the defect",
+          "prompt": "Where is this atrial septal defect located and what type does that suggest?",
+          "cachedAnswer": "The visible discontinuity lies in the mid portion of the interatrial septum, corresponding to the region of the fossa ovalis. A defect in this central location is characteristic of an ostium secundum atrial septal defect, the most common ASD subtype. This contrasts with ostium primum defects (near the atrioventricular valves) and sinus venosus defects (near the caval junctions). On imaging you should confirm the septum is truly absent rather than a dropout artifact, ideally in more than one view. Definitive typing still requires the full study and Doppler interrogation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "left-to-right-mechanism",
+          "label": "Explain the shunt physiology",
+          "prompt": "Explain the pathophysiology of the left-to-right shunt in an ASD.",
+          "cachedAnswer": "At the atrial level, shunt direction is governed largely by the relative compliance of the two ventricles filling in diastole rather than by a large pressure gradient. Because the right ventricle is normally more compliant, the right atrium and RV accept preferential filling, driving left-to-right flow across the defect. This recirculates oxygenated blood back through the pulmonary circulation, increasing pulmonary blood flow (Qp) relative to systemic flow (Qs). The magnitude scales with defect size and chamber compliance. Chronically elevated Qp:Qs is the basis for right-sided remodeling.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "fixed-split-s2",
+          "label": "Why fixed split S2?",
+          "prompt": "Why does an ASD produce a fixed split S2 and right-sided volume load?",
+          "cachedAnswer": "S2 splits because the pulmonic valve (P2) closes after the aortic valve (A2). In an ASD, chronic left-to-right shunting causes a persistently increased right ventricular volume, prolonging RV ejection and delaying P2. The septal defect also equalizes the respiratory variation in venous return between the atria, so inspiration no longer changes the splitting interval—hence the split is 'fixed.' The chronic volume overload dilates the right atrium and right ventricle, and increased flow across the pulmonic valve can create a relative flow murmur. These findings tie the anatomy directly to the physical exam.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A young adult with a fixed split S2 has this echocardiographic frame showing a mid-septal interatrial defect, consistent with an ostium secundum ASD. The exam and imaging together point toward a chronic left-to-right shunt with right-sided volume loading. Before committing, remember shunt magnitude, direction, and closure eligibility require Doppler and a complete study. Consider how you would build and narrow a differential for a fixed split S2 in this age group. What features would you look for next to characterize the shunt and decide on management?",
+      "introQuestions": [
+        {
+          "id": "read-the-frame",
+          "label": "Interpret the echo frame",
+          "prompt": "What do you see on this echo frame and how does it fit the presentation?",
+          "cachedAnswer": "The frame shows a discontinuity in the mid interatrial septum with dark atrial chambers on either side, in the location typical for an ostium secundum ASD. This anatomic finding pairs logically with the fixed split S2 on auscultation, which suggests an atrial-level left-to-right shunt. You should assess for signs of right heart volume overload—RA and RV dilation and possibly paradoxical septal motion—on the full study. Confirm the defect in multiple views to exclude echo dropout. Color and spectral Doppler are then needed to demonstrate shunt direction and estimate Qp:Qs.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-fixed-split",
+          "label": "Differential for fixed split S2",
+          "prompt": "What is the differential for a fixed split S2 and why does ASD lead the list here?",
+          "cachedAnswer": "A truly fixed split S2 is fairly specific and strongly suggests an atrial septal defect, given the loss of respiratory variation from equalized interatrial filling. Other causes of wide splitting—RBBB, pulmonic stenosis, or RV dysfunction—usually still vary with respiration, so they are 'wide' rather than 'fixed.' Partial anomalous pulmonary venous return can accompany sinus venosus ASDs and mimic the physiology. In this young adult with a septal defect on imaging, a secundum ASD is the unifying diagnosis. The echo finding plus the fixed split make ASD the leading consideration, pending confirmation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps-management",
+          "label": "Next steps and management",
+          "prompt": "What are the next diagnostic and management steps for a suspected ASD?",
+          "cachedAnswer": "Complete the echocardiographic study with color and spectral Doppler to confirm left-to-right shunting, estimate Qp:Qs, assess RV size and function, and estimate pulmonary pressures. A transesophageal echo or bubble study helps define defect margins and rims relevant to device closure. Significant shunting (typically Qp:Qs ≥1.5) with right heart enlargement generally favors closure, either percutaneous device or surgical depending on anatomy. Rule out significant pulmonary hypertension, which can contraindicate closure. Ostium secundum defects with adequate rims are often amenable to transcatheter closure, but eligibility requires the full study and specialist evaluation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Young adult, fixed split S2, and a subcostal-appearing frame with a mid-septal dropout consistent with an ostium secundum ASD. The task is to integrate anatomy, shunt physiology, and auscultation while respecting that Qp:Qs, directionality, and closure eligibility need Doppler and a complete study. Watch for the common pitfall of calling thin fossa ovalis dropout a defect without corroborating views. Consider rim assessment, associated PAPVR, and pulmonary vascular status as you plan. How would you sequence your workup and frame closure candidacy?",
+      "introQuestions": [
+        {
+          "id": "pattern-and-pitfalls",
+          "label": "Pattern recognition and pitfalls",
+          "prompt": "What imaging pattern supports secundum ASD here and what artifacts must you exclude?",
+          "cachedAnswer": "The mid-septal discontinuity at the fossa ovalis is the classic location for an ostium secundum ASD, and the fixed split S2 corroborates atrial-level shunting. The key pitfall is thin fossa ovalis membrane producing signal dropout that mimics a defect, especially in apical four-chamber views where the septum lies parallel to the beam. Subcostal imaging orients the septum more perpendicular to the beam and is more reliable, and color Doppler showing flow across the rim confirms a true defect. T-sign at the defect edges and demonstrable transseptal flow help. Always look for RA/RV dilation and paradoxical septal motion as supportive volume-overload signs.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "quantify-shunt",
+          "label": "Quantify and characterize the shunt",
+          "prompt": "How do you quantify the shunt and assess hemodynamic significance?",
+          "cachedAnswer": "Estimate Qp:Qs from Doppler velocity-time integrals and dimensions at the RVOT (pulmonary) and LVOT (systemic), with a ratio ≥1.5 generally indicating hemodynamic significance. Corroborate with indirect signs: RV enlargement, RV volume overload with diastolic septal flattening, and increased pulmonary flow. Assess RVSP and PA pressures to screen for pulmonary hypertension, and evaluate for a reversing or bidirectional shunt suggesting elevated PVR. Screen for partial anomalous pulmonary venous return, particularly with sinus venosus morphology. TEE or CMR refines defect size, rims, and PAPVR when transthoracic imaging is inconclusive.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "closure-candidacy",
+          "label": "Closure candidacy and guidelines",
+          "prompt": "How do you frame closure eligibility for this ostium secundum ASD?",
+          "cachedAnswer": "Closure is generally indicated for secundum ASDs with significant left-to-right shunt and RA/RV enlargement, provided PVR is not prohibitively elevated. Transcatheter device closure is favored for centrally located secundum defects with adequate rims (typically an aortic rim may be deficient but other rims and defect size must be suitable) and no significant associated PAPVR. Sinus venosus, primum, and unroofed coronary sinus defects are not candidates for device closure and require surgery. Significant pulmonary vascular disease with net right-to-left shunting (Eisenmenger physiology) contraindicates closure. Final candidacy rests on a complete study, precise rim and size assessment, and multidisciplinary/ACHD evaluation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

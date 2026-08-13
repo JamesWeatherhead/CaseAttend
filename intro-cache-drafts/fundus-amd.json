@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-amd",
+  "lessonPlanSha256": "984f34e6370d087270ebc81fd53c2a0760c88339306c72d4b8a36abff2efa666",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "0d5697b276306809bd4e17b24bc80010f0a2f74eb1a9a7776fc98fbe051793e2",
+    "generatedAt": "2026-08-13T16:18:55.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph of the back of the eye, called the retina. The bright circle on the left is where the nerve leaves the eye, and the reddish lines are blood vessels. Scattered across the center you can see small pale yellow dots and some patchy color changes. An older person in this case is having trouble reading small print when the lights are low. What do you think those pale yellow dots might have to do with their reading problem?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the yellow dots?",
+          "prompt": "What are the pale yellow dots I can see in this eye photo?",
+          "cachedAnswer": "The pale yellow dots are tiny deposits called drusen, which build up under the light-sensing layer at the back of the eye. Think of them like little bits of waste that collect under a carpet, making the surface uneven. They tend to appear as people get older. In this picture they sit near the center of the retina, in an area called the macula, which is the part we use for sharp, detailed vision. Small amounts may cause few problems, but larger or more numerous deposits can make the center of vision fuzzy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-dim-light",
+          "label": "Why is reading hard in dim light?",
+          "prompt": "Why would this person have trouble reading small print in dim light?",
+          "cachedAnswer": "The center of the retina packs the special cells we use to see fine detail, like the words in a book. When deposits and color changes disturb this area, those detail cells do not work as well. Reading small print already needs good detail vision, and dim light makes it even harder because the eye gets less to work with. It is a bit like trying to read a faint page with a dirty pair of glasses. That is why difficulty with small print in low light can be an early clue.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "warning-signs",
+          "label": "What warning signs matter?",
+          "prompt": "What kinds of vision changes should make this person see a doctor quickly?",
+          "cachedAnswer": "The most important warning sign is if straight lines suddenly start looking bent, wavy, or crooked. Another is a new dark or blurry spot right in the middle of what they are looking at. A sudden drop in central vision is also a reason to seek care quickly rather than waiting. These changes can mean the condition is getting worse and may need prompt attention. Slow, mild changes are usually checked at regular eye visits.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This color fundus photograph shows the inside back surface of the eye. On the left is the optic disc, with retinal vessels branching outward, and the central macula shows scattered pale round deposits along with some pigment mottling. The patient, an older adult, reports increasing trouble reading fine print in dim light. These findings are consistent with an aging change of the macula. Given that the macula is responsible for central detailed vision, how would you expect this to affect the patient's visual field?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "Identify the structures shown",
+          "prompt": "What structures and abnormalities can I identify in this fundus photograph?",
+          "cachedAnswer": "The bright, rounded pale area on the left is the optic disc, where the optic nerve and central retinal vessels enter the eye. The branching red lines are retinal arteries and veins spreading across the retina. The central region between the vessel arcades is the macula, the zone of highest visual acuity. Within the macula you can see scattered pale, round, yellowish deposits (drusen) and irregular darker and lighter areas representing pigment change. Together these are typical age-related changes at the macula.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "central-vs-peripheral",
+          "label": "Central vs peripheral vision",
+          "prompt": "Why does macular disease affect central vision rather than peripheral vision?",
+          "cachedAnswer": "The macula is a small central patch of retina densely packed with cone cells, which provide sharp color and detail vision. The very center, the fovea, is what we point at anything we want to see clearly. The peripheral retina, by contrast, is dominated by rod cells that handle motion and dim-light vision but not fine detail. So when disease targets the macula, the sharp central part of vision suffers while the surrounding peripheral vision is largely spared. This is why patients keep their ability to get around a room but struggle with reading and faces.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "drusen-meaning",
+          "label": "What do drusen represent?",
+          "prompt": "What are drusen made of and why do they form with age?",
+          "cachedAnswer": "Drusen are deposits of lipids, proteins, and cellular waste that accumulate between the retinal pigment layer and the underlying membrane that supports it. As the eye ages, the cells that recycle photoreceptor waste become less efficient, and this material builds up. Small, few drusen are common and often harmless, but larger and more numerous ones signal a higher risk of progressive macular disease. Their location at the macula is what links them to problems with central, detail vision. They are visible on a fundus photo as the pale round spots seen here.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This macular fundus photograph demonstrates multiple discrete yellowish subretinal deposits with associated pigmentary mottling, findings consistent with intermediate age-related macular degeneration. The optic disc and vascular arcades are unremarkable, and the changes are concentrated at the macula. The patient describes progressive difficulty reading small print in low illumination. Recall that the macula houses the highest density of cones and the retinal pigment epithelium's greatest metabolic burden. What is the anatomic and cellular basis linking drusen at the level of Bruch's membrane to early functional deficits?",
+      "introQuestions": [
+        {
+          "id": "histology-basis",
+          "label": "Drusen and RPE histology",
+          "prompt": "Where do drusen form histologically and what layers are involved in AMD?",
+          "cachedAnswer": "Drusen are focal deposits that accumulate between the basal lamina of the retinal pigment epithelium (RPE) and the inner collagenous layer of Bruch's membrane. They consist of lipids, complement components, apolipoproteins, and other extracellular material reflecting impaired RPE clearance of photoreceptor outer segment debris. Overlying the drusen, the RPE and adjacent photoreceptors may show degeneration, and pigment migration produces the mottling seen clinically. Bruch's membrane thickens and its permeability changes, impairing metabolic exchange between the choriocapillaris and the outer retina. Intermediate AMD is characterized by large drusen and/or pigmentary abnormalities without geographic atrophy or neovascularization.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cone-topography",
+          "label": "Cone topography and symptoms",
+          "prompt": "How does macular cone topography explain this patient's specific symptoms?",
+          "cachedAnswer": "Cone density peaks sharply at the fovea and falls off rapidly toward the periphery, so high-acuity tasks like reading depend almost entirely on foveal and parafoveal cones. Early RPE and photoreceptor dysfunction in AMD compromises these cones, degrading contrast sensitivity and detail resolution before acuity on a bright chart may drop. Reduced photoreceptor and RPE function also slows dark adaptation, which is disproportionately affected by outer-retinal metabolic stress. This combination explains difficulty reading small print specifically in dim light. Peripheral rod-mediated vision remains comparatively intact, preserving navigation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "dry-vs-wet",
+          "label": "Dry vs neovascular mechanism",
+          "prompt": "What is the mechanistic difference between dry (non-neovascular) and wet (neovascular) AMD?",
+          "cachedAnswer": "Non-neovascular (dry) AMD is characterized by drusen, RPE changes, and, when advanced, geographic atrophy from progressive RPE and photoreceptor loss. Neovascular (wet) AMD occurs when VEGF-driven choroidal neovascular membranes breach Bruch's membrane and grow into the sub-RPE or subretinal space. These fragile new vessels leak fluid and blood, producing rapid distortion and central vision loss. The transition from intermediate dry AMD to neovascular AMD is the feared event that changes management. This is why counseling about sudden metamorphopsia or central vision loss is central to this case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An older adult reports progressive difficulty reading small print in dim light. The fundus photo shows numerous macular drusen with pigmentary change but no hemorrhage, exudate, or obvious neovascular signs, fitting intermediate age-related macular degeneration. Your task is to counsel appropriately and set up the right safety net. Consider what distinguishes stable disease that warrants routine follow-up from findings requiring urgent referral. What specific symptoms would you instruct this patient to report immediately, and how would you monitor them at home?",
+      "introQuestions": [
+        {
+          "id": "exam-findings",
+          "label": "Characterize the findings",
+          "prompt": "How would you describe these fundus findings and stage the AMD?",
+          "cachedAnswer": "The macula shows multiple discrete drusen, several appearing large (>125 microns), along with focal pigmentary changes, without evidence of subretinal fluid, hemorrhage, exudate, or geographic atrophy. This pattern is consistent with intermediate AMD by the AREDS classification, which is defined by large drusen and/or any AMD-associated pigment abnormality in the absence of advanced disease. Documenting drusen size and burden, pigmentary change, and any signs of atrophy or neovascularization guides risk stratification. OCT would help confirm the absence of intraretinal or subretinal fluid. Baseline acuity and Amsler grid response should also be recorded.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "counseling-warning",
+          "label": "What warning signs to counsel",
+          "prompt": "What warning signs should I counsel this patient to report urgently?",
+          "cachedAnswer": "Counsel the patient that new metamorphopsia (straight lines appearing wavy or bent), a new or enlarging central scotoma, or a sudden decline in central acuity warrants urgent ophthalmology evaluation, as these may signal conversion to neovascular AMD. Provide an Amsler grid for regular monocular home monitoring and teach them to test each eye separately with reading glasses. Emphasize that gradual, stable difficulty with fine print is expected with intermediate disease, while abrupt change is not. Prompt treatment of neovascular AMD with anti-VEGF therapy preserves vision, so early presentation matters. Ensure they know how and where to seek same-week care.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-plan",
+          "label": "Routine management plan",
+          "prompt": "What is the routine management and follow-up for intermediate AMD?",
+          "cachedAnswer": "For intermediate AMD, AREDS2 supplementation (vitamin C, vitamin E, lutein, zeaxanthin, zinc, and copper) is recommended to reduce the risk of progression to advanced disease, noting beta-carotene is omitted particularly in smokers. Advise smoking cessation, a diet rich in leafy greens and fish, cardiovascular risk factor control, and UV protection. Schedule routine follow-up, often every 6 to 12 months, with dilated exam and OCT as indicated. Reinforce home Amsler grid monitoring between visits. Set clear return precautions for acute symptoms so neovascular conversion is caught early.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Fundus photo of the macula with a moderate drusen load and pigmentary mottling, no hemorrhage, exudate, or PED, consistent with intermediate AMD; the patient notes worsening low-luminance reading. The teaching aim is efficient risk stratification and a robust safety net for neovascular conversion, plus AREDS2 counseling. Note the source label here is unadjudicated and would require specialist confirmation before clinical use. Given the phenotype, how would you weight progression risk and structure surveillance, and what pitfalls in distinguishing intermediate from early neovascular disease would you flag?",
+      "introQuestions": [
+        {
+          "id": "phenotype-risk",
+          "label": "Phenotype and progression risk",
+          "prompt": "How do these features stratify progression risk in intermediate AMD?",
+          "cachedAnswer": "Large drusen and pigmentary abnormalities are the two features driving the AREDS simple severity score, and having both in an eye elevates 5-year progression risk to advanced AMD substantially. High-risk phenotypes to note include confluent large drusen, reticular pseudodrusen (subretinal drusenoid deposits), and any nascent geographic atrophy or hyperreflective foci on OCT. Reticular pseudodrusen in particular correlate with impaired dark adaptation and higher conversion risk, matching low-luminance symptoms. Bilateral large drusen carry higher cumulative risk than unilateral disease. Low-luminance deficit and delayed rod-mediated dark adaptation are increasingly recognized functional biomarkers.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "occult-neovascular",
+          "label": "Don't-miss neovascular signs",
+          "prompt": "What subtle signs of early neovascular AMD should I not miss on exam or imaging?",
+          "cachedAnswer": "On fundoscopy, look for subretinal fluid, lipid exudate, subretinal hemorrhage (including small dot hemorrhages), a gray-green subretinal lesion, or a serous or hemorrhagic PED that can masquerade as confluent drusen. OCT is the highest-yield tool: intraretinal or subretinal fluid, sub-RPE fluid, a fibrovascular PED, and hyperreflective material are red flags. OCT angiography can reveal a non-exudative (quiescent) neovascular network that warrants closer follow-up rather than immediate treatment. Type 3 (retinal angiomatous proliferation) lesions can present with small intraretinal hemorrhages and are easy to overlook. When findings are ambiguous, imaging and specialist review resolve intermediate versus early neovascular disease.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "surveillance-counseling",
+          "label": "Surveillance and AREDS2 pearls",
+          "prompt": "How should I structure surveillance and AREDS2 counseling with guideline awareness?",
+          "cachedAnswer": "Recommend AREDS2 formulation for intermediate AMD in one or both eyes or advanced AMD in one eye; it does not benefit early AMD or primary prevention, and beta-carotene should be avoided in current/former smokers given lung cancer risk. Structure follow-up around risk: dilated exam with OCT typically every 6 to 12 months, tighter if reticular pseudodrusen or high drusen burden. Reinforce daily monocular Amsler grid and consider home monitoring adjuncts where available, with explicit same-week return precautions for metamorphopsia or acute central loss. Address modifiable factors: smoking cessation, Mediterranean-style diet, cardiovascular risk control. Remember the source label for this teaching image is unadjudicated, so confirm staging with specialist review before applying to care.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

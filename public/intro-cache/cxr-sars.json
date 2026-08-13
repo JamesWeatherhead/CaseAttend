@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-sars",
+  "lessonPlanSha256": "fccd945e75914dfaa33f568d5a20b77b7563c782ac4f66de18b31fad20f21a00",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "d7cdf5ca254e50ecf29568cf425b271a8110e95ee0998e18784bc1e1493bcbb4",
+    "generatedAt": "2026-08-13T14:52:30.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a picture that uses a small amount of radiation to show the inside of the chest. Normally, healthy lungs look dark on an X-ray because they are full of air. In this image, there are hazy, cloudy white patches, especially in the lower parts of the lungs, where air is being pushed out by fluid or infection. The patient recently traveled, has a fever and cough, and low oxygen in their blood. What do you think those cloudy white areas might mean about how well the lungs are working?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the cloudy white patches?",
+          "prompt": "What do the cloudy white patches on this chest X-ray mean in simple terms?",
+          "cachedAnswer": "On a chest X-ray, air looks black and solid things look white. Healthy lungs are mostly air, so they look dark and clear. The hazy white patches here mean the tiny air pockets in the lungs are filled with something other than air, like fluid or pus from an infection. These patches are stronger near the bottom of the lungs. When lungs fill up like this, it is harder for oxygen to pass into the blood, which is why this person has low oxygen.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-low-oxygen",
+          "label": "Why does the person have low oxygen?",
+          "prompt": "Why would these lung changes cause someone to have low oxygen levels?",
+          "cachedAnswer": "Your lungs work like a sponge that lets oxygen from the air pass into your blood. When the tiny air sacs get filled with fluid or infection, oxygen cannot cross into the blood as easily. Think of trying to breathe through a wet cloth instead of open air. With less oxygen getting into the blood, the whole body feels tired and the person may breathe faster to make up for it. That is why doctors measure oxygen levels when someone is sick with a lung problem.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "protect-others",
+          "label": "How do we protect other people?",
+          "prompt": "During an outbreak, how do we keep this illness from spreading to others?",
+          "cachedAnswer": "During an outbreak, we do not know for sure what germ is causing the illness, so we act carefully. The sick person is often placed in a separate room away from others so germs cannot spread through the air. Doctors and nurses wear masks, gowns, and gloves as a shield. Everyone washes their hands often. These steps are called infection control, and they protect other patients and health workers while tests are done to find the exact cause.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This chest radiograph comes from an outbreak scenario involving a returning traveler with fever, cough, and low blood oxygen. The lungs, which normally appear dark because they are air-filled, show patchy hazy whiteness (air-space opacity) that is more pronounced in the lower zones. This pattern tells us the air sacs (alveoli) are being filled with fluid or inflammatory material rather than air. Importantly, an X-ray shows a pattern, not the specific germ causing it. What features of this image help you describe where the abnormality is located?",
+      "introQuestions": [
+        {
+          "id": "describe-pattern",
+          "label": "How do I describe this opacity?",
+          "prompt": "How should I describe the pattern and distribution of the lung opacity on this radiograph?",
+          "cachedAnswer": "Radiologists describe an abnormality by its appearance and its location. Here the appearance is air-space (alveolar) opacity, meaning hazy whiteness where air sacs are filled with fluid or cells instead of air. The distribution is patchy and bilateral, meaning it appears in scattered areas on both sides, and it is more pronounced in the lower zones of the lungs. Describing both the type and location gives a clear, neutral picture without naming a cause. This kind of careful description is the first step before any reasoning about what disease might be responsible.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "gas-exchange",
+          "label": "Why does this lower oxygen?",
+          "prompt": "How does filling the air sacs with fluid affect oxygen getting into the blood?",
+          "cachedAnswer": "Oxygen normally diffuses from air in the alveoli across a thin membrane into blood in nearby capillaries. When alveoli fill with fluid or inflammatory material, that diffusion pathway is blocked, so blood passing those areas picks up less oxygen. This is one reason the patient's oxygen level is low. The body may respond by breathing faster to try to compensate. Because both lungs are affected, a larger portion of the blood is under-oxygenated, which makes the drop in oxygen more noticeable.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pattern-vs-diagnosis",
+          "label": "Can the X-ray name the germ?",
+          "prompt": "Can this chest X-ray tell us which specific germ is causing the illness?",
+          "cachedAnswer": "No. A chest radiograph shows a pattern of lung involvement, but many different infections and non-infectious conditions can produce similar-looking air-space opacity. The X-ray cannot identify a specific virus or bacterium by sight. To find the actual cause, doctors need laboratory tests such as swabs or blood samples. This is why we separate the imaging pattern from the etiologic (cause-based) diagnosis, and why history like recent travel and outbreak context matters so much.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This frontal chest radiograph is from a returning traveler with fever, cough, and hypoxemia in an outbreak scenario. Note the bilateral patchy air-space (alveolar) opacity with lower-zone predominance, reflecting alveolar filling by exudate, transudate, or cellular debris rather than air. The imaging finding constitutes a pattern, distinct from an etiologic diagnosis, since no radiographic feature is pathognomonic for a specific pathogen. Consider both the pathophysiology of impaired gas exchange and the epidemiologic implications. What mechanism connects alveolar filling to this patient's hypoxemia?",
+      "introQuestions": [
+        {
+          "id": "alveolar-pattern",
+          "label": "Describe the air-space pattern",
+          "prompt": "Describe the air-space opacity pattern and its distribution on this radiograph in appropriate anatomical terms.",
+          "cachedAnswer": "The radiograph shows air-space (alveolar) opacity: hazy increased density where alveoli are filled with fluid or cellular material, sometimes with associated silhouetting of adjacent structures. The distribution is bilateral and patchy with lower-zone predominance, favoring the lung bases. Alveolar patterns tend to be fluffy and confluent, and may show air bronchograms when air-filled bronchi are outlined by surrounding opacified lung. This contrasts with an interstitial pattern, which produces linear or reticular markings. Precise description of both the type of opacity and its zonal distribution provides the foundation for later differential reasoning.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "hypoxemia-mechanism",
+          "label": "Mechanism of the hypoxemia",
+          "prompt": "What is the pathophysiologic mechanism of hypoxemia when alveoli are filled with fluid?",
+          "cachedAnswer": "Alveolar filling produces hypoxemia primarily through ventilation-perfusion (V/Q) mismatch and, when alveoli are completely filled, intrapulmonary shunt. In shunt physiology, blood perfuses alveoli that are not ventilated, so it returns to systemic circulation without being oxygenated. The thickened or fluid-filled alveolar-capillary interface also impairs diffusion. Because shunted blood bypasses functional gas exchange, hypoxemia from significant shunt responds poorly to supplemental oxygen. Bilateral lower-zone involvement means a substantial fraction of pulmonary blood flow drains under-oxygenated alveolar units, amplifying the hypoxemia.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pattern-not-etiology",
+          "label": "Pattern versus etiology",
+          "prompt": "Why can we not assign a specific etiologic diagnosis from this imaging pattern alone?",
+          "cachedAnswer": "Air-space opacity is a nonspecific final common pathway of alveolar filling that can result from infection (viral, bacterial, atypical), aspiration, pulmonary edema, hemorrhage, or inflammatory conditions. No radiographic feature reliably distinguishes among these causes, so imaging defines a pattern, not an etiology. Establishing the cause requires integrating history, epidemiology, and confirmatory microbiologic or laboratory testing. In an outbreak context, the pattern plus exposure history raises concern for a transmissible respiratory pathogen, which drives infection-control decisions even before a specific agent is identified. Keeping the pattern and the diagnosis conceptually separate prevents premature closure.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A returning traveler presents during an outbreak with fever, cough, and hypoxemia; this chest radiograph shows bilateral patchy air-space opacity with lower-zone predominance. Your task is to describe the finding neutrally, build a differential that respects the gap between imaging pattern and etiology, and act on infection-control priorities. Radiographs of this type were historically associated with severe acute respiratory syndrome, but imaging alone cannot confirm a viral pathogen. The combination of epidemiologic exposure plus a compatible pattern should trigger empiric isolation while confirmatory testing is arranged. What isolation and workup steps would you prioritize before you have a microbiologic diagnosis?",
+      "introQuestions": [
+        {
+          "id": "clinical-description",
+          "label": "Describe and frame the finding",
+          "prompt": "How would you describe this radiograph and frame it in a clinical note without over-calling a diagnosis?",
+          "cachedAnswer": "I would report bilateral, patchy air-space opacities with lower-zone predominance, without over-interpreting as a specific disease. A neutral phrasing would be: 'multifocal air-space opacities, greatest at the lung bases, compatible with an infectious or inflammatory process; clinical correlation and pathogen testing recommended.' I would note the absence of definite pleural effusion or clear consolidation with air bronchograms if not seen. Framing the finding as a pattern keeps the differential open and aligns the note with the reality that imaging cannot specify an organism. This also signals to the team that infection-control and testing decisions rest on epidemiology and clinical context.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for this pattern",
+          "prompt": "What is your differential diagnosis for bilateral lower-zone air-space opacity in a febrile hypoxemic traveler?",
+          "cachedAnswer": "The differential includes viral pneumonia (including emerging respiratory viruses relevant to the outbreak), atypical bacterial pneumonia (Mycoplasma, Legionella, Chlamydophila), typical bacterial multilobar pneumonia, and, in travelers, consideration of endemic pathogens depending on region. Non-infectious mimics include cardiogenic pulmonary edema, ARDS from any cause, and diffuse alveolar hemorrhage. Travel history, incubation period, and exposure to sick contacts or specific regions substantially reshape the pretest probability. Given the outbreak framing, a transmissible viral etiology sits high on the list, but this is driven by epidemiology rather than the radiograph itself. The imaging simply confirms a compatible pattern.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "isolation-workup",
+          "label": "Isolation and confirmatory testing",
+          "prompt": "What infection-control steps and confirmatory tests would you prioritize in this outbreak context?",
+          "cachedAnswer": "Institute empiric respiratory isolation immediately: place the patient in a single room, ideally an airborne-infection isolation room if an airborne-transmissible pathogen is plausible, and apply appropriate PPE including a fitted respirator, eye protection, gown, and gloves per institutional and public-health guidance. Notify infection prevention and, when an outbreak pathogen is suspected, the relevant public-health authority. Send confirmatory testing such as respiratory viral panels or pathogen-specific molecular assays, along with blood cultures and other studies guided by the differential. Support oxygenation and monitor for progression to respiratory failure. De-escalation of isolation should follow test results and case definitions, not imaging alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Outbreak setting, returning traveler, febrile with cough and hypoxemia: this AP chest radiograph demonstrates bilateral, somewhat asymmetric patchy air-space opacity with basilar predominance and a few support lines projecting over the chest. Historically CDC circulated radiographs of this appearance in association with SARS, but the image is nonspecific and must not be over-read as pathogen-specific. Your job is disciplined pattern description, appropriate empiric transmission-based precautions, notification, and confirmatory molecular testing under prevailing case definitions. Watch for progression toward an ARDS phenotype and the pitfalls of anchoring on imaging. How do you reconcile a nonspecific radiographic pattern with high-consequence infection-control decisions?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Precise radiographic read",
+          "prompt": "Give a precise, structured read of this radiograph and note limitations and confounders.",
+          "cachedAnswer": "Structured read: technically an AP portable film with support hardware projecting over the thorax, adequate for gross assessment but limiting fine detail. Findings: bilateral, patchy, somewhat asymmetric air-space opacities with lower-zone predominance; no unequivocal large pleural effusion or pneumothorax identified on this view; cardiomediastinal silhouette partially obscured by overlying opacity and positioning. The pattern is consistent with multifocal alveolar filling and is nonspecific. Confounders include AP magnification, rotation, low lung volumes, and overlying lines/soft tissue that can mimic or mask opacity. I would avoid pathogen-specific language and recommend correlation with clinical and microbiologic data plus serial imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "anchoring-pitfall",
+          "label": "Pitfalls: pattern vs etiology",
+          "prompt": "What are the key cognitive and diagnostic pitfalls in reading this film during an outbreak?",
+          "cachedAnswer": "The central pitfall is anchoring: attributing the film to the outbreak pathogen and truncating the differential prematurely. Multifocal air-space opacity is a final common pathway shared by viral and bacterial pneumonias, ARDS, cardiogenic edema, and hemorrhage, so imaging cannot confirm etiology. Another pitfall is under-triage of transmission precautions when the film looks 'nonspecific,' versus over-diagnosing based on outbreak fear. Also beware satisfaction of search—overlying lines and basilar opacity can hide a pneumothorax or effusion. Guard against downgrading isolation on the basis of imaging trends rather than test results and case definitions. Serial films and the clinical trajectory carry more weight than a single snapshot.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "guideline-response",
+          "label": "Isolation, notification, testing",
+          "prompt": "Outline a guideline-aware infection-control and confirmatory testing plan for this presentation.",
+          "cachedAnswer": "Apply transmission-based precautions matched to the suspected agent: for a novel or airborne-capable respiratory pathogen, use an airborne-infection isolation room with a fitted N95/PAPR, eye protection, gown, and gloves, and minimize aerosol-generating procedures with appropriate protections. Activate institutional infection prevention and notify public health per reportable-disease and outbreak protocols; apply the current case definition to classify suspect/probable/confirmed status. Obtain pathogen-specific molecular assays (e.g., respiratory viral NAAT panels or targeted RT-PCR), plus blood cultures and other studies driven by the differential. Manage hypoxemia along an ARDS-aware pathway, escalating support as needed while limiting nosocomial spread. De-escalate precautions only per test results and public-health guidance, documenting the rationale and contact tracing as indicated.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

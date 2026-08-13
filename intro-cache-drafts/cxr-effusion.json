@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-effusion",
+  "lessonPlanSha256": "9e7083e34bd2d292cdd5b516a63cafd057a508afaf962c9fbc14573d239f3fca",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "d3110400f3099c57cbc0753c92a278144425b82e68ee90f06bcdd79449c762c9",
+    "generatedAt": "2026-08-13T14:22:52.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a special photo that lets us see inside the chest. Air-filled lungs normally look dark, but on this picture one whole side of the chest looks much whiter (more cloudy) than the other. The person has been losing weight and feeling more and more out of breath over several weeks. When something like fluid fills up the space around a lung, it blocks the X-rays and shows up bright white. Looking at the two sides, which side looks different, and what might be filling that space?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What looks different on this X-ray?",
+          "prompt": "In simple terms, what is different between the two sides of this chest X-ray?",
+          "cachedAnswer": "On a chest X-ray, air-filled lungs normally look dark or black because X-rays pass right through the air. Here, one side (the patient's left, which appears on the right side of the image) is almost completely white and cloudy. The other side still shows the dark lung with the rib shadows crossing over it. That bright white side means something other than air is filling the space. Fluid, like water, blocks X-rays and shows up as a pale, milky color. So the big clue is that one side is dark and normal-looking while the other is whited-out. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-white",
+          "label": "Why does fluid look white?",
+          "prompt": "Why does fluid around the lung show up white on an X-ray while air is dark?",
+          "cachedAnswer": "X-rays are like invisible light beams that shoot through the body onto a detector. Air is very thin, so the beams pass through easily and hit the detector, which turns that area dark. Denser things like fluid or bone stop more of the beams, so fewer reach the detector and that spot turns white. Think of it like sunlight through a glass of water versus through empty air — the water dims the light more. Because fluid is much denser than air, a lung surrounded by fluid looks pale and cloudy instead of dark. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What would doctors want to know next?",
+          "prompt": "What questions or next steps would doctors think about after seeing this?",
+          "cachedAnswer": "Doctors would want to know how long the breathing trouble has been going on and whether the weight loss was on purpose or not, since losing weight without trying can be a warning sign. They would listen to the chest and might tap on it to hear if it sounds dull, which happens over fluid. They could take a sample of the fluid with a thin needle to study what it is made of. They would also ask about smoking, fevers, and past illnesses. Each answer helps narrow down why the space filled up. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This frontal chest radiograph shows a striking difference between the two hemithoraces. The patient's left side (image right) is almost uniformly opaque (white), while the right lung remains aerated and dark with visible rib markings. The clinical background is several weeks of weight loss and progressive shortness of breath. On an X-ray, density determines brightness: air is dark, fluid and soft tissue are pale. Given that one side is whited-out, what substance filling the pleural space could explain this appearance?",
+      "introQuestions": [
+        {
+          "id": "identify-finding",
+          "label": "What is the main finding?",
+          "prompt": "Describe the main radiographic finding on this chest X-ray using introductory anatomy terms.",
+          "cachedAnswer": "The dominant finding is that one entire hemithorax (the patient's left) is opacified, meaning it appears white instead of the normal dark, air-filled appearance. The lung is surrounded by a thin double-layered lining called the pleura, and the small space between those layers can collect fluid. When a large amount of fluid accumulates there, the fluid absorbs the X-ray beam and produces a homogeneous white shadow. The opposite lung looks normal, showing dark air spaces and the curved shadows of the ribs. This dramatic left-right difference is the key observation. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "physics-density",
+          "label": "How does tissue density create the image?",
+          "prompt": "Explain simply how differences in density produce the contrast between the dark lung and the white side.",
+          "cachedAnswer": "An X-ray image is a map of how much of the beam gets absorbed as it passes through the body. Air-filled lung tissue is low density, so most of the beam passes through and darkens the detector. Fluid has roughly the density of water, which is far greater than air, so it absorbs much more of the beam and leaves that region bright. Bone is even denser and appears whitest of all. Because a large fluid collection replaces the air that would normally be in that half of the chest, that side loses its dark appearance and turns uniformly pale. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-questions",
+          "label": "What should we ask or check next?",
+          "prompt": "What are the sensible next questions or checks after seeing a whited-out hemithorax?",
+          "cachedAnswer": "A useful next step is to figure out whether the white side is pushing structures away or pulling them toward it, because fluid tends to shift the midline structures to the opposite side. You would want to know the history of the weight loss and breathlessness, smoking history, and any fevers. Physically, tapping the chest over fluid gives a dull sound and breath sounds are reduced. Sampling a small amount of the fluid can reveal whether it is thin or protein-rich. These clues together help explain what filled the space and why. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This AP portable chest radiograph demonstrates near-complete opacification of the left hemithorax with preservation of the aerated, well-defined right lung. The clinical stem — subacute weight loss and progressive dyspnea — frames a large pleural fluid collection as the leading consideration. Recall that the pleural space normally holds only a few milliliters of fluid, maintained by a balance of hydrostatic and oncotic pressures and lymphatic drainage. A massive effusion accumulates when that balance is disrupted or drainage is obstructed. Based on this image, what mediastinal shift would you expect with a large effusion, and how does that help distinguish it from collapse?",
+      "introQuestions": [
+        {
+          "id": "describe-opacity",
+          "label": "Characterize the opacity and its extent",
+          "prompt": "Characterize the left hemithorax opacity and estimate the distribution of pleural fluid.",
+          "cachedAnswer": "The left hemithorax shows a homogeneous, ground-white opacity that obscures the normal lung markings, hemidiaphragm, and costophrenic angle, consistent with a large to massive pleural effusion. The opacity appears to extend from the apex to the base, suggesting the fluid has largely filled the pleural space, though a supine or semi-erect AP technique can layer fluid posteriorly and exaggerate the whiteout. The contralateral right lung is normally aerated with a sharp cardiac and diaphragmatic silhouette. On an upright film, free fluid classically produces a meniscus and blunts the costophrenic angle first before ascending. Estimating volume requires attention to positioning, but this degree of opacification implies a substantial collection. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophys-shift",
+          "label": "Why does a massive effusion shift the mediastinum?",
+          "prompt": "Explain the pathophysiology of mediastinal shift in a massive pleural effusion and how it differs from lobar collapse.",
+          "cachedAnswer": "A massive pleural effusion is a space-occupying process: accumulating fluid raises intrapleural pressure on that side and displaces the mediastinum toward the contralateral hemithorax. In contrast, lobar or complete lung collapse (atelectasis) is a volume-loss process that pulls the mediastinum toward the opacified side because absorbed air reduces that hemithorax volume. Distinguishing these on a whiteout film hinges on this shift direction plus rib crowding (seen in collapse) versus rib spreading (seen in large effusion). Effusion arises when Starling forces favor fluid entry — elevated hydrostatic pressure, reduced oncotic pressure, increased capillary permeability, or impaired lymphatic clearance. The subacute weight-loss history raises concern for an exudative, possibly malignant, process. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workup-questions",
+          "label": "What guides the educational workup?",
+          "prompt": "What clinical questions and mechanisms should guide further workup of this finding?",
+          "cachedAnswer": "Key questions center on the transudate-versus-exudate distinction, classically approached with Light's criteria comparing pleural and serum protein and LDH. Constitutional symptoms like weight loss shift suspicion toward exudative causes such as malignancy, infection, or inflammatory disease. Mechanistically you would consider whether the effusion reflects altered Starling forces, increased permeability, or lymphatic obstruction. Additional useful information includes fluid appearance, cell counts, cytology, and glucose/pH for parapneumonic processes. Correlating the radiographic distribution with these laboratory mechanisms builds the diagnostic reasoning framework. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 58-year-old man presents with several weeks of weight loss and progressive dyspnea, and this AP portable film shows near-total opacification of the left hemithorax with a preserved, aerated right lung. The pattern of a unilateral whiteout demands you distinguish a large effusion from complete lung collapse, consolidation, or prior pneumonectomy. Note whether the trachea and mediastinum are shifted toward or away from the opaque side, since that single observation reorients the differential. The subacute course with constitutional symptoms raises concern for a malignant effusion. What is your working differential for a unilateral opaque hemithorax, and how would mediastinal position help you narrow it?",
+      "introQuestions": [
+        {
+          "id": "read-the-film",
+          "label": "Give a structured read of this film",
+          "prompt": "Provide a structured clinical read of this chest radiograph and the key finding.",
+          "cachedAnswer": "Technique: AP portable projection, chest, which limits assessment of volume and silhouette. The dominant finding is a homogeneous opacification of the left hemithorax obscuring the hemidiaphragm and costophrenic angle, consistent with a large to massive pleural effusion. The right lung is normally aerated with preserved markings. I would specifically assess tracheal and mediastinal position: contralateral shift favors a large effusion, while ipsilateral shift favors volume-loss processes such as collapse or pneumonectomy. Correlating with subacute weight loss and dyspnea, a malignant or exudative effusion is high on the differential. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-whiteout",
+          "label": "Differential for an opaque hemithorax",
+          "prompt": "What is the differential for a unilateral opaque hemithorax and how does mediastinal shift discriminate?",
+          "cachedAnswer": "The classic teaching splits a unilateral whiteout by mediastinal position. Shift AWAY from the opacity suggests a large pleural effusion or a large mass. Shift TOWARD the opacity suggests complete lung collapse (endobronchial obstruction), post-pneumonectomy, or pulmonary agenesis/hypoplasia. No shift suggests consolidation, extensive infiltration, or a combination of effusion plus collapse balancing out. Rib crowding and elevated hemidiaphragm point to volume loss, whereas an expanded hemithorax with widened rib spaces supports a tension-type large effusion. Given the constitutional symptoms, a malignant effusion or an obstructing central tumor causing both effusion and collapse must be considered. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-steps",
+          "label": "Next steps in workup and management",
+          "prompt": "What are the appropriate next diagnostic and management steps for this presentation?",
+          "cachedAnswer": "After confirming the effusion clinically and radiographically, diagnostic and often therapeutic thoracentesis under ultrasound guidance is the key next step, with fluid sent for protein, LDH, glucose, pH, cell count/differential, Gram stain and culture, and cytology. Applying Light's criteria classifies the fluid as transudate versus exudate, and constitutional symptoms plus a bloody or lymphocytic exudate would heighten concern for malignancy or TB. Large-volume drainage relieves dyspnea but should be paced to avoid re-expansion pulmonary edema. Contrast CT of the chest helps evaluate for an underlying mass, pleural nodularity, or lymphadenopathy once fluid is drained. Persistent or recurrent malignant effusions may warrant pleurodesis or an indwelling pleural catheter. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "58M, subacute weight loss and progressive dyspnea, AP portable CR showing a near-complete left hemithorax whiteout with a preserved right lung. Portable AP technique degrades your ability to judge true volume and silhouette sign, so anchor your read on mediastinal position, rib spacing, and diaphragm visibility. The subacute constitutional history makes a malignant exudative effusion the leading pretest consideration, but an obstructing central lesion producing effusion-plus-collapse is a common trap. Before you commit, ask whether the mediastinum is shifted contralaterally as a massive free effusion should push it. How do you reconcile the whiteout pattern with the shift direction to avoid the effusion-versus-collapse pitfall?",
+      "introQuestions": [
+        {
+          "id": "systematic-read",
+          "label": "Systematic read and estimated volume",
+          "prompt": "Give a systematic read including estimated effusion volume and technical caveats.",
+          "cachedAnswer": "AP portable, semi-erect to supine positioning likely, which layers free fluid and can produce a diffuse veil rather than a discrete meniscus, causing volume overestimation or a deceptively hazy whiteout. The left hemithorax is near-completely opacified with loss of the hemidiaphragm and costophrenic angle and obscured left heart border; the right lung is clear. This distribution implies a large-to-massive effusion, but on supine films dependent fluid mimics whiteout without necessarily reflecting a truly massive volume. I would confirm with upright or lateral decubitus views or, preferably, bedside ultrasound to quantify and assess for loculation. Assess tracheal and mediastinal position and rib interspaces to separate space-occupying effusion from volume-loss collapse. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Pitfalls in the whiteout differential",
+          "prompt": "What are the key pitfalls when interpreting a unilateral whiteout, and how do you avoid them?",
+          "cachedAnswer": "The central pitfall is misclassifying a mixed picture: a central obstructing tumor can cause both an effusion and lobar/complete collapse, which may offset each other so the mediastinum appears midline despite significant pathology. A massive free effusion should shift the mediastinum contralaterally; a midline or ipsilaterally shifted mediastinum with a whiteout should trigger a hunt for endobronchial obstruction. Portable supine technique masks the meniscus and can make even moderate effusions look like whiteouts, so always correlate with ultrasound. Do not attribute the entire opacity to fluid without accounting for underlying collapsed or consolidated lung, which changes drainage yield and management. Also beware loculation and empyema, which alter both drainage approach and prognosis. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "guideline-workup",
+          "label": "Guideline-aware workup and drainage",
+          "prompt": "Outline a guideline-aware diagnostic and management approach for a suspected malignant effusion.",
+          "cachedAnswer": "Ultrasound-guided diagnostic (and therapeutic) thoracentesis is standard; send fluid for protein, LDH, pH, glucose, cell count/differential, cytology, and microbiology, and apply Light's criteria to classify exudate versus transudate. For suspected malignancy, high-volume cytology and consideration of repeat sampling or pleural biopsy improve yield, and contrast-enhanced CT chest characterizes pleural nodularity, mediastinal masses, and lymphadenopathy. Limit initial large-volume drainage guided by symptoms and pleural manometry when available to reduce re-expansion pulmonary edema risk. For confirmed recurrent malignant effusions, options per pleural guidelines include indwelling pleural catheter or chemical pleurodesis, with choice individualized to trapped lung and prognosis. Coordinate with pulmonology, interventional radiology, and oncology, and ensure tissue diagnosis before committing to definitive management. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

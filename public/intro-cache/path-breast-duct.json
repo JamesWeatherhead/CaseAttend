@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-breast-duct",
+  "lessonPlanSha256": "9fcca3512ff0833ec033eeb31f79db021d29fd33bfff3819230a5bd8b3f7f8f8",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "72fa8ecb2650590c0eceb45f8672d566ca2e193abbcb9fc1a8d4660ca3cee7c4",
+    "generatedAt": "2026-08-13T15:11:07.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a super close-up photo of breast tissue, stained with pink and purple dyes so we can see the cells under a microscope. The pink stringy stuff around the edges is the tissue's supportive framework, and the crowded blue-purple dots in the middle are the centers (nuclei) of many cells packed tightly together. Normally, cells in a breast \"tube\" (called a duct) are neat and organized, but here they look crowded and messy. This is a teaching image, not a real patient's diagnosis. Looking at this picture, what stands out to you as different between an organized group of cells and a crowded, messy one?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is this image showing me and what do the colors mean?",
+          "cachedAnswer": "This is a microscope photo of breast tissue that was stained with two dyes: hematoxylin, which turns cell centers (nuclei) blue-purple, and eosin, which turns supporting tissue pink. The dark purple dots are the nuclei of hundreds of tightly packed cells. The pink wavy bands near the top and edges are the tissue's connective framework. Think of it like looking at a crowd of people from above: the dots are their heads, and the pink lines are the fences around them. In a healthy area, cells are usually spread out and orderly, but here they look crowded and jumbled. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-crowded",
+          "label": "Why are the cells so crowded?",
+          "prompt": "Why would cells in a breast duct become so crowded together?",
+          "cachedAnswer": "A breast duct is like a tiny tube that normally has just a neat lining of cells around a hollow center. When cells start dividing too much and don't stop when they should, they pile up and fill in the space, which is why this picture looks so crowded. Growth that gets out of control like this is the basic idea behind a tumor. The extra cells also look more irregular in size and shape than normal, tidy cells. Scientists study these patterns to understand how cell growth can go wrong. Remember, one photo alone cannot tell the whole story of what is happening. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "one-photo-enough",
+          "label": "Can one photo tell the whole story?",
+          "prompt": "Can doctors learn everything they need from a single microscope picture?",
+          "cachedAnswer": "No, a single microscope view is like looking at one small window of a very large house. It can show that the cells look abnormal and crowded, but it cannot show how far the problem has spread through the rest of the tissue. To understand the full picture, doctors look at many slides, imaging scans, and other tests. That is why one image is a starting clue, not a final answer. This is exactly why careful, complete examination matters so much in medicine. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an H&E-stained photomicrograph of breast tissue taken from a core needle biopsy. Hematoxylin stains cell nuclei blue-purple and eosin stains cytoplasm and connective tissue pink. In the center you can see a dense population of crowded cells with prominent nuclei, bounded by pink fibrous tissue. A normal breast duct has an organized lining of cells around an open lumen, but this field shows that neat pattern replaced by packed cells. As you compare normal architecture to what you see here, what features would tell you the cells are proliferating abnormally?",
+      "introQuestions": [
+        {
+          "id": "normal-vs-abnormal",
+          "label": "How does normal duct differ from this?",
+          "prompt": "How does normal breast duct architecture differ from what's shown in this field?",
+          "cachedAnswer": "A normal breast duct is a tube lined by two organized layers of cells (an inner epithelial layer and an outer supporting layer) surrounding a clear open center called the lumen. The cells are evenly spaced, similar in size, and sit on a well-defined basement membrane. In this image, that orderly arrangement is replaced by a solid mass of crowded cells that fill up the space, with much less visible open lumen. The nuclei also look variable in size and darkly stained. These differences in organization and crowding are the visual clues that something is growing abnormally. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-is-proliferation",
+          "label": "What does cell proliferation mean?",
+          "prompt": "What does it mean when cells are described as proliferating, and how does that show up in tissue?",
+          "cachedAnswer": "Proliferation means cells are dividing and multiplying more than they normally should. In tissue, this shows up as increased cell density (crowding), loss of the normal open spaces, and sometimes visible dividing cells (mitotic figures). Normally, cell division is tightly balanced with cell death so tissue stays the same size, but in a proliferative lesion that balance is lost. The crowded appearance in this field reflects that excess growth. Studying these patterns helps biologists understand how normal growth control breaks down. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "limits-of-one-field",
+          "label": "What can't one field tell us?",
+          "prompt": "What are the limits of what a single microscopic field can tell you about a lesion?",
+          "cachedAnswer": "A single field shows only a tiny slice of the tissue, so it cannot reveal how far the abnormal cells extend or whether they have broken through natural boundaries into surrounding tissue. Understanding the true extent of a lesion requires examining many sections, the edges of the sample, and often additional imaging. One view might look dramatic but still miss important information found elsewhere in the sample. This is why pathologists sample tissue thoroughly rather than judging from one picture. It is a good reminder that context and sampling matter in biology. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This H&E photomicrograph shows breast tissue in which a duct is expanded and filled by a crowded proliferation of atypical epithelial cells, surrounded by dense fibrous stroma. Compared with the normal bilayered ductal epithelium arranged around a patent lumen, this field shows a solid, cellular population with nuclear enlargement and variability. A key conceptual distinction in breast pathology is whether such a proliferation remains confined within the basement membrane (in situ) or has breached it (invasive). Notice that this single field does not clearly demonstrate the basement membrane or stromal invasion. Based on the architecture and cytology you can appreciate here, how would you frame your histologic description and its limits?",
+      "introQuestions": [
+        {
+          "id": "describe-histology",
+          "label": "Describe the histologic findings",
+          "prompt": "Describe the key histologic features visible in this field and how they differ from normal ductal architecture.",
+          "cachedAnswer": "Normal breast ducts show a bilayered arrangement: an inner luminal epithelial layer and an outer myoepithelial layer resting on a basement membrane, encircling an open lumen. This field instead shows a duct-like space expanded and filled by a solid, highly cellular proliferation of epithelial cells. The nuclei are enlarged, hyperchromatic, and vary in size and shape, indicating cytologic atypia, and the normal lumen is largely obliterated. Surrounding pink fibrous stroma frames the lesion. Importantly, the myoepithelial layer and basement membrane cannot be reliably assessed on this routine H&E view. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "in-situ-vs-invasive",
+          "label": "In situ versus invasive: the concept",
+          "prompt": "Explain the conceptual difference between an in situ and an invasive lesion at the tissue level.",
+          "cachedAnswer": "An in situ proliferation is confined within the epithelial compartment, bounded by an intact basement membrane and typically an intact myoepithelial layer, so the atypical cells have not gained access to stroma, lymphatics, or vessels. An invasive lesion is defined by malignant cells breaching the basement membrane and infiltrating the surrounding stroma, which gives them access to routes of metastasis. The distinction hinges on demonstrating an intact versus disrupted myoepithelial/basement membrane boundary, which often requires immunohistochemical stains (e.g., p63, smooth muscle myosin, calponin) beyond H&E. Conceptually, this boundary marks the difference between a lesion with essentially no metastatic potential and one that can spread. This is why the basement membrane is the pivotal structure to evaluate. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "staging-limits",
+          "label": "Why can't one field stage this?",
+          "prompt": "Why can't grading and staging be reliably performed from a single microscopic field?",
+          "cachedAnswer": "Grading integrates features such as nuclear pleomorphism, mitotic rate, and architectural pattern assessed across representative areas, not just one high-power field. Staging depends on the overall size or extent of invasive disease, margin status, and lymph node involvement—information that is spatial and cannot be derived from one image. A single field may capture only the most cellular or most atypical region and misrepresent the lesion as a whole. Determining in situ versus invasive status often additionally requires ancillary myoepithelial stains. For all these reasons, one field supports description and hypothesis generation but not definitive grading or staging. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with a palpable breast mass had a core needle biopsy, and this H&E section shows a duct expanded and filled by a crowded, atypical epithelial proliferation within fibrous stroma. Clinically, the pivotal question is whether this represents an in situ process or an invasive carcinoma, because that distinction drives prognosis and management. This single field shows cytologic atypia and architectural distortion but does not clearly resolve basement membrane integrity or lesion extent. Remember that a core biopsy samples only part of the mass. Given what you can and cannot see here, how would you approach the diagnosis and next steps?",
+      "introQuestions": [
+        {
+          "id": "clinical-significance",
+          "label": "What is the clinical significance?",
+          "prompt": "What is the clinical significance of distinguishing in situ from invasive disease in a breast biopsy?",
+          "cachedAnswer": "The in situ versus invasive distinction fundamentally changes prognosis and management. In situ disease (e.g., DCIS) is by definition confined by the basement membrane and lacks metastatic potential, so treatment centers on local control (excision, often radiation, and endocrine therapy where appropriate) without routine axillary staging. Invasive carcinoma can access lymphovascular channels, so it requires assessment of tumor size, margins, nodal status, and biomarkers (ER/PR, HER2, Ki-67) to guide systemic therapy decisions. Getting this distinction right also determines whether sentinel lymph node biopsy is indicated. This is why demonstrating stromal invasion (or its absence) is a central diagnostic task. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirm-invasion",
+          "label": "How would you confirm invasion?",
+          "prompt": "What additional workup would help confirm whether this lesion is in situ or invasive?",
+          "cachedAnswer": "The key adjunct is immunohistochemistry for myoepithelial markers (p63, smooth muscle myosin heavy chain, calponin) to test whether an intact myoepithelial layer surrounds the atypical cell nests—present favors in situ, absent around infiltrating nests favors invasion. Radiologic-pathologic correlation with mammography, ultrasound, and sometimes MRI helps assess lesion size and multifocality. Because a core biopsy samples only a portion of the mass, surgical excision may be needed to exclude an invasive focus and to fully characterize the lesion. ER/PR and HER2 testing informs biology and therapy once invasion status is established. Multidisciplinary review ties imaging, histology, and clinical findings together. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "core-biopsy-limits",
+          "label": "Pitfalls of core biopsy sampling",
+          "prompt": "What are the sampling limitations of a core needle biopsy that a clinician should keep in mind here?",
+          "cachedAnswer": "A core needle biopsy samples only narrow cylinders of tissue, so it may capture an in situ component while missing an adjacent invasive focus—a well-recognized reason for upgrade at excision. It also cannot establish overall lesion size or margin status, both needed for staging. Discordance between imaging (a clearly palpable mass) and biopsy findings should prompt reconsideration and possibly repeat sampling or excision. Grade assessed on a core may differ from the final resection because of limited sampling. Always interpret a core result as provisional and correlate it with the clinical and imaging picture before finalizing management. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This H&E field from a core biopsy of a palpable breast mass shows a duct-like space distended by a monomorphic-to-atypical epithelial proliferation with solid architecture, set against dense fibrous stroma. The differential centers on a solidly expanded intraductal proliferation (DCIS) versus early invasion, and the field as shown does not confidently demonstrate an intact myoepithelial boundary or unequivocal stromal infiltration. Note also the source label for this teaching case is unadjudicated, so treat it as a pattern-recognition exercise rather than ground truth. Consider what pitfalls could bias interpretation of this single field. How would you build a rigorous, guideline-aware assessment from here?",
+      "introQuestions": [
+        {
+          "id": "pattern-differential",
+          "label": "Frame the differential from this pattern",
+          "prompt": "Given this solid intraductal-appearing proliferation, what is your differential and what features would refine it?",
+          "cachedAnswer": "A solid proliferation expanding a duct raises solid-pattern DCIS versus atypical ductal hyperplasia versus, if the myoepithelial layer is lost around infiltrating nests, invasive carcinoma; usual ductal hyperplasia and lobular neoplasia are also on the spectrum. Refining features include nuclear grade and monomorphism, presence or absence of secondary architectural patterns (cribriform, micropapillary), necrosis/microcalcifications, and the character of any surrounding stromal response (desmoplasia suggests invasion). Loss of the polarized bilayer and a monotonous population favor a clonal neoplastic process over usual hyperplasia's streaming heterogeneity. Definitive separation of in situ from invasive requires myoepithelial IHC. Correlating with imaging extent and calcification distribution further narrows the interpretation. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ancillary-workup",
+          "label": "Ancillary studies and biomarkers",
+          "prompt": "What ancillary stains and biomarker workup would you order and why?",
+          "cachedAnswer": "Myoepithelial markers (p63, smooth muscle myosin heavy chain, calponin; sometimes CK5/6 for hyperplasia vs neoplasia) are first-line to confirm an intact peripheral myoepithelial layer and exclude invasion. If invasion is confirmed or on definitive material, ER, PR, HER2 (with ISH reflex per ASCO/CAP), and often Ki-67 guide prognosis and therapy. CK5/6 and ER can help distinguish usual ductal hyperplasia (mosaic/heterogeneous) from ADH/DCIS (uniform ER-positive, CK5/6-negative). Beware interpretive pitfalls: cautery/crush artifact and tangential sectioning can mimic loss of myoepithelium, and some benign lesions show attenuated myoepithelial staining. Integrate stains with morphology rather than reading them in isolation. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "staging-caveats",
+          "label": "Grading/staging and upgrade risk",
+          "prompt": "What are the key caveats around grading, staging, and upgrade risk when reporting from this core?",
+          "cachedAnswer": "Grade and definitive invasion status from a core are provisional: cores sample limited tissue and are prone to underestimating an invasive component adjacent to DCIS, contributing to the well-documented upgrade rate at excision. Staging (T size, margins, nodal status) cannot be established on a core; only a partial picture is available. Radiologic-pathologic concordance is mandatory—a discordant benign or in situ result with a clearly palpable mass warrants re-review, repeat sampling, or excision. Report should flag the unadjudicated nature of any outside label and recommend confirmatory work rather than committing to invasion or extent. Multidisciplinary tumor board correlation aligns histology, imaging, and clinical findings before management. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "ct-epidural",
+  "lessonPlanSha256": "8315a05adf2adcad76ef40f2dab12a028ffbc405e97b7b2e4fa5dfd30824403b",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "fdf2e61e0c24c3134cc785d0415832d48f8a1fb74dda33887a2801c7468d60fd",
+    "generatedAt": "2026-08-13T16:03:08.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a CT scan (a special X-ray that shows slices of the head) of an 87-year-old woman who fell and hit her head. She was awake at first but is now getting sleepy, which worries the doctors. On the picture, look for a bright white patch pressed up against the inside of the skull bone. The brain underneath looks pushed away from that white patch. **What do you think the bright white blob near the skull might be, and why would a person get sleepy because of it?**",
+      "introQuestions": [
+        {
+          "id": "what-is-white",
+          "label": "What is the bright white part?",
+          "prompt": "What does the bright white area near the skull represent on this head CT?",
+          "cachedAnswer": "The bright white area is fresh blood that has collected between the skull bone and the brain. On a CT scan, fresh blood shows up bright white because it is denser than brain tissue, which appears gray. Here the blood is packed against the inside of the skull and pushes on the brain. The special lens-like (football or lemon) shape helps doctors guess where the bleeding came from. Any blood squeezing the brain is a serious sign and needs quick attention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-sleepy",
+          "label": "Why is she getting sleepy?",
+          "prompt": "Why would someone become drowsy after a head injury like this?",
+          "cachedAnswer": "The skull is a hard, closed box that cannot expand. When blood pools inside, it takes up space and squeezes the brain because there is nowhere else for the pressure to go. As the pressure rises, the parts of the brain that keep us awake get pressed on, so the person becomes drowsy. That is why she was fine at first but is now getting sleepy as the blood keeps building up. This 'talk and deteriorate' pattern is a big warning sign.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-emergency",
+          "label": "Why is this an emergency?",
+          "prompt": "Why is this situation treated as a medical emergency?",
+          "cachedAnswer": "This is an emergency because the blood is actively squeezing the brain and the woman is getting worse in front of us. If the pressure keeps rising, it can damage the brain that controls breathing and heartbeat, which can be deadly. Doctors may need surgery to remove the blood and stop the bleeding quickly. Fast action can prevent lasting harm, so getting the right help right away really matters.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This head CT belongs to an 87-year-old woman who fell, was initially alert, then became drowsy. Notice the bright (hyperdense) collection hugging the inner skull on one side, with a distinct lens shape, and the way the brain is displaced away from it. The skull is a rigid container, so anything extra inside raises pressure on the brain. **Given the lens-like shape pressed against the bone, what structures do you think are trapping this blood in place?**",
+      "introQuestions": [
+        {
+          "id": "identify-collection",
+          "label": "What am I looking at?",
+          "prompt": "What is the bright, lens-shaped collection along the skull on this CT?",
+          "cachedAnswer": "The bright collection is acute (fresh) blood sitting in the space between the skull and the outer covering of the brain called the dura mater. Fresh blood appears white on CT because clotted blood absorbs more X-rays than normal gray brain tissue. Its biconvex, lens or football shape is a key clue to its exact location. You can also see the brain tissue being pushed inward, showing the blood is taking up space. Comparing the left and right sides makes the abnormal side obvious.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "shape-anatomy",
+          "label": "Why the lens shape?",
+          "prompt": "Why does this collection have a lens (biconvex) shape rather than spreading out?",
+          "cachedAnswer": "The dura mater is a tough membrane that is firmly attached to the skull at the seams called sutures. When blood collects between the skull and the dura, it cannot cross these attachment points, so it bulges into a tight, lens-like shape instead of spreading thinly. Think of blood pushing the dura away from the bone like inflating a balloon that is glued down at its edges. This anatomy is why the collection looks convex on both sides. It is a helpful way to tell this type of bleed apart from ones that spread in a crescent shape.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pressure-effect",
+          "label": "How does it harm the brain?",
+          "prompt": "How does a growing blood collection inside the skull damage the brain?",
+          "cachedAnswer": "The skull is a closed, rigid box, so its total volume is fixed. When blood accumulates, the brain, blood vessels, and cerebrospinal fluid must give up space, and once that limited buffer is used up, pressure rises sharply. Rising pressure squeezes brain tissue and can push it out of its normal position, which reduces blood flow and impairs function. This explains the woman's decline from alert to drowsy as the collection grows. Left unchecked, this can be life-threatening.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This teaching CT shows an 87-year-old woman post-fall with a lucid interval followed by declining consciousness. On the images there is a hyperdense, biconvex extra-axial collection along the inner table with mass effect on the adjacent parenchyma. The biconvex morphology and its relationship to the dura and cranial sutures are central teaching points. **Using meningeal and vascular anatomy, explain why this collection is biconvex and does not cross sutures.**",
+      "introQuestions": [
+        {
+          "id": "describe-collection",
+          "label": "Describe the collection",
+          "prompt": "Describe the shape, density, and location of the extra-axial collection on this CT.",
+          "cachedAnswer": "The collection is an acute hyperdense extra-axial fluid collection situated between the inner table of the skull and the dura, in the epidural (extradural) space. It has a classic biconvex (lentiform) shape and is well-circumscribed. There is associated mass effect: local sulcal effacement, inward displacement of the underlying cortex, and possible midline shift. Acute hemorrhage measures roughly 50–70 HU, appearing bright relative to gray parenchyma. Recognizing the biconvex morphology and hyperdensity together points strongly toward an epidural hematoma.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "meningeal-anatomy",
+          "label": "Anatomy behind the shape",
+          "prompt": "How does meningeal and skull anatomy explain the biconvex shape and suture limitation of an epidural hematoma?",
+          "cachedAnswer": "The dura is tightly adherent to the inner table, especially at the cranial sutures where its periosteal layer is continuous with the sutural periosteum. Blood in the epidural space must strip the dura off the bone, and because this attachment resists at the sutures, the hematoma is contained between suture lines and bulges inward, producing a biconvex (lentiform) contour. Epidural hematomas classically arise from arterial injury, often the middle meningeal artery after a temporal bone fracture, so higher-pressure arterial bleeding can expand the collection rapidly. In contrast, subdural collections track beneath the dura, cross sutures, and appear crescentic. The tight biconvex shape therefore reflects both the plane of blood accumulation and the dural attachments.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "monro-kellie",
+          "label": "Mass effect mechanism",
+          "prompt": "Apply the Monro-Kellie doctrine to explain the mass effect and clinical deterioration.",
+          "cachedAnswer": "The Monro-Kellie doctrine states that the sum of intracranial volumes (brain, blood, CSF) is constant within the fixed cranial vault. As the hematoma expands, CSF and venous blood are displaced first to compensate, so intracranial pressure initially stays near normal, corresponding to the lucid interval. Once compensatory reserve is exhausted, small further increases in volume cause steep rises in intracranial pressure, driving the decline from alert to drowsy. Rising pressure produces mass effect, reduces cerebral perfusion pressure, and threatens herniation. This nonlinear pressure-volume relationship explains why deterioration can be sudden and rapid.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An 87-year-old woman is found down after a fall, initially alert but now becoming drowsy. Her non-contrast head CT shows a hyperdense, biconvex extra-axial collection with underlying mass effect. The history of a lucid interval with subsequent deterioration is a classic teaching pattern for this appearance. **How does this imaging and clinical picture shape your differential and immediate management priorities?**",
+      "introQuestions": [
+        {
+          "id": "key-findings",
+          "label": "Key findings and differential",
+          "prompt": "What are the key CT findings and how do they narrow the differential for an extra-axial collection?",
+          "cachedAnswer": "The key findings are an acute hyperdense, biconvex (lentiform) extra-axial collection with local mass effect and possible midline shift. The biconvex shape that does not cross suture lines favors an epidural hematoma, classically from middle meningeal artery injury with an associated temporal bone fracture. The main differential is a subdural hematoma, which is crescentic, crosses sutures, and often arises from bridging vein tears—more common with atrophy in the elderly. The clinical lucid interval followed by deterioration reinforces the epidural pattern in this teaching case. Always review bone windows for an overlying fracture and assess for herniation signs.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "deterioration",
+          "label": "Why is she deteriorating?",
+          "prompt": "Why did this patient talk and then deteriorate, and what does that imply clinically?",
+          "cachedAnswer": "The 'talk and deteriorate' or lucid-interval pattern reflects the Monro-Kellie compensation: initially CSF and venous blood are displaced, maintaining consciousness, until compensatory reserve is exhausted and intracranial pressure rises steeply. As the arterial epidural bleed expands, mass effect compromises the reticular activating system and threatens uncal or subfalcine herniation, producing progressive drowsiness. This trajectory implies an expanding, surgically relevant lesion until proven otherwise. It mandates urgent reassessment of GCS, pupils, and repeat imaging if the exam changes. Deterioration is a red flag demanding immediate neurosurgical involvement.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Immediate management",
+          "prompt": "What are the immediate management priorities for this teaching scenario?",
+          "cachedAnswer": "Priorities follow ABCs with attention to airway protection if consciousness continues to fall, and maintaining adequate oxygenation and cerebral perfusion. Obtain urgent neurosurgical consultation, as a significant epidural hematoma with mass effect and deterioration is often a surgical emergency for evacuation. Address coagulopathy: review anticoagulant/antiplatelet use common in the elderly and reverse as indicated per protocol. Employ ICP-directed measures (head elevation, normocapnia, avoiding hypotension) while arranging definitive care. Serial neuro checks and rapid disposition to a center with neurosurgical capability are essential.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "87F, unwitnessed fall, initial GCS preserved with subsequent decline. NCCT demonstrates an acute hyperdense biconvex extra-axial collection with mass effect—consider epidural hematoma with a lucid interval. In the elderly, atrophy and anticoagulation shift pretest probabilities and complicate the classic teaching. **Walk through your imaging read, pitfalls in distinguishing EDH from SDH, and how age and anticoagulation change your threshold and disposition.**",
+      "introQuestions": [
+        {
+          "id": "structured-read",
+          "label": "Structured CT read",
+          "prompt": "Give a structured read of this head CT for the extra-axial collection and associated findings.",
+          "cachedAnswer": "Acute hyperdense biconvex extra-axial collection along the inner table, morphology consistent with an epidural hematoma, with mass effect on adjacent parenchyma and evaluation for midline shift and sulcal effacement. Assess for a swirl sign (hypodense foci) indicating active/hyperacute bleeding and rapid expansion risk. Interrogate bone windows for an overlying calvarial fracture, particularly temporal squamosa near the middle meningeal artery groove. Evaluate basal cisterns, ventricular size, and gray-white differentiation for early herniation and secondary injury. Confirm the collection respects suture lines but can cross the falx/tentorium, the mirror opposite of a crossing-sutures subdural.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "edh-vs-sdh-pitfalls",
+          "label": "EDH vs SDH pitfalls",
+          "prompt": "What are the pitfalls in distinguishing epidural from subdural hematoma, especially in the elderly?",
+          "cachedAnswer": "Classic teaching—biconvex, suture-limited, arterial EDH versus crescentic, suture-crossing, venous SDH—holds most of the time, but overlap exists. Venous epidurals (e.g., near dural sinuses or from fracture-related diploic bleeding) can appear atypical and evolve more slowly. In the elderly, cerebral atrophy enlarges the subdural space and predisposes to subdurals, making SDH far more common than EDH after falls. Anticoagulation and antiplatelet therapy promote larger, mixed-density collections and can blur the picture with acute-on-chronic components. Don't anchor on shape alone: correlate with bone windows, location relative to sutures and venous sinuses, and clinical tempo.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition",
+          "label": "Disposition and thresholds",
+          "prompt": "How do you approach neurosurgical thresholds and disposition for this patient?",
+          "cachedAnswer": "Guideline-informed EDH management (e.g., Brain Trauma Foundation surgical guidelines) favors evacuation for volume greater than ~30 cm3 regardless of GCS, and strongly considers surgery with declining GCS, anisocoria, or significant mass effect—this patient's deterioration lowers the threshold. Emergent priorities: airway protection for falling GCS, avoid hypotension and hypoxia, maintain CPP, and initiate ICP measures while mobilizing neurosurgery. Rapidly identify and reverse anticoagulation (PCC for warfarin/factor inhibitors per institutional protocol, consider platelet strategies, reverse to target). Consider goals-of-care discussion given advanced age and comorbidities, balancing surgical candidacy against prognosis. Serial exams, short-interval repeat CT for any change, and transfer to neurosurgical capability drive disposition.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

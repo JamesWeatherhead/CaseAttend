@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-fibrothorax",
+  "lessonPlanSha256": "71a51ad5b4f1050c882a987c505c8074334cdd25a7b965a86690496bf9f969b9",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "ecf6eb58cd6b4dea5d40bb8ab984b433a9123a0908f4a8ca2770855d188b6bf2",
+    "generatedAt": "2026-08-13T14:56:56.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a picture that lets us see inside the chest using a special kind of light. On one side, the lung area looks cloudy and white instead of dark, and that side of the chest looks smaller than the other. The white haze along the edge is a thickened lining around the lung, kind of like a scar. This can happen years after a serious chest infection. **What differences do you notice between the left and right sides of the chest?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What is this image and what stands out on it?",
+          "cachedAnswer": "This is a chest X-ray, which uses a small amount of radiation to make a shadow picture of the inside of the chest. Air-filled healthy lung looks dark, while denser things like bone or fluid look white. In this image, one side of the chest is much whiter and cloudier than the other, which means less air is present there. That side also looks a bit smaller and more crowded. The whiteness along the edge is a thickened covering around the lung, like a layer of scar. Comparing the two sides is the easiest way to spot the problem.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-smaller",
+          "label": "Why is one side smaller?",
+          "prompt": "Why would one side of the chest look smaller than the other?",
+          "cachedAnswer": "The lung is wrapped in a thin covering called the pleura. After a bad infection, this covering can heal by forming thick scar tissue, almost like a stiff peel around an orange. Scar tissue shrinks as it heals, and this pulls the chest wall inward and squeezes the lung. Because the lung cannot fully expand, that side ends up smaller, which is why we call it 'volume loss.' A stiff, shrunken cover keeps the lung from puffing up with air normally.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "breathing-effect",
+          "label": "How does this affect breathing?",
+          "prompt": "How could this change make it hard to breathe?",
+          "cachedAnswer": "Breathing works when the lungs stretch open to pull in fresh air. If a stiff scar wraps one lung, that lung cannot stretch well, so it holds less air with each breath. This is called a 'restrictive' problem, meaning the lung is restricted or held back. The person may feel short of breath, especially when active, even though the airways themselves are open. Doctors use the person's history and older X-rays to figure out how long this has been going on.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This chest radiograph shows a hemithorax that is more opaque (whiter) than the opposite side, with signs that the affected side is reduced in volume. The pleura, a thin double-layered membrane around each lung, appears thickened along the chest wall. Such changes can follow a past chest infection that healed with scarring. On an X-ray, denser tissue absorbs more radiation and appears whiter, while air-filled lung appears dark. **Which features here suggest chronic scarring rather than a fresh collection of fluid?**",
+      "introQuestions": [
+        {
+          "id": "opacity-basics",
+          "label": "Why does the lung look white here?",
+          "prompt": "Why does one side of the chest appear whiter on this X-ray?",
+          "cachedAnswer": "X-ray brightness depends on how much radiation the tissue absorbs. Air, being low density, lets most rays through and appears dark; bone, fluid, and thick scar tissue absorb more and appear white. On this film, one hemithorax is more opaque because either air-filled lung has been replaced or displaced, or a thick pleural layer is adding density. Thickened, scarred pleura along the chest wall can create a whitish rind. Combined with the smaller size of that side, this pattern points toward reduced lung volume rather than a normal air-filled lung.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pleura-anatomy",
+          "label": "What is the pleura?",
+          "prompt": "What is the pleura and how does thickening of it show up?",
+          "cachedAnswer": "The pleura is a thin, two-layered serous membrane: the visceral layer hugs the lung and the parietal layer lines the chest wall, with a thin film of fluid between them that lets the lung glide during breathing. When inflammation from infection heals, the pleura can lay down fibrous scar tissue and become thickened. On a radiograph this appears as a band of density along the inner chest wall that follows the contour of the ribs. Unlike free fluid, this thickening does not shift when the patient changes position. That fixed, wall-hugging appearance is a clue to chronic pleural disease.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "fluid-vs-scar",
+          "label": "Scar vs fluid — how to tell?",
+          "prompt": "How can we distinguish chronic pleural thickening from free fluid on a single film?",
+          "cachedAnswer": "Free pleural fluid is mobile and settles with gravity, so it typically blunts the costophrenic angle and can form a curved upper edge (a meniscus), and it may shift on a lateral decubitus view. Chronic pleural thickening is fixed scar tissue that clings to the chest wall in a uniform band and does not move with position. A key difference is volume: a large effusion pushes structures away and can look bigger, while chronic fibrosis pulls the chest inward, causing volume loss. Volume loss on the opaque side therefore favors chronic change over a simple effusion. Confirming this usually needs old films for comparison and sometimes cross-sectional imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This PA chest radiograph demonstrates unilateral hemithorax opacification with features of ipsilateral volume loss and pleural thickening along the chest wall. The visible pattern is consistent with organized pleural fibrosis following a remote inflammatory process. Note the contrast with the well-aerated contralateral lung. Distinguishing fibrothorax from a mobile effusion depends on morphology and volume effects rather than opacity alone. **What signs of volume loss would you look for, and how do they differ mechanistically from mass effect of an effusion?**",
+      "introQuestions": [
+        {
+          "id": "identify-findings",
+          "label": "Describe the key findings",
+          "prompt": "What are the key radiographic findings and how would you describe them systematically?",
+          "cachedAnswer": "There is asymmetric opacification of one hemithorax with a peripheral band of pleural density hugging the chest wall, consistent with pleural thickening. Signs of ipsilateral volume loss include a smaller hemithorax, crowded ribs, and expected mediastinal shift toward the abnormal side. The contralateral lung appears normally aerated and may show compensatory hyperinflation. Absence of a shifting meniscus and the presence of volume loss argue against a large free effusion. A calcified or uniform pleural rind following the rib contour supports chronic fibrosis. Systematic comparison of the two hemithoraces for size, opacity, and mediastinal position anchors the interpretation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophys-fibrosis",
+          "label": "Pathophysiology of fibrothorax",
+          "prompt": "What is the pathophysiologic basis of fibrothorax after an infection or effusion?",
+          "cachedAnswer": "Fibrothorax results from organization of an exudative or hemorrhagic pleural process, often complicated parapneumonic effusion or empyema. Fibrin deposition on the pleural surfaces recruits fibroblasts, which lay down dense collagen, producing a thick, often calcified fibrous peel that encases the lung. This peel is inelastic and contracts over time, restricting lung expansion and reducing hemithorax volume. Because it fixes the visceral and parietal pleura together, normal pleural sliding is lost. The net effect is a trapped, non-compliant lung. Histologically the pleura shows dense hyalinized fibrous tissue with sparse cellularity in the chronic stage.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "restrictive-link",
+          "label": "Link to restrictive physiology",
+          "prompt": "How do these imaging findings connect to restrictive pulmonary physiology?",
+          "cachedAnswer": "A rigid fibrous peel reduces chest wall and lung compliance, so the affected lung cannot fully expand during inspiration. This produces a restrictive pattern with reduced total lung capacity, vital capacity, and FRC, while the FEV1/FVC ratio is preserved or elevated. Diffusion capacity may be relatively preserved if parenchyma is intact but lung is simply trapped. The volume loss seen radiographically is the anatomic correlate of the reduced expansible volume measured on spirometry. Because ventilation to that lung is impaired, patients experience exertional dyspnea. This mechanical restriction is distinct from obstructive or diffusion-limited disease.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with a remote chest infection now has chronic, restrictive dyspnea, and this radiograph shows unilateral opacification with pleural thickening and ipsilateral volume loss. The clinical task is to attribute the chronic symptoms to the imaging findings while excluding an active process such as a new effusion or malignancy. Note the fixed, wall-hugging pleural density and signs pointing to volume loss rather than mass effect. **How would you build your differential and decide what next imaging or comparison you need?**",
+      "introQuestions": [
+        {
+          "id": "chronic-vs-acute",
+          "label": "Chronic thickening vs acute effusion",
+          "prompt": "How do you distinguish chronic pleural thickening from an acute effusion at the bedside and on imaging?",
+          "cachedAnswer": "An acute effusion is mobile and causes mass effect: blunted costophrenic angle, meniscus sign, and mediastinal shift away from the opacity when large. Chronic pleural thickening or fibrothorax is fixed, follows the chest wall as a uniform rind, and produces volume loss with mediastinal shift toward the abnormal side and rib crowding. A lateral decubitus film or ultrasound quickly shows whether fluid layers freely. Ultrasound also detects the anechoic character of fluid versus the echogenic, non-mobile pleural peel. History of a prior infection, chronicity of symptoms, and old films clinch the distinction. When in doubt, contrast CT differentiates loculated fluid, pleural thickening, and calcification.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for this appearance",
+          "prompt": "What is the differential diagnosis for unilateral pleural thickening with volume loss?",
+          "cachedAnswer": "Post-infectious/post-empyema fibrothorax is the classic cause, especially after complicated parapneumonic effusion or tuberculous pleuritis. Prior hemothorax and prior pleurodesis can produce similar organized thickening. Asbestos-related pleural disease causes plaques and diffuse thickening, sometimes with rounded atelectasis. Malignant pleural involvement, including mesothelioma and metastatic disease, must be considered, particularly if the pleura is nodular, exceeds ~1 cm, or is circumferential. Chronic post-radiation change is possible with a matching history. Correlating occupational, infectious, and oncologic history plus CT morphology narrows the list.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "Workup and management",
+          "prompt": "What are appropriate next steps in evaluation and management?",
+          "cachedAnswer": "Start by retrieving prior imaging to establish chronicity and stability. Contrast-enhanced CT of the chest characterizes the pleura, detects loculated fluid, and flags features suspicious for malignancy such as nodularity, circumferential thickening, or mediastinal pleural involvement. Pulmonary function testing quantifies the restrictive defect and functional impact. If an active infection or malignancy is suspected, pleural fluid sampling or image-guided pleural biopsy may be warranted. Stable, symptomatic fibrothorax with trapped lung may be referred for surgical decortication in appropriate candidates. Management is ultimately driven by cause, symptom burden, and physiologic impairment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "PA chest radiograph showing unilateral hemithorax opacification with a wall-hugging pleural rind, ipsilateral volume loss, rib crowding, and ipsilateral mediastinal traction — a pattern consistent with fibrothorax rather than a mobile effusion. The teaching point is recognizing volume loss and fixed pleural disease, then avoiding the trap of over-calling an effusion or under-calling malignancy. Chronicity and etiology require history and comparison imaging. **Which discriminators would you use to separate benign post-infectious fibrothorax from malignant pleural disease before committing to a management pathway?**",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Read the film like a radiologist",
+          "prompt": "Walk through the radiographic pattern recognition for fibrothorax versus effusion.",
+          "cachedAnswer": "Fibrothorax presents as a peripheral pleural band paralleling the chest wall with associated volume loss: reduced hemithorax size, crowded ribs, elevated hemidiaphragm, and mediastinal shift toward the lesion. A free effusion instead layers dependently, blunts the costophrenic angle, forms a meniscus, and produces mass effect with shift away when large. Calcified pleura and a sharply marginated pleural line favor chronic fibrosis. On CT, an extrapleural fat sign and smooth, non-nodular thickening under 1 cm favor benignity. The combination of volume loss plus fixed peripheral density is the key gestalt separating chronic pleural disease from a mobile collection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "benign-vs-malignant",
+          "label": "Benign vs malignant pleural signs",
+          "prompt": "What CT features distinguish benign fibrothorax from malignant pleural disease?",
+          "cachedAnswer": "Leung criteria for malignant pleural thickening include circumferential thickening, nodular pleural contour, parietal thickening greater than 1 cm, and mediastinal pleural involvement. Benign post-infectious fibrothorax tends to be smooth, non-nodular, may be calcified, and spares the mediastinal pleura. Rounded atelectasis with a comet-tail vessel suggests benign asbestos-related change. Loss of the extrapleural fat plane and rib destruction raise concern for aggressive disease. FDG-PET can add specificity but is imperfect with active inflammation. Any indeterminate or progressive thickening warrants image-guided pleural biopsy for tissue.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls-management",
+          "label": "Pitfalls and decortication",
+          "prompt": "What are common pitfalls and management considerations, including decortication?",
+          "cachedAnswer": "Pitfalls include mistaking a fixed pleural rind for a drainable effusion (leading to a dry or unhelpful tap), missing an early malignant rind because it looks smooth, and failing to obtain comparison films to establish chronicity. Correlate PFTs to confirm restrictive physiology and quantify impairment before intervention. Symptomatic trapped lung from mature fibrothorax with preserved underlying parenchyma may benefit from surgical decortication in selected candidates; timing matters because too-early operation on immature peel risks recurrence. Address the underlying etiology first — treat active infection, complete anti-tuberculous therapy, or manage malignancy per oncology. Multidisciplinary discussion with thoracic surgery guides candidacy and expected functional gain.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

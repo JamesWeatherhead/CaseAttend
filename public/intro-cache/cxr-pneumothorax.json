@@ -4,71 +4,131 @@
   "caseId": "cxr-pneumothorax",
   "lessonPlanSha256": "1028f0859be97e1526c9169af4c171f3228a793ad1f332bfd604b718c546108c",
   "provenance": {
-    "modelId": "human-authored (pipeline-validated seed)",
-    "systemPromptSha256": "f12643a613b503fc0a081ed8d96e105c3a32675f31a4a9479d8f0f3719f4c70c",
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
     "requestTemplateVersion": "1.0",
     "mediaSha": "948447ce4e6829c271f5b910fce034840c15360c974a0713304aaa6df172201d",
-    "generatedAt": "2026-08-13T13:39:56.000Z"
+    "generatedAt": "2026-08-13T16:01:44.000Z"
   },
   "review": {
     "status": "approved",
     "reviewer": "James Weatherhead",
     "credentials": "MD/PhD/MPH candidate; principal investigator",
-    "reviewedAt": "2026-08-13T13:43:29.000Z"
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
   },
   "levels": {
     "highschool": {
-      "introPrompt": "**21-year-old man, sudden chest pain**\n\nHe is tall and thin. Out of nowhere he felt a sharp stab in his chest and could not catch his breath. His doctor took an X-ray to look inside.\n\nYou are looking at his chest X-ray. On an X-ray, bones show up bright white, and air shows up black. Healthy lungs are full of air, so they normally look dark on both sides of the chest.\n\nCompare the left side of the image to the right side. Do they look the same, or is one side different?",
+      "introPrompt": "This is an X-ray of the chest of a tall, thin 21-year-old man who suddenly felt a sharp, stabbing pain and could not catch his breath. An X-ray uses invisible rays to make a shadow picture: bone looks white, air looks black, and softer tissues look gray. Normally the two lungs look like soft, spongy gray areas full of tiny branching lines. Look carefully and compare the left side of the picture to the right side. Which side looks darker or emptier, and what do you think that empty-looking area might be?",
       "introQuestions": [
         {
-          "id": "why-different",
-          "label": "Why do the sides look different?",
-          "prompt": "Why does one side of the chest look different from the other on this X-ray?",
-          "cachedAnswer": "On this X-ray, one side of the chest looks darker and emptier than the other. That happens because air has escaped from the lung into the space around it. Normally the lung fills that space, so you see the branching lines of blood vessels going all the way to the edges. When air leaks out and gets trapped between the lung and the chest wall, the lung shrinks toward the middle and the outer part of the chest looks like a very dark, empty pocket. That trapped air is called a pneumothorax. It is why he suddenly cannot breathe well: one of his lungs is not doing its job.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is this image and what are the basic parts I should be able to see?",
+          "cachedAnswer": "This is a chest X-ray, a shadow picture made with special rays that pass through the body. Hard things like the ribs and spine block the rays and show up white, while air lets the rays through and shows up dark. Healthy lungs look gray because they are like sponges full of air and tiny blood-vessel lines. In the middle you can see the spine and the heart, and the curved dome-shaped muscle below the lungs is the diaphragm, which helps us breathe. When you look at a chest X-ray, a good habit is to compare the left and right sides to see if they match.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-cant-breathe",
+          "label": "Why can't he breathe?",
+          "prompt": "Why would a collapsed lung make it hard to breathe, explained simply?",
+          "cachedAnswer": "Each lung normally sits snugly inside the chest and inflates like a balloon when you breathe in. If a small leak lets air escape out of the lung and into the space around it, the lung can shrink or collapse, like a balloon that lost its air. A collapsed lung cannot take in oxygen well, so the person feels short of breath. If air keeps leaking and gets trapped, the pressure can build up and push on the heart and the other lung, making things much worse. That is why sudden sharp chest pain plus trouble breathing is taken very seriously.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-happens-next",
+          "label": "What would doctors do next?",
+          "prompt": "What would a medical team do for someone like this?",
+          "cachedAnswer": "First, doctors would check how sick the person is right now: are they breathing fast, is their oxygen low, do they look distressed? If someone is truly struggling and unstable, doctors act immediately and do not wait for a slow test. Treatment for trapped air usually means letting the air escape by placing a small tube or needle into the chest so the lung can re-expand. Once the emergency is handled, imaging like this X-ray helps confirm what happened and guides follow-up care. The big lesson is that a really sick patient is treated first, and pictures come after.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "undergrad": {
-      "introPrompt": "**21M, sudden pleuritic chest pain and dyspnea**\n\nTall, thin, no prior medical history. Onset was sudden and one-sided. Vitals show tachycardia and hypoxia. A frontal chest radiograph was obtained.\n\nOn a normal chest X-ray both lung fields should look symmetric and dark because the lungs are air-filled. Branching pulmonary vessels should extend from the hila all the way to the periphery, and the mediastinum should sit near the midline.\n\nCompare the two hemithoraces. Look at lung markings, the position of the trachea and heart, and whether one side looks abnormally lucent (dark) at its edge.",
+      "introPrompt": "You are viewing a frontal chest radiograph from a tall, thin 21-year-old man with sudden stabbing chest pain and difficulty breathing. On an X-ray, denser structures (bone) appear white and air appears black, so normal air-filled lungs look dark gray with fine vascular markings running through them. Comparing the two hemithoraces here, one side appears more lucent (blacker) and lacks the normal lung markings, and the midline structures do not sit perfectly centered. Air trapped in the pleural space—the potential space between the lung and the chest wall—can collapse the lung and shift structures. Which side looks abnormal to you, and what does the shift of the central structures suggest is happening?",
       "introQuestions": [
         {
-          "id": "identify-pleural-air",
-          "label": "How do I identify pleural air?",
-          "prompt": "How do I identify pleural air on this chest X-ray?",
-          "cachedAnswer": "Pleural air produces a thin, curved white line at the visceral pleural edge, with black lucency lateral to it and no vascular markings past that line. On this film you can see that on the left the lung silhouette is pulled inward and there are no vascular markings in the lateral hemithorax. The absence of peripheral lung markings, combined with a visible visceral pleural line, is the classic signature of a pneumothorax. Compare it to the right side, where the vessels extend all the way to the chest wall. In a tension pneumothorax you would additionally see mediastinal shift away from the affected side and diaphragmatic depression, both of which raise the urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "how-xray-works",
+          "label": "How does a chest X-ray form an image?",
+          "prompt": "How does a chest X-ray create the light and dark areas I see?",
+          "cachedAnswer": "An X-ray beam passes through the body and is absorbed at different amounts by different tissues before hitting a detector. Dense material like bone absorbs many X-rays and leaves that area white (radiopaque), while air absorbs very few and appears black (radiolucent); soft tissues fall in between as shades of gray. Normal lung is mostly air with a delicate network of blood vessels, so it looks dark gray with thin branching white lines. When abnormal air collects in the pleural space, that region becomes uniformly darker and loses those vessel lines because there is no lung tissue there. Comparing symmetry side to side is one of the most useful reading habits.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pleural-space",
+          "label": "What is the pleural space?",
+          "prompt": "What is the pleural space and why does air there collapse the lung?",
+          "cachedAnswer": "The lungs are wrapped in two thin membranes: the visceral pleura hugs the lung and the parietal pleura lines the chest wall, with a tiny fluid-filled potential space between them. Normally this space has a slight negative pressure that helps keep the lung expanded and pressed against the chest wall. If air enters this space (a pneumothorax), that negative pressure is lost, and the elastic lung recoils inward and collapses. The collapsed lung can no longer participate fully in gas exchange, producing shortness of breath. Tall, thin young men are a classic group for a spontaneous version of this, sometimes from a small ruptured air sac at the lung apex.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-shift-matters",
+          "label": "Why do the middle structures shift?",
+          "prompt": "Why would the heart and central structures move to one side, and why is that concerning?",
+          "cachedAnswer": "The mediastinum is the central compartment holding the heart, great vessels, and windpipe. If air keeps entering the pleural space and cannot escape, pressure builds and pushes the mediastinum toward the opposite side. This is dangerous because that pressure can compress the large veins returning blood to the heart, reducing how much blood the heart can pump. That is the difference between a simple collapsed lung and a life-threatening 'tension' situation. A shift of the central structures away from the abnormal side is therefore a warning sign that demands urgent attention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "ms_preclinical": {
-      "introPrompt": "**21M, no PMH, sudden left-sided pleuritic chest pain and progressive dyspnea**\n\nAsthenic body habitus, BMI 19. HR 118, BP 102/68, RR 28, SpO2 91% on room air. Left breath sounds are diminished; the trachea may be deviated. A PA chest radiograph was obtained.\n\nA sudden pleuritic presentation in a tall thin young male with tachycardia, hypoxia, and unilateral diminished breath sounds already narrows the differential before you look at the film.\n\nRead the image systematically: lung markings out to the pleura, mediastinal contours, tracheal position, diaphragms, costophrenic angles, and any asymmetry. Where do you see the abnormality, and what visible features distinguish a simple pneumothorax from a tension pneumothorax?",
+      "introPrompt": "This frontal chest radiograph is from a tall, thin 21-year-old man with acute-onset pleuritic chest pain and dyspnea—a classic demographic for primary spontaneous pneumothorax. On a normal film, pulmonary vascular markings extend to the periphery of both lung fields; loss of these markings with a hyperlucent hemithorax suggests pleural air. Assess the symmetry of the hemithoraces, the position of the mediastinum, and the appearance of the diaphragms and rib spaces. Consider how loss of pleural negative pressure allows elastic recoil of the lung and how a one-way valve mechanism can escalate to tension physiology. Which findings would let you distinguish a simple pneumothorax from a tension pneumothorax on this film?",
       "introQuestions": [
         {
-          "id": "tension-vs-simple",
-          "label": "Simple vs. tension pneumothorax on this film",
-          "prompt": "How does this radiograph help me distinguish a simple pneumothorax from a tension pneumothorax?",
-          "cachedAnswer": "A simple pneumothorax shows a visible visceral pleural line with black lucency and absent vessels beyond it, but the mediastinum, trachea, and diaphragm stay in their normal positions. A tension pneumothorax accumulates air under pressure and produces mediastinal shift AWAY from the affected side, ipsilateral hemidiaphragm depression, and (with time) rib splaying. On this film, look at where the trachea sits relative to the spinous processes, whether the mediastinal silhouette is displaced to the right, and whether the left hemidiaphragm is pushed inferiorly. Physiologically, tension arises when pleural air cannot escape and rising intrathoracic pressure impedes venous return, which is why the patient becomes hypotensive and tachycardic. The teaching point is that tension pneumothorax is a clinical diagnosis: if the exam and vitals fit, decompression should not wait on imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "identify-pleural-air",
+          "label": "How do I identify pleural air here?",
+          "prompt": "What specific radiographic signs indicate pleural air and how do I localize it?",
+          "cachedAnswer": "Look for a hyperlucent (abnormally dark) hemithorax that lacks peripheral pulmonary vascular markings, since air in the pleural space displaces aerated lung. A visceral pleural line may be visible, seen as a thin white line paralleling the chest wall with lucency and no vessels beyond it. The collapsed lung retracts toward the hilum and may appear as a denser opacity. Associated signs include a deep or widened intercostal spaces on the affected side and, when large, depression or flattening of the ipsilateral hemidiaphragm. Localization comes from comparing symmetry and identifying which side has lost its normal vascular pattern.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "tension-physiology",
+          "label": "Explain tension pneumothorax physiology",
+          "prompt": "How does mediastinal shift relate to tension pneumothorax pathophysiology?",
+          "cachedAnswer": "In tension pneumothorax, a defect in the visceral pleura acts as a one-way valve: air enters the pleural space during inspiration but cannot exit during expiration. Intrapleural pressure rises progressively above atmospheric, completely collapsing the ipsilateral lung and then pushing the mediastinum toward the contralateral side. This mediastinal shift kinks and compresses the superior and inferior vena cavae, impairing venous return (preload). Reduced preload drops cardiac output, producing obstructive shock with hypotension, tachycardia, and distended neck veins. Radiographically, contralateral mediastinal displacement, ipsilateral hemidiaphragm depression, and a completely lucent hemithorax indicate tension physiology superimposed on the pneumothorax.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-tall-thin",
+          "label": "Why tall, thin young men?",
+          "prompt": "Why is primary spontaneous pneumothorax classic in tall, thin young men?",
+          "cachedAnswer": "Primary spontaneous pneumothorax classically occurs in tall, thin males aged roughly 10–30, often smokers. The favored explanation is rupture of subpleural apical blebs or bullae—small air-filled outpouchings at the lung apex. Taller individuals have a greater gradient of negative pleural pressure from base to apex, subjecting the apical alveoli to greater distending stress over time, which may promote bleb formation and rupture. Connective tissue laxity (as in Marfan syndrome) is an associated risk factor. When a bleb ruptures, air escapes into the pleural space and the underlying pathophysiology of lung collapse follows.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "ms_clinical": {
-      "introPrompt": "**21M, no PMH, sudden left-sided pleuritic chest pain and progressive dyspnea**\n\nTall, thin (BMI 19). HR 118, BP 102/68, RR 28, SpO2 91% RA. Left breath sounds diminished; trachea possibly deviated. A PA chest radiograph was obtained.\n\nBuild your differential first, then use the imaging to narrow it. Sudden pleuritic pain, tachycardia, hypoxia, and unilateral diminished breath sounds in a young, tall, thin male.\n\nRead the film for pneumothorax features, then plan your immediate management assuming this is spontaneous. What are the exam and imaging thresholds that push you toward observation, aspiration, small-bore chest tube, or urgent decompression?",
+      "introPrompt": "A 21-year-old tall, thin man presents with sudden pleuritic chest pain and dyspnea; this frontal chest radiograph is provided. Your reading should systematically compare hemithorax lucency, evaluate for a visceral pleural line, and assess mediastinal position and diaphragm contour. The demographic and presentation strongly favor primary spontaneous pneumothorax, and this is framed as a left-sided tension pneumothorax teaching case. Before finalizing your interpretation, think about what bedside findings would override the need to wait for imaging. What clinical and radiographic features would drive you to decompress the chest immediately versus manage more conservatively?",
       "introQuestions": [
         {
-          "id": "next-steps-management",
-          "label": "What are my next steps?",
-          "prompt": "Given the imaging and vitals, what are my next management steps for this patient?",
-          "cachedAnswer": "First, decide whether this is a tension pneumothorax. Persistent hypotension, worsening hypoxia, and tracheal deviation with unilateral absent breath sounds justify emergent needle decompression at the 4th or 5th intercostal space in the anterior axillary line, followed by tube thoracostomy — imaging should not delay it. If the patient is hemodynamically stable, the next-step decision is guided by size (BTS uses a 2 cm rim at the hilum; ACCP uses 3 cm at the apex) and symptoms. A small, stable, minimally symptomatic primary spontaneous pneumothorax can be observed with high-flow oxygen; a larger or symptomatic one is typically managed with needle aspiration or a small-bore pigtail catheter. Regardless of size, admit for observation if aspiration was performed, and counsel about recurrence risk (roughly 30 percent) and lifestyle triggers such as flying and diving.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "findings-and-read",
+          "label": "Walk me through reading this film",
+          "prompt": "How should I systematically read this radiograph for pneumothorax and tension features?",
+          "cachedAnswer": "Use a structured approach: assess symmetry of lung lucency, then look for a visceral pleural line with absent peripheral vascular markings beyond it, indicating pleural air. Identify the collapsed lung retracted toward the hilum on the affected side. Evaluate the mediastinum and trachea for contralateral shift and the ipsilateral hemidiaphragm for depression—both suggest tension physiology. Widened intercostal spaces on the affected side support increased intrapleural volume. In this left-sided tension teaching case, the key alarm signs are the hyperlucent left hemithorax with shift of midline structures away from the abnormal side.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What's the differential for this presentation?",
+          "prompt": "What is the differential diagnosis for a young man with sudden pleuritic chest pain and dyspnea?",
+          "cachedAnswer": "Spontaneous pneumothorax leads the list given the classic tall, thin young male phenotype and sudden pleuritic pain with dyspnea. Other considerations include pulmonary embolism (pleuritic pain, dyspnea, risk factors), musculoskeletal chest wall pain, pericarditis or myocarditis, and pneumonia with pleurisy. Esophageal rupture and acute coronary syndrome are less likely at this age but should not be forgotten with atypical features. A large bulla can mimic pneumothorax radiographically and is a classic pitfall—inserting a chest tube into a giant bulla causes harm. History, exam, and careful film review help narrow the diagnosis while the clinical stability of the patient dictates urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "dont-wait-for-imaging",
+          "label": "When do you skip imaging and act?",
+          "prompt": "Why should an unstable patient with suspected tension pneumothorax not wait for imaging?",
+          "cachedAnswer": "Tension pneumothorax is a clinical diagnosis, not a radiologic one. A patient with severe respiratory distress, hypotension, tachycardia, tracheal deviation, absent breath sounds, and distended neck veins is in obstructive shock and can arrest within minutes. Waiting to obtain and interpret a chest radiograph in such a patient introduces fatal delay. Immediate needle decompression (or finger thoracostomy) followed by chest tube placement is indicated on clinical grounds alone. Imaging is reserved for hemodynamically stable patients or to confirm and characterize after decompression—so the teaching pearl is 'treat the patient, not the picture.'\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "resident": {
-      "introPrompt": "**21M, PSP suspected. Tall, asthenic. HR 124, BP 94/62, RR 32, SpO2 88% on 15L NRB. JVD present. Trachea deviated right. Left hemithorax hyperresonant, breath sounds absent left. A portable PA radiograph was obtained.**\n\nIn a real scenario with these vitals and exam findings, decompression should precede imaging; this film exists for educational review.\n\nWalk through the ATLS algorithm end to end: recognition, needle decompression landmarks (2nd ICS MCL vs 4th/5th ICS AAL — ATLS 10th changed the recommendation), definitive tube thoracostomy technique, indications for VATS/pleurodesis, and how you would counsel this patient about recurrence and airspace precautions.",
+      "introPrompt": "21M, tall and thin, with abrupt pleuritic chest pain and progressive dyspnea; frontal CXR shown, presented as a left-sided tension pneumothorax teaching case. Scan for a hyperlucent hemithorax with absent peripheral markings, the visceral pleural line, contralateral mediastinal shift, ipsilateral hemidiaphragm depression, and any deep sulcus. Reconcile the film with the clinical gestalt—remember tension is a bedside call and radiographic confirmation is a luxury the unstable patient cannot afford. Consider your decompression approach, tube thoracostomy sizing, and downstream questions about recurrence risk and pleurodesis. What pitfalls could lead you astray on this film, and where would you place your needle or finger first?",
       "introQuestions": [
         {
-          "id": "atls-decompression",
-          "label": "Walk me through decompression",
-          "prompt": "Walk me through decompression for tension pneumothorax at the resident level, including the ATLS 10th edition site change.",
-          "cachedAnswer": "The clinical criteria for tension pneumothorax are unilateral absent breath sounds, hyperresonance, tracheal deviation, and hemodynamic compromise: acting before imaging is correct. Needle decompression is temporizing. ATLS 10th edition moved the primary adult site from 2nd ICS MCL to 4th or 5th ICS in the anterior axillary line, because measured chest wall thickness at the 2nd ICS MCL exceeds needle length in a meaningful fraction of adults, especially those with higher BMI. Use a 14G, at least 8 cm angiocath, perpendicular to the chest wall over the superior rib margin to avoid the neurovascular bundle. Follow immediately with definitive tube thoracostomy — for a 21-year-old asthenic male, a 20 to 28 French tube in the 4th or 5th ICS AAL under conscious sedation with local anesthesia. Post-placement management includes water-seal drainage, daily imaging, and criteria for removal (no air leak on cough, resolved on imaging). Recurrence risk after a first primary spontaneous pneumothorax is roughly 30 percent, so counsel about smoking cessation, avoidance of scuba diving, and airline travel precautions; refer to thoracic surgery for VATS with pleurodesis or bleb resection if there is a persistent air leak beyond a few days or a second event.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "radiographic-pearls",
+          "label": "Key radiographic signs and mimics",
+          "prompt": "What are the key radiographic signs of tension pneumothorax and common mimics on a frontal supine or upright film?",
+          "cachedAnswer": "On an upright film, look for a hyperlucent hemithorax lacking peripheral vascular markings, a sharply defined visceral pleural line, contralateral mediastinal shift, and ipsilateral hemidiaphragm flattening or inversion. On a supine film, pleural air rises anteriorly and may show a deep sulcus sign, sharp cardiac/mediastinal border, or increased basal lucency rather than an obvious apical line. Skin folds, scapular edges, bedding, and the medial border of the scapula are classic false-positive pleural lines—true visceral pleural line has no vessels beyond it and typically curves parallel to the chest wall. A large emphysematous bulla is the dangerous mimic; a tube into a bulla is a real complication. Correlate any of these with hemodynamics before committing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "decompression-technique",
+          "label": "Decompression approach and pitfalls",
+          "prompt": "How would you decompress a suspected tension pneumothorax and what are the technical pitfalls?",
+          "cachedAnswer": "For a clinically diagnosed tension pneumothorax, decompress immediately—do not wait for imaging. Needle decompression is traditionally at the 2nd intercostal space, midclavicular line, but standard catheters frequently fail to reach the pleura in adults, so many now favor the 4th/5th intercostal space anterior-to-mid axillary line, or proceed directly to finger thoracostomy. Definitive management is tube thoracostomy in the safe triangle, then imaging to confirm placement and re-expansion. Pitfalls include catheter kinking or inadequate length, decompressing the wrong side, injuring the neurovascular bundle by riding the inferior rib margin, and mistaking a bulla for pneumothorax. Always reassess for re-accumulation and persistent air leak after intervention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "recurrence-and-definitive",
+          "label": "Recurrence risk and definitive management",
+          "prompt": "What drives recurrence risk and when is definitive surgical management indicated for primary spontaneous pneumothorax?",
+          "cachedAnswer": "Primary spontaneous pneumothorax has a substantial recurrence rate, often cited around 30% after a first episode, rising markedly after a second. Indications for definitive intervention include recurrent ipsilateral pneumothorax, first contralateral or bilateral events, persistent air leak (typically beyond 3–5 days), tension pneumothorax, or high-risk occupations (pilots, divers). VATS with apical bullectomy/blebectomy plus mechanical or chemical pleurodesis is the usual definitive approach. Smoking cessation counseling is essential since it strongly influences recurrence. Guideline frameworks (e.g., BTS/ACCP) tie initial management to symptom severity and size rather than size alone, and stable patients may be candidates for conservative or ambulatory pathways.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     }

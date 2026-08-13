@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-echo-4chamber",
+  "lessonPlanSha256": "ff0aff724cf5887d31cac318ae054f69c2960eff6615893c1219607616ba0913",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "bb7625766340d9d1771f103c10a1f3e3f0c375ab50295faaebaebfb88c80aa95",
+    "generatedAt": "2026-08-13T14:43:14.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an ultrasound picture of a heart, taken from the bottom tip looking up. Ultrasound uses sound waves that bounce off the body to make a live picture, kind of like how a bat 'sees' with echoes. The heart has four rooms: two on top and two on the bottom, and this special view shows all four at once. The pointy tip of the heart (called the apex) is at the bottom of the screen here. Before anyone can spot a problem, they first have to figure out which room is which. Can you find the four dark, blood-filled spaces in this picture?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is this image showing me in simple terms?",
+          "cachedAnswer": "This is a moving picture of a heart made with sound waves, frozen as a single frame. The dark areas are the spaces inside the heart that hold blood, and the bright white lines are the walls and dividers between the rooms. The heart has four rooms: two smaller ones on top (atria) and two bigger, stronger ones on the bottom (ventricles). The pointy tip at the bottom of the screen is the apex, the very bottom point of the heart. Think of it like looking at a house cut in half so you can see all four rooms at once. This view is used just to get oriented before looking for anything unusual.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-four-rooms",
+          "label": "Why does a heart have four rooms?",
+          "prompt": "Why does the heart have four separate chambers?",
+          "cachedAnswer": "The heart is really two pumps working side by side. One side collects blood coming back from the body and sends it to the lungs to pick up oxygen. The other side takes the oxygen-rich blood from the lungs and pushes it out to the rest of the body. Each side has a smaller 'waiting room' on top (an atrium) and a bigger 'pushing room' on the bottom (a ventricle). Having four rooms keeps the fresh, oxygen-filled blood from mixing with the used blood. That is why we look for all four in this view.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "left-right-screen",
+          "label": "Is left on the screen the person's left?",
+          "prompt": "Does the left side of the screen mean the patient's left side?",
+          "cachedAnswer": "No, and this is a really common mix-up! The side of the picture is not the same as the patient's real left or right. Because of how the ultrasound probe is held and how the image is displayed, the person's structures can appear flipped compared to what you might expect. So you should never guess which chamber is which just by picking 'left side of screen.' Instead, you use clues in the picture itself, like the size and shape of each chamber. Always double-check your orientation before saying anything about a problem.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an apical four-chamber echocardiogram, an ultrasound image made by sending high-frequency sound waves into the chest and recording the echoes. The transducer sits near the apex (the tip of the heart), which is why the apex points to the bottom of the screen. In one frame you can see both atria (the upper receiving chambers) and both ventricles (the lower pumping chambers), separated by walls called septa and by valves. Before analyzing any structure, you must orient yourself: identify the apex, the four chambers, and figure out image left versus true anatomic left. What features in this image would help you tell an atrium from a ventricle?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What structures can I identify?",
+          "prompt": "What anatomical structures are visible in this four-chamber view?",
+          "cachedAnswer": "In this apical four-chamber view you can identify four blood-filled chambers as dark spaces bounded by bright tissue. The two chambers nearer the apex (bottom of screen) are the ventricles, which have thicker walls, and the two farther from the apex are the atria, which are smaller and thinner-walled. A vertical bright line running toward the apex is the wall (septum) dividing left from right. Between each atrium and ventricle sits a valve that opens and closes to control blood flow. The bright curved lines are cardiac walls, and the dark regions are the chambers themselves. This orientation step comes before any assessment of function or disease.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "atria-ventricle-relation",
+          "label": "How do atria and ventricles connect?",
+          "prompt": "How are the atria and ventricles related to each other in this view?",
+          "cachedAnswer": "Each atrium sits 'above' (farther from the apex) its matching ventricle and connects to it through a one-way valve. The right atrium connects to the right ventricle, and the left atrium connects to the left ventricle. Blood flows from atrium to ventricle, then out of the ventricle to either the lungs or the body. The four-chamber view is useful because it lines up both atrioventricular valves and both septa in the same plane. This lets you compare the two sides and check that each chamber connects to the correct neighbor. Getting these relationships straight is the whole point of the orientation exercise.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "screen-vs-anatomy",
+          "label": "Why isn't screen left = body left?",
+          "prompt": "Why does screen position not match the patient's anatomic left and right?",
+          "cachedAnswer": "The image is a projection created by the ultrasound probe, and its orientation depends on how the probe is held and how the machine is set to display the data. By convention the display does not simply mirror the patient's own left and right, so a chamber on one side of the screen may correspond to the opposite side of the body. Because of this, you identify chambers by their intrinsic features, such as wall thickness and chamber size, rather than by which side of the screen they appear on. Assuming screen-left equals patient-left is a classic beginner error. Careful orientation prevents you from mislabeling structures before you ever look for pathology.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This is an apical four-chamber transthoracic echocardiographic frame with the cardiac apex directed toward the bottom of the sector. All four chambers, both atrioventricular valves, the interatrial and interventricular septa, and the crux of the heart are captured in a single imaging plane. Orientation is the first task: locate the apex, distinguish ventricles from atria by wall thickness and geometry, and identify left versus right using structural landmarks rather than screen position. Recall that the right ventricle is normally the more triangular, apex-sharing chamber and that the septal tricuspid leaflet inserts slightly more apically than the mitral leaflet. Which anatomic features let you assign each chamber before any assessment of function?",
+      "introQuestions": [
+        {
+          "id": "chamber-identification",
+          "label": "How do I assign each chamber?",
+          "prompt": "What anatomic landmarks let me identify each chamber in the apical four-chamber view?",
+          "cachedAnswer": "The ventricles occupy the near field (toward the apex) and are recognized by their thicker myocardial walls, while the atria lie in the far field with thinner walls. The left ventricle is typically the more ellipsoid, thicker-walled chamber, whereas the right ventricle is more triangular and often shares the apex. The mitral (bicuspid) valve separates the left atrium and left ventricle, and the tricuspid valve separates the right-sided chambers; the septal tricuspid leaflet inserts slightly more apically than the anterior mitral leaflet at the crux. A moderator band and coarser trabeculation help mark the right ventricle. The interatrial and interventricular septa form the central bright line. Assigning chambers by these intrinsic features, not by screen side, is the goal of this orientation exercise.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "av-relationships",
+          "label": "Atrioventricular relationships?",
+          "prompt": "Describe the atrioventricular relationships demonstrated in this plane.",
+          "cachedAnswer": "This plane aligns both atrioventricular connections simultaneously, showing atrioventricular concordance in the normal heart: right atrium to right ventricle via the tricuspid valve, and left atrium to left ventricle via the mitral valve. The offsetting of the two AV valves at the crux (tricuspid slightly more apical) is a normal landmark and helps confirm which side is which. The septa converge at the crux, and the atrioventricular valves anchor to the fibrous skeleton there. Evaluating these connections lets you confirm normal segmental anatomy before considering any lesion. This is purely an orientation and relationship exercise, not a structural or functional evaluation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "laterality-pitfall",
+          "label": "Screen laterality pitfall?",
+          "prompt": "Why must anatomic left/right be inferred from structure rather than screen position?",
+          "cachedAnswer": "Echocardiographic display orientation is a convention set by transducer position and machine settings, so the sector is a projection rather than a true anatomic mirror. Depending on convention, a chamber displayed on one side of the sector may correspond to the contralateral anatomic side, so screen position alone is unreliable. Correct laterality must be inferred from intrinsic markers: right ventricular trabeculation and moderator band, more apical tricuspid leaflet insertion, and relative chamber morphology. This discipline prevents mislabeling that could cascade into errors, such as misinterpreting a septal defect or a dilated chamber. Establishing structural laterality first is foundational to all downstream echocardiographic reasoning.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "You are handed an unlabeled apical four-chamber frame with the apex at the bottom of the sector. Before commenting on any pathology, you must systematically orient: confirm the apex, identify all four chambers, define the atrioventricular relationships, and establish anatomic laterality from structural cues rather than display side. This is deliberately an orientation drill; comparative chamber size, valve leaflet offset, and RV morphology are your anchors. Disciplined orientation prevents downstream errors in interpreting septal defects, chamber dilatation, or regional wall motion. Walk me through how you would confirm which chamber is the right ventricle in this frame.",
+      "introQuestions": [
+        {
+          "id": "systematic-orientation",
+          "label": "How do I orient this view step by step?",
+          "prompt": "What is a systematic approach to orienting an unlabeled apical four-chamber view?",
+          "cachedAnswer": "Start by confirming the imaging plane and locating the apex, which points to the bottom of the sector in this frame. Identify the ventricles in the near field by their thicker walls and the atria in the far field by their thinner walls and smaller size. Distinguish the right ventricle by its triangular shape, apical trabeculation, moderator band, and more apically inserted septal tricuspid leaflet, then assign the left ventricle as the more ellipsoid, thicker-walled chamber. Trace the interventricular and interatrial septa to the crux and confirm concordant atrioventricular connections. Only after this laterality and chamber assignment is secure should you comment on size, function, or lesions. Skipping orientation risks systematic misinterpretation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-orientation-matters",
+          "label": "Why does orientation change interpretation?",
+          "prompt": "How can incorrect orientation lead to clinical misinterpretation?",
+          "cachedAnswer": "If you mislabel laterality, you can invert the significance of findings: a truly dilated right ventricle might be called a large left ventricle, changing the differential entirely. Regional wall motion abnormalities depend on knowing which segments belong to which coronary territory, so orientation errors corrupt ischemia interpretation. A septal defect could be assigned to the wrong side or missed, and valve pathology could be attributed to the wrong valve. Chamber-size ratios (such as RV:LV) are only meaningful once each chamber is correctly identified. Because this frame is unlabeled, disciplined orientation is the safeguard against these cascading errors. That is precisely why this is framed as an orientation exercise rather than a full study.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step-limits",
+          "label": "What are the limits of a single frame?",
+          "prompt": "What can and cannot be concluded from a single still four-chamber frame?",
+          "cachedAnswer": "A single still frame lets you assess relative chamber size, gross geometry, septal continuity, and static valve position at one point in the cardiac cycle, which is enough for the orientation task. However, it cannot establish systolic or diastolic function, valve competence, or dynamic wall motion, all of which require the full cine loop across the cycle. It also does not include the complementary views (parasternal, subcostal, apical two- and three-chamber) needed for a complete segmental and functional assessment. Doppler is absent, so flow direction, regurgitation, and gradients cannot be evaluated. Therefore this frame supports orientation and structural identification only, and any pathology statement would be premature. The appropriate next step is to obtain and integrate the complete study.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Unlabeled apical four-chamber frame, apex-down orientation, single still. Your first move is segmental orientation: apex localization, chamber assignment, AV concordance, and anatomic laterality from RV morphology (moderator band, apical trabeculation, septal tricuspid leaflet offset) rather than sector side. Treat display laterality as convention-dependent and refuse to infer left/right from screen position alone. This is an orientation drill, not a functional or Doppler assessment, so anchor on structural landmarks and note the limits of a single non-gated frame. How would you defend your laterality call and flag the pitfalls a junior learner typically hits here?",
+      "introQuestions": [
+        {
+          "id": "landmark-pattern",
+          "label": "Which landmarks anchor laterality?",
+          "prompt": "Which structural landmarks most reliably establish laterality and chamber identity here?",
+          "cachedAnswer": "The most reliable right ventricular signatures are the moderator band, coarser apical trabeculation, the triangular RV silhouette, and the more apically inserted septal tricuspid leaflet relative to the anterior mitral leaflet at the crux. The left ventricle is the thicker-walled, more conical/ellipsoid chamber with a smoother endocardium. Atria are assigned in the far field; the left atrium typically receives pulmonary veins and the interatrial septum bows physiologically, while the fossa ovalis thins the mid-septum. AV valve offset and septal continuity to the crux confirm concordance. These intrinsic markers, not sector side, drive the laterality call. In an unlabeled frame, defending each assignment against these anchors is the standard.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "common-pitfalls",
+          "label": "What pitfalls trip up learners?",
+          "prompt": "What are the common pitfalls in orienting and interpreting this view?",
+          "cachedAnswer": "Classic pitfalls include equating screen-left with patient-left, foreshortening the apex which distorts chamber geometry and RV:LV ratios, and mistaking near-field dropout at the interatrial septum for a true defect. Off-axis planes can make the RV falsely dominant or exclude it, and reverberation or side-lobe artifact can mimic membranes or thrombi. Learners also over-read a single non-gated frame for function, or attribute valve findings to the wrong valve when the AV offset is not appreciated. Depth and sector settings shown on the display (here 14 cm depth) affect perceived chamber size and must be accounted for. Guarding against these requires deliberate landmark-based orientation before any interpretive statement. Confirming with the cine loop and complementary windows resolves most ambiguity.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "orientation-to-study",
+          "label": "From orientation to complete study?",
+          "prompt": "How does correct orientation set up the rest of a complete echocardiographic assessment?",
+          "cachedAnswer": "Secure orientation is the substrate for standardized segmental reporting: once chambers and laterality are fixed, you can meaningfully assess RV:LV size, apical and septal wall motion by coronary territory, and AV valve function. It frames integration with parasternal long/short axis, subcostal, and additional apical views to complete the 16- or 17-segment model and full valve interrogation. It also cues appropriate Doppler placement for inflow, regurgitation, and gradient assessment, none of which are available on a still frame. Correct laterality prevents mislabeling shunts, chamber dilatation, or ischemic segments downstream. In practice, orientation is not a formality but the error-prevention step that makes the guideline-driven complete study interpretable. This drill isolates that skill deliberately.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

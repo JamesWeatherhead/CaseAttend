@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "axr-nec",
+  "lessonPlanSha256": "cfcdc5395b30d89ec016319217ea4a97ff911d7bec921817ca7bb8123fd3095b",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "0def948c4f37605af3dca78bfe4d1de431c913cd39cc88d575ae73f56fc5d51a",
+    "generatedAt": "2026-08-13T14:29:44.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an X-ray of a newborn baby's belly. An X-ray is like a shadow picture that uses invisible light to show what's inside the body. In this baby, the loops of intestine (the tubes that food travels through) look puffy and stretched, and there are some bubbly-looking areas. This baby was born early and is having trouble with feeding, throwing up, and bloody poop. What patterns or shapes do you notice in this picture that seem unusual?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What does this X-ray show and what are the puffy shapes?",
+          "cachedAnswer": "This is a front-view X-ray of a baby's abdomen (belly). The dark, oval shapes are loops of intestine that are filled with gas (air) and look swollen. The thin line running down the middle is a small tube that doctors sometimes place to help feed the baby or empty the stomach. In a healthy belly you'd see some gas, but here the loops look very stretched out and there are some bubbly, foamy-looking areas in the intestine walls. This bubbly look is a clue that something is wrong. Doctors study these shadows to figure out what is happening inside without surgery.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-premature",
+          "label": "Why does being born early matter?",
+          "prompt": "Why is a premature baby more likely to have belly problems?",
+          "cachedAnswer": "Babies born too early have not finished growing all of their organs, including their intestines. Their gut wall is thin and delicate, like tissue paper compared to a grown-up's leather. The immune system (the body's defense team) is also not fully ready, so germs can cause trouble more easily. When these fragile intestines start to receive milk, they can become injured and inflamed. That is why premature babies who have feeding trouble are watched very carefully.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What would doctors do next?",
+          "prompt": "What would doctors do to help this baby?",
+          "cachedAnswer": "First, doctors would usually stop giving milk to let the intestines rest, and use a tube to gently empty the stomach. They would give fluids and nutrition through a vein instead. They often give antibiotics (germ-fighting medicine) and take more X-rays over time to see if things get better or worse. If the intestine becomes very damaged, surgery might be needed. The team watches closely because this kind of belly problem can change quickly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This frontal abdominal radiograph belongs to a premature newborn who has bloody stools, a swollen abdomen, and green (bilious) vomiting. An abdominal X-ray uses low-dose radiation that passes through soft tissue but is blocked by denser material, so gas appears dark and tissue appears lighter gray. Notice the many dilated bowel loops and the faint bubbly texture along some bowel walls. A thin support tube is visible crossing the field. Given the baby's age and symptoms, what might the bubbly gas pattern within the bowel wall represent?",
+      "introQuestions": [
+        {
+          "id": "reading-the-image",
+          "label": "How do I read this X-ray?",
+          "prompt": "How is an abdominal X-ray formed and what do the dark and light areas mean?",
+          "cachedAnswer": "X-rays are absorbed differently by different materials: air absorbs very little so it appears dark, while soft tissue and fluid appear gray and bone appears white. On this neonatal film, the dark oval spaces are gas-filled bowel loops, and they look enlarged and numerous. The gray background is the soft tissue of the abdominal wall and organs. The thin bright line is a tube (such as a feeding or drainage catheter). The abnormal finding to look for is small dark bubbles or a lacy dark stripe within the wall of the bowel itself, rather than only inside the hollow center.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "gas-in-wall",
+          "label": "Why is there gas in the bowel wall?",
+          "prompt": "What causes gas to appear inside the wall of the intestine?",
+          "cachedAnswer": "Normally gas is only inside the hollow channel of the intestine. When the intestinal lining becomes injured, bacteria can invade the wall and produce gas as they break down nutrients. This trapped gas within the bowel wall is called pneumatosis intestinalis and shows up as tiny bubbles or thin dark lines outlining the loops. In a premature baby with feeding intolerance, this pattern is a hallmark of intestinal injury. It tells us the gut barrier has been damaged rather than the gut simply being full of swallowed air.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "connect-symptoms",
+          "label": "How do symptoms fit the picture?",
+          "prompt": "How do prematurity and the baby's symptoms connect to what's on the X-ray?",
+          "cachedAnswer": "Prematurity means an immature, fragile gut and immune system, which sets the stage for intestinal injury when feeding begins. Bloody stools suggest the intestinal lining is being damaged and bleeding. Abdominal distension matches the swollen, gas-filled loops we see on the film. Bilious (green) vomiting suggests the intestine is not moving contents forward normally. Together, these clinical clues and the radiograph findings point toward a serious inflammatory bowel condition seen in newborns.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This neonatal supine abdominal radiograph is from a premature infant with hematochezia, distension, and bilious emesis. Note the diffusely dilated, disorganized bowel loops and the suggestion of curvilinear/bubbly lucencies along the bowel wall, with an enteric tube in place. Prematurity, enteral feeding, and mucosal ischemia together underlie the pathophysiology being illustrated. This constellation is the classic teaching presentation of necrotizing enterocolitis (NEC). What histopathologic and mechanistic events produce intramural gas (pneumatosis intestinalis)?",
+      "introQuestions": [
+        {
+          "id": "identify-findings",
+          "label": "Name the radiographic findings",
+          "prompt": "What specific radiographic findings should I identify on this film?",
+          "cachedAnswer": "The key findings are multiple dilated, gas-distended bowel loops with an abnormal, disorganized (non-anatomic) distribution rather than the usual gas pattern. There is a suggestion of pneumatosis intestinalis—curvilinear or bubbly/frothy lucency paralleling the bowel wall. An enteric (orogastric/nasogastric) tube is seen crossing the abdomen. You should also actively search for portal venous gas (branching lucencies over the liver) and free intraperitoneal air, both of which would indicate more advanced disease. Fixed, persistent dilated loops on serial films (a sentinel loop) are another worrisome sign. Recognizing pneumatosis is the central teaching goal of this case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pneumatosis-mechanism",
+          "label": "Mechanism of pneumatosis",
+          "prompt": "What is the pathophysiologic mechanism producing pneumatosis intestinalis in NEC?",
+          "cachedAnswer": "NEC involves a multifactorial injury: an immature intestinal mucosa, impaired barrier function, abnormal microbial colonization, and mucosal ischemia from compromised perfusion. When the mucosal barrier is breached, gas-forming enteric bacteria translocate into the bowel wall and ferment luminal substrate (from enteral feeds), producing hydrogen gas. This gas dissects into the submucosa and subserosa, creating the intramural lucency seen as pneumatosis. If gas enters mesenteric and portal venous drainage it produces portal venous gas. Histologically, coagulative necrosis, mucosal ulceration, inflammation, and bacterial overgrowth are seen, and transmural necrosis can lead to perforation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "risk-factors",
+          "label": "Risk factors and triad",
+          "prompt": "How do prematurity and feeding connect to the NEC teaching differential?",
+          "cachedAnswer": "The classic risk profile is a premature, low-birth-weight infant who has begun enteral feeds, typically in the first weeks of life. Immature gut motility, immature immune defenses, and the introduction of a fermentable substrate combine with ischemic/reperfusion injury to trigger the disease. The clinical triad of feeding intolerance, abdominal distension, and bloody stools should raise NEC on the differential. Bilious vomiting broadens the differential to include malrotation with volvulus and other obstructive causes, which is why imaging and clinical context matter. The immature gut is the unifying theme linking prematurity to this presentation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A premature neonate presents with hematochezia, abdominal distension, and bilious emesis; this supine AXR shows dilated, disorganized bowel loops with probable pneumatosis intestinalis and an enteric tube in place. The clinical-radiographic picture is a teaching example of necrotizing enterocolitis. Your task is to translate these findings into a working differential and a staged management approach. Which additional radiographic findings would change your urgency and disposition?",
+      "introQuestions": [
+        {
+          "id": "what-i-see-clinical",
+          "label": "Findings and their significance",
+          "prompt": "What do I see and why does each finding matter clinically?",
+          "cachedAnswer": "I see multiple dilated bowel loops with an abnormal distribution and a suggestion of pneumatosis intestinalis, plus an enteric decompression tube. Pneumatosis is relatively specific for NEC in this population and, with the clinical triad, supports the diagnosis. I would deliberately look for portal venous gas (branching liver lucencies) and free air (Rigler sign, football sign, or air outlining the falciform ligament), which escalate management. A fixed/persistent dilated loop across serial films suggests an ischemic sentinel loop. Gasless abdomen or asymmetric fluid can also indicate advanced disease. Each of these findings shifts management from medical to potentially surgical.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential diagnosis",
+          "prompt": "What is the differential for a premature neonate with bilious vomiting, distension, and bloody stools?",
+          "cachedAnswer": "NEC leads the differential given prematurity, feeding intolerance, and pneumatosis. However, bilious emesis mandates excluding malrotation with midgut volvulus—a surgical emergency—often evaluated with an upper GI study when the infant is stable. Other considerations include spontaneous intestinal perforation (typically without extensive pneumatosis), Hirschsprung disease with enterocolitis, intestinal atresia or obstruction, sepsis with ileus, and milk-protein allergic colitis for bloody stools. Infectious enteritis and coagulopathy-related bleeding also belong on the list. Context—gestational age, timing of feeds, and serial imaging—helps prioritize these.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Initial management",
+          "prompt": "What are the initial management principles for suspected NEC?",
+          "cachedAnswer": "Medical management (Bell stage I–II) centers on bowel rest with NPO status, gastric decompression via an orogastric tube, and IV fluids with parenteral nutrition. Broad-spectrum antibiotics are started after cultures, and serial abdominal exams plus serial radiographs (often every 6 hours during acute illness) track progression. Correct thrombocytopenia, coagulopathy, and acidosis, and provide respiratory and hemodynamic support as needed. Surgical consultation is obtained early; indications for intervention include pneumoperitoneum (perforation) or clinical deterioration despite maximal medical therapy. Options range from peritoneal drainage to laparotomy depending on stability and findings.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Supine neonatal AXR in a preterm infant with hematochezia, distension, and bilious emesis: dilated, disorganized bowel loops with probable curvilinear/bubbly pneumatosis intestinalis and an in-situ enteric tube. This is a canonical NEC teaching film. Your job is pattern recognition plus staging and pitfall avoidance. Which signs would you specifically hunt for to place this on the Bell staging spectrum and to trigger surgical consultation?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Pattern recognition and pitfalls",
+          "prompt": "What is the systematic search pattern and what are the pitfalls in reading this film?",
+          "cachedAnswer": "Systematically assess bowel gas distribution, caliber, and symmetry; look for pneumatosis (bubbly submucosal vs linear subserosal lucency), portal venous gas (fine peripheral hepatic branching lucencies), and free air (Rigler, football, falciform, and triangle signs on supine views; consider a left lateral decubitus or cross-table lateral for occult pneumoperitoneum). A fixed dilated sentinel loop on serial films suggests focal necrosis. Pitfalls include mistaking stool-mixed gas or overlapping loops for pneumatosis, missing subtle pneumoperitoneum on a supine-only film, and underappreciating a paucity-of-gas/gasless abdomen as a sign of advanced disease. Always correlate with serial imaging and clinical trajectory rather than a single frame.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "bell-staging",
+          "label": "Bell staging and progression",
+          "prompt": "How do imaging and clinical findings map to Bell staging and signs of progression?",
+          "cachedAnswer": "Modified Bell staging integrates systemic, intestinal, and radiographic signs. Stage I (suspected) shows nonspecific distension/ileus with mild systemic signs; Stage IIA adds definite pneumatosis; IIB adds portal venous gas and/or clinical deterioration (thrombocytopenia, mild metabolic acidosis). Stage III (advanced) includes hypotension, DIC, marked acidosis, and IIIB denotes perforation with pneumoperitoneum. Progression signals include worsening acidosis, thrombocytopenia, a fixed dilated loop, increasing pneumatosis or new portal venous gas, and any free air. These shifts move care from medical management toward surgical intervention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "surgical-triggers",
+          "label": "Surgical triggers and guidelines",
+          "prompt": "What are the guideline-aware indications for surgery and how does bilious emesis change your workup?",
+          "cachedAnswer": "The only absolute surgical indication is pneumoperitoneum from perforation; relative indications include clinical deterioration despite maximal medical therapy, a fixed sentinel loop, abdominal wall erythema, palpable mass, and positive paracentesis. Operative choices—primary peritoneal drainage versus laparotomy—depend on weight, stability, and extent of disease, with evidence showing comparable outcomes in select ELBW infants. Bilious emesis should prompt you to exclude malrotation with midgut volvulus; if the infant is hemodynamically stable and NEC is not obvious, an urgent upper GI series clarifies duodenojejunal junction position, whereas an unstable infant with peritonism warrants direct surgical involvement. Maintain serial exams, serial films, platelet/coagulation monitoring, and early surgical partnership throughout.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

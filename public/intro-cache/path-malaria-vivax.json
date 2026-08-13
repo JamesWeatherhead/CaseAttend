@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-malaria-vivax",
+  "lessonPlanSha256": "80b3ef34ce06a1525b9effb0181cb0c226e83292304da4ea3be81a304dd92dc9",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "70c63298455d897c40547d7de074801058772a96714d21eba956014a5e7d6f02",
+    "generatedAt": "2026-08-13T16:12:36.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture of blood seen under a microscope, with a special purple stain that helps hidden things show up. Most of the round shapes are red blood cells, the cells that carry oxygen around your body. One cell in the middle looks bigger and has purple speckles inside it, which is a sign that a tiny parasite has moved in. The story tells us this person keeps getting fevers weeks after a trip abroad. What clues in this picture might tell us that something has invaded the red blood cells?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What am I looking at in this stained blood picture?",
+          "cachedAnswer": "You are looking at a drop of blood spread thin and stained with a purple dye so tiny details show up. The many round, pale shapes are red blood cells, which normally carry oxygen. In the center, one cell looks larger than its neighbors and has purple dots and blobs inside it. Those purple bits are a parasite that has crawled inside the cell. Spotting an intruder like this is the first step doctors take to figure out why someone keeps getting sick.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-fevers",
+          "label": "Why does this cause fevers?",
+          "prompt": "Why would a parasite in the blood cause repeating fevers?",
+          "cachedAnswer": "The parasite grows inside a red blood cell, multiplies, and then bursts the cell open to escape. When many cells pop at the same time, the body reacts with a big fever, kind of like an alarm going off. Then the new parasites invade fresh cells and the cycle repeats, which is why the fevers come back again and again. This on-and-off pattern is a famous clue for this kind of infection. Doctors use both the pattern and the microscope picture together to solve the puzzle.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "travel-clue",
+          "label": "Why does travel matter?",
+          "prompt": "Why is it important that the patient traveled abroad recently?",
+          "cachedAnswer": "This kind of parasite is spread by mosquito bites in certain warm parts of the world, so recent travel is a big hint. A person can feel fine for a while after the trip and only get sick weeks later. Knowing where someone traveled helps doctors guess which germ they might have caught. That is why doctors always ask about recent travel when someone has mysterious fevers. It turns the microscope clue into a real story that makes sense.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This Giemsa-stained blood smear shows red blood cells and one clearly infected cell in the center containing purple-staining parasite material. Malaria parasites live inside red cells, grow through several stages, and rupture the cells in cycles that produce recurring fevers. Notice that the infected cell in the middle appears somewhat enlarged compared with nearby uninfected cells. The patient had fevers returning weeks after travel abroad. Which features here would help you decide which malaria species is involved?",
+      "introQuestions": [
+        {
+          "id": "enlarged-cells",
+          "label": "Why do infected cells look enlarged?",
+          "prompt": "Why does an infected red blood cell appear enlarged in this smear?",
+          "cachedAnswer": "Some malaria species prefer to infect young red blood cells, and as the parasite grows inside, the whole cell can swell and appear larger and paler than its neighbors. In the image, the central infected cell looks bigger than the surrounding uninfected cells, which is a meaningful clue. Enlargement is associated with Plasmodium vivax, which favors reticulocytes (immature red cells). The parasite also takes up the purple stain, showing its ring or ameboid growing form. Comparing the size of infected versus uninfected cells is a simple but powerful observation. This is exactly the kind of pattern-spotting that guides species identification.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "life-cycle",
+          "label": "How does the parasite life cycle work?",
+          "prompt": "How does the malaria parasite life cycle produce the forms seen on a smear?",
+          "cachedAnswer": "A mosquito injects the parasite, which first travels to the liver and then enters the bloodstream to infect red blood cells. Inside a red cell it starts as a small ring shape, grows into a feeding form, then divides into many new parasites that burst the cell and spread. The purple structure in the central cell represents one of these developing intracellular forms captured at a moment in time. Each cycle of growth and rupture releases parasites and triggers a fever. Understanding the stages helps you make sense of the shapes you see on the slide.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step-species",
+          "label": "How do we tell the species apart?",
+          "prompt": "What basic features help distinguish malaria species on a blood smear?",
+          "cachedAnswer": "Scientists compare the size of infected cells, the shape of the parasite forms, and sometimes tiny colored dots inside the cell. Enlarged, pale infected cells suggest Plasmodium vivax, while normal-sized cells packed with small rings can suggest Plasmodium falciparum. The number of parasites per cell and their overall pattern also matter. In this smear, the enlarged infected cell fits the vivax pattern described in the case. Confirming the species is important because different species need different treatment approaches.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This Giemsa-stained peripheral smear demonstrates an infected erythrocyte that appears enlarged relative to adjacent uninfected cells and contains a developing intraerythrocytic parasite with ameboid morphology. These features are compatible with Plasmodium vivax, which preferentially parasitizes reticulocytes. The clinical context of recurring fevers weeks after travel raises the issue of the dormant hepatic stage. As you review, connect the smear morphology to the parasite life cycle and to why relapse prevention differs from acute treatment. Which stage of the life cycle explains relapse, and how does host G6PD status become relevant?",
+      "introQuestions": [
+        {
+          "id": "vivax-morphology",
+          "label": "Which morphologic features suggest vivax?",
+          "prompt": "Which morphologic features on this smear are compatible with Plasmodium vivax?",
+          "cachedAnswer": "Key vivax-compatible features include enlargement of the infected erythrocyte relative to uninfected neighbors, reflecting tropism for reticulocytes, and an ameboid, irregular trophozoite rather than a compact form. Vivax classically shows Schuffner's stippling and typically infects one parasite per cell, in contrast to the multiple ring forms and applique/marginal rings of falciparum. In this image the central infected cell is visibly larger and contains a developing parasite taking up purple stain. Uninfected cells provide a helpful internal size reference. These pattern features guide the presumptive species call, though confirmation still requires expert review.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vivax-vs-falciparum",
+          "label": "How does this contrast with falciparum?",
+          "prompt": "How do vivax smear features contrast with those typical of Plasmodium falciparum?",
+          "cachedAnswer": "Falciparum typically infects red cells of any age, so infected cells are normal-sized rather than enlarged, and parasitemia can be high with multiple delicate rings per cell and marginal/applique forms. Mature trophozoites and schizonts are usually absent from peripheral blood in falciparum because of sequestration in the microvasculature; often only rings and banana-shaped gametocytes are seen. Vivax, by contrast, shows all stages in circulation, enlarged infected cells, ameboid trophozoites, and Schuffner's dots. The enlarged infected cell in this smear argues against falciparum. Distinguishing these matters because falciparum carries higher risk of severe disease.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "hypnozoite-g6pd",
+          "label": "Why do hypnozoites and G6PD matter?",
+          "prompt": "How do hypnozoites and G6PD status connect to relapse prevention in vivax?",
+          "cachedAnswer": "Plasmodium vivax forms dormant hepatic hypnozoites that are not cleared by drugs targeting the blood stage, so they can reactivate weeks to months later and cause relapse. Radical cure therefore requires an 8-aminoquinoline (such as primaquine or tafenoquine) to eliminate the liver forms, in addition to treating the acute bloodstream infection. However, these agents can precipitate hemolysis in individuals with G6PD deficiency. Consequently, G6PD testing is done before prescribing radical cure to weigh benefit against hemolytic risk. This links the microscopic diagnosis to a mechanistic understanding of relapse and safe management.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A returned traveler presents with recurrent fevers weeks after travel, and this Giemsa smear shows an enlarged infected erythrocyte with a developing ameboid parasite, features compatible with Plasmodium vivax. The recurrent, delayed pattern should prompt you to think about hepatic dormancy and radical cure rather than acute blood-stage treatment alone. Species identification meaningfully changes management, particularly regarding G6PD testing. Note that the source label for this teaching image is not adjudicated ground truth and specialist review is required before clinical use. How would you structure your diagnostic workup and relapse-prevention plan?",
+      "introQuestions": [
+        {
+          "id": "clinical-features",
+          "label": "What smear and history features fit vivax?",
+          "prompt": "What smear and clinical features point toward Plasmodium vivax in this presentation?",
+          "cachedAnswer": "The history of fevers recurring weeks after travel, plus a smear showing enlarged infected erythrocytes with ameboid trophozoites, is a classic vivax pattern. Vivax preferentially infects reticulocytes, producing enlarged pale cells, Schuffner's stippling, and all developmental stages circulating peripherally. Parasitemia is usually lower than falciparum, and severe disease is less common but not impossible. The delayed and relapsing tempo specifically reflects hypnozoite reactivation. Confirmation should use expert microscopy plus species-specific rapid diagnostic tests or PCR, since accurate speciation directs therapy.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What is your fever-in-traveler differential?",
+          "prompt": "What is the differential for recurrent fever in a returned traveler, and how do you narrow it?",
+          "cachedAnswer": "Beyond malaria, consider typhoid/enteric fever, dengue and other arboviruses, leptospirosis, rickettsial infections, amebic liver abscess, acute HIV, and viral hepatitis, guided by geography and exposures. Malaria must be excluded urgently in any febrile returned traveler because falciparum can be rapidly fatal, so thick and thin smears (repeated up to three times) plus rapid antigen testing are first-line. The relapsing pattern here specifically favors vivax or ovale over falciparum. Travel itinerary, incubation period, and exposure history refine the list. Never delay malaria evaluation while chasing other causes.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "How do you manage and prevent relapse?",
+          "prompt": "What are the management principles including relapse prevention for vivax malaria?",
+          "cachedAnswer": "Acute uncomplicated vivax is treated with a blood-stage schizonticide (chloroquine where susceptible, or an artemisinin-based combination in chloroquine-resistant regions) to control symptoms and parasitemia. Preventing relapse requires radical cure with an 8-aminoquinoline (primaquine or tafenoquine) to eradicate hepatic hypnozoites, since blood-stage drugs do not touch the liver forms. Quantitative G6PD testing is mandatory before an 8-aminoquinoline because these drugs cause hemolysis in G6PD-deficient patients, and tafenoquine has stricter thresholds. Assess severity, hydration, and comorbidities, and consult infectious disease and current guidelines. This teaching case's species label is unverified, so real cases demand confirmatory speciation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This Giemsa smear from a febrile returned traveler shows an enlarged parasitized erythrocyte with an ameboid trophozoite, a pattern compatible with Plasmodium vivax and distinct from the sequestering, normocytic-infecting falciparum. The relapsing tempo focuses attention on hypnozoite biology and mandatory G6PD-informed radical cure. Note the source label here is not adjudicated ground truth, so specialist microscopy or molecular confirmation is required before any clinical action. Consider common speciation pitfalls, mixed infections, and the tafenoquine versus primaquine decision. How will you confirm species and structure a safe radical-cure pathway?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Nail the vivax pattern and its pitfalls",
+          "prompt": "What features define the vivax pattern here, and what are the speciation pitfalls?",
+          "cachedAnswer": "Vivax cues include enlarged infected reticulocytes, ameboid trophozoites, Schuffner's stippling, all asexual stages plus round gametocytes in circulation, and typically low parasitemia with single-cell infection. Pitfalls include misreading early vivax rings as falciparum, missing mixed vivax/falciparum infections, over-calling ovale (which shows fimbriated, oval cells) versus vivax, and low-density smears requiring repeat sampling. Knowlesi can mimic both malariae and falciparum morphologically and needs PCR to distinguish. Because morphology overlaps, presumptive calls should be confirmed with species-specific RDT and PCR. Reference labs and expert microscopy remain the standard, especially given this image's unadjudicated label.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirmation-workup",
+          "label": "Confirmatory workup and severity triage",
+          "prompt": "How do you confirm species and triage severity in suspected vivax malaria?",
+          "cachedAnswer": "Obtain thick and thin films for parasitemia quantification and speciation, a species-specific RDT (HRP2 for falciparum plus pan-pLDH or Pv-specific bands), and PCR when morphology is ambiguous or mixed infection is suspected. Repeat smears every 12-24 hours up to three times before excluding malaria. Although vivax is usually uncomplicated, it can cause severe disease and even ARDS or splenic complications, so assess for severity criteria, hemodynamics, glucose, renal and hepatic function, and hemoglobin. Rule out concomitant falciparum, which changes urgency and drug choice. Document baseline hemoglobin before radical cure given hemolytic risk.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "radical-cure-decision",
+          "label": "Radical cure: primaquine vs tafenoquine",
+          "prompt": "How do you approach G6PD testing and choose between primaquine and tafenoquine for radical cure?",
+          "cachedAnswer": "Radical cure targets hepatic hypnozoites and requires an 8-aminoquinoline alongside a blood-stage schizonticide; without it, relapse is likely. Quantitative G6PD activity is essential: primaquine requires normal G6PD and is dosed daily over 14 days (adherence is a common failure point), whereas single-dose tafenoquine requires a higher G6PD activity threshold (often >70%) due to greater hemolytic risk. Both are contraindicated or require caution in significant G6PD deficiency, pregnancy, and breastfeeding of G6PD-unknown infants. Weigh relapse-prevention benefit against hemolysis risk, and follow current CDC/WHO guidance and ID consultation. Given the unverified species label on this teaching image, real management hinges on confirmed speciation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

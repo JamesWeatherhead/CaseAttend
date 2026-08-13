@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-lung-blines",
+  "lessonPlanSha256": "f040986cbd00e03dafb740384e5c59c85a6eefbef6365937d83b14fab5de5d70",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "2af73150e68fec8fa1ccf82b2bef46027cc04fc45b4a55c182913ce27e7fbbde",
+    "generatedAt": "2026-08-13T14:40:11.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a lung ultrasound picture. Ultrasound uses sound waves that bounce off the body to make an image on a screen. In this picture there are bright straight lines shooting downward from the top part of the lung's surface, like beams of a flashlight. The patient got hit in the chest and has a sore spot there. **What do you notice about these bright vertical lines, and why might they matter?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the bright lines I see?",
+          "prompt": "What are the bright vertical lines in this lung ultrasound image?",
+          "cachedAnswer": "The bright vertical lines are a type of ultrasound reflection called 'B-lines.' They start at the lung's outer surface (called the pleural line) and shoot straight down to the bottom of the picture like laser beams. In a totally healthy, dry lung you usually don't see many of them. When you do see several, it often means there is a little extra fluid or swelling in that spot of the lung. Think of it like fog forming when air mixes with moisture. In this case the patient was hit in the chest, so swelling in the bruised area could cause these lines.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-here",
+          "label": "Why would a bruise cause this?",
+          "prompt": "Why would a bruised lung after being hit in the chest cause these bright lines?",
+          "cachedAnswer": "When something hits the chest hard, the tiny air sacs in the lung underneath can get bruised, just like your skin bruises after a bump. A bruised lung leaks a little fluid and blood into the spongy tissue. Ultrasound sound waves bounce differently when there is fluid mixed with the air, and that creates the bright vertical lines. Because the injury is in just one spot, the lines here are 'focal,' meaning bunched in one area rather than all over. That focal pattern fits with a bruise right under the sore spot on the chest.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "still-picture-limit",
+          "label": "What can't a still photo tell us?",
+          "prompt": "Why can't we be sure of everything from just one still ultrasound picture?",
+          "cachedAnswer": "A single frozen picture is like one photo instead of a video. Some important clues in lung ultrasound only show up when the lung is moving with each breath. For example, doctors watch for the lung sliding back and forth; if it does not slide, that can mean air has leaked into the chest (a dangerous problem called a collapsed lung). A still image can't show that movement, so it can't rule out these serious problems. That is why doctors use a live moving scan and other tests, not just one snapshot.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This image is a lung ultrasound of a stable patient who has a tender spot on the chest wall after a blunt injury. Ultrasound sends high-frequency sound waves into the body and builds an image from the echoes that return. Notice the several bright vertical streaks that begin at the lung surface (the pleural line) and extend downward through the image. These are called B-lines, a kind of artifact rather than a solid structure. **What do you think these vertical artifacts tell us about the tissue just beneath the chest wall, and what can't a single frozen image reveal?**",
+      "introQuestions": [
+        {
+          "id": "identify-blines",
+          "label": "How do I recognize B-lines?",
+          "prompt": "How do I recognize B-lines on a lung ultrasound image?",
+          "cachedAnswer": "B-lines are bright (hyperechoic) vertical artifacts that originate exactly at the pleural line, the reflective interface where the chest wall meets the lung surface. They extend all the way to the bottom edge of the image without fading and they move with the lung during breathing on a live scan. In this still frame you can see several of these vertical streaks clustered together. A few scattered B-lines can be normal, but several in one region suggest fluid or swelling in the lung tissue there. They differ from horizontal 'A-lines,' which are evenly spaced repeats of the pleural line seen in normal air-filled lung.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "focal-meaning",
+          "label": "Why does a focal cluster matter?",
+          "prompt": "Why is a focal cluster of B-lines meaningful after chest trauma?",
+          "cachedAnswer": "The distribution of B-lines carries meaning. When B-lines appear all over both lungs (diffuse), the cause is usually a whole-body process such as fluid overload. When they are focal, meaning concentrated in one region, they point to a localized problem in that spot. After blunt trauma, a focal cluster directly under the tender area fits with a bruised (contused) segment of lung, where blood and fluid have leaked into the air spaces. Correlating the ultrasound location with the site of injury strengthens this reasoning. Still, focal B-lines are not specific and other tests help confirm.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "still-frame-limit",
+          "label": "Limits of one still frame?",
+          "prompt": "What important information is missing from a single still ultrasound frame?",
+          "cachedAnswer": "A still frame captures only one instant, but several key lung findings depend on motion. 'Lung sliding' is the shimmering back-and-forth movement of the pleural line during breathing, and its absence can indicate air trapped between the lung and chest wall (a pneumothorax). You cannot judge sliding from a frozen image. Likewise, a collection of blood (hemothorax) is best assessed by looking at the dependent parts of the chest, often in real time. So while this image shows B-lines, it cannot exclude these more dangerous conditions on its own, which is why clinicians rely on live scanning and additional evaluation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "A stable patient presents with focal chest wall tenderness following blunt trauma, and this lung ultrasound still shows several vertical hyperechoic artifacts arising from the pleural line. These B-lines are reverberation artifacts generated at the interface between aerated lung and areas of increased interstitial or alveolar density. The teaching draft describes this as an early pulmonary contusion pattern. **Given what B-lines represent at the tissue level, how does a focal distribution correlate with contusion pathophysiology, and why does a static image leave key diagnoses unaddressed?**",
+      "introQuestions": [
+        {
+          "id": "artifact-physics",
+          "label": "Physical basis of B-lines",
+          "prompt": "What is the physical and tissue basis for B-line artifacts?",
+          "cachedAnswer": "B-lines are 'ring-down' or reverberation artifacts produced when the ultrasound beam encounters a subpleural region where fluid-filled or thickened interstitium sits adjacent to trapped air. The large acoustic impedance mismatch causes the sound to bounce repeatedly within this small structure, generating a comet-tail of vertical echoes that project to the far field. Because they originate at the pleural line, move with respiration, and erase A-lines, they are recognized as pathologic interstitial markers when numerous. Histologically this corresponds to alveolar/interstitial edema, hemorrhage, or inflammatory exudate. In trauma, extravasated blood and edema in a lung segment supply exactly this air-fluid contrast.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "focal-contusion",
+          "label": "Focal pattern and contusion",
+          "prompt": "How does a focal B-line distribution relate to the pathophysiology of pulmonary contusion?",
+          "cachedAnswer": "Pulmonary contusion results from mechanical energy transfer to the lung parenchyma, producing capillary disruption, alveolar hemorrhage, and interstitial edema in the affected segment. Because the injury is localized to the region under the impact, the resulting interstitial changes are regional rather than diffuse, generating a focal cluster of B-lines overlying the injured area. This contrasts with cardiogenic pulmonary edema, which produces bilateral, symmetric, gravity-dependent B-lines. The spatial concordance between the tender chest wall, the mechanism, and the focal artifacts supports early contusion. However, artifact appearance may lag or evolve over hours as edema accumulates.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "still-cannot-exclude",
+          "label": "Why still frame can't exclude PTX",
+          "prompt": "Why can a still frame not exclude pneumothorax or hemothorax?",
+          "cachedAnswer": "Pneumothorax assessment relies on dynamic findings: absence of lung sliding, absence of B-lines, and the presence or absence of a lung point on real-time or M-mode imaging. A single B2D frame cannot demonstrate motion, so it cannot confirm or exclude sliding, and paradoxically the presence of B-lines in a region actually argues against pneumothorax at that spot—but only if the image were truly showing lung, which requires temporal context. Hemothorax appears as anechoic or complex fluid in dependent pleural spaces, which a focal supra-diaphragmatic still may not sample. Therefore a static image cannot rule out these life threats and dynamic clips plus dependent windows are essential.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A hemodynamically stable patient has focal chest wall tenderness after blunt trauma; this lung ultrasound still shows a focal cluster of vertical B-line artifacts at the pleural line. The pattern is compatible with early pulmonary contusion beneath the injured segment. However, a single frozen frame constrains your interpretation and cannot address several dangerous alternatives. **How would you integrate this finding into your trauma assessment, and what dynamic and additional imaging do you still need before excluding pneumothorax or hemothorax?**",
+      "introQuestions": [
+        {
+          "id": "read-the-image",
+          "label": "Interpreting the focal B-lines",
+          "prompt": "How should I interpret focal B-lines in this trauma context?",
+          "cachedAnswer": "Focal B-lines localized to the area of chest wall tenderness after blunt trauma are consistent with an early pulmonary contusion, where alveolar hemorrhage and interstitial edema create the air-fluid interfaces that generate the artifact. Unlike the bilateral, symmetric B-lines of cardiogenic edema, this focal, mechanism-concordant distribution points to a regional parenchymal injury. Lung ultrasound is more sensitive than supine chest radiograph for early contusion, so this may precede radiographic opacity. That said, the finding is supportive, not diagnostic in isolation, and severity and evolution matter for triage. Serial exams and correlation with respiratory status guide disposition.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "dangerous-differentials",
+          "label": "Dangerous alternatives to assess",
+          "prompt": "What dangerous alternative diagnoses must I still assess in this patient?",
+          "cachedAnswer": "Despite the contusion-compatible pattern, you must actively exclude pneumothorax and hemothorax, both of which can be missed on a supine film and can decompensate. Pneumothorax requires evaluation of lung sliding, B-line presence, and a lung point on dynamic or M-mode imaging in the least dependent zones. Hemothorax is sought in dependent pleural recesses as anechoic or complex fluid, ideally as part of an eFAST. Also keep rib fractures, flail segment, cardiac injury, and diaphragmatic injury on the differential given the mechanism. Progressive contusion itself can cause respiratory failure, so monitoring is part of the plan.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "Next steps in workup",
+          "prompt": "What are the appropriate next steps in the ultrasound and overall workup?",
+          "cachedAnswer": "Obtain real-time cine clips to assess lung sliding at multiple thoracic zones, add M-mode to look for seashore versus barcode/stratosphere sign, and search for a lung point if pneumothorax is suspected. Complete the eFAST to survey for hemothorax and free fluid, and interrogate dependent thoracic windows. Correlate with vitals, oxygenation, and a focused exam, and consider CT chest for definitive characterization of contusion extent, occult pneumothorax, and associated injuries in the stable patient. Provide analgesia and pulmonary toilet, and plan serial reassessment because contusions can worsen over 24–48 hours. Escalate imaging or intervention if the patient deteriorates.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Stable blunt trauma patient with focal chest wall tenderness; this static lung ultrasound demonstrates a focal band of B-lines emanating from the pleural line. Draft source material attributes this to early pulmonary contusion, and the focal, mechanism-concordant distribution supports that read. The critical teaching point is that a frozen frame forfeits the dynamic data—sliding, M-mode signatures, lung point—needed to adjudicate occult pneumothorax, and it undersamples for hemothorax. **How do you build a defensible interpretation and disposition around this image while respecting the artifact's limits and the pitfalls that trip up POCUS interpretation?**",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Pattern recognition and mimics",
+          "prompt": "What is the pattern here and what mimics should I keep in mind?",
+          "cachedAnswer": "The still shows focal, well-formed vertical B-lines originating at the pleural line and effacing A-lines—an interstitial pattern consistent with early contusion when regional and concordant with the impact site. Key discriminator: focal/asymmetric B-lines favor a localized process (contusion, aspiration, focal pneumonia, atelectasis, infarct), whereas diffuse bilateral B-lines with smooth pleura suggest cardiogenic/hydrostatic edema. Pitfalls include mistaking normal isolated B-lines (up to a few per field can be physiologic, especially at bases) for pathology, and over-reading a single zone. Remember that in a contused segment you can also see subpleural consolidation, irregular pleura, and small effusions on fuller evaluation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ptx-workflow",
+          "label": "Ruling out PTX rigorously",
+          "prompt": "What is the rigorous sonographic workflow to evaluate for pneumothorax here?",
+          "cachedAnswer": "Assess least-dependent zones first (anterior/parasternal in supine) with high-frame-rate cine to judge lung sliding; loss of sliding raises concern but is nonspecific (mainstem intubation, apnea, pleural adhesions, prior pleurodesis). Confirm with M-mode: seashore sign indicates sliding, barcode/stratosphere sign supports absent sliding. The lung point is highly specific for pneumothorax and localizes its extent, but its absence does not exclude a large PTX. Importantly, the very presence of B-lines at an interrogated spot excludes pneumothorax at that location, since the visceral pleura must be apposed—so this image argues against PTX where the B-lines arise, not globally. Scan multiple rib spaces before clearing the hemithorax.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition",
+          "label": "Disposition and pitfalls",
+          "prompt": "How does this finding inform disposition, and what pitfalls should I flag?",
+          "cachedAnswer": "Document the focal B-lines as supportive of contusion, but disposition on the whole clinical picture: mechanism, work of breathing, SpO2, eFAST for hemothorax/hemoperitoneum/pericardial fluid, and rib/sternal injury. In the stable patient, CT chest remains the reference standard for contusion burden, occult PTX, and associated injuries, and it recalibrates management. Anticipate contusion progression over 24–48 hours with worsening gas exchange—arrange serial exams, analgesia, and pulmonary hygiene, and set clear return/escalation criteria. Pitfalls: clearing a hemithorax from a single window, ignoring dependent zones for hemothorax, attributing all B-lines to trauma when volume overload or aspiration coexists, and treating a still frame as a substitute for dynamic assessment. Always integrate serial POCUS with the trajectory rather than a single timepoint.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

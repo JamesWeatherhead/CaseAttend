@@ -1,13 +1,22 @@
 /**
  * Batch generator for the intro cache.
  *
+ * Provider selection is via env INTRO_CACHE_PROVIDER:
+ *   - 'openrouter' (default): OPENROUTER_API_KEY + optional INTRO_CACHE_MODEL.
+ *   - 'anthropic':             ANTHROPIC_API_KEY  + ANTHROPIC_BASE_URL + INTRO_CACHE_MODEL.
+ *     ANTHROPIC_BASE_URL points at any Anthropic Messages-compatible endpoint (api.anthropic.com or
+ *     a maintainer-configured deployment). Nothing is hard-coded, nothing is committed.
+ *
  * Usage (from the repo root):
  *   OPENROUTER_API_KEY=sk-or-... npx tsx scripts/introCache/generate.mts --all
- *   OPENROUTER_API_KEY=sk-or-... npx tsx scripts/introCache/generate.mts --case=cxr-pneumothorax
+ *   INTRO_CACHE_PROVIDER=anthropic ANTHROPIC_API_KEY=... ANTHROPIC_BASE_URL=https://.../v1 \
+ *     INTRO_CACHE_MODEL=claude-opus-4-8 npx tsx scripts/introCache/generate.mts --all
  *   npx tsx scripts/introCache/generate.mts --list         # print lesson roster and stop
  *   npx tsx scripts/introCache/generate.mts --case=... --dry-run   # fixture answers, no network
  *
  * Behavior:
+ *   - Sequential: one case at a time, with pacing (INTRO_CACHE_INTER_CALL_MS, default 6000)
+ *     between calls, and exponential backoff on 429/5xx (starts at 5s, up to 5 retries).
  *   - Resumable per lesson: skips any case whose intro-cache-drafts/<caseId>.json is already current
  *     (lessonPlanSha256 + provenance.mediaSha match), unless --force is passed.
  *   - Fails closed on the per-level guarantee: if any of the five levels comes back without
@@ -40,8 +49,33 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const draftsDir = path.join(repoRoot, 'intro-cache-drafts');
 const publicDir = path.join(repoRoot, 'public', 'intro-cache');
 
-const DEFAULT_MODEL = process.env.INTRO_CACHE_MODEL?.trim() || 'anthropic/claude-opus-4';
+type Provider = 'openrouter' | 'anthropic';
+
+function resolveProvider(): Provider {
+  const raw = (process.env.INTRO_CACHE_PROVIDER ?? 'openrouter').trim().toLowerCase();
+  if (raw === 'openrouter' || raw === 'anthropic') return raw;
+  throw new Error(`INTRO_CACHE_PROVIDER='${raw}' is not supported. Use 'openrouter' or 'anthropic'.`);
+}
+
+const PROVIDER: Provider = resolveProvider();
+const DEFAULT_OPENROUTER_MODEL = 'anthropic/claude-opus-4';
+const DEFAULT_ANTHROPIC_MODEL = 'claude-opus-4-8';
+const DEFAULT_MODEL = process.env.INTRO_CACHE_MODEL?.trim()
+  || (PROVIDER === 'anthropic' ? DEFAULT_ANTHROPIC_MODEL : DEFAULT_OPENROUTER_MODEL);
 const MAX_MEDIA_PER_CASE = 4;
+
+const INTER_CALL_MS = Number.parseInt(process.env.INTRO_CACHE_INTER_CALL_MS ?? '6000', 10);
+const MAX_RETRIES = Number.parseInt(process.env.INTRO_CACHE_MAX_RETRIES ?? '5', 10);
+const BASE_BACKOFF_MS = Number.parseInt(process.env.INTRO_CACHE_BASE_BACKOFF_MS ?? '5000', 10);
+const MAX_BACKOFF_MS = Number.parseInt(process.env.INTRO_CACHE_MAX_BACKOFF_MS ?? '120000', 10);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function anthropicVersion(): string {
+  return (process.env.ANTHROPIC_VERSION ?? '2023-06-01').trim();
+}
 
 interface CliOptions {
   caseIds: string[] | 'all';
@@ -87,7 +121,8 @@ function printUsageAndExit(code: number): never {
     [
       'Usage:',
       '  OPENROUTER_API_KEY=sk-or-... npx tsx scripts/introCache/generate.mts --all',
-      '  OPENROUTER_API_KEY=sk-or-... npx tsx scripts/introCache/generate.mts --case=<caseId>',
+      '  INTRO_CACHE_PROVIDER=anthropic ANTHROPIC_API_KEY=... ANTHROPIC_BASE_URL=https://.../v1 \\',
+      '    INTRO_CACHE_MODEL=claude-opus-4-8 npx tsx scripts/introCache/generate.mts --all',
       '  npx tsx scripts/introCache/generate.mts --list',
       '  npx tsx scripts/introCache/generate.mts --case=<caseId> --dry-run',
       '',
@@ -97,7 +132,16 @@ function printUsageAndExit(code: number): never {
       '  --list          Print the enumerated lesson roster and exit.',
       '  --force         Ignore existing drafts and regenerate.',
       '  --dry-run       Skip network; write a hand-written fixture per level. Useful for pipeline validation.',
-      '  --model=<id>    Override the OpenRouter model id (default: anthropic/claude-opus-4).',
+      '  --model=<id>    Override the model id (provider-appropriate default).',
+      '',
+      'Env:',
+      '  INTRO_CACHE_PROVIDER      openrouter (default) | anthropic',
+      '  INTRO_CACHE_MODEL         model id (default depends on provider)',
+      '  INTRO_CACHE_INTER_CALL_MS pacing between calls (default 6000)',
+      '  INTRO_CACHE_MAX_RETRIES   backoff retries on 429/5xx (default 5)',
+      '  ANTHROPIC_BASE_URL        Anthropic Messages endpoint base (e.g. https://.../v1)',
+      '  ANTHROPIC_API_KEY         key for the anthropic provider',
+      '  ANTHROPIC_VERSION         anthropic-version header (default 2023-06-01)',
     ].join('\n'),
   );
   process.exit(code);
@@ -192,7 +236,7 @@ async function buildUserMessage(lesson: EnumeratedLesson): Promise<Array<
   return parts;
 }
 
-interface OpenRouterUsage {
+interface FrontierUsage {
   prompt_tokens?: number;
   completion_tokens?: number;
   total_tokens?: number;
@@ -200,14 +244,36 @@ interface OpenRouterUsage {
 
 interface OpenRouterResponse {
   choices?: { message?: { content?: string } }[];
-  usage?: OpenRouterUsage;
+  usage?: FrontierUsage;
 }
 
-async function callFrontierModel(
+interface AnthropicResponse {
+  content?: { type?: string; text?: string }[];
+  usage?: { input_tokens?: number; output_tokens?: number };
+}
+
+class RetryableError extends Error {
+  constructor(message: string, readonly retryAfterMs?: number) {
+    super(message);
+    this.name = 'RetryableError';
+  }
+}
+
+function extractRetryAfterMs(response: Response): number | undefined {
+  const header = response.headers.get('retry-after');
+  if (!header) return undefined;
+  const asSeconds = Number.parseFloat(header);
+  if (Number.isFinite(asSeconds)) return Math.max(0, asSeconds * 1000);
+  const asDate = Date.parse(header);
+  if (!Number.isNaN(asDate)) return Math.max(0, asDate - Date.now());
+  return undefined;
+}
+
+async function callOpenRouter(
   lesson: EnumeratedLesson,
   systemPrompt: string,
   model: string,
-): Promise<{ payload: ModelPayload; usage?: OpenRouterUsage }> {
+): Promise<{ payload: ModelPayload; usage?: FrontierUsage }> {
   const apiKey = process.env.OPENROUTER_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
@@ -235,6 +301,13 @@ async function callFrontierModel(
     },
     body: JSON.stringify(body),
   });
+  if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
+    const errText = await response.text().catch(() => '');
+    throw new RetryableError(
+      `OpenRouter transient failure (${response.status}): ${errText.slice(0, 200)}`,
+      extractRetryAfterMs(response),
+    );
+  }
   if (!response.ok) {
     const errText = await response.text().catch(() => '');
     throw new Error(`OpenRouter call failed (${response.status}): ${errText.slice(0, 500)}`);
@@ -249,6 +322,153 @@ async function callFrontierModel(
     throw new Error(`Model response was not valid JSON: ${(error as Error).message}`);
   }
   return { payload: parsed, usage: data.usage };
+}
+
+function joinUrl(base: string, path: string): string {
+  const trimmedBase = base.replace(/\/+$/, '');
+  const trimmedPath = path.replace(/^\/+/, '');
+  return `${trimmedBase}/${trimmedPath}`;
+}
+
+async function anthropicUserContent(lesson: EnumeratedLesson): Promise<Array<
+  | { type: 'text'; text: string }
+  | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } }
+>> {
+  const openaiShape = await buildUserMessage(lesson);
+  return openaiShape.map((part) => {
+    if (part.type === 'text') return { type: 'text', text: part.text };
+    const url = part.image_url.url;
+    const match = /^data:([^;]+);base64,(.*)$/.exec(url);
+    if (!match) {
+      throw new Error(`Expected inline base64 data URL for image; got ${url.slice(0, 32)}...`);
+    }
+    return {
+      type: 'image',
+      source: { type: 'base64', media_type: match[1], data: match[2] },
+    };
+  });
+}
+
+function extractJsonBlock(text: string): string {
+  const trimmed = text.trim();
+  const fence = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
+  if (fence) return fence[1].trim();
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    return trimmed.slice(firstBrace, lastBrace + 1);
+  }
+  return trimmed;
+}
+
+async function callAnthropic(
+  lesson: EnumeratedLesson,
+  systemPrompt: string,
+  model: string,
+): Promise<{ payload: ModelPayload; usage?: FrontierUsage }> {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  const baseUrl = process.env.ANTHROPIC_BASE_URL?.trim();
+  if (!apiKey || !baseUrl) {
+    throw new Error(
+      'INTRO_CACHE_PROVIDER=anthropic requires ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL. '
+        + 'Pass --dry-run to skip the network.',
+    );
+  }
+  const userContent = await anthropicUserContent(lesson);
+  const body: Record<string, unknown> = {
+    model,
+    max_tokens: 8192,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userContent }],
+  };
+  // Some frontier Anthropic deployments reject temperature; only include it
+  // when the caller opts in via env.
+  const temperatureEnv = process.env.ANTHROPIC_TEMPERATURE?.trim();
+  if (temperatureEnv) {
+    const value = Number.parseFloat(temperatureEnv);
+    if (Number.isFinite(value)) body.temperature = value;
+  }
+  const response = await fetch(joinUrl(baseUrl, 'messages'), {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': anthropicVersion(),
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
+    const errText = await response.text().catch(() => '');
+    throw new RetryableError(
+      `Anthropic transient failure (${response.status}): ${errText.slice(0, 200)}`,
+      extractRetryAfterMs(response),
+    );
+  }
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    throw new Error(`Anthropic call failed (${response.status}): ${errText.slice(0, 500)}`);
+  }
+  const data = (await response.json()) as AnthropicResponse;
+  const textBlock = data.content?.find((b) => b.type === 'text' && typeof b.text === 'string');
+  if (!textBlock?.text) throw new Error('Anthropic response did not include text content.');
+  const jsonText = extractJsonBlock(textBlock.text);
+  let parsed: ModelPayload;
+  try {
+    parsed = JSON.parse(jsonText) as ModelPayload;
+  } catch (error) {
+    throw new Error(`Model response was not valid JSON: ${(error as Error).message}`);
+  }
+  const usage: FrontierUsage | undefined = data.usage
+    ? {
+        prompt_tokens: data.usage.input_tokens,
+        completion_tokens: data.usage.output_tokens,
+        total_tokens:
+          (data.usage.input_tokens ?? 0) + (data.usage.output_tokens ?? 0) || undefined,
+      }
+    : undefined;
+  return { payload: parsed, usage };
+}
+
+function isNetworkFailure(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  if (error instanceof RetryableError) return false;
+  const message = error.message.toLowerCase();
+  return (
+    error.name === 'TypeError'
+    || message.includes('fetch failed')
+    || message.includes('econnreset')
+    || message.includes('etimedout')
+    || message.includes('enotfound')
+    || message.includes('socket hang up')
+  );
+}
+
+async function callFrontierModel(
+  lesson: EnumeratedLesson,
+  systemPrompt: string,
+  model: string,
+): Promise<{ payload: ModelPayload; usage?: FrontierUsage }> {
+  const attempt = (): Promise<{ payload: ModelPayload; usage?: FrontierUsage }> =>
+    PROVIDER === 'anthropic'
+      ? callAnthropic(lesson, systemPrompt, model)
+      : callOpenRouter(lesson, systemPrompt, model);
+  let lastError: unknown = null;
+  for (let i = 0; i <= MAX_RETRIES; i += 1) {
+    try {
+      return await attempt();
+    } catch (error) {
+      lastError = error;
+      const retryable = error instanceof RetryableError || isNetworkFailure(error);
+      if (!retryable || i === MAX_RETRIES) throw error;
+      const exponential = Math.min(MAX_BACKOFF_MS, BASE_BACKOFF_MS * 2 ** i);
+      const retryAfter = error instanceof RetryableError ? error.retryAfterMs : undefined;
+      const wait = retryAfter && retryAfter > exponential ? retryAfter : exponential;
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(`    transient failure, retry ${i + 1}/${MAX_RETRIES} in ${Math.round(wait / 1000)}s: ${message}`);
+      await sleep(wait);
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
 function fixtureLevel(lesson: EnumeratedLesson, level: string): LevelPayload {
@@ -349,6 +569,23 @@ interface RunResult {
   caseId: string;
   status: 'wrote' | 'skipped-current' | 'skipped-error' | 'skipped-no-key';
   detail?: string;
+  networkCall?: boolean;
+}
+
+function providerCredentialsReady(): { ok: boolean; detail?: string } {
+  if (PROVIDER === 'anthropic') {
+    if (!process.env.ANTHROPIC_API_KEY?.trim() || !process.env.ANTHROPIC_BASE_URL?.trim()) {
+      return {
+        ok: false,
+        detail: 'INTRO_CACHE_PROVIDER=anthropic requires ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL.',
+      };
+    }
+    return { ok: true };
+  }
+  if (!process.env.OPENROUTER_API_KEY?.trim()) {
+    return { ok: false, detail: 'OPENROUTER_API_KEY is not set.' };
+  }
+  return { ok: true };
 }
 
 async function processLesson(
@@ -366,16 +603,19 @@ async function processLesson(
     }
   }
   let payload: ModelPayload;
-  let usage: OpenRouterUsage | undefined;
+  let usage: FrontierUsage | undefined;
+  let networkCall = false;
   if (options.dryRun) {
     payload = fixturePayload(lesson);
   } else {
-    if (!process.env.OPENROUTER_API_KEY?.trim()) {
-      return { caseId: lesson.caseId, status: 'skipped-no-key', detail: 'OPENROUTER_API_KEY is not set.' };
+    const ready = providerCredentialsReady();
+    if (!ready.ok) {
+      return { caseId: lesson.caseId, status: 'skipped-no-key', detail: ready.detail };
     }
     const call = await callFrontierModel(lesson, INTRO_CACHE_SYSTEM_PROMPT, options.model);
     payload = call.payload;
     usage = call.usage;
+    networkCall = true;
   }
   let levels: IntroCacheV1['levels'];
   try {
@@ -414,7 +654,7 @@ async function processLesson(
   const usageDetail = usage
     ? `tokens: prompt ${usage.prompt_tokens ?? '?'}, completion ${usage.completion_tokens ?? '?'}, total ${usage.total_tokens ?? '?'}`
     : options.dryRun ? 'dry-run fixture' : undefined;
-  return { caseId: lesson.caseId, status: 'wrote', detail: usageDetail };
+  return { caseId: lesson.caseId, status: 'wrote', detail: usageDetail, networkCall };
 }
 
 async function main(): Promise<void> {
@@ -443,21 +683,28 @@ async function main(): Promise<void> {
   await ensureDirs();
   const systemPromptSha = await computeSystemPromptSha256(INTRO_CACHE_SYSTEM_PROMPT);
   console.log(
-    `Generating intro cache for ${targets.length} lesson(s). Model: ${options.model}. Dry-run: ${options.dryRun}. Force: ${options.force}.`,
+    `Generating intro cache for ${targets.length} lesson(s). Provider: ${PROVIDER}. Model: ${options.model}. `
+      + `Dry-run: ${options.dryRun}. Force: ${options.force}. Pacing: ${INTER_CALL_MS}ms.`,
   );
   console.log(`System prompt SHA-256: ${systemPromptSha}`);
   const results: RunResult[] = [];
-  for (const lesson of targets) {
-    process.stdout.write(`- ${lesson.caseId} ... `);
+  for (let index = 0; index < targets.length; index += 1) {
+    const lesson = targets[index];
+    process.stdout.write(`- [${index + 1}/${targets.length}] ${lesson.caseId} ... `);
+    let didNetworkCall = false;
     try {
       const result = await processLesson(lesson, options, systemPromptSha);
       results.push(result);
+      didNetworkCall = result.networkCall === true;
       const suffix = result.detail ? ` (${result.detail})` : '';
       console.log(`${result.status}${suffix}`);
     } catch (error) {
       const detail = (error as Error).message;
       results.push({ caseId: lesson.caseId, status: 'skipped-error', detail });
       console.log(`skipped-error (${detail})`);
+    }
+    if (didNetworkCall && index < targets.length - 1 && INTER_CALL_MS > 0) {
+      await sleep(INTER_CALL_MS);
     }
   }
   const wrote = results.filter((r) => r.status === 'wrote').length;

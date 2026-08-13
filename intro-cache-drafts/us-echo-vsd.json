@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-echo-vsd",
+  "lessonPlanSha256": "afcc623afcece98570a52a33cb99e132303549933f287f0b789f26944a4b3f98",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "400d6878233a0ffe0c8f831a908d65bf7736ecfcdb59fdf5850742e6d79074f4",
+    "generatedAt": "2026-08-13T14:46:12.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an ultrasound picture of a baby's heart. The heart has walls that separate its pumping chambers, and one of those walls is like a barrier between the two bottom rooms of the heart. In this image, the bright and colorful spot shows blood moving in a way it normally shouldn't. The baby in the story is having trouble feeding and has a loud whooshing heart sound called a murmur. What do you think the colorful splash of red and blue is telling us about how blood is flowing?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What is the colorful splash?",
+          "prompt": "What are the colors in this heart ultrasound showing me?",
+          "cachedAnswer": "The colors are added by the ultrasound machine to show blood movement, kind of like a weather map showing wind. Red and blue mean blood is flowing toward or away from the probe, and a bright messy mix means the blood is moving fast and swirling. In this picture that colorful spot sits right at the wall between the two lower pumping chambers of the heart. That tells us blood is squeezing through an opening in that wall where there should be a solid barrier. The moving squiggle at the bottom is the baby's heartbeat timing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-a-murmur",
+          "label": "Why does the baby have a loud murmur?",
+          "prompt": "Why would a hole in the heart wall cause a loud whooshing sound?",
+          "cachedAnswer": "A murmur is an extra sound a doctor hears when blood flows in a rough, turbulent way instead of smoothly. When there is a small opening in the wall between the pumping chambers, blood gets forced through that narrow gap at high speed. Fast blood squeezing through a tight space makes a whooshing or hissing noise, just like water spraying through a pinched garden hose. That is why the doctor hears a harsh sound during each heartbeat. The 'holosystolic' part means the sound lasts through the whole squeezing phase of the heartbeat.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-poor-feeding",
+          "label": "Why is the baby feeding poorly?",
+          "prompt": "How could a heart problem make a baby too tired to feed?",
+          "cachedAnswer": "Feeding is hard work for a baby, almost like exercise. If the heart is working overtime because blood is leaking through the hole and looping around inefficiently, the baby gets tired and breathes fast. That extra effort makes it hard to keep sucking and swallowing long enough to get a full meal. Some babies also sweat during feeds because their little heart is straining. So poor feeding can be an early clue that something is making the heart work harder than normal.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a color-flow echocardiogram of an infant's heart. The wall separating the two lower chambers (ventricles) is called the interventricular septum, and here color signals show blood crossing where the wall should be solid. Normally the left ventricle generates higher pressure than the right, so blood pushed through any opening moves from left to right. The infant's poor feeding and harsh holosystolic murmur are clues to the physical consequences of this flow. Where along the septum do you see the abnormal color signal, and what direction would you expect the blood to travel?",
+      "introQuestions": [
+        {
+          "id": "locate-septum",
+          "label": "Where is the septum and the defect?",
+          "prompt": "How do I identify the interventricular septum and the defect in this image?",
+          "cachedAnswer": "The interventricular septum is the muscular and membranous wall that divides the heart's two lower pumping chambers, the left and right ventricles. On this echocardiogram it appears as the bright band of tissue running between the chambers, and a defect shows up as a gap in that band. The color signal marks the spot where blood is streaming across the septum rather than staying within one chamber. The color mapping (a color scale is shown on the right) turns blood velocity and direction into red and blue shades. Seeing the mosaic of colors at the septum is a strong hint that blood is crossing through an opening there.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "left-to-right",
+          "label": "Why does blood flow left to right?",
+          "prompt": "Why would blood flow from the left ventricle to the right through a septal opening?",
+          "cachedAnswer": "Fluids always move from higher pressure to lower pressure. The left ventricle pumps blood out to the whole body and normally works at much higher pressure than the right ventricle, which only pushes blood to the nearby lungs. If there is an opening in the septum, that pressure difference drives blood from the left side into the right side, called a left-to-right shunt. This means some already-oxygenated blood gets recycled back toward the lungs instead of going out to the body. The fast jet across the opening creates the turbulence you can hear as a murmur.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "size-vs-severity",
+          "label": "Can I tell how serious it is from this?",
+          "prompt": "Can I judge how serious the defect is just from this still image?",
+          "cachedAnswer": "No, a single frozen frame cannot reliably tell you how serious the defect is. The size of the opening and the pressure difference across it both matter, and those need moving images, measurements, and pressure estimates over the whole heartbeat. Interestingly, a small opening can make a louder murmur because it forces blood through a tighter space at higher speed, while a large opening may be quieter. So loudness of the murmur does not equal severity. Judging severity requires a full study, not just this snapshot.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This color-flow echocardiogram of an infant demonstrates a discontinuity in the interventricular septum with turbulent flow crossing it. In fetal and early neonatal life pulmonary vascular resistance is high, so left and right ventricular pressures are similar; as that resistance falls over the first weeks, a pressure gradient develops. This gradient drives left-to-right shunting through the defect, producing the harsh holosystolic murmur and the volume load underlying poor feeding. Consider how the timing of symptom onset relates to the physiology of the transitional circulation. What hemodynamic change explains why a ventricular septal defect often becomes audible or symptomatic after birth rather than immediately?",
+      "introQuestions": [
+        {
+          "id": "identify-defect",
+          "label": "Identify the anatomy on this frame",
+          "prompt": "What anatomy and abnormal flow can I identify on this echocardiogram frame?",
+          "cachedAnswer": "The image shows a cardiac chamber view in which the interventricular septum is interrupted, and color Doppler reveals a turbulent mosaic flow signal at that interruption. The mosaic (mixed red, blue, and green) pattern reflects high-velocity, turbulent, aliased flow characteristic of a jet crossing a pressure gradient. This is consistent with a ventricular septal defect, per the teaching notes. The color scale on the right encodes velocity toward and away from the transducer. Precise septal segment localization (perimembranous, muscular, inlet, outlet) would require additional views but the key finding is septal discontinuity with a transseptal jet.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "prv-mechanism",
+          "label": "Role of falling pulmonary resistance",
+          "prompt": "Explain how falling pulmonary vascular resistance produces left-to-right shunting after birth.",
+          "cachedAnswer": "In utero, pulmonary vascular resistance (PVR) is high because the lungs are fluid-filled and hypoxic pulmonary vasoconstriction predominates, so right and left ventricular pressures are near-equal and shunt flow across a VSD is minimal. After birth, lung expansion and rising oxygen tension cause PVR to fall progressively over the first days to weeks. As right ventricular and pulmonary pressures decline below systemic pressure, a left-to-right pressure gradient develops across the defect. This drives shunting of oxygenated blood into the pulmonary circulation, increasing pulmonary blood flow and eventually volume-loading the left atrium and ventricle. This delayed drop in PVR explains why the murmur and symptoms of a VSD frequently appear after the neonatal period rather than at birth.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "anatomy-vs-severity",
+          "label": "Anatomy versus severity",
+          "prompt": "Why must I distinguish defect anatomy from defect severity, and why can't this still tell me severity?",
+          "cachedAnswer": "Defect anatomy (location and structural type) and severity (hemodynamic impact) are separate concepts that do not map one-to-one. Anatomically a VSD may be perimembranous, muscular, inlet, or outlet, which affects natural history and associated lesions. Severity depends on the shunt volume, which is governed by defect size and the instantaneous pressure gradient, not by anatomic type alone. Small restrictive defects maintain a large gradient and produce loud murmurs but small shunts, whereas large non-restrictive defects may equalize pressures and produce softer murmurs yet greater volume overload. A single still frame captures neither the gradient across the whole cycle nor quantitative shunt fraction, so severity cannot be inferred from it.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An infant presents with poor feeding and a harsh holosystolic murmur, and this echocardiogram shows a color jet crossing an interrupted interventricular septum. The clinical picture is consistent with a ventricular septal defect producing a left-to-right shunt as pulmonary vascular resistance falls. Poor feeding, tachypnea, and diaphoresis with feeds reflect the increased pulmonary blood flow and evolving heart failure physiology. Remember that murmur intensity correlates poorly with shunt magnitude. How would you integrate the exam, this imaging, and the growth history to gauge hemodynamic significance and plan next steps?",
+      "introQuestions": [
+        {
+          "id": "clinical-correlation",
+          "label": "Correlate image with presentation",
+          "prompt": "How does this echocardiographic finding correlate with the infant's poor feeding and murmur?",
+          "cachedAnswer": "The frame shows a transseptal color jet consistent with a ventricular septal defect, and the harsh holosystolic murmur reflects turbulent flow through the defect throughout systole. As pulmonary vascular resistance falls in the weeks after birth, left-to-right shunting increases pulmonary blood flow and volume-loads the left heart. This produces pulmonary overcirculation and early congestive symptoms: tachypnea, diaphoresis and fatigue with feeds, and poor weight gain, which manifest clinically as poor feeding. Hepatomegaly, a hyperdynamic precordium, and a mid-diastolic apical rumble from increased mitral flow may accompany a large shunt. The image and the symptoms together point toward a hemodynamically active shunt worth quantifying.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for a holosystolic murmur",
+          "prompt": "What is the differential for a harsh holosystolic murmur in an infant, and what favors VSD here?",
+          "cachedAnswer": "Holosystolic murmurs in infants can arise from a ventricular septal defect, mitral or tricuspid regurgitation, and less commonly other left-to-right shunts. Distinguishing features include murmur location and radiation: a VSD murmur is typically loudest at the left lower sternal border, while mitral regurgitation is loudest at the apex with axillary radiation. The echocardiographic finding of a color jet crossing an interrupted interventricular septum directly favors a VSD over valvar regurgitation. Ejection murmurs of pulmonary or aortic stenosis are crescendo-decrescendo rather than holosystolic, and PDA gives a continuous murmur. The imaging plus the described murmur make VSD the leading consideration, though associated lesions should still be excluded on a full study.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "Assessing significance and management",
+          "prompt": "What are the next steps to assess hemodynamic significance and guide management?",
+          "cachedAnswer": "Assessment centers on estimating shunt magnitude and its impact rather than reacting to murmur loudness alone. A complete echocardiogram characterizes defect location and size, estimates the peak transseptal gradient and RV/PA pressure, and looks for LA/LV dilation as a marker of significant shunting. Clinical monitoring of growth, feeding, respiratory rate, and signs of heart failure guides urgency. Management ranges from watchful waiting for small restrictive defects that often close spontaneously, to medical therapy (e.g., diuretics and calorie optimization) for symptomatic shunts, to surgical or device closure for large or refractory lesions with failure to thrive or pulmonary hypertension. Pediatric cardiology involvement directs definitive decisions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Color-flow echo in a symptomatic infant demonstrates a transseptal jet across an interrupted interventricular septum, consistent with a VSD per the teaching note. The harsh holosystolic murmur and poor feeding reflect left-to-right shunting emerging as PVR regresses postnatally. Keep in mind the classic teaching pitfall that a louder murmur often signals a smaller, more restrictive defect rather than greater hemodynamic burden. Severity here cannot be adjudicated from a single still—defect location, restrictiveness, chamber loading, and PA pressure all require the full study. Given only this frame, what pattern-recognition cues and what missing data would you prioritize before committing to a severity assessment?",
+      "introQuestions": [
+        {
+          "id": "image-read",
+          "label": "Read the frame like a specialist",
+          "prompt": "What are the pattern-recognition cues on this frame and their limitations?",
+          "cachedAnswer": "The salient cue is a discrete mosaic aliased color jet at a point of septal dropout, indicating high-velocity turbulent transseptal flow typical of a VSD. The variance/mosaic appearance suggests a restrictive gradient rather than pressure equalization, though a single frame and one color scale (Nyquist limit shown) cannot confirm this. Septal segment localization (perimembranous versus muscular, inlet, or outlet) is not reliably assignable without sweeping through orthogonal views. Beware of color gain artifact and ghosting mimicking or exaggerating a jet, and of dropout at the thin membranous septum simulating a defect. Confirmatory 2D dropout with a clear jet on multiple planes, plus CW Doppler across the defect, is needed before firm characterization.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "hemodynamics",
+          "label": "Restrictive versus nonrestrictive physiology",
+          "prompt": "How do I reason from restrictive versus nonrestrictive VSD physiology to the exam and imaging?",
+          "cachedAnswer": "In a restrictive VSD, a large systolic pressure gradient is maintained between LV and RV, yielding a high-velocity jet on CW Doppler and a loud, harsh holosystolic murmur with limited shunt volume. In a nonrestrictive VSD, pressures equalize, the jet velocity and murmur intensity fall, and shunt magnitude is instead governed by the PVR:SVR ratio, risking pulmonary overcirculation and eventual pulmonary vascular disease. Thus murmur intensity is an unreliable severity proxy and can invert expectations. Interrogating the peak transseptal velocity lets you estimate the LV-RV gradient and back-calculate RV/PA systolic pressure when systemic pressure is known. LA and LV dilation index the chronic volume load and are more faithful markers of hemodynamic significance than the murmur.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workup-guidelines",
+          "label": "Workup, pitfalls, and disposition",
+          "prompt": "What is the guideline-aware workup and disposition, and what pitfalls should I avoid?",
+          "cachedAnswer": "A complete study should define defect type and number, estimate Qp:Qs and PA pressures, assess LA/LV size, and exclude associated lesions (aortic cusp prolapse/AR in perimembranous or outlet defects, coarctation, RVOT obstruction). Clinically, track growth velocity, respiratory rate, and feeding tolerance; consider BNP trends and CXR/ECG for chamber enlargement. Management follows severity: expectant management for small restrictive muscular defects that frequently close, afterload/preload optimization and caloric augmentation with diuretics for symptomatic shunts, and surgical or catheter closure for large shunts with failure to thrive, refractory heart failure, or rising PA pressures per pediatric cardiology guidance. Key pitfalls: equating murmur loudness with severity, missing evolving pulmonary vascular disease (a quieting murmur with worsening cyanosis suggests Eisenmenger physiology), and over-reading a still frame. Escalate any concern for pulmonary hypertension promptly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

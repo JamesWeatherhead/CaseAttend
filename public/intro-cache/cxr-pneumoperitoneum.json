@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-pneumoperitoneum",
+  "lessonPlanSha256": "b018a6338a866bc1033aaf5764686c677c948cccf4ac8b38d4ffdb2c0561e929",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "ea3c5b1d0e4f1439a27f391d094dbd323e3b060ea5206e8e9f65904645729c4c",
+    "generatedAt": "2026-08-13T14:28:17.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an X-ray taken while a 71-year-old woman was standing up. Her belly suddenly started hurting badly and felt as hard as a board. On the picture, look at the curved dome-shaped muscle (the diaphragm) that separates the chest from the belly. Notice the dark, gas-colored crescents sitting just under that dome on the right side. **What do you think that dark air pocket in the belly might mean?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What does this upright chest and upper-belly X-ray show, in simple terms?",
+          "cachedAnswer": "This is a black-and-white X-ray taken while the patient was standing up, showing the bottom of the chest and top of the belly. The two big dark areas up high are the lungs, which are full of air. The dome-shaped line across the middle is the diaphragm, the muscle that helps you breathe. Just under the dome, there is a thin dark crescent of gas that normally should not be there. Because air is very light, it floats to the highest spot in the belly when you stand, so it collects right under the diaphragm. Seeing free air like this is a warning sign that something inside the belly has leaked.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-air-there",
+          "label": "Why would air be loose in the belly?",
+          "prompt": "Why would there be free air inside the belly, and why is that a problem?",
+          "cachedAnswer": "Normally, air in your belly stays inside tubes like the stomach and intestines. If one of those tubes gets a hole in it (a 'perforation'), the gas that lives inside can escape into the open space of the belly. That escaped gas is called free air, and it floats up under the diaphragm when a person stands. It is a problem because whatever leaked out of the intestine, including germs, is now loose where it does not belong. This can quickly cause a dangerous, whole-body infection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "emergency",
+          "label": "Is this an emergency?",
+          "prompt": "Why is a rigid, board-like belly with this X-ray an emergency?",
+          "cachedAnswer": "Yes, this is a true emergency. A belly that feels hard as a board means the muscles are tightening up to protect very irritated, painful insides. Combined with the free air on the X-ray, it strongly suggests something has burst inside. This kind of situation usually needs surgeons and often an operation very soon, because waiting can be life-threatening. In real life, a person like this would be rushed to the emergency room right away.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "You are viewing an upright frontal radiograph of the lower chest and upper abdomen in a 71-year-old woman with sudden severe abdominal pain and a rigid abdomen. X-rays pass easily through air, so air appears dark, while dense tissue and bone appear white. Look at the curved diaphragm dividing the air-filled lungs above from the abdomen below, and notice a dark gas crescent tucked just beneath it. **Why does gas that has escaped into the abdomen collect specifically under the diaphragm on an upright film?**",
+      "introQuestions": [
+        {
+          "id": "physics-of-air",
+          "label": "Why does air look dark on X-ray?",
+          "prompt": "Explain simply why air appears dark and bone appears white on a radiograph.",
+          "cachedAnswer": "An X-ray image is made by beams passing through the body onto a detector. Dense materials like bone absorb many X-rays, so few reach the detector and those areas look white. Air absorbs very few X-rays, so lots of them pass through and those areas look dark or black. That is why the air-filled lungs look dark and the bones of the ribs and spine look bright. This same principle lets us spot abnormal pockets of air, like gas trapped where it should not be under the diaphragm.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "gas-under-diaphragm",
+          "label": "Why gas sits under the diaphragm",
+          "prompt": "Why does free abdominal gas collect under the diaphragm on an upright radiograph?",
+          "cachedAnswer": "Gas is much less dense than the surrounding fluid and organs, so it rises to the highest point available, much like a bubble rising in water. When a patient stands upright, the highest point of the abdominal cavity is directly beneath the domes of the diaphragm. Free gas therefore floats up and collects there, forming a thin dark crescent between the diaphragm and the liver. This is why an upright position (or having the patient sit up for several minutes before the film) makes small amounts of free air easier to see.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "where-from",
+          "label": "Where could the loose air come from?",
+          "prompt": "What structures could leak air into the abdominal cavity?",
+          "cachedAnswer": "The digestive tract normally holds swallowed and produced gas inside the stomach and intestines. If the wall of any of these hollow organs develops a hole, gas can leak into the peritoneal cavity, the space around the organs. Common sources include the stomach, small intestine, and colon. A hole in part of the large intestine, such as the sigmoid colon, is one important example. Because the leaked contents carry bacteria, this quickly becomes a serious situation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This upright frontal radiograph of the lower thorax and upper abdomen belongs to a 71-year-old woman with acute severe abdominal pain and a rigid, board-like abdomen. Free intraperitoneal air (pneumoperitoneum) is seen as a lucent crescent beneath the right hemidiaphragm, outlining its superior surface. This finding reflects loss of integrity of a hollow viscus with gas tracking into the peritoneal cavity. **What anatomical and pathophysiologic sequence links a perforated viscus to the crescent of subdiaphragmatic air seen here?**",
+      "introQuestions": [
+        {
+          "id": "identify-free-air",
+          "label": "Localize the free air",
+          "prompt": "How do you identify and localize free intraperitoneal air on this upright radiograph?",
+          "cachedAnswer": "Free intraperitoneal air on an upright film appears as a lucent (dark) crescent interposed between the diaphragm and the underlying liver or abdominal viscera. On the right, the normally soft-tissue-density liver abuts the diaphragm, so a thin band of gas separating them is abnormal and readily visible. The key is that you can see both the superior and inferior surfaces of the diaphragm outlined by air. This differs from normal gastric or colonic gas, which is bounded by a bowel wall. Recognizing this subdiaphragmatic lucency is the defining step in diagnosing pneumoperitoneum on plain film.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "perforation-mechanism",
+          "label": "Mechanism of pneumoperitoneum",
+          "prompt": "Explain the pathophysiologic mechanism linking hollow viscus perforation to pneumoperitoneum.",
+          "cachedAnswer": "The gastrointestinal lumen contains gas from swallowed air and bacterial fermentation. When a full-thickness defect develops in the wall of a hollow viscus, this intraluminal gas escapes through the mucosa, submucosa, muscularis, and serosa into the peritoneal cavity. Being buoyant, the gas migrates to the non-dependent regions, which are subdiaphragmatic in the upright patient. Simultaneously, luminal contents and enteric flora spill into the peritoneum, triggering chemical and then bacterial peritonitis. The resulting peritoneal irritation produces reflex abdominal wall guarding, clinically appreciated as the rigid, board-like abdomen.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "sigmoid-source",
+          "label": "Why the sigmoid colon?",
+          "prompt": "Why is the sigmoid colon a classic source of perforation in an older patient?",
+          "cachedAnswer": "The sigmoid colon is a frequent site of diverticulosis, especially in older adults, because of high intraluminal pressures generated in this narrow, high-tension segment. Diverticula are outpouchings where the mucosa herniates through weak points in the muscularis, typically where vasa recta penetrate the wall. Inflammation of a diverticulum (diverticulitis) can progress to microperforation or frank perforation, releasing colonic gas and feculent contents. The colon carries a heavy bacterial load, so perforation here produces particularly severe peritonitis. This makes the sigmoid a classic teaching source of pneumoperitoneum in an elderly patient with acute abdomen.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 71-year-old woman presents with sudden severe abdominal pain and a rigid, board-like abdomen; this upright radiograph shows a lucent crescent of free air beneath the right hemidiaphragm, consistent with pneumoperitoneum. The combination of peritonitis on exam and free air on imaging is a surgical emergency until proven otherwise. Your job is to integrate the image with the clinical picture and prioritize appropriate next steps. **Given this presentation, how would you frame your differential and immediate management?**",
+      "introQuestions": [
+        {
+          "id": "confirm-finding",
+          "label": "Confirm and describe the finding",
+          "prompt": "How would you describe the radiographic finding and confirm it clinically?",
+          "cachedAnswer": "The upright film demonstrates free subdiaphragmatic air, seen as a lucent crescent separating the right hemidiaphragm from the liver, indicating pneumoperitoneum. Clinically, this correlates with a rigid, board-like abdomen reflecting diffuse peritonitis. I would confirm hemodynamic status, look for signs of sepsis, and note that plain films can miss small volumes of free air. In a stable patient, CT of the abdomen and pelvis with contrast localizes the perforation and characterizes the underlying pathology. However, in a peritonitic, unstable patient the free air plus exam may be sufficient to proceed toward the OR without delay.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for pneumoperitoneum",
+          "prompt": "What is the differential diagnosis for free intraperitoneal air in this patient?",
+          "cachedAnswer": "The leading concern is perforation of a hollow viscus: perforated peptic ulcer, perforated diverticulitis (classically sigmoid in an older patient), perforated malignancy, ischemic bowel with necrosis, or perforation from obstruction. Iatrogenic causes such as recent endoscopy or surgery can also introduce peritoneal air. Rarely, pneumoperitoneum can be non-surgical, for example from mechanical ventilation tracking down or gynecologic sources. In a 71-year-old with acute pain and peritonitis, colonic or peptic perforation heads the list. History (NSAID use, prior diverticulitis, weight loss, bowel habit changes) helps refine the differential.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "initial-management",
+          "label": "Immediate management priorities",
+          "prompt": "What are the immediate management priorities for suspected perforation with peritonitis?",
+          "cachedAnswer": "Resuscitation and rapid surgical consultation are the priorities. Start with ABCs, large-bore IV access, isotonic fluid resuscitation, and correction of electrolyte and acid-base derangements. Make the patient NPO, place a nasogastric tube for decompression, and begin broad-spectrum IV antibiotics covering gram-negatives and anaerobes. Obtain labs including CBC, lactate, and a type-and-screen, and provide analgesia. Definitive treatment is typically operative source control; imaging should not delay surgical evaluation in a peritonitic patient.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Upright frontal radiograph in a 71-year-old woman with acute abdomen and peritoneal signs demonstrates a lucent crescent of free air beneath the right hemidiaphragm, diagnostic of pneumoperitoneum. In the context of a rigid abdomen, this is a surgical emergency; the teaching diagnosis here is sigmoid perforation. Consider both the radiographic pitfalls and how the imaging drives disposition. **Which secondary signs and mimics would you interrogate before committing to management?**",
+      "introQuestions": [
+        {
+          "id": "radiographic-signs",
+          "label": "Signs and pitfalls of pneumoperitoneum",
+          "prompt": "What radiographic signs and pitfalls should you consider when reading for pneumoperitoneum?",
+          "cachedAnswer": "On the upright film, look for subdiaphragmatic free air as a lucent crescent, ideally viewing the diaphragm superiorly and inferiorly. If the patient cannot stand, a left lateral decubitus film shows air over the liver edge. On supine films, watch for Rigler's sign (both sides of the bowel wall visible), the falciform ligament sign, the football sign, and lucency over the liver. Key pitfall: Chilaiditi syndrome (colon interposed between liver and diaphragm) mimics free air but shows haustral markings within the lucency. Subpulmonic effusion, curvilinear atelectasis, and gastric fundal gas can also mislead, so correlate with the clinical picture.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ct-role",
+          "label": "Role and timing of CT",
+          "prompt": "When and how should CT be used to localize the perforation, and when should it be skipped?",
+          "cachedAnswer": "In a hemodynamically stable patient, CT abdomen/pelvis with IV contrast is the study of choice to localize the site of perforation and characterize etiology, using signs such as focal bowel wall defect, extraluminal air adjacent to a segment, fat stranding, and localized fluid collections. Oral or rectal contrast can occasionally help demonstrate a colonic leak. CT often distinguishes free versus contained perforation, which influences whether an operative or percutaneous/nonoperative pathway is appropriate. However, in a peritonitic or septic, unstable patient, definitive imaging should not delay resuscitation and OR mobilization. Judgment balances diagnostic yield against time-critical source control.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition-pearls",
+          "label": "Disposition and management pearls",
+          "prompt": "What are guideline-aware disposition and management pearls for perforated diverticulitis with pneumoperitoneum?",
+          "cachedAnswer": "For perforated sigmoid diverticulitis with generalized peritonitis and pneumoperitoneum (Hinchey III-IV), emergent operative source control is standard, classically Hartmann's procedure, though primary resection with anastomosis is selected in appropriate patients. Concurrently: aggressive resuscitation, broad-spectrum antibiotics covering enteric gram-negatives and anaerobes, lactate-guided monitoring, and early surgical involvement. Contained perforations with localized abscess (Hinchey I-II) may be amenable to percutaneous drainage and antibiotics. Remember to risk-stratify for sepsis and frailty in the elderly, and to consider malignancy as an underlying cause of colonic perforation. Early recognition and rapid escalation are the outcome-determining steps.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-pneumonia",
+  "lessonPlanSha256": "19a49f2cbb56799e61340960222bcfb1dd07fdd89322a4c3055427daa9b88637",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "dea4e805d430f3cbd59b050f53dfc85fa59d7d11114079a99ebc2934b9525c69",
+    "generatedAt": "2026-08-13T14:17:41.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a black-and-white picture of the inside of the chest. Air-filled lungs normally look dark, but here part of the right lung (on the left side of the image) looks cloudy and white. This patient has had three days of cough with thick mucus, fever, and chills. Cloudy white spots often mean the lung's tiny air sacs have filled up with fluid or pus instead of air. What do you think could turn part of a normally dark lung white on an X-ray?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What am I looking at in this chest X-ray?",
+          "cachedAnswer": "This is a chest X-ray, which uses a tiny amount of radiation to make a shadow picture of the chest. Bones like the ribs and spine look bright white because they block the X-rays. Air-filled lungs look dark gray or black because air lets the X-rays pass through easily. In this picture, part of the right lung looks cloudy and pale instead of dark, which stands out as unusual. That whiteness suggests something is filling the air spaces where there should be air. Because the patient has cough, fever, and chills, this pattern fits with an infection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-white",
+          "label": "Why does part of the lung look white?",
+          "prompt": "Why does part of the lung look white instead of dark?",
+          "cachedAnswer": "Healthy lungs are like sponges full of air, and air lets X-rays pass through, so lungs normally look dark. When a person gets a lung infection, the body sends fluid and infection-fighting cells into the tiny air sacs. Think of a dry sponge (dark) versus a sponge soaked with water (heavy and pale). The soaked, fluid-filled part blocks more X-rays, so it shows up white. That is why one area here looks cloudy compared to the other lung. This white cloudiness in the setting of fever and cough is a classic sign of pneumonia, a lung infection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What would doctors do next?",
+          "prompt": "What would doctors do next for this patient?",
+          "cachedAnswer": "Doctors would combine the X-ray with the patient's story of cough, fever, and chills to decide what is going on. They might listen to the lungs with a stethoscope, check oxygen levels, and sometimes order blood tests or a sputum sample. If it is a bacterial lung infection, treatment often includes antibiotics, rest, and fluids. They also watch to make sure the person is breathing well enough. The X-ray helps confirm which part of the lung is affected and how much.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This frontal chest radiograph shows both lungs, the ribs, the spine, and the heart shadow. Normally aerated lung appears dark because air is nearly transparent to X-rays. Here there is a region of increased whiteness (opacity) in the lower-to-mid right lung field. The patient reports three days of worsening productive cough, fever, and chills. Given how X-rays interact with air versus fluid, what does an area of increased opacity tell you about what is inside those air spaces?",
+      "introQuestions": [
+        {
+          "id": "opacity-basics",
+          "label": "What is an 'opacity'?",
+          "prompt": "What does opacity mean on a chest X-ray and why does it appear here?",
+          "cachedAnswer": "On an X-ray, 'opacity' means an area that is whiter than expected because it absorbs more X-rays. Air absorbs very little, so normal lung is dark; water, pus, blood, and tissue absorb more, so they appear pale. When the small air sacs (alveoli) fill with fluid or inflammatory material, that region stops looking dark and becomes hazy or solid white. In this image, part of the right lung shows this increased whiteness compared to the clearer left lung. Combined with fever and productive cough, this pattern points toward fluid or pus filling the air spaces.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "air-vs-fluid",
+          "label": "How do X-rays show air vs fluid?",
+          "prompt": "How do X-rays distinguish air-filled lung from fluid-filled lung?",
+          "cachedAnswer": "X-ray imaging depends on how much different tissues absorb the beam, called attenuation. Air has very low density and low attenuation, so it lets most X-rays reach the detector and appears dark. Fluid and soft tissue have higher density and absorb more of the beam, appearing lighter. So a lung full of air is dark, but a lung region full of fluid or pus becomes progressively whiter as it loses air. This is why an infected, fluid-filled zone stands out against normal lung. Bone, being densest here, is the brightest structure of all.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "one-sided",
+          "label": "Why is only one area affected?",
+          "prompt": "Why might only one region of one lung look abnormal?",
+          "cachedAnswer": "Lungs are divided into lobes and smaller segments, each supplied by its own airways and blood vessels. An infection can settle into one lobe or segment and fill just that region's air sacs while neighboring lung stays clear. That produces a localized opacity rather than a whole-lung whiteout. Seeing which region is affected helps identify which lobe is involved. In this case the abnormal whiteness is on the right side, suggesting the infection is concentrated there rather than spread evenly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This PA chest radiograph demonstrates an airspace opacity in the right hemithorax, most consistent with lobar consolidation. Note how the opacity relates to normally sharp mediastinal and diaphragmatic borders. The clinical context is three days of productive cough, fever, and chills, and the teaching focus is a right middle lobe process. As you review, consider how the silhouette sign can help you localize which lobe is consolidated, and what histologic process underlies the radiographic whiteness.",
+      "introQuestions": [
+        {
+          "id": "localize-opacity",
+          "label": "How do I localize this opacity?",
+          "prompt": "How would I describe and localize the airspace opacity on this radiograph?",
+          "cachedAnswer": "Start by describing it as an airspace (alveolar) opacity: hazy-to-confluent increased density, often with ill-defined margins and possible air bronchograms. Localize by systematically checking which borders it obscures and which remain sharp. A right middle lobe consolidation classically abuts the right heart border and tends to preserve the right hemidiaphragm because the RML lies anteriorly against the heart. On the frontal view alone, RML disease can be subtle, so correlating with a lateral film (opacity bounded by the horizontal and minor fissures) confirms it. Describing lobar rather than diffuse distribution supports a focal process such as bacterial lobar pneumonia.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "silhouette-sign",
+          "label": "How does the silhouette sign work?",
+          "prompt": "How does the silhouette sign help localize the consolidation?",
+          "cachedAnswer": "The silhouette sign relies on the fact that two structures of the same radiographic density in direct anatomic contact lose their border interface. The right heart border is normally sharp because aerated RML lies against it; if the RML consolidates, that border becomes indistinct or obscured. In contrast, a right lower lobe process sits more posteriorly and inferiorly, so it obscures the right hemidiaphragm while sparing the heart border. Thus, loss of the right heart border with a preserved diaphragm points to RML, whereas the opposite pattern points to RLL. Applying the sign lets you localize disease in three dimensions from a single frontal projection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "consolidation-mechanism",
+          "label": "What causes the consolidation pattern?",
+          "prompt": "What pathophysiologic process produces this consolidation pattern?",
+          "cachedAnswer": "Consolidation reflects replacement of alveolar air by inflammatory exudate. In classic bacterial lobar pneumonia, pathogens trigger an acute inflammatory response with capillary congestion, then alveolar filling by neutrophils, fibrin, red cells, and bacteria (red then gray hepatization phases). Because the alveoli fill while airways may remain patent, the radiograph shows a dense opacity that can contain air bronchograms. Spread through pores of Kohn and interalveolar channels allows the process to fill a lobe fairly uniformly, producing the lobar pattern. Radiographically, loss of air explains the increased attenuation, and the anatomic confinement by fissures explains the lobar borders.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 67-year-old man presents with three days of worsening productive cough, fever, and chills, and this frontal chest radiograph shows a right-sided airspace opacity consistent with lobar consolidation. Use the silhouette sign to confirm right middle lobe involvement, and integrate the imaging with the clinical picture of community-acquired pneumonia. Consider how you would risk-stratify and treat this patient. What features on the film and history most support your working diagnosis, and what would you do next?",
+      "introQuestions": [
+        {
+          "id": "read-the-film",
+          "label": "How do I read and localize this film?",
+          "prompt": "Walk me through reading this radiograph and localizing the abnormality.",
+          "cachedAnswer": "Confirm technique and rotation, then survey systematically. The key finding is a right mid-zone airspace opacity that obscures the right heart border while the right hemidiaphragm remains visible, indicating right middle lobe consolidation via the silhouette sign. Look for air bronchograms supporting an alveolar process, and check for volume loss, effusion, or cavitation. Compare with any prior films and correlate with the febrile, productive-cough presentation. This combination is characteristic of lobar bacterial pneumonia rather than a diffuse interstitial or cardiogenic pattern.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What's the differential?",
+          "prompt": "What is the differential for a focal lobar opacity in this patient?",
+          "cachedAnswer": "The leading diagnosis is community-acquired bacterial pneumonia, classically Streptococcus pneumoniae for a lobar pattern. Alternatives include atypical or viral pneumonia, aspiration (though RML is less typical than RLL), and postobstructive pneumonia from an endobronchial lesion, which is an important consideration in a 67-year-old, especially a smoker. Non-infectious mimics include pulmonary infarct, organizing pneumonia, hemorrhage, and, rarely, a lobar mass or lymphoma. In an older patient, ensure resolution on follow-up imaging to exclude an obstructing tumor masked by the pneumonia. History of exposures, immune status, and time course help refine the list.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "How would I manage this?",
+          "prompt": "How would I risk-stratify and manage this patient with suspected pneumonia?",
+          "cachedAnswer": "Assess severity with a validated tool such as CURB-65 or PSI, incorporating vitals, oxygen saturation, mental status, and comorbidities to decide inpatient versus outpatient care. Obtain basic labs, consider blood cultures and sputum studies if hospitalized, and check for sepsis. Start empiric antibiotics per guidelines: outpatient options often a respiratory fluoroquinolone or a beta-lactam plus macrolide depending on comorbidities and local resistance. Provide supportive care with oxygen, fluids, and antipyretics as needed. Arrange follow-up and consider repeat imaging in 6–8 weeks in an older patient to confirm clearing and exclude an underlying lesion.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Frontal chest radiograph in a 67-year-old with three days of productive cough, fever, and rigors shows a right mid-zone airspace opacity silhouetting the right heart border with a preserved right hemidiaphragm—the classic right middle lobe pattern. The teaching emphasis is precise lobar localization via the silhouette sign and connecting the alveolar-filling pattern to underlying pathophysiology. Keep the age-related pitfall of postobstructive pneumonia in mind. What subtle findings would you confirm on a lateral view, and what pitfalls could alter your interpretation?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Confirm the RML pattern",
+          "prompt": "What findings confirm right middle lobe consolidation and how do I avoid overcalling it?",
+          "cachedAnswer": "RML consolidation silhouettes the right heart border while sparing the right hemidiaphragm, the reverse of RLL disease. On the lateral view, look for a wedge-shaped opacity bounded superiorly by the minor (horizontal) fissure and posteriorly by the major fissure. Air bronchograms and minimal volume loss favor consolidation over atelectasis, though RML frequently shows some collapse. Avoid overcalling: a summation of breast shadow, rotation, or poor inspiration can mimic right basal haze, so correlate with border effacement rather than density alone. Prior films and a lateral projection resolve most ambiguity.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "silhouette-pitfalls",
+          "label": "Silhouette sign pitfalls",
+          "prompt": "What are the pitfalls in applying the silhouette sign here?",
+          "cachedAnswer": "The silhouette sign requires equal-density contact, so an effusion, pectus, or mediastinal fat pad can blur the heart border without true RML disease. Conversely, RML consolidation can be strikingly subtle on the frontal film, appearing only as loss of heart-border sharpness—easy to miss without the lateral. Lingular disease on the left produces the analogous left-heart-border effacement, so don't misattribute laterality on a rotated film. Combined RML and RLL disease can efface both the heart border and diaphragm, complicating localization. Always integrate the lateral and, if needed, CT for equivocal or nonresolving cases.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workup-followup",
+          "label": "Workup and follow-up pearls",
+          "prompt": "What management and follow-up considerations are guideline-relevant for this presentation?",
+          "cachedAnswer": "Treat as community-acquired pneumonia with severity stratification (CURB-65/PSI) guiding disposition and empiric therapy per IDSA/ATS, accounting for comorbidities, prior antibiotics, and local resistance. In a 67-year-old, an obstructing endobronchial lesion is a genuine concern, so document the need for follow-up radiography, typically at 6–8 weeks, to confirm radiographic resolution. Persistent or nonresolving RML opacity warrants CT and consideration of bronchoscopy. Watch for complications: parapneumonic effusion, empyema, and cavitation should prompt drainage or organism-specific escalation. Correlate clinically—radiographic clearing lags behind clinical improvement, so imaging alone shouldn't drive antibiotic duration.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

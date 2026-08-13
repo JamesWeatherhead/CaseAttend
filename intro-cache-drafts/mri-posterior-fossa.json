@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "mri-posterior-fossa",
+  "lessonPlanSha256": "d0bc639e415eaea081790eb02eda0883769808a3be16f177c6d8c4d8d6cbec72",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "592dbb7d522cf74a6359da115739e28cf028e10653e74f958100cfe6cc8fa3b0",
+    "generatedAt": "2026-08-13T16:09:21.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a special kind of picture called an MRI, which uses magnets to take detailed photos of the inside of the brain without any surgery. You are looking down at a slice of a child's brain, like looking at a slice of bread from the top. On this image, someone has outlined a lump in a colored circle and labeled it 'BRAIN TUMOR' — a tumor is an abnormal growth of cells that does not belong there. The child in the story has been waking up with bad headaches, throwing up, and walking in a wobbly way. Why do you think a growth inside a closed space like the skull could cause these problems?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What is the colored blob in the picture?",
+          "prompt": "What is the colored, outlined area in this brain MRI image?",
+          "cachedAnswer": "The colored, outlined area is an abnormal lump that someone labeled as a 'brain tumor' on the image. A tumor is a clump of cells growing where they should not be. On this MRI, it shows up as a differently-shaded blob that is not shaped like the normal, smooth brain tissue around it. The person who made this teaching image drew an orange circle around it to help you find it. Notice that it takes up space and pushes on the brain nearby, kind of like a balloon blown up inside a crowded box. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-morning-headaches",
+          "label": "Why headaches in the morning and vomiting?",
+          "prompt": "Why would a growth in the brain cause headaches that are worst in the morning and cause vomiting?",
+          "cachedAnswer": "The skull is like a hard, sealed box that cannot stretch. If a growth takes up extra room, the pressure inside the box goes up, and that squeezing feeling causes a headache. When you lie down flat all night to sleep, fluid and blood spread differently and the pressure builds even more, so the headache is often worst right when you wake up. That same high pressure can trigger the brain's vomiting center, which is why throwing up often comes with the headache. Think of it like a too-full water bottle with the cap on tight — there is nowhere for the extra pressure to go. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-wobbly-walk",
+          "label": "Why is the child walking wobbly?",
+          "prompt": "Why might this child have trouble walking steadily?",
+          "cachedAnswer": "A part at the back of the brain called the cerebellum is like the body's balance and coordination helper — it keeps your walking smooth and steady. If a growth presses on or is near this area, the balance system does not work as well, so the child walks with feet spread wide apart and cannot walk a straight line. That is why doctors ask patients to walk heel-to-toe, like on a tightrope, to test balance. A wobbly, wide-based walk is a clue that something is bothering the back part of the brain. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an axial (top-down) T2-weighted brain MRI slice, meaning fluid tends to look bright and different tissues show up as different shades of gray. The image includes an area that has been outlined and labeled as a brain tumor — an abnormal mass of cells. Clinically, the child has weeks of morning-predominant headaches, vomiting, and an unsteady, wide-based walk. The skull is a rigid container, so anything that adds volume inside can raise the pressure. Given the child's symptoms and the closed nature of the skull, how might a mass produce this specific combination of findings?",
+      "introQuestions": [
+        {
+          "id": "orient-image",
+          "label": "How do I read this MRI slice?",
+          "prompt": "How is this axial brain MRI oriented, and what am I looking at?",
+          "cachedAnswer": "This is an axial slice, which means you are looking at the brain from above, as if the top of the head were removed. On MRI the brain's outer folded surface, the fluid-filled spaces, and deeper structures each appear as different shades because they contain different amounts of water and fat. The bright, symmetric spaces near the center are fluid-filled chambers called ventricles. An abnormal region has been outlined and labeled as a tumor, and you can see it disrupts the normal shape of the surrounding tissue. Comparing one side of the brain to the other helps you spot where the normal symmetry is broken. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pressure-mechanism",
+          "label": "Why does a mass raise brain pressure?",
+          "prompt": "Why does a mass inside the skull raise pressure, and how does that explain morning headaches and vomiting?",
+          "cachedAnswer": "The skull is a fixed-volume box holding brain tissue, blood, and cerebrospinal fluid. If a mass adds volume, the body can compensate only a little before pressure inside the skull rises. When lying flat during sleep, pressure tends to be higher, so headaches are often worst on waking and may improve after being upright. Rising pressure and stretching of pain-sensitive structures also stimulate the brain's vomiting center, causing the vomiting. A mass near the back of the brain can also block the flow of cerebrospinal fluid, making the fluid back up and driving pressure even higher. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cerebellum-balance",
+          "label": "What controls balance and coordination?",
+          "prompt": "Which part of the brain controls balance and coordination, and how does that relate to the unsteady gait?",
+          "cachedAnswer": "The cerebellum, located at the back and lower part of the brain, coordinates smooth, balanced movement and steady walking. When its function is disrupted by pressure or a nearby mass, walking becomes wide-based and unsteady, and heel-to-toe (tandem) walking becomes difficult. This is why the exam finding of an unsteady gait points toward a problem in the back region of the brain called the posterior fossa. In children, the combination of raised-pressure symptoms plus balance problems commonly directs attention to this region. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This axial T2-weighted MRI is presented for a school-aged child with subacute morning headaches, vomiting, and truncal/gait ataxia. The teaching image has an outlined, labeled region indicating a mass. The clinical triad here should anchor your localization: think about the cerebellum, brainstem, and fourth ventricle within the posterior fossa. Recall that the posterior fossa is a confined compartment, and that the fourth ventricle is a critical node in CSF flow. Using landmarks and pathophysiology, how would you localize the lesion and explain the symptom complex?",
+      "introQuestions": [
+        {
+          "id": "localize-landmarks",
+          "label": "How do I localize using CSF landmarks?",
+          "prompt": "Which anatomical landmarks localize a posterior fossa lesion, and what should I look for on this slice?",
+          "cachedAnswer": "Key posterior fossa landmarks are the cerebellar hemispheres and vermis, the brainstem (pons and midbrain) anteriorly, and the fourth ventricle sitting between them. Localization involves determining whether a mass is midline (vermian/fourth ventricular) versus within a cerebellar hemisphere, and whether it effaces or displaces the fourth ventricle. Effacement or compression of the fourth ventricle is important because it can obstruct CSF outflow. You should also look upstream for dilation of the third and lateral ventricles, which indicates obstructive hydrocephalus. Note that in this particular teaching image the outlined region does not sit in the classic posterior fossa midline location, which is itself a useful reminder that image labels must be checked against anatomy. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "obstructive-hydrocephalus",
+          "label": "Mechanism of obstructive hydrocephalus",
+          "prompt": "Explain how a posterior fossa mass produces obstructive hydrocephalus and the resulting symptoms.",
+          "cachedAnswer": "CSF is produced by the choroid plexus and flows from the lateral ventricles through the foramina of Monro to the third ventricle, then through the cerebral aqueduct to the fourth ventricle, exiting via the foramina of Luschka and Magendie. A posterior fossa mass that compresses the fourth ventricle or aqueduct obstructs this outflow, causing CSF to accumulate proximally and raising intracranial pressure (obstructive/non-communicating hydrocephalus). Elevated ICP produces headache that is worse when recumbent (hence morning-predominant) and stimulates the area postrema to cause vomiting. Direct mass effect on the cerebellar vermis produces truncal ataxia and a wide-based, unsteady gait. This mechanistic chain links a single lesion to the full clinical triad. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "imaging-vs-histology",
+          "label": "Imaging localization vs tissue diagnosis",
+          "prompt": "Why can imaging localize and characterize a lesion but not establish a definitive histopathologic diagnosis?",
+          "cachedAnswer": "MRI defines a lesion's location, size, margins, signal characteristics, and effect on surrounding structures, and it generates a ranked differential based on age and pattern. However, many tumor types share overlapping imaging features, so signal and morphology alone cannot reliably specify the exact cell of origin. Definitive histopathologic (and increasingly molecular) diagnosis requires tissue sampling via biopsy or resection with microscopy, immunohistochemistry, and genetic testing. This distinction matters because management and prognosis depend on the specific entity, not the radiographic impression alone. For this teaching case, any source label naming a specific tumor type should be treated as unverified until confirmed by tissue and specialist review. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A school-aged child presents with several weeks of morning headaches, vomiting, and a wide-based ataxic gait — a classic raised-ICP-plus-cerebellar-dysfunction picture prompting posterior fossa evaluation. An axial T2 MRI is provided with a labeled mass. Your task is to reason from the clinical syndrome to localization, to a working imaging differential, and to appropriate next steps. Remember that in a child this presentation warrants urgent evaluation for obstructive hydrocephalus. Based on the history, exam, and this image, how do you localize the lesion and what would you do next?",
+      "introQuestions": [
+        {
+          "id": "clinical-localization",
+          "label": "Localize from the clinical syndrome",
+          "prompt": "How does the clinical picture guide localization, and what do I confirm on the MRI?",
+          "cachedAnswer": "Morning-predominant headache with vomiting reflects raised intracranial pressure, while a wide-based gait and impaired tandem walking point to cerebellar (particularly vermian/midline) dysfunction. Together this classically localizes to the posterior fossa with likely fourth-ventricular compromise. On MRI, confirm the mass location relative to the vermis, hemispheres, brainstem, and fourth ventricle, and specifically look for fourth-ventricular effacement and upstream ventricular dilation indicating obstructive hydrocephalus. Also assess for tonsillar herniation or transtentorial changes. As a teaching caveat, verify that the labeled/outlined region on the provided image actually corresponds to the posterior fossa, since annotations should always be cross-checked against anatomy. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "peds-ddx",
+          "label": "Pediatric posterior fossa differential",
+          "prompt": "What is the imaging differential for a posterior fossa mass in a child, and what features distinguish them?",
+          "cachedAnswer": "The classic pediatric posterior fossa differential includes medulloblastoma (often midline/vermian, arising near the fourth ventricle, typically restricting on diffusion due to high cellularity), pilocytic astrocytoma (often cystic with an enhancing mural nodule, hemispheric), ependymoma (fourth-ventricular, tends to extrude through foramina, may show calcification), and brainstem glioma (expansile pontine, diffuse). Diffusion, enhancement pattern, calcification, cyst formation, and precise origin help stratify these. Age and exact location shift the pre-test probabilities. However, imaging provides a ranked differential rather than a definitive diagnosis, and overlap is common. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "Immediate management priorities",
+          "prompt": "What are the immediate management and workup priorities for this child?",
+          "cachedAnswer": "First priority is recognizing and managing raised ICP and obstructive hydrocephalus, which can be life-threatening; this involves urgent neurosurgical consultation and consideration of CSF diversion (e.g., EVD or endoscopic third ventriculostomy). Obtain complete MRI of the brain with and without contrast, and MRI of the entire spine before or appropriately timed relative to surgery to evaluate for leptomeningeal (drop) metastases when a malignant embryonal tumor is suspected. Corticosteroids may reduce peritumoral edema. Definitive diagnosis requires tissue via biopsy or resection with histopathology and molecular studies, guiding subsequent therapy in a multidisciplinary neuro-oncology setting. Avoid lumbar puncture in the setting of a posterior fossa mass with obstructive hydrocephalus due to herniation risk. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "School-aged child, subacute morning headaches, emesis, and truncal ataxia — a textbook posterior fossa syndrome with concern for obstructive hydrocephalus. You are given an axial T2 slice with an outlined, labeled mass. Note that the draft source label for this teaching case names a primitive neuroectodermal tumor, but that label is not adjudicated ground truth and the annotated region should be scrutinized against actual posterior fossa anatomy. Work through localization, sequence selection, differential refinement, and pitfalls. Where does this lesion actually localize, and does the provided annotation hold up?",
+      "introQuestions": [
+        {
+          "id": "annotation-scrutiny",
+          "label": "Does the annotation match the anatomy?",
+          "prompt": "Critically appraise the labeled region on this image against expected posterior fossa localization.",
+          "cachedAnswer": "The clinical syndrome (raised ICP plus truncal ataxia) predicts a posterior fossa, likely fourth-ventricular or vermian, lesion. On this axial T2 image, however, the outlined region sits in a supratentorial posterior location rather than the classic infratentorial midline posterior fossa, so the annotation does not cleanly match the expected localization for the vignette. This mismatch is the teaching point: image labels and even case titles require independent verification against anatomy and the correct slice level. A single axial slice may also not capture the culprit lesion, so review the full stack and multiplanar reformats. Discordance between clinical localization and a labeled image should prompt specialist re-review before any interpretation is trusted. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "sequence-strategy",
+          "label": "Optimal MRI sequences and findings",
+          "prompt": "Which MRI sequences best characterize a pediatric posterior fossa mass and stage disease?",
+          "cachedAnswer": "Beyond T2/FLAIR for morphology and edema, DWI/ADC is critical: markedly restricted diffusion favors highly cellular embryonal tumors such as medulloblastoma, whereas pilocytic astrocytoma typically shows facilitated diffusion. Post-contrast T1 characterizes enhancement patterns, and SWI/GRE can reveal calcification or hemorrhage (e.g., ependymoma). Assess the fourth ventricle, aqueduct, and ventricular size for obstructive hydrocephalus, plus tonsillar position. Whole-neuraxis contrast-enhanced spine MRI is required for staging leptomeningeal dissemination in suspected embryonal tumors, ideally pre-operatively to avoid post-surgical artifact. Perfusion and MR spectroscopy may add supportive metabolic data in select cases. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls-pearls",
+          "label": "Pitfalls and molecular-era caveats",
+          "prompt": "What are key pitfalls in radiographic diagnosis and how does tissue/molecular data change management?",
+          "cachedAnswer": "Pitfalls include over-committing to a specific histology from imaging alone given substantial overlap, mislabeling supratentorial versus infratentorial lesions on limited slices, and anchoring on a provided (possibly incorrect) label. The older term 'primitive neuroectodermal tumor' (PNET) has been largely retired in current CNS tumor classification, which now emphasizes molecular subgrouping (e.g., medulloblastoma WNT, SHH, group 3, group 4), underscoring that terminology and diagnosis are tissue- and molecularly defined. Radiology localizes, characterizes, and stages, but definitive diagnosis and risk stratification require histopathology plus molecular profiling, which directly drive surgery, radiation planning, and chemotherapy in a multidisciplinary setting. Always separate the radiographic impression from the pathologic diagnosis. Avoid LP in the setting of a mass with obstructive hydrocephalus due to herniation risk. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

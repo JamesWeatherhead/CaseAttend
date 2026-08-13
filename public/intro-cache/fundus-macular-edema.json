@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-macular-edema",
+  "lessonPlanSha256": "f5c9293d48a9819eb90d0f88de78f59612c09d38a6c13cc1d6748e7056352b54",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "d161b9f6d0307b6982d5602f31ac544c26795c587bfc9f983266db25edf4c333",
+    "generatedAt": "2026-08-13T15:03:26.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph of the inside back wall of the eye, called the retina. It is like looking at a movie screen where light images land. The bright yellow-white patches near the center are deposits that don't belong there, and the person in this case has diabetes and trouble seeing clearly when reading. The very center of the retina is the part that handles the sharpest, most detailed vision.\n\nWhy would a problem right in the middle of the eye's 'screen' cause trouble reading?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the yellow spots?",
+          "prompt": "What are the bright yellow-white spots I see in this eye picture?",
+          "cachedAnswer": "The bright yellow-white patches are deposits called exudates, which are like little puddles of fats and proteins that leaked out of tiny blood vessels. Think of a garden hose with small holes that lets water drip out onto the ground. In this picture, damaged blood vessels have leaked fluid and these deposits into the retina, the light-sensing layer at the back of the eye. The area around them may also be swollen, which is called edema (a fancy word for swelling from extra fluid). These deposits sit near the center of vision, which is why they matter so much.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-blurry",
+          "label": "Why is the reading blurry?",
+          "prompt": "Why does damage in the center of the eye make reading blurry?",
+          "cachedAnswer": "The center of the retina is the spot that gives you your sharpest, most detailed vision, the kind you need to read words or recognize faces. When that spot gets swollen or covered with leaked deposits, the light can't land cleanly, so the picture your brain receives gets fuzzy right in the middle. It is a bit like a smudge on the exact center of a pair of glasses. The edges of your vision can still work fine, but the important detail work suffers. That is why the person notices trouble specifically when reading.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What should this person do?",
+          "prompt": "What should a person with diabetes and blurry central vision do next?",
+          "cachedAnswer": "Someone with diabetes who notices new blurring in the center of their vision should see an eye doctor promptly. Diabetes can slowly damage the tiny blood vessels in the eye, so regular eye checkups help catch problems early. The eye doctor can take special scans and pictures to see the swelling clearly and decide on treatment. Keeping blood sugar well controlled also helps protect the eyes over time. Catching changes early gives the best chance to keep good vision.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This color fundus photograph shows the retina, the neural tissue lining the back of the eye that converts light into signals for the brain. The central area, called the macula, is responsible for high-resolution central vision. In this image you can see clusters of bright yellow-white exudates and surrounding retinal thickening near the center. The patient has diabetes and reports central blurring while reading.\n\nGiven that the macula handles fine detail, why would leakage and swelling here selectively affect reading vision?",
+      "introQuestions": [
+        {
+          "id": "locate-macula",
+          "label": "Where is the macula?",
+          "prompt": "How do I locate the macula and optic disc on a fundus photograph?",
+          "cachedAnswer": "The optic disc is the pale, roundish spot where blood vessels and the optic nerve enter the eye; in many photos it appears as a bright circle to one side. The macula is the darker, vessel-free zone located roughly two disc-diameters toward the center, temporal to (away from the nose relative to) the disc. Its very center is the fovea, the pinpoint of sharpest vision. Large retinal blood vessels arch above and below the macula but generally spare its center. In this image, the yellow deposits and thickening sit in this central macular region, which is why they draw attention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-are-exudates",
+          "label": "What causes the exudates?",
+          "prompt": "What are hard exudates and what do they tell us about the blood vessels?",
+          "cachedAnswer": "Hard exudates are deposits of lipids and proteins that leak out of retinal blood vessels when their walls become abnormally permeable, or leaky. In diabetes, chronically high blood sugar damages the tiny capillaries, weakening the barrier that normally keeps fluid inside the vessels. Fluid and these lipid-rich materials then seep into the retina, causing both the yellow deposits and the swelling (edema) you can see. The presence of exudates near the center signals ongoing leakage in a critical location. This pattern is a clue that the vascular supply of the macula is being affected.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-central-matters",
+          "label": "Why does the center matter most?",
+          "prompt": "Why does central retinal involvement produce noticeable symptoms compared to the periphery?",
+          "cachedAnswer": "The macula, and especially the fovea, is packed with cone photoreceptors and has the densest neural wiring for detail, so it delivers the sharp central vision used for reading and recognizing faces. The peripheral retina, by contrast, is better at detecting motion and low light but gives coarser detail. When fluid or deposits disrupt the macula, the highest-resolution part of the visual field is degraded, producing very noticeable blur even if peripheral vision stays intact. This is why a small area of macular swelling can cause big functional complaints. It also explains why this finding prompts further imaging and treatment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This fundus photograph is centered on the macula and demonstrates focal hard exudates with adjacent retinal thickening, in a patient with diabetes and central blur. The macula lies temporal to the optic disc, and its center, the fovea, provides peak visual acuity via a high density of cone photoreceptors. The findings here are consistent with a pattern of macular edema driven by compromised inner blood-retinal barrier integrity. Consider the microvascular pathophysiology underlying these changes.\n\nWhat cellular and vascular mechanisms link chronic hyperglycemia to the exudation and edema seen at the macula?",
+      "introQuestions": [
+        {
+          "id": "identify-pattern",
+          "label": "Identify the visible pattern",
+          "prompt": "Describe the retinal findings visible here and how they suggest macular edema.",
+          "cachedAnswer": "The photograph shows clusters of well-demarcated yellow-white hard exudates in the central retina, arranged in and around the macular region, with surrounding retinal thickening implied by the loss of the normal foveal contour. Hard exudates represent extravasated lipoprotein that accumulates at the border of edematous and non-edematous retina, often in a circinate or ring configuration around a leaking focus. Their concentration near the fovea, together with retinal thickening, is the hallmark pattern of macular edema. On stereo viewing or OCT the thickening would be more directly appreciated. The clinical correlate is reduced central acuity.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "brb-mechanism",
+          "label": "Blood-retinal barrier breakdown",
+          "prompt": "Explain the pathophysiology of blood-retinal barrier breakdown leading to macular edema in diabetes.",
+          "cachedAnswer": "Chronic hyperglycemia drives pericyte loss, basement membrane thickening, and endothelial dysfunction in retinal capillaries, degrading the inner blood-retinal barrier normally maintained by tight junctions between endothelial cells. Accumulation of advanced glycation end-products, oxidative stress, and upregulation of VEGF increase vascular permeability, while inflammatory mediators loosen tight junction proteins such as occludin and claudins. Fluid and plasma proteins then leak into the extracellular space of the retina, and lipid-rich residue precipitates as hard exudates. Fluid preferentially collects in the outer plexiform and inner nuclear layers, producing the cystoid spaces characteristic of macular edema. Because the fovea depends on precise retinal architecture, this fluid markedly impairs central acuity.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-refer",
+          "label": "Why symptoms and referral",
+          "prompt": "Why does macular involvement produce symptoms and warrant imaging and referral?",
+          "cachedAnswer": "The fovea contains the highest density of cone photoreceptors and provides the sharpest photopic acuity, so even limited edema there distorts photoreceptor alignment and light transmission, producing central blur and metamorphopsia. Peripheral retina can tolerate similar pathology with far fewer symptoms, which is why macular disease is disproportionately symptomatic. Optical coherence tomography quantifies retinal thickness and identifies intraretinal fluid, and fluorescein angiography localizes leakage, guiding decisions. Because untreated center-involving edema threatens permanent acuity loss, prompt referral for imaging and treatment is appropriate. This teaching case's source label is not adjudicated, so specialist confirmation is required before any clinical inference.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with diabetes reports central blur on reading, and this fundus photograph centered on the macula shows focal hard exudates with associated retinal thickening. The macula sits temporal to the optic disc, and center-involving pathology here maps directly onto the patient's symptom. This appearance is consistent with diabetic macular edema, though the finding should be confirmed with OCT and correlated clinically. Work through how you would characterize, image, and manage this presentation.\n\nHow would you distinguish center-involving from non-center-involving macular edema, and how does that change management?",
+      "introQuestions": [
+        {
+          "id": "exam-findings",
+          "label": "Characterize the findings",
+          "prompt": "What clinical features on this fundus image support diabetic macular edema and what else would you look for?",
+          "cachedAnswer": "The image shows clustered hard exudates and retinal thickening in the macular region, features that fit diabetic macular edema when center-involving. On a full exam I would also look for microaneurysms, dot-blot hemorrhages, cotton-wool spots, venous beading, and any neovascularization to grade the underlying retinopathy severity. The distribution of exudates relative to the fovea, and any circinate ring around a leaking focus, helps localize the pathology. Reduced acuity and metamorphopsia on Amsler testing support functional involvement. Stereo biomicroscopy or OCT is needed to confirm thickening, since a single color photo can underestimate edema.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for macular exudates",
+          "prompt": "What is the differential diagnosis for macular exudates and edema in this patient?",
+          "cachedAnswer": "In a diabetic patient with central exudates, diabetic macular edema is the leading consideration, but the differential includes retinal vein occlusion with macular edema, hypertensive retinopathy, and radiation retinopathy, all of which can produce exudates and thickening. Macular telangiectasia and retinal arterial macroaneurysm can cause focal exudation. Neovascular or other maculopathies, and inflammatory or uveitic edema, also enter the differential depending on context. Coexisting hypertension and dyslipidemia can worsen exudation. History, blood pressure, lipid profile, and imaging with OCT and fluorescein angiography help discriminate. The unadjudicated source label here means the diagnosis is illustrative and requires specialist confirmation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Management principles",
+          "prompt": "Outline the management approach for center-involving diabetic macular edema.",
+          "cachedAnswer": "Management combines systemic optimization with ocular treatment: tighten glycemic control and address blood pressure and lipids, since these drive progression. For center-involving edema with reduced acuity, intravitreal anti-VEGF therapy is generally first-line and can improve vision. Focal or grid laser photocoagulation has a role for select non-center-involving or refractory leakage, and intravitreal corticosteroids are an option in certain cases. OCT guides treatment initiation and monitoring of response, and fluorescein angiography localizes leakage. Timely referral to ophthalmology is essential, and non-center-involving edema without acuity loss may be observed with close follow-up.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This pretreatment color fundus photo, centered on the macula, shows a cluster of hard exudates with associated retinal thickening in a diabetic patient with central blur, a presentation consistent with diabetic macular edema pending OCT confirmation. The exudate distribution relative to the fovea and the underlying retinopathy grade both drive decisions. Note that the NEI source label for this teaching case is not adjudicated ground truth, so treat the diagnosis as illustrative. Reason through classification, imaging pitfalls, and guideline-aware management.\n\nHow do you integrate DR severity grading, OCT-based center involvement, and treatment thresholds when planning care here?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Pattern and grading pearls",
+          "prompt": "What pattern recognition and grading points apply to this fundus appearance?",
+          "cachedAnswer": "The circinate-type hard exudate ring with central thickening is a classic signpost of focal leakage, often from an underlying cluster of microaneurysms at the ring's center. Assess concurrently for NPDR/PDR features: intraretinal hemorrhages across quadrants, venous beading, IRMA, and any neovascularization, which together set the DR severity grade and follow-up interval. Hard exudates track lipid extravasation and can persist after fluid resolves, so they lag behind treatment response. Exudate plaques encroaching the fovea carry prognostic weight for acuity. Remember that color photography underestimates thickening compared with OCT.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "imaging-pitfalls",
+          "label": "OCT and angiography pitfalls",
+          "prompt": "What imaging pitfalls should I keep in mind when confirming and characterizing this edema?",
+          "cachedAnswer": "OCT defines center-involving versus non-center-involving edema and quantifies central subfield thickness, but interpret against normative and device-specific values and watch for segmentation errors over exudates or in dense edema. Distinguish true intraretinal/subretinal fluid from vitreomacular traction, epiretinal membrane, or a taut posterior hyaloid, which change management. Hard exudates can cast shadowing artifact on OCT. OCT-angiography and fluorescein angiography localize leakage and reveal macular ischemia, which tempers visual prognosis and anti-VEGF expectations. Correlate structure with acuity, since thickness and visual function do not always align.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "treatment-thresholds",
+          "label": "Guideline-aware treatment",
+          "prompt": "How do current treatment thresholds and options guide management of this DME?",
+          "cachedAnswer": "For center-involving DME with vision impairment, intravitreal anti-VEGF is first-line, with regimens such as treat-and-extend and monitoring by OCT and acuity; protocol data support observation for good-acuity center-involving DME with close follow-up. Non-center-involving edema is often observed or treated with focal laser to leaking microaneurysms outside the fovea. Steroids (implants or intravitreal triamcinolone) are useful in pseudophakic or anti-VEGF-suboptimal eyes, weighing cataract and IOP risk. Optimize systemic HbA1c, blood pressure, and lipids concurrently, as these modify progression. Screen for and treat coexisting proliferative disease, and set realistic prognosis when macular ischemia is present.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-prostate",
+  "lessonPlanSha256": "afc8b2a3bce7588e888f2de4b1bbf667d481407843e0b347158ea8ef157d277b",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "ebceb955a70edfdfbc106d1d8e5c0d0e368a52ad3d9a9dddce81b257b7256d0a",
+    "generatedAt": "2026-08-13T15:12:40.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a microscope picture of prostate tissue, stained pink and purple so we can see its shapes. The prostate is a small gland in the male body that helps make fluid for semen, and it is built out of many tiny tube-like glands. In panel A the glands look large, round, and organized, like neat balloons. In panel B the glands look small, crowded, and messy, packed close together. What differences between the neat glands and the crowded glands do you notice first?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What is shown in this prostate tissue picture?",
+          "cachedAnswer": "This is a photomicrograph, which means a photo taken through a microscope, of prostate tissue. The pink and purple colors come from a common stain called H&E that makes cells and their parts show up. The empty white circles are the insides (lumens) of glands, which are tube-shaped structures that make fluid. The pink material between the glands is called stroma, a kind of supportive filler tissue. In panel A the glands are big and tidy, while in panel B the glands are small, crowded, and irregular. Comparing these two patterns is what pathologists do to spot problems.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-crowded-glands",
+          "label": "Why do some glands look crowded?",
+          "prompt": "Why do the small glands look so crowded and messy compared to the neat ones?",
+          "cachedAnswer": "Healthy glands usually grow in an orderly way with space between them, like houses on a well-planned street. When cells grow out of control, they can make lots of tiny extra glands crammed together with less room in between, like too many buildings squeezed into one block. That crowded, disorganized look is a clue that something abnormal may be happening. The neat glands in panel A show the normal pattern, and the messy small glands in panel B show a more worrying one. Still, one picture alone cannot tell the whole story. Doctors always look at many areas and use other tests.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "one-picture-enough",
+          "label": "Can one picture give the answer?",
+          "prompt": "Can doctors decide everything from just one microscope picture?",
+          "cachedAnswer": "No, one picture is only a tiny window into the whole sample. A single field of view might miss important areas or show something misleading. Doctors examine many slices of tissue, compare patterns, and sometimes run special stains or repeat tests. They also combine the pictures with the patient's exam and blood tests, like the PSA blood test mentioned in this case. Careful review by a trained specialist is always needed before any real conclusion. This helps avoid mistakes from judging too quickly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This H&E-stained section shows prostate tissue, an exocrine gland that secretes components of seminal fluid. The prostate is normally organized into glands with an open lumen surrounded by a wall of epithelial cells, all embedded in supportive stroma. Panel A illustrates larger, well-organized glands, while panel B shows small, crowded, irregular glands and a nest of poorly formed structures. This case was flagged with a source label of prostate adenocarcinoma, but that label is not confirmed ground truth here. Looking at the two panels, what structural features distinguish the organized glands from the crowded ones?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What are the labeled structures?",
+          "prompt": "What do the labeled parts (lumen, wall of gland, stroma) mean in this image?",
+          "cachedAnswer": "The lumen is the hollow central space of each gland, where secretions would collect. The wall of the gland is made of epithelial cells that line and form the gland, appearing as a rim of purple-stained nuclei. The stroma is the pink supportive connective tissue between glands, containing fibrous tissue and smooth muscle. In panel A these features are clearly organized and evenly spaced. In panel B the glands are smaller, more numerous, and packed tightly with little stroma between them. Recognizing these basic building blocks is the first step in reading any glandular tissue.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "architecture-difference",
+          "label": "How does the architecture differ?",
+          "prompt": "How does the overall architecture differ between panel A and panel B?",
+          "cachedAnswer": "Panel A shows an orderly arrangement: glands are large, rounded, and spaced apart with intervening stroma, resembling normal or benign tissue. Panel B shows a loss of this order, with crowded small glands, irregular shapes, and a nest of poorly formed glands fused together. Loss of the normal spacing and uniformity is a general warning sign that tissue growth has become disorganized. This kind of architectural change is one of the main features pathologists evaluate. However, architecture must be interpreted alongside cellular detail and clinical information. A single field cannot capture how much of the tissue is affected.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step-reasoning",
+          "label": "What would a specialist do next?",
+          "prompt": "Why is expert review needed instead of concluding from this one image?",
+          "cachedAnswer": "A single photomicrograph is a very limited sample, and appearances can be mimicked by benign conditions. A pathologist examines the entire biopsy, evaluates many fields, and may order special immunostains to confirm whether protective cell layers are present or absent. They also correlate findings with the patient's PSA level and physical exam. Because the source label in this teaching case is not adjudicated, it should not be treated as a confirmed diagnosis. This reflects a broader scientific principle: conclusions require adequate sampling and confirmation. Careful, systematic review protects against error.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This H&E photomicrograph contrasts benign-appearing prostatic glands (panel A) with crowded small glands and poorly formed nests (panel B). Normal prostatic glands show a two-cell-layer epithelium (secretory luminal cells over a basal cell layer) with papillary infoldings, set in fibromuscular stroma. In gland-forming adenocarcinoma, small crowded glands typically lack the basal layer and show nuclear atypia with prominent nucleoli. The source label suggests invasive adenocarcinoma, but it is unadjudicated and requires specialist confirmation. Which histologic features would you use to distinguish the crowded small glands from benign architecture?",
+      "introQuestions": [
+        {
+          "id": "malignant-features",
+          "label": "Features of gland-forming carcinoma?",
+          "prompt": "What histologic features characterize gland-forming prostatic adenocarcinoma?",
+          "cachedAnswer": "Gland-forming prostatic adenocarcinoma classically shows a proliferation of small, crowded glands with an infiltrative pattern between benign glands. The malignant glands are lined by a single layer of cells and lack the basal cell layer seen in benign glands, a key diagnostic feature. Nuclei are typically enlarged with prominent, often eosinophilic nucleoli, and intraluminal contents such as blue mucin, pink amorphous secretions, or crystalloids may be seen. The straight luminal borders and absence of papillary infolding contrast with benign glands. In this image, panel B's crowded irregular glands and poorly formed nests are consistent with such a pattern. Confirmation still relies on more than architecture alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "benign-vs-malignant",
+          "label": "Benign vs malignant architecture",
+          "prompt": "How does benign prostatic architecture differ from the crowded malignant pattern?",
+          "cachedAnswer": "Benign prostatic glands (panel A) are larger and more variable in size, show papillary and undulating luminal infoldings, and retain an intact basal cell layer beneath the luminal secretory cells. They are lobular and organized, separated by abundant fibromuscular stroma. Malignant glands (panel B) tend to be smaller, more uniform in caliber, crowded, and infiltrate between benign glands with loss of the basal layer. The nuclear changes—enlargement, hyperchromasia, and prominent nucleoli—also help. Immunohistochemistry for basal cell markers (e.g., p63, high-molecular-weight cytokeratin) and AMACR can confirm these impressions. Architecture and cytology together guide the distinction.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "gleason-limits",
+          "label": "Why not grade from one field?",
+          "prompt": "Why can Gleason grade not be assigned from a single microscopic field?",
+          "cachedAnswer": "Gleason grading assesses the architectural patterns of prostatic adenocarcinoma, assigning a primary and secondary pattern based on the predominant and second-most-common architectures across the tumor. Because grading depends on the proportion and range of patterns present, a single field cannot represent the full tumor. One image might show only the most or least differentiated area, biasing the estimate. Modern reporting uses Grade Groups derived from the full Gleason score, requiring evaluation of the entire specimen. Sampling adequacy and correlation with the whole biopsy are essential. This is why casual grading from one photomicrograph is inappropriate.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with an abnormal DRE and rising PSA undergoes prostate needle biopsy; this field shows crowded small glands adjacent to more organized architecture. Panel B's small infiltrative glands and poorly formed nests raise concern for gland-forming adenocarcinoma, while panel A shows a benign-appearing pattern. The source label suggests invasive adenocarcinoma but is unadjudicated, so it should not drive management. Your task is to reason about what a single field can and cannot establish. Given this picture and the clinical context, how would you frame the differential and next steps?",
+      "introQuestions": [
+        {
+          "id": "clinical-differential",
+          "label": "What is the differential here?",
+          "prompt": "What is the differential for crowded small prostatic glands on biopsy?",
+          "cachedAnswer": "Crowded small glands raise a differential that includes prostatic adenocarcinoma, but also benign mimics that must be excluded. Mimics include atrophy, post-atrophic hyperplasia, adenosis (atypical adenomatous hyperplasia), and partial atrophy, which can look crowded but retain basal cells. High-grade prostatic intraepithelial neoplasia (HGPIN) and atypical small acinar proliferation (ASAP) are also considerations, the latter being a descriptive category when features are suspicious but not definitive. Nuclear atypia, absent basal layer, and infiltrative growth favor carcinoma. Immunostains (p63, HMWCK, AMACR) help resolve ambiguous cases. Clinical correlation with PSA and DRE supports but never replaces histologic confirmation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "single-field-limits",
+          "label": "What can't one field tell you?",
+          "prompt": "What conclusions can and cannot be drawn from this single field?",
+          "cachedAnswer": "From this single field you can note morphologic features suggestive of malignancy—crowded small glands, irregular architecture, and poorly formed nests—but you cannot render a definitive diagnosis or grade. You cannot determine tumor extent, number of positive cores, percentage involvement, or presence of perineural or extraprostatic extension, all of which affect staging and risk. You also cannot confirm the absence of a basal layer without immunostains at higher power. A representative field may over- or under-represent the worst pattern. Definitive interpretation requires the full biopsy set reviewed systematically. This case's unadjudicated label reinforces the need for specialist sign-out.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-principles",
+          "label": "How does this feed into management?",
+          "prompt": "How would a confirmed diagnosis and grading influence management principles?",
+          "cachedAnswer": "If adenocarcinoma is confirmed, management is stratified by Grade Group (from Gleason score), PSA, clinical stage, and core involvement, informing risk categories used by guidelines such as NCCN. Low-risk, low-volume, low-grade disease may be appropriate for active surveillance, whereas higher-grade or higher-volume disease may warrant radical prostatectomy or radiotherapy, with androgen deprivation in selected cases. Accurate grading is therefore central to management, which is exactly why it cannot be estimated casually from one image. Shared decision-making incorporates patient age, comorbidities, and preferences. Multiparametric MRI and staging studies may further refine the plan. Pathology is one pillar of an integrated assessment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This needle biopsy field juxtaposes benign glands (panel A) against crowded small acini and poorly formed nests (panel B) in a patient with abnormal DRE and rising PSA. The morphology raises gland-forming acinar adenocarcinoma, but the source label is unadjudicated and warrants confirmatory work-up before any sign-out. Consider the diagnostic pitfalls of small-gland proliferations and the constraints of Grade Group assignment from limited material. As you review, which pitfalls and confirmatory steps would you prioritize before committing to a diagnosis?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Key diagnostic features and pitfalls",
+          "prompt": "What features support carcinoma and what pitfalls should be avoided in small-gland proliferations?",
+          "cachedAnswer": "Supportive features include infiltrative small crowded acini, single-cell-layer glands lacking basal cells, nuclear enlargement with prominent nucleoli, amphophilic cytoplasm, and intraluminal blue mucin, pink secretions, or crystalloids; perineural invasion and glomerulations are specific when present. Pitfalls include benign mimics such as partial atrophy, adenosis, cowper glands, seminal vesicle epithelium, and reactive nucleolar prominence from inflammation. Overcalling on architecture alone is a classic error; basal cell markers (p63, HMWCK) confirm retention, while AMACR positivity supports but is not specific. HGPIN with adjacent small glands can simulate invasion. When features are equivocal, ASAP is the honest descriptor. Correlate with cores, PSA, and DRE.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "grade-group-assignment",
+          "label": "Grade Group from limited material",
+          "prompt": "How should Gleason pattern and Grade Group be assigned, and why is one field insufficient?",
+          "cachedAnswer": "Contemporary reporting uses ISUP/WHO Grade Groups derived from Gleason scoring: pattern 3 shows discrete well-formed glands, pattern 4 includes fused, cribriform, glomeruloid, or poorly formed glands, and pattern 5 shows sheets, cords, single cells, or comedonecrosis. On needle biopsy the highest-grade pattern is incorporated even if minor, and each involved core is typically graded. A single field cannot establish the proportion or full range of patterns, nor tumor length or number of positive cores that drive risk stratification. Percent pattern 4 and cribriform morphology carry prognostic weight and require whole-slide assessment. Casual grading from one image risks both under- and over-grading. Systematic review of the entire case is mandatory.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirmatory-workup",
+          "label": "Confirmatory work-up and sign-out",
+          "prompt": "What confirmatory work-up would you pursue before signing this out, given the unadjudicated label?",
+          "cachedAnswer": "Before committing, review all levels and cores at high power, and obtain a basal cell/AMACR immunopanel (e.g., PIN-4 cocktail) on the atypical focus to confirm basal cell absence with AMACR overexpression. Assess for perineural invasion, extraprostatic extension, and cribriform or intraductal carcinoma, which affect grading and reporting. Correlate with PSA kinetics, DRE, and any mpMRI findings, and consider deeper levels if the focus is small or exhausted. Because this teaching case's source label is not adjudicated ground truth, treat it as a hypothesis requiring specialist confirmation rather than a diagnosis. Consider intradepartmental consultation for borderline cases. Document limitations of sampling in the report.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

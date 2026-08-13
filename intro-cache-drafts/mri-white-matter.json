@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "mri-white-matter",
+  "lessonPlanSha256": "5576c4ac67b7c8c4d215f7056bde7377da29c5db98369d8696f838f3b49413af",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "817b906a3bc4bed766bbd1e762dc6914af748f0665f4511aee7b60ab88277beb",
+    "generatedAt": "2026-08-13T15:09:33.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture of a brain taken by an MRI machine, which uses magnets to take detailed photos of the inside of the body. You are looking down at a slice of the brain, like looking at the layers of a cake from above. The red arrows point to small bright spots near the fluid-filled spaces in the middle of the brain. An older person with high blood pressure for many years has been noticing they are a bit forgetful and slower to think. What do you think those bright spots might be telling us?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the bright spots the arrows point to?",
+          "prompt": "What are the bright white spots that the red arrows are pointing to in this brain picture?",
+          "cachedAnswer": "The red arrows point to small bright areas in the brain's \"white matter,\" which is the part that acts like the wiring or cables connecting different regions of the brain. On this type of MRI image, extra-bright spots often mean the tissue there has changed a little, like a slightly worn or watery patch. These bright patches sit near the dark, fluid-filled spaces in the center of the brain (called ventricles). Doctors call them \"white matter hyperintensities,\" which just means \"areas that shine brighter than normal.\" They are very common in older people. On their own, the bright spots do not tell us exactly what a person feels or how they think.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "blood-pressure-link",
+          "label": "How could high blood pressure affect the brain?",
+          "prompt": "Why might having high blood pressure for a long time cause changes in the brain like this?",
+          "cachedAnswer": "Blood pressure is the force of blood pushing against the walls of your blood vessels, like water pushing through a garden hose. If that pressure stays too high for many years, it can slowly wear out the tiny, thin blood vessels deep inside the brain. When those little vessels get damaged, some brain areas may not get as much fresh blood and oxygen as they need. Over time this can leave small marks that show up as bright spots on an MRI. So long-term high blood pressure is one thing that can lead to these changes. Keeping blood pressure under control is one way people try to protect their blood vessels.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "does-it-explain-memory",
+          "label": "Do the spots explain the memory problems?",
+          "prompt": "Does seeing these bright spots on the MRI prove that they are causing the person's memory and thinking problems?",
+          "cachedAnswer": "Not by themselves. Finding bright spots on the MRI and having memory concerns can happen together, but that does not automatically mean one caused the other. Think of it like seeing wet streets and an umbrella at the same time, they often go together, but you still need to check whether it actually rained. Many older people have these bright spots and think just fine, while others with memory trouble may have other causes too. Doctors look at the whole picture, including tests, history, and how the person is doing day to day. It is important to be careful and not jump to conclusions from one image.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an axial (top-down) slice of the brain from an MRI. The dark central structures are the fluid-filled ventricles, and the surrounding gray-appearing tissue is the cerebral white matter, the bundles of nerve fibers connecting brain regions. The red arrows highlight small bright signals in the white matter next to the ventricles. This patient is an older adult with long-standing high blood pressure and recent mild memory and processing-speed concerns. What might these bright regions represent, and how could they relate to the blood vessels of the brain?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What structures and findings are shown here?",
+          "prompt": "What anatomical structures and imaging findings can I identify in this brain MRI slice?",
+          "cachedAnswer": "This is an axial section, so you are looking down through the head. The dark butterfly-shaped structures in the center are the lateral ventricles, which hold cerebrospinal fluid. The large surrounding tissue is cerebral white matter, made of myelinated axons that carry signals between brain areas. The red arrows point to small bright (hyperintense) spots in the white matter next to the ventricles, called white matter hyperintensities. On this MRI setting, most fluid is suppressed to dark, so areas of tissue change stand out as bright. The \"R\" and \"L\" labels mark the right and left sides of the brain.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-bright-flair",
+          "label": "Why do damaged areas look bright on MRI?",
+          "prompt": "In simple physics and biology terms, why do these white matter areas appear bright on this kind of MRI image?",
+          "cachedAnswer": "MRI works by detecting signals from water (hydrogen) in tissue after magnetic pulses. This particular sequence, called FLAIR, is designed to make normal free-flowing fluid appear dark, so it does not overwhelm the picture. When white matter is subtly injured, extra water tends to accumulate in and around the tissue and stays put rather than flowing freely. That trapped water gives off a stronger signal, so those areas glow brighter than healthy tissue around them. This is why small regions of chronic tissue change stand out clearly. The brightness itself is a signal of altered water content, not a specific diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vessel-connection",
+          "label": "How do small blood vessels connect to this?",
+          "prompt": "How are the brain's small blood vessels involved in producing these white matter changes in someone with high blood pressure?",
+          "cachedAnswer": "Deep in the brain, small penetrating arteries supply the white matter, and these tiny vessels have little backup supply if they get damaged. Chronically elevated blood pressure stresses the walls of these small vessels, making them thicken and stiffen over time. As they narrow and function less well, small regions of white matter receive reduced, less reliable blood flow. This can lead to slow tissue changes that appear as the bright spots on MRI. Because these vessels tend to be near the ventricles and deep white matter, the changes often show up in those locations. This is a general association seen across many older adults with vascular risk factors.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This axial FLAIR MRI shows the lateral ventricles centrally and the surrounding cerebral white matter, with red arrows marking periventricular hyperintensities. The clinical context is an older adult with long-standing hypertension and subacute mild cognitive complaints. FLAIR suppresses free CSF signal, so these hyperintensities reflect regions of increased tissue water content and chronic microstructural change. Consider the pathophysiology of cerebral small-vessel disease as you review this. What histopathologic and vascular processes could underlie these periventricular white matter hyperintensities?",
+      "introQuestions": [
+        {
+          "id": "distribution-pattern",
+          "label": "Describe the distribution pattern of the WMH.",
+          "prompt": "How would you characterize the distribution pattern of the white matter hyperintensities shown, and what are the common WMH patterns on FLAIR?",
+          "cachedAnswer": "The arrows here indicate periventricular hyperintensities, hugging the margins of the lateral ventricles, which is one of the classic distributions. White matter hyperintensities are broadly categorized as periventricular (caps at the ventricular horns, thin rims, or smooth halos) versus deep or subcortical (punctate, early confluent, or confluent foci in the centrum semiovale and deep white matter). Periventricular caps and rims are extremely common and often clinically benign, while extensive confluent deep lesions carry more weight. Distribution and confluence are captured semi-quantitatively by scales such as the Fazekas score. Recognizing the pattern helps frame whether findings are age-expected or more prominent. The visible lesions here appear relatively focal and periventricular rather than diffusely confluent.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "small-vessel-pathophys",
+          "label": "What is the small-vessel pathophysiology?",
+          "prompt": "What is the pathophysiology linking chronic hypertension to cerebral small-vessel disease and these white matter changes?",
+          "cachedAnswer": "Chronic hypertension drives arteriolosclerosis of the deep penetrating arterioles, with lipohyalinosis, fibrinoid change, and luminal narrowing. These vessels are end-arteries supplying periventricular and deep white matter watershed zones, making that tissue vulnerable to chronic hypoperfusion. The result is incomplete ischemia with demyelination, axonal loss, gliosis, and increased interstitial fluid, correlating with the FLAIR hyperintensity. Blood-brain barrier dysfunction and impaired interstitial fluid clearance are also implicated in modern models. Over time this produces the imaging spectrum of small-vessel disease, which also includes lacunes, microbleeds, and enlarged perivascular spaces. The periventricular predilection reflects both the vascular supply and proximity to CSF.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-hyperintensity",
+          "label": "What else causes white matter hyperintensities?",
+          "prompt": "Besides hypertensive small-vessel disease, what is the differential for white matter hyperintensities on FLAIR in an older adult?",
+          "cachedAnswer": "White matter hyperintensities are nonspecific, so a differential is important. Age-related and hypertensive small-vessel disease is most common, but consider demyelinating disease (though MS lesions favor callosal, juxtacortical, and infratentorial sites), migraine-associated white matter changes, and vasculitis. Infectious and inflammatory causes (e.g., prior infection, sarcoid), metabolic or toxic leukoencephalopathies, and CADASIL (with characteristic anterior temporal and external capsule involvement) can also produce hyperintensities. Cerebral amyloid angiopathy is another vascular contributor in older adults. Distribution, morphology, symmetry, and accompanying findings (microbleeds, enhancement, mass effect) help narrow the list. In this hypertensive older adult, the periventricular pattern most fits chronic small-vessel change, but the finding alone is not diagnostic.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An older adult with long-standing hypertension presents with several months of mild subjective memory and processing-speed concerns, and this axial FLAIR MRI shows periventricular white matter hyperintensities (arrows). The family wants to know whether these findings explain the cognitive symptoms. This is a common counseling scenario that requires distinguishing an imaging association from a causal explanation. Consider how you would integrate imaging, history, cognitive assessment, and vascular risk. How would you interpret and communicate these findings to the patient and family?",
+      "introQuestions": [
+        {
+          "id": "clinical-significance",
+          "label": "How significant are these WMH clinically?",
+          "prompt": "How clinically significant are these white matter hyperintensities in this patient, and how do I weigh them?",
+          "cachedAnswer": "White matter hyperintensities are extremely prevalent in older adults and their significance depends on burden, distribution, and clinical correlation. Modest periventricular caps and rims are often age-expected and asymptomatic, while extensive confluent lesions (higher Fazekas grade) associate more strongly with slowed processing speed, executive dysfunction, gait changes, and increased stroke and dementia risk. The pattern of cognitive complaints matters: small-vessel disease more typically produces a dysexecutive, slowed-processing profile rather than the amnestic pattern of early Alzheimer disease. You should correlate with objective cognitive testing, functional impact, and vascular risk factors rather than reading the image in isolation. A single FLAIR slice cannot fully quantify the burden. Frame the findings as a risk marker to be integrated, not a standalone diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workup-management",
+          "label": "What is the workup and management approach?",
+          "prompt": "What workup and management steps are appropriate for an older adult with WMH and mild cognitive concerns?",
+          "cachedAnswer": "Start with a structured cognitive assessment (e.g., MoCA) and a functional history to gauge whether there is objective impairment. Evaluate and optimize vascular risk factors: blood pressure control is central, along with diabetes, lipids, smoking, and physical activity, since these are the modifiable drivers of small-vessel disease progression. Screen for reversible contributors to cognitive change (thyroid, B12, medications, mood, sleep). Consider whether the presentation warrants further dementia evaluation, and involve neurology if progression, focal deficits, or atypical features arise. Management is largely preventive: aggressive risk-factor modification aims to slow accrual of white matter injury and reduce stroke and dementia risk. Reassurance combined with realistic risk communication is a key part of care.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "counseling-causation",
+          "label": "How do I counsel on association vs causation?",
+          "prompt": "How should I counsel the patient and family about whether these MRI findings cause the memory symptoms?",
+          "cachedAnswer": "Be honest that these findings are common and associated with vascular risk, but that association is not the same as proof of cause for this individual's symptoms. Explain that many people with similar imaging have no cognitive complaints, and that mild symptoms can also stem from other treatable factors. Avoid definitively attributing all the symptoms to the MRI, which can cause unnecessary alarm or foreclose other diagnoses. Instead, frame the white matter changes as evidence of small-vessel disease that signals the importance of controlling blood pressure and other risks. Emphasize the actionable message: risk-factor management may help protect brain health going forward. Offer follow-up and cognitive monitoring rather than a single fixed conclusion.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Axial FLAIR demonstrates periventricular white matter hyperintensities (arrows) in an older adult with long-standing hypertension and several months of mild cognitive and processing-speed complaints. The referring question from the family is causal attribution of the symptoms to the imaging findings. This case tests pattern recognition of small-vessel disease, appropriate use of grading, and the counseling pitfall of overinterpreting nonspecific WMH. Note the modest periventricular predominance without obvious confluent deep-white-matter disease on this slice. How would you structure your read and your counseling, and where are the common pitfalls?",
+      "introQuestions": [
+        {
+          "id": "characterize-grade",
+          "label": "Characterize and grade these findings.",
+          "prompt": "How would you characterize and grade these white matter hyperintensities, and what limits the assessment on a single slice?",
+          "cachedAnswer": "These are periventricular FLAIR hyperintensities with what appears to be a caps/rim configuration adjacent to the frontal horns, without clearly confluent deep white matter involvement on this image. Semiquantitative grading via the Fazekas scale (0-3 for periventricular and deep separately) or the modified STRIVE reporting framework is standard, but reliable grading requires the full stacked sequence, not an isolated slice. I would also look for co-travelers of small-vessel disease per STRIVE: lacunes, cerebral microbleeds on SWI/GRE, enlarged perivascular spaces, and cortical superficial siderosis suggesting amyloid angiopathy. Symmetry, sparing of subcortical U-fibers, and absence of mass effect or enhancement support a chronic microangiopathic pattern. Quantifying burden matters because higher grades carry stronger prognostic weight. Documenting stability versus progression against priors adds meaningful value.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mimics-pitfalls",
+          "label": "What mimics and pitfalls should I flag?",
+          "prompt": "What mimics and interpretive pitfalls should I consider before attributing these WMH to hypertensive small-vessel disease?",
+          "cachedAnswer": "Do not reflexively equate WMH with hypertensive microangiopathy. Consider distribution-specific mimics: MS (callosocortical, Dawson fingers, infratentorial), CADASIL (anterior temporal poles, external capsule), cerebral amyloid angiopathy (lobar microbleeds, posterior predominance), and migraine-related punctate lesions. Screen for inflammatory/vasculitic, infectious, metabolic, and toxic leukoencephalopathies when the pattern is atypical, enhancing, or rapidly progressive. Common pitfalls include over-grading benign periventricular caps, ignoring SWI microbleeds that shift management, mislabeling enlarged perivascular spaces as lesions, and failing to compare with priors. Also beware anchoring on the hypertension history and closing the differential prematurely. Correlate imaging pattern with the tempo and phenotype of the cognitive complaint.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "attribution-counseling",
+          "label": "Association vs causation in the report/counseling.",
+          "prompt": "How should the association-versus-causation distinction shape my report language and counseling for this case?",
+          "cachedAnswer": "Report language should describe the burden and pattern of small-vessel disease and note prognostic associations without asserting that the WMH cause this patient's specific symptoms. Phrasing like \"chronic microangiopathic change, moderate periventricular burden; findings are common with vascular risk factors and correlate with, but are not diagnostic of, the cognitive complaints\" keeps the imaging in its lane. Clinically, WMH burden is a risk marker linked to vascular cognitive impairment, stroke, and dementia, and the actionable takeaway is aggressive vascular risk modification, guideline-directed BP control being central. Counsel the family that many individuals with similar imaging are asymptomatic and that reversible contributors deserve evaluation. Recommend cognitive assessment, risk-factor optimization, and interval follow-up rather than a fixed causal verdict. This preserves diagnostic humility while giving a concrete prevention message.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-plax-mmode",
+  "lessonPlanSha256": "f654416b2b9e52f344be0af34425de716d381fe3c248555518038f16b1526fe7",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "366845debd542943e6356d3d8fbcb4f1013082e18318f3464b6a7eb6ad759d17",
+    "generatedAt": "2026-08-13T14:41:42.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture made with **ultrasound**, which uses sound waves (too high for us to hear) to look inside the body without any cutting. The small fan-shaped picture at the top is the heart seen from the side. The wavy black-and-white lines below come from a special mode called **M-mode**, which follows one thin line through the heart over time to show how the walls move as the heart squeezes and relaxes. On the left you can see a list of numbers the machine calculated. What patterns in the moving lines do you think tell us the heart is beating?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What is shown in this ultrasound image?",
+          "cachedAnswer": "The small fan-shaped image at the top is a live picture of the heart taken with **ultrasound** (safe sound waves). The bigger black-and-white striped picture below is called **M-mode** — imagine shining a single line of light through the heart and recording how things along that line move up and down over time. The moving bumps show the heart walls squeezing closer together and then relaxing apart with each heartbeat. The wavy green line at the very bottom is the **ECG**, an electrical tracing of the heartbeat. Together these show the rhythm and pumping motion of the heart. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-moving-lines",
+          "label": "Why do the lines move?",
+          "prompt": "Why do the M-mode lines go up and down?",
+          "cachedAnswer": "The heart is a muscle that squeezes to push blood out and then relaxes to fill up again, over and over. M-mode records one thin slice of the heart continuously, so as the walls move toward and away from each other, the lines on the screen rise and fall like a heartbeat pattern. The wide dark space in the middle is the inside of the pumping chamber, which gets smaller when the heart squeezes and bigger when it fills. This is like watching a balloon being pumped and released many times. Counting the beats over time also tells us how fast the heart is going. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "one-picture-enough",
+          "label": "Can one picture tell everything?",
+          "prompt": "Can doctors learn everything about the heart from just this one image?",
+          "cachedAnswer": "No — one view or measurement is never the whole story. This single slice can show how one part of the heart wall moves and roughly how big the chamber is, but it cannot show every part of the heart or every problem. If the ultrasound line is aimed at a slight angle, the measurements can be a little off, so doctors take many views and combine them. The numbers the machine printed are estimates, not final answers. Doctors always match pictures with how the patient feels and other tests. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an **echocardiogram** — an ultrasound study of the heart. The top shows a **parasternal long-axis (PLAX)** view, which looks at the heart lengthwise from beside the breastbone. The striped tracing below is **M-mode**, a technique that plots one scan line's motion over time (depth on the vertical axis, time on the horizontal). The machine has listed calculated left-ventricle dimensions and volumes. Given that M-mode samples along just one line, what could make its measurements inaccurate?",
+      "introQuestions": [
+        {
+          "id": "identify-view",
+          "label": "How do I know this is PLAX?",
+          "prompt": "How can I recognize the parasternal long-axis view?",
+          "cachedAnswer": "The **parasternal long-axis (PLAX)** view is obtained by placing the probe beside the sternum and looking at the heart along its long axis. In the small 2D image you can see the left ventricle, the mitral valve region, and the outflow toward the aorta laid out lengthwise. This orientation lets you drop an **M-mode cursor** straight across the left ventricle to measure wall thickness and chamber size. The M-mode below shows the front and back walls of the ventricle moving toward each other with each beat. Recognizing the view first is essential before interpreting any measurement. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mmode-physics",
+          "label": "What does M-mode actually plot?",
+          "prompt": "What do the axes of the M-mode tracing represent?",
+          "cachedAnswer": "In **M-mode** (motion mode), the vertical axis is **depth** — how far a structure is from the probe — and the horizontal axis is **time**. The ultrasound machine sends pulses along a single line and records the echoes very rapidly, so moving structures trace out wavy lines. The bright bands are the ventricular walls, and the dark space between them is the blood-filled chamber that widens in filling and narrows in contraction. Because it samples so quickly, M-mode has excellent time resolution, which is why it's good for timing and measuring motion. The green **ECG** at the bottom lines up the mechanical motion with the electrical cycle. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "measurement-limits",
+          "label": "Why might the numbers be wrong?",
+          "prompt": "Why should I be cautious about the printed measurements?",
+          "cachedAnswer": "The machine's numbers depend entirely on where and how the cursor was placed. If the M-mode line crosses the ventricle at an angle rather than perpendicular, it overestimates the chamber size — a problem related to **foreshortening**. Volume and ejection-fraction estimates like the Teichholz method assume the ventricle has a simple, symmetric shape, which is often not true, especially in diseased hearts. A single line samples only one small region and cannot represent the whole ventricle. This is why one view alone cannot reliably establish pump function. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This is a **parasternal long-axis (PLAX)** echocardiographic view with an **M-mode** cursor sampling across the left ventricle. The 2D image orients the LV, mitral apparatus, and LV outflow tract lengthwise, while the M-mode below resolves interventricular septum, LV cavity, and posterior wall motion against time, referenced to the ECG. The panel lists derived dimensions (IVSd, LVIDd, LVIDs, LVPWd) and Teichholz-based volumes and fractional shortening. Consider the anatomy the cursor traverses: which structures generate each M-mode band, and why does cursor angulation matter?",
+      "introQuestions": [
+        {
+          "id": "structures-crossed",
+          "label": "Which structures does the cursor cross?",
+          "prompt": "What anatomical structures does the M-mode cursor sample in this PLAX view?",
+          "cachedAnswer": "In the standard LV M-mode at the level just beyond the mitral leaflet tips, the cursor sequentially crosses the anterior chest wall, the **right ventricular free wall and cavity**, the **interventricular septum (IVS)**, the **LV chamber**, and the **posterior (inferolateral) LV wall**. The bright anterior band is the septum, the dark central space is the blood-filled LV cavity, and the bright posterior band is the LV posterior wall with pericardium behind it. Wall thickening and the narrowing of the cavity during systole reflect myocardial contraction. Measuring at end-diastole (ECG R-wave) and end-systole yields the labeled dimensions. Correct beam placement perpendicular to the long axis is what makes these dimensions anatomically meaningful. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "physiology-timing",
+          "label": "How does timing relate to the cycle?",
+          "prompt": "How does the M-mode motion correspond to the cardiac cycle?",
+          "cachedAnswer": "End-diastole is identified at the QRS/R-wave, where the LV cavity is widest and walls thinnest; end-systole is at maximal wall approximation. The excursion between these states reflects the mechanical contraction driven by cross-bridge cycling in cardiomyocytes. **Fractional shortening (%FS)** = (LVIDd − LVIDs)/LVIDd expresses this one-dimensional change. Because M-mode has high temporal resolution, it captures subtle timing and motion abnormalities well. However, one-dimensional shortening at one location does not equal global systolic function, which depends on regional and longitudinal contributions not sampled here. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "foreshortening-mechanism",
+          "label": "Why does foreshortening matter?",
+          "prompt": "Explain the mechanism and consequence of oblique cursor placement and foreshortening.",
+          "cachedAnswer": "If the M-mode line is not truly perpendicular to the ventricular long axis, it traverses the cavity obliquely and overestimates the internal dimension — the same geometric error as measuring a circle along a chord rather than its diameter. **Teichholz volume estimation** cubes a single linear dimension under an idealized ellipsoid assumption, so small linear errors amplify greatly in derived EDV, ESV, and EF. This assumption also fails with regional wall-motion abnormalities or non-symmetric remodeling. Therefore printed EF from a single M-mode line should be treated as an estimate, not a validated ejection fraction. Modern practice favors 2D/3D volumetric methods for global function. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with **exertional dyspnea** has this PLAX view with LV M-mode and an auto-generated measurement panel (IVSd, LVIDd/s, LVPWd, Teichholz EDV/ESV/EF, %FS). The task is to orient the image, relate the cursor to LV dimensions, and reason about what this single view can and cannot establish. Note the automated EF here derives from one linear M-mode line. In a dyspneic patient, what does this view legitimately contribute, and what must you not conclude from it alone?",
+      "introQuestions": [
+        {
+          "id": "orient-and-read",
+          "label": "How do I orient and read this?",
+          "prompt": "How should I orient this PLAX M-mode and interpret the labeled dimensions?",
+          "cachedAnswer": "Confirm PLAX orientation: LV, mitral valve, LVOT, and aortic root laid lengthwise, with the M-mode cursor ideally perpendicular across the LV just distal to the mitral leaflet tips. Read the septum, LV cavity, and posterior wall bands, gating measurements to the ECG (end-diastole at R-wave, end-systole at peak inward motion). The panel reports septal and posterior wall thickness and LV internal dimensions used to compute %FS and Teichholz volumes. These give a quick snapshot of chamber size and wall thickness. Always integrate with 2D global assessment rather than acting on the printed EF alone. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "dyspnea-differential",
+          "label": "How does this inform the dyspnea workup?",
+          "prompt": "What can this view contribute to the differential for exertional dyspnea?",
+          "cachedAnswer": "This view can flag structural clues relevant to dyspnea: increased wall thickness suggesting hypertrophy, chamber dilation suggesting volume overload or dilated cardiomyopathy, or reduced fractional shortening suggesting systolic impairment. However, exertional dyspnea has a broad differential — HFpEF, HFrEF, valvular disease, pulmonary disease, anemia, and deconditioning — most of which cannot be resolved from one M-mode line. Notably, diastolic dysfunction and HFpEF require additional views (mitral inflow, tissue Doppler, LA size). Treat any single normal-appearing measurement cautiously, since a preserved %FS does not exclude diastolic disease. A complete echo plus clinical and lab data is required. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "What are the key pitfalls here?",
+          "prompt": "What measurement pitfalls limit conclusions from this single M-mode?",
+          "cachedAnswer": "The main pitfalls are oblique cursor angulation and **foreshortening**, which inflate linear dimensions and propagate into cubed Teichholz volumes and EF. Teichholz assumes symmetric ellipsoid geometry and is unreliable with regional wall-motion abnormalities, aneurysm, or remodeled ventricles. A single view samples one plane and cannot exclude segmental dysfunction, valvular lesions, effusion elsewhere, or diastolic disease. Automated calipers may also be mispositioned. For these reasons guideline-concordant global systolic assessment uses biplane Simpson's (or 3D), and you should not establish EF from this image alone. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "PLAX with LV M-mode and an automated panel reporting IVSd 0.70, IVSs 1.09, LVIDd 3.94, LVIDs 2.46, LVPWd 0.51, LVPWs 1.01 cm, Teichholz EDV/ESV/EF 67.5/21.4/68.3%, %FS 37.6% at HR 77. The exercise is to orient, tie the cursor to linear LV dimensions, and articulate the measurement and geometric limitations before trusting any derived EF in a dyspneic patient. Note the thin reported posterior wall and Teichholz-based EF from a single line. Which of these numbers would you defend, and which require a volumetric method or additional windows?",
+      "introQuestions": [
+        {
+          "id": "cursor-standards",
+          "label": "Are the measurements standards-compliant?",
+          "prompt": "Do these M-mode measurements follow ASE conventions, and what would you verify?",
+          "cachedAnswer": "Per ASE convention, linear LV dimensions are measured perpendicular to the long axis at the level just distal to the mitral leaflet tips, from leading-edge to leading-edge, gated to end-diastole (R-wave) and end-systole. Verify the cursor is truly orthogonal — 2D-guided or anatomic M-mode reduces oblique error versus classic M-mode. The reported LVPWd of 0.51 cm is thin and warrants scrutiny for caliper placement or dropout. Confirm end-diastolic and end-systolic frames align with the ECG and that endocardial/epicardial borders were correctly tracked. Small placement errors here meaningfully shift %FS and every Teichholz-derived value. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "teichholz-validity",
+          "label": "Should I report this Teichholz EF?",
+          "prompt": "Is the Teichholz-derived EF of 68.3% defensible in this patient?",
+          "cachedAnswer": "Teichholz cubes a single minor-axis dimension under an idealized prolate-ellipsoid assumption, so it is unreliable whenever geometry is non-uniform — RWMA, aneurysm, sigmoid septum, or eccentric remodeling — and current guidelines discourage it for reporting global EF. Even with a plausible %FS of ~38%, the derived EF should be treated as an estimate, not the reported LVEF. In a dyspneic patient, prefer biplane Simpson's or 3D EF and integrate GLS if available. Also recognize a preserved EF does not exclude HFpEF, which requires diastolic assessment (E/A, e', E/e', LA volume, TR velocity). Do not anchor management on this single line. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "What completes the study?",
+          "prompt": "What additional imaging completes the assessment of this dyspneic patient?",
+          "cachedAnswer": "Acquire full 2D volumetric EF (biplane Simpson's or 3D), assess all segments for RWMA across PLAX, PSAX, and apical windows, and quantify LA volume index. Add diastolic evaluation — mitral inflow, tissue Doppler e', E/e', TR peak velocity for estimated PASP — to screen for HFpEF given exertional dyspnea. Interrogate valves (aortic and mitral) with color and spectral Doppler, and evaluate the pericardium and RV/IVC for volume status and pulmonary hypertension. Correlate with symptoms, exam, natriuretic peptides, and ECG. Foreshortening and single-plane sampling are the recurring pitfalls to guard against throughout. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

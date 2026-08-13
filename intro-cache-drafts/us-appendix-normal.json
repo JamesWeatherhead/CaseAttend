@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-appendix-normal",
+  "lessonPlanSha256": "9b1a660727858be2afcb77f3ed90cb436f4408f90f8eb1d7f53efd8c4fdb534d",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "73d18f45f19dc3bdec300096512e8a53b2f96fac5ba474999fbb6203c46ea968",
+    "generatedAt": "2026-08-13T14:35:36.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an ultrasound, a way of taking pictures inside the body using sound waves instead of X-rays. A child came in with pain on the lower right side of their belly, but they were already feeling better. The doctor gently pressed on the belly with the ultrasound probe to look at a small tube-shaped organ called the appendix. On the left you see it in a circle (an end-on view), and on the right you see it stretched out long, with little cross marks measuring its size. Why might a doctor press down gently while taking these pictures?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is shown in these two ultrasound pictures?",
+          "cachedAnswer": "These are two ultrasound pictures of the same small tube in the belly called the appendix. The left picture shows it from the end, so it looks like a small circle, and the right picture shows it from the side, so it looks like a short tube. The little plus signs (+) are markers the doctor uses to measure how big it is. The grainy gray background is the normal tissue and muscle around it. Ultrasound uses sound waves, kind of like how bats find things in the dark, to make these pictures without any radiation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-press",
+          "label": "Why press on the belly?",
+          "prompt": "Why does the doctor press down with the ultrasound probe?",
+          "cachedAnswer": "The doctor presses down gently to push aside gas and other tissue that can block the view, so the appendix becomes easier to see. Pressing also tests whether the appendix can squish flat. A healthy appendix is soft and squashes when pressed, like an empty balloon. An unhealthy, swollen one is stiff and stays round, like a balloon full of water. So pressing is a clever way to check both the picture and how the appendix behaves.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "can-we-be-sure",
+          "label": "Can one picture prove nothing is wrong?",
+          "prompt": "Can a single ultrasound picture prove the child does not have appendicitis?",
+          "cachedAnswer": "No, one picture alone cannot fully prove nothing is wrong. The appendix is small and can be hard to find, and sometimes it hides behind gas or other organs. How well the pictures turn out depends a lot on the skill of the person doing the scan and whether they can see the whole appendix. Doctors also look at the child's symptoms, exam, and sometimes blood tests together. If the appendix cannot be clearly seen, the doctor may watch the child over time or use another test.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "Ultrasound creates images from reflected sound waves, and here it is used to evaluate the appendix in a child with right lower quadrant pain that is improving. The two panels show the same tubular structure: a rounded cross-section on the left and a longitudinal view on the right, with calipers (+) marking the measurements. A key technique here is graded compression, where the probe is pressed steadily to displace bowel gas and test whether the structure flattens. A normal appendix is small and compressible, while an inflamed one tends to be enlarged and rigid. Based on what you see, what features would make you lean toward a normal appendix?",
+      "introQuestions": [
+        {
+          "id": "identify-structure",
+          "label": "How is the appendix identified?",
+          "prompt": "How do you recognize the appendix on these ultrasound views?",
+          "cachedAnswer": "The appendix appears as a blind-ending tubular structure, meaning it is a tube closed at one end. On the left panel it is seen in cross-section as a target-like round shape with layered walls, and on the right it is seen along its length as a short tube. It does not have the normal wave-like squeezing motion (peristalsis) that the intestines show, which helps distinguish it. The calipers measure its diameter, an important number for judging whether it is normal. Surrounding gray speckled tissue is the normal fat and muscle of the abdominal wall and nearby bowel.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "graded-compression",
+          "label": "What does graded compression tell us?",
+          "prompt": "Explain graded compression and what it demonstrates about the appendix.",
+          "cachedAnswer": "Graded compression means applying gradually increasing, gentle pressure with the ultrasound probe. This pushes gas-filled bowel out of the way, which otherwise scatters sound and blocks the image. It also lets you test compressibility: a normal appendix squashes flat under pressure because it is soft and not distended. An inflamed appendix is filled and swollen, so it resists flattening and stays round. Comparing the before and during-compression images is the whole point of these paired views.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "size-cutoff",
+          "label": "Why does size matter?",
+          "prompt": "Why is the measured diameter of the appendix important?",
+          "cachedAnswer": "Diameter is one of the main clues to whether an appendix is normal or inflamed. A normal appendix is generally small, often under about 6 millimeters across when pressed, while a larger, non-compressible diameter raises concern for inflammation. That is why calipers are placed to measure it. However, size is only part of the picture: compressibility, wall changes, surrounding fluid, and the patient's symptoms all matter too. Measurements should always be interpreted alongside the whole clinical situation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "These paired graded-compression sonograms show the appendix in transverse (left, target-shaped) and longitudinal (right) planes, with calipers marking wall-to-wall measurements. The appendix is a blind-ending tubular outpouching of the cecum, and its wall shows the gut layers (mucosa, submucosa, muscularis) that ultrasound can resolve. Graded compression displaces gas and assesses compressibility, a functional correlate of luminal distention and wall edema. A normal appendix is thin-walled, compressible, and typically measures 6 mm or less in outer diameter without surrounding inflammatory change. Which sonographic features here are most consistent with a normal appendix, and what remains uncertain?",
+      "introQuestions": [
+        {
+          "id": "layered-wall",
+          "label": "What does the wall anatomy tell us?",
+          "prompt": "What does the layered appearance and measured diameter of the appendiceal wall indicate?",
+          "cachedAnswer": "The gut signature (alternating echogenic and hypoechoic layers) reflects the mucosa, submucosa, and muscularis propria, and its preservation suggests intact, non-inflamed wall architecture. A normal appendix has a thin wall and an outer diameter of 6 mm or less when measured on graded compression. The target-like transverse view demonstrates concentric layers without mural thickening or hyperemia. Loss of the layered pattern, wall thickening beyond ~3 mm, and mural hyperemia would instead point toward inflammation. The calipers on both views allow objective measurement rather than relying on subjective impression.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "compressibility-mechanism",
+          "label": "Why does compressibility reflect pathology?",
+          "prompt": "What is the pathophysiologic basis for using compressibility to assess the appendix?",
+          "cachedAnswer": "Compressibility depends on luminal contents and wall stiffness. A normal appendix has a collapsible lumen and pliable wall, so it flattens under probe pressure. In acute appendicitis, luminal obstruction (often by a fecalith or lymphoid hyperplasia) causes distention, increased intraluminal pressure, wall edema, and eventually venous congestion, all of which make the appendix rigid and non-compressible. Graded compression therefore tests a physiologic consequence of the disease, not just anatomy. Additional findings like periappendiceal fluid or echogenic inflamed fat support the diagnosis. The paired before/during images are meant to demonstrate this dynamic collapse.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "nonvisualization-limits",
+          "label": "What limits exclusion of appendicitis?",
+          "prompt": "Why does a single view or nonvisualized appendix limit exclusion of appendicitis?",
+          "cachedAnswer": "Ultrasound of the appendix is highly operator-dependent, and the appendix may be retrocecal, pelvic, or gas-obscured, making it difficult or impossible to fully visualize. A partially visualized or nonvisualized appendix does not exclude early appendicitis, which may not yet show classic distention. Improving symptoms are reassuring but not definitive. A single still image cannot capture the full graded-compression maneuver or the surrounding structures. Exclusion requires visualizing the entire appendix including its blind tip, along with the clinical context and, when needed, serial exams or further imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A child presents with RLQ pain that is clinically improving, and graded-compression ultrasound shows a small, compressible tubular structure in transverse and longitudinal planes. The paired images demonstrate a maneuver, not a single snapshot: compressibility and a maximal outer diameter of 6 mm or less favor a normal appendix. In children, ultrasound is the first-line modality because it avoids radiation, but its sensitivity depends on operator skill and appendiceal position. You must integrate imaging with history, exam, and labs rather than relying on one image. Given these views, how would you frame your assessment and next steps?",
+      "introQuestions": [
+        {
+          "id": "normal-criteria",
+          "label": "What supports a normal appendix?",
+          "prompt": "What sonographic criteria on these views support a normal appendix?",
+          "cachedAnswer": "Reassuring features include a compressible, blind-ending tubular structure with an outer diameter of 6 mm or less on graded compression, a thin and non-thickened wall, and preserved gut-signature layering. Absence of a non-compressible dilated appendix, no appendicolith, no periappendiceal fluid, and no echogenic inflamed fat all argue against appendicitis. Lack of mural hyperemia on color Doppler is also reassuring. Combined with improving clinical symptoms, these findings lower the probability of appendicitis. However, these must be documented across the full appendix, not just at one segment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What else causes RLQ pain in a child?",
+          "prompt": "What is the differential for right lower quadrant pain in a child with a normal-appearing appendix?",
+          "cachedAnswer": "With a normal appendix, consider mesenteric adenitis (often post-viral, with enlarged clustered nodes), gastroenteritis, and constipation. Also consider ileocolitis, Meckel diverticulum, intussusception, and in older girls ovarian pathology such as torsion or a hemorrhagic cyst. Urinary tract infection or renal colic can mimic RLQ pain. Improving symptoms with a compressible appendix support a self-limited process like mesenteric adenitis or viral illness. The clinical trajectory and additional ultrasound findings help narrow the differential.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition",
+          "label": "What are safe next steps?",
+          "prompt": "How should management proceed if the appendix appears normal but cannot be fully excluded?",
+          "cachedAnswer": "If the appendix is fully visualized and normal with improving symptoms, discharge with return precautions and clear follow-up is often reasonable. If the appendix is nonvisualized or only partially seen, do not falsely reassure: options include a period of observation with serial exams, repeat ultrasound, or MRI in equivocal pediatric cases to avoid CT radiation. Incorporate clinical scores (e.g., Alvarado or pediatric appendicitis score) and inflammatory markers into the decision. Shared decision-making and explicit safety-netting are essential because early appendicitis can evolve. Document the extent of appendiceal visualization clearly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Paired graded-compression sonograms show the appendix in short and long axis with calipers documenting maximal outer diameter. The teaching point is the maneuver itself: a compressible blind-ending tube measuring 6 mm or less, without an appendicolith, mural hyperemia, periappendiceal free fluid, or inflammatory fat, favors a normal appendix. Beware anchoring on a single still frame or a partially visualized appendix, and remember that improving symptoms plus a nonvisualized appendix do not exclude early appendicitis. Operator technique, appendiceal location, and full tip-to-base visualization drive negative predictive value. How would you document and act on these findings while avoiding the classic pitfalls?",
+      "introQuestions": [
+        {
+          "id": "technique-pitfalls",
+          "label": "What are graded-compression pitfalls?",
+          "prompt": "What technical pitfalls affect graded-compression appendiceal ultrasound?",
+          "cachedAnswer": "Common pitfalls include inadequate compression allowing gas to obscure the appendix, failing to trace the appendix to its blind tip (missing tip appendicitis), and mistaking a fluid-filled loop of terminal ileum or a normal collapsed appendix for the true target. Measuring only anterior-posterior compressed diameter without confirming compressibility can mislead, as can overreliance on the 6 mm cutoff in a non-distended segment. Retrocecal and pelvic positions are frequently missed and may require posterior manual compression, graded compression in decubitus, or a transvaginal/transperineal window in select patients. Absence of color Doppler hyperemia should be interpreted alongside gray-scale findings. Always correlate with the entire clinical picture.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "reporting-standard",
+          "label": "How should you report this study?",
+          "prompt": "How should a normal or nonvisualized appendix be reported and stratified?",
+          "cachedAnswer": "Report the maximal outer diameter on graded compression, compressibility, wall thickness, presence or absence of an appendicolith, hyperemia, periappendiceal fluid, and inflamed fat, and explicitly state whether the appendix was completely visualized including the tip. Many centers use structured or risk-stratified templates (e.g., normal, equivocal/nonvisualized, or positive) analogous to standardized reporting frameworks to guide clinicians. A nonvisualized appendix should be reported as such rather than 'negative,' with secondary signs commented on. This transparency prevents false reassurance and supports appropriate observation or further imaging. Clear documentation also protects downstream decision-making.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "equivocal-pathway",
+          "label": "How do you handle the equivocal scan?",
+          "prompt": "What is the guideline-aware pathway when pediatric appendiceal ultrasound is equivocal?",
+          "cachedAnswer": "For equivocal or nonvisualized pediatric appendices, integrate a clinical scoring system (pediatric appendicitis score) and inflammatory markers to stratify risk. Low-risk patients can often be observed with serial exams and repeat ultrasound; intermediate or high-risk equivocal cases favor MRI, which has excellent accuracy without ionizing radiation, reserving CT for when MRI is unavailable. Surgical consultation and shared decision-making are appropriate for persistent concern. Improving symptoms lower probability but do not eliminate it, so safety-netting and follow-up remain mandatory. The goal is to minimize both missed appendicitis and negative appendectomies while limiting radiation exposure in children.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

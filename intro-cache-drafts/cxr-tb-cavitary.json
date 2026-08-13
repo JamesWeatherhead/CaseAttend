@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-tb-cavitary",
+  "lessonPlanSha256": "b76fd3ea9fdd4b18d0d9e54f179284fe87d409e2c11277686da9b696843b1ab1",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "09018d98f0e679ca6a12a18fd5c7f32a593f31de3c9b597f5219bd5252f2b972",
+    "generatedAt": "2026-08-13T14:50:59.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a special picture that lets us see inside the chest. The lungs normally look dark because they are full of air, but here the upper parts of both lungs look cloudy and white, which usually means something is filling the air spaces. Near the top of the right lung there is a rounded dark spot that looks like a little hole or pocket. The patient in this case has been coughing for a long time, losing weight, and sweating at night. What do you think that cloudy pattern and the hole-like spot might be telling us?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at in this X-ray?",
+          "prompt": "What are the main things I can see on this chest X-ray?",
+          "cachedAnswer": "A chest X-ray shows the lungs, heart, and ribs using a small amount of radiation. Healthy lungs are mostly full of air, so they normally look dark or black in the picture. In this image, the top parts of both lungs look cloudy and white, which means the air spaces there are filled with something instead of air. There is also a rounded dark spot near the top of the right lung that looks like a small pocket or hole. The white cloudy areas and the hole are signs that the lungs are not healthy. Doctors would put these picture clues together with the person's symptoms to figure out what is wrong.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-a-hole",
+          "label": "Why would there be a hole in the lung?",
+          "prompt": "How can a hole form inside the lung?",
+          "cachedAnswer": "A hole in the lung, called a cavity, can form when an infection damages and destroys a piece of lung tissue. Think of it like a rotten spot in an apple that leaves an empty pocket behind. Certain slow, long-lasting infections are known for making these pockets, especially near the top of the lungs. On the X-ray the pocket shows up as a rounded darker area because it is filled with air surrounded by damaged tissue. Because this patient has had a long cough with weight loss and night sweats, doctors would be thinking about an infection that behaves this way. Tests would be needed to know for sure.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "is-it-catching",
+          "label": "Could this spread to other people?",
+          "prompt": "Should we worry about this being contagious?",
+          "cachedAnswer": "Some lung infections that cause a long cough and cavities in the lungs can spread through the air when a person coughs. Because of that, doctors take safety steps, like having the patient wear a mask and stay in a special room, until they know what is going on. This protects other patients, visitors, and hospital staff. The next step is to collect samples, such as spit from a deep cough, and test them in a lab to find out exactly what germ is present. Only lab tests can confirm the cause, not the X-ray alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an AP chest radiograph, meaning the X-ray beam passed from front to back. Air-filled lung normally appears dark, so the whiter, hazy areas in the upper zones of both lungs tell us those air spaces are filled with fluid, cells, or debris. At the very top of the right lung there is a rounded lucency (a darker, air-containing pocket) suggesting a cavity where tissue has been destroyed. The patient's chronic cough, weight loss, and night sweats point toward a slow infectious process. Given the location and the pattern, what type of disease process tends to favor the upper lungs and leave cavities behind?",
+      "introQuestions": [
+        {
+          "id": "reading-the-film",
+          "label": "How do I read this chest film?",
+          "prompt": "How should I systematically describe what I see on this chest radiograph?",
+          "cachedAnswer": "A systematic approach keeps you from missing findings. First confirm it is a chest film, its orientation (AP here), and rough quality. Then scan the bones, soft tissues, airway, heart, and finally the lungs, comparing left to right and dividing each lung into upper, middle, and lower zones. In this film the key findings are bilateral upper-zone opacities (whiter areas where air should be) and a rounded lucency at the right apex suggesting a cavity. Describing location precisely matters, because certain diseases have favorite locations. Building this habit means you notice the pattern before you jump to a diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-is-a-cavity",
+          "label": "What is a lung cavity?",
+          "prompt": "What is a cavity and why does it appear dark on the X-ray?",
+          "cachedAnswer": "A cavity is a gas-filled space within the lung created when inflamed or infected tissue breaks down and its contents drain away, often through an airway. On an X-ray, air blocks very little of the beam, so air-filled regions look dark; the surrounding damaged tissue and its wall look whiter. That contrast is why a cavity appears as a rounded darker area with a visible rim. Cavities in the upper lungs are classically linked with infections that thrive in the oxygen-rich apex. This film's right apical lucency fits that description, but imaging alone cannot name the germ.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-tests",
+          "label": "What tests would confirm the cause?",
+          "prompt": "What steps would help confirm what is causing this picture?",
+          "cachedAnswer": "Because a low-resolution image cannot identify a specific organism, the next move is to collect biological samples and safety measures at the same time. Sputum (deep-cough mucus) can be examined under the microscope and grown in culture to identify bacteria. Modern molecular tests can detect specific pathogens and even resistance genes quickly. If a contagious airborne infection is suspected, the patient is placed in isolation until results return. Combining the clinical story, the radiograph, and lab results gives a confident answer that no single test provides alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This AP chest radiograph shows bilateral upper-zone airspace opacities with an accompanying rounded lucency at the right apex consistent with a cavitary lesion. The apical predominance is a meaningful clue: relatively high oxygen tension and reduced lymphatic clearance in the lung apices favor certain granulomatous infections. Caseous necrosis with subsequent liquefaction and drainage into a bronchus is the classic mechanism producing an air-filled cavity. Paired with chronic cough, constitutional symptoms, and epidemiologic risk, this pattern raises concern for reactivation pulmonary tuberculosis. What histopathologic process explains both the upper-lobe predilection and the cavity formation?",
+      "introQuestions": [
+        {
+          "id": "describe-findings",
+          "label": "Describe the radiographic findings",
+          "prompt": "How would I describe these findings using systematic terminology?",
+          "cachedAnswer": "Report orientation and adequacy first: this is an AP film of limited resolution. Using a zonal approach, there are bilateral upper-zone heterogeneous opacities representing airspace and interstitial disease, more confluent on the right. At the right apex there is a rounded lucency with a discernible wall, consistent with a cavity. There is no clearly identifiable large effusion or pneumothorax on this view, though technique limits assessment. Documenting zone, laterality, and the cavity's wall characteristics frames the differential and links to pathophysiology. Precise description precedes interpretation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathogenesis-cavity",
+          "label": "Mechanism of cavitary upper-lobe disease",
+          "prompt": "What pathophysiology explains upper-lobe cavitation in this pattern?",
+          "cachedAnswer": "In reactivation tuberculosis, Mycobacterium tuberculosis proliferates in the well-oxygenated lung apices, where higher PO2 favors aerobic organisms and lymphatic drainage is comparatively sluggish. The host mounts a delayed-type hypersensitivity, cell-mediated response, forming caseating granulomas with central caseous necrosis. When necrotic material liquefies and erodes into a bronchus, it drains, leaving an air-filled cavity and simultaneously discharging infectious organisms into the airways, which fuels transmission. The surrounding rim represents granulomatous and fibrotic tissue. This sequence explains both the apical predilection and the cavity seen at the right apex.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-isolation",
+          "label": "Why isolation plus micro confirmation?",
+          "prompt": "Why do we combine airborne isolation with microbiologic testing here?",
+          "cachedAnswer": "A cavitary upper-lobe process with chronic constitutional symptoms carries a high pretest probability of infectious, potentially airborne disease, so empiric airborne precautions protect others while workup proceeds. Definitive diagnosis is microbiologic, not radiographic: sputum smear microscopy for acid-fast bacilli, mycobacterial culture (the reference standard), and nucleic acid amplification testing that can also flag rifampin resistance. Culture additionally enables drug-susceptibility testing to guide therapy. A single low-resolution film cannot establish organism identity, so imaging raises suspicion while labs confirm. Linking pattern recognition to precautions and testing is the core clinical translation of this pathophysiology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with chronic cough, weight loss, night sweats, and epidemiologic risk presents with this AP chest radiograph showing bilateral upper-zone infiltrates and a right apical cavity. This constellation should immediately trigger a working diagnosis of pulmonary tuberculosis and a parallel process of protecting others while confirming the etiology. The task is to describe the film systematically, generate a focused differential for upper-lobe cavitary disease, and act on infection-control priorities before results return. How would you sequence isolation and diagnostic testing in this presentation?",
+      "introQuestions": [
+        {
+          "id": "structured-read",
+          "label": "Give a structured read of the film",
+          "prompt": "How should I present the findings and impression on this chest film?",
+          "cachedAnswer": "Present in a structured way: AP portable technique of limited resolution, adequate for gross assessment. Findings: bilateral upper-zone heterogeneous opacities with a rounded right apical lucency consistent with a cavity; no definite large effusion or pneumothorax on this view. Impression: bilateral upper-lobe cavitary disease. Given chronic cough, weight loss, night sweats, and epidemiologic risk, reactivation tuberculosis leads the differential. State that a single film cannot confirm the organism and recommend correlation and microbiologic testing. This framing communicates both the finding and the clinical urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for upper-lobe cavities",
+          "prompt": "What is the differential diagnosis for upper-lobe cavitary lung disease here?",
+          "cachedAnswer": "Reactivation tuberculosis is the leading consideration given the classic apical cavitary pattern and constitutional symptoms. Other infectious causes include nontuberculous mycobacteria, endemic fungi (histoplasmosis, coccidioidomycosis, blastomycosis), and cavitary bacterial infections such as Klebsiella or septic emboli/Staph, though those often present more acutely. Non-infectious mimics include malignancy (cavitating squamous cell carcinoma) and granulomatosis with polyangiitis. The epidemiologic risk and subacute course shift probability strongly toward TB. However, the differential is why empiric coverage decisions await microbiology, and isolation is applied for the most transmissible possibility.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "isolation-workup",
+          "label": "Isolation and diagnostic sequence",
+          "prompt": "What are the immediate isolation and diagnostic steps?",
+          "cachedAnswer": "Place the patient in an airborne infection isolation room (negative pressure) and use N95 respirators before further movement through the department. Collect serial sputum specimens (typically three, spaced) for AFB smear microscopy, mycobacterial culture, and a rapid nucleic acid amplification test such as Xpert MTB/RIF that also detects rifampin resistance. Send HIV testing and consider drug-susceptibility testing on positive cultures. Notify public health per local requirements and evaluate contacts. Isolation continues until TB is excluded or the patient meets de-isolation criteria; empiric multidrug therapy decisions follow clinical judgment and results.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "AP portable chest radiograph: bilateral upper-zone fibronodular and airspace opacities with a right apical thick-walled cavity in a patient with chronic cough, weight loss, night sweats, and epidemiologic risk. This is a textbook reactivation-TB pattern, and the operational priority is airborne isolation and sputum-based confirmation in parallel, not sequentially. Recognize the pattern, but avoid anchoring: mimics exist and a single low-resolution film cannot establish a microbiologic diagnosis. How will you balance rapid infection control, appropriate diagnostics, and stewardship while awaiting results?",
+      "introQuestions": [
+        {
+          "id": "pattern-pitfalls",
+          "label": "Pattern recognition and pitfalls",
+          "prompt": "What are the pattern clues and interpretive pitfalls on this film?",
+          "cachedAnswer": "Key clues: apical/posterior upper-lobe predilection, cavitation with a defined wall, and bilateral fibronodular change suggesting chronicity rather than acute lobar pneumonia. Pitfalls include over-reliance on a portable AP film where technique degrades resolution and can obscure smaller cavities, miliary pattern, or effusion. Old fibrotic scarring can mimic active disease radiographically, so activity is judged clinically and microbiologically, not by the film alone. Cavitary squamous cell carcinoma and fungal disease can look nearly identical, so avoid premature closure. Comparison with priors and CT can clarify equivocal cases.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "de-isolation",
+          "label": "De-isolation and stewardship logic",
+          "prompt": "How do you reason through isolation, de-isolation, and empiric therapy?",
+          "cachedAnswer": "Initiate airborne precautions immediately based on the clinical-radiographic gestalt. De-isolation generally requires clinical improvement and typically three negative AFB smears on adequate specimens (or facility protocol incorporating NAAT), recognizing smear-negative TB remains possible. A positive Xpert MTB/RIF permits earlier confidence and flags rifampin resistance to shape empiric regimens. Empiric four-drug therapy (RIPE) is started when suspicion is high and cannot safely await culture, balanced against confirming the diagnosis to avoid unnecessary hepatotoxic exposure. Engage public health early for reporting, contact investigation, and directly observed therapy planning.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirmatory-testing",
+          "label": "Optimal confirmatory testing",
+          "prompt": "What confirmatory microbiology best supports this diagnosis?",
+          "cachedAnswer": "Obtain multiple sputum samples for AFB smear, NAAT (Xpert MTB/RIF or Ultra), and mycobacterial culture, which remains the reference standard and enables phenotypic drug-susceptibility testing. NAAT provides rapid confirmation and rifampin-resistance detection, improving both diagnostic speed and initial regimen selection. Culture is essential for full susceptibilities and to guide MDR/XDR management. Send HIV testing given the strong management implications, and consider bronchoscopy with lavage if sputum is nondiagnostic and suspicion persists. Correlate every result with the clinical picture, since neither imaging nor a single test is definitive in isolation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

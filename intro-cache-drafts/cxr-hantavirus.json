@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-hantavirus",
+  "lessonPlanSha256": "010f408563f870ce6756b162e93b445c0af157a707de122e97856f530d2f20b0",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "10655ae448e33984eade4a61f1c7a4c8b0082832e715f8f41fb590a12d2dc052",
+    "generatedAt": "2026-08-13T14:53:58.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a picture that uses invisible rays to show the inside of the chest. The two dark areas are the lungs, which should be mostly filled with air, but here they look hazy and cloudy instead of clean and black. This patient got very short of breath quickly after being around mice or rats, and their blood pressure dropped dangerously low. On an X-ray, cloudy lungs often mean fluid has leaked into places where air belongs. Why might fluid in the lungs make it so hard to breathe?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is this image and what looks abnormal about it?",
+          "cachedAnswer": "This is a chest X-ray taken from the front. The big dark shapes on each side are the lungs, which normally look almost black because they are full of air. In this picture the lungs look foggy and gray in many spots, which suggests something other than air is filling them. That extra material is usually fluid leaking into the tiny air spaces and the surrounding tissue. There may also be small amounts of fluid collecting at the bottom edges of the lungs. Think of a sponge that should be full of air but is now soggy and heavy. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-hard-to-breathe",
+          "label": "Why is breathing so hard?",
+          "prompt": "Why does fluid in the lungs make it hard to breathe?",
+          "cachedAnswer": "Your lungs work by letting oxygen pass from the air into your blood. This happens across very thin walls in millions of tiny air sacs. When fluid leaks into those sacs and the tissue around them, oxygen has a much harder time crossing over into the blood. It is like trying to breathe through a wet cloth instead of open air. The person feels breathless and their body does not get enough oxygen. That is why cloudy, fluid-filled lungs are so dangerous. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-mice-matter",
+          "label": "Why does rodent contact matter?",
+          "prompt": "Why is being around rodents important in this case?",
+          "cachedAnswer": "Some germs live in wild rodents like mice and rats and can spread to people, especially when people breathe in dust from droppings or nests. One rare but serious illness spread this way can cause the lungs to suddenly fill with fluid and the blood pressure to crash. Doctors call the story of where someone has been an exposure history, and it can be a huge clue. That is why the mouse or rat contact is not just a small detail. Always tell a doctor about unusual exposures. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an AP chest radiograph showing hazy, diffuse opacity across both lungs where air should make the lungs appear dark. The patient developed rapidly worsening shortness of breath and low blood pressure after exposure to rodents. The cloudiness suggests fluid moving into the interstitial tissue and air spaces of both lungs, and there appears to be a small amount of pleural fluid at the lung bases. This combination of leaky lungs plus low blood pressure points toward a serious, whole-body process rather than a simple local infection. What kinds of problems can cause fluid to leak into the lungs?",
+      "introQuestions": [
+        {
+          "id": "read-the-film",
+          "label": "How do I read this X-ray?",
+          "prompt": "How do I describe the findings on this chest X-ray as a beginner?",
+          "cachedAnswer": "Start by noting this is a front-to-back (AP) chest X-ray. Air-filled lungs normally appear dark, so the widespread gray haziness across both lungs tells you they are not fully aerated. This pattern of fine, spread-out cloudiness plus fluffy patches suggests fluid in both the interstitial tissue (the scaffolding between air sacs) and the air spaces themselves. The whiteness collecting at the lower edges may represent small pleural effusions, meaning fluid between the lung and chest wall. The distribution is bilateral and diffuse rather than in one spot, which is an important clue. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cardiogenic-or-not",
+          "label": "Heart problem or leaky vessels?",
+          "prompt": "What are the two main reasons fluid leaks into the lungs?",
+          "cachedAnswer": "Fluid can enter the lungs in two broad ways. In cardiogenic edema, the heart fails to pump well, pressure backs up into the lung blood vessels, and fluid is pushed out into the lungs. In noncardiogenic edema, the tiny blood vessels themselves become leaky and let fluid escape even when heart pressures are normal. The rodent exposure and shock in this case make a leaky-vessel (noncardiogenic) process the more fitting story. Both can look cloudy on X-ray, so history and other tests help tell them apart. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "exposure-clue",
+          "label": "What does rodent exposure suggest?",
+          "prompt": "Why is rodent exposure a meaningful clue in this scenario?",
+          "cachedAnswer": "Certain infections carried by wild rodents can be inhaled from contaminated dust and can trigger widespread lung inflammation with leaky blood vessels. This can produce sudden breathlessness together with dangerously low blood pressure. In a teaching case, that exposure history helps you connect the picture of leaky lungs and shock to a possible cause. It is important to remember that the X-ray shows a pattern, while the history helps suggest why the pattern is there. This is a good example of combining an image with the story to reason toward a diagnosis. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This AP chest radiograph demonstrates diffuse bilateral interstitial and air-space opacity with small pleural effusions. The clinical stem describes rapidly progressive dyspnea and hypotension following rodent exposure. The radiographic pattern is consistent with increased-permeability (noncardiogenic) pulmonary edema, in which alveolar-capillary barrier disruption allows protein-rich fluid into the interstitium and alveoli. This case asks you to link a permeability edema pattern with shock physiology and an exposure history. What histologic and physiologic changes at the alveolar-capillary membrane would produce this appearance?",
+      "introQuestions": [
+        {
+          "id": "describe-pattern",
+          "label": "Describe the edema pattern",
+          "prompt": "How should I describe the radiographic edema pattern here at a preclinical level?",
+          "cachedAnswer": "The film shows diffuse, bilateral opacity involving both the interstitial compartment (reticular, hazy ground-glass character) and the air spaces (patchy confluent opacity). Small blunting at the costophrenic regions suggests minor pleural effusions. A relatively normal cardiac silhouette and lack of vascular redistribution favor an increased-permeability rather than a hydrostatic mechanism, though a single AP film limits this judgment. The key descriptive terms are bilateral, diffuse, interstitial-plus-air-space, with small effusions. Remember to separate the descriptive pattern from any presumed cause. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "membrane-mechanism",
+          "label": "Mechanism at the alveolar membrane",
+          "prompt": "What is the pathophysiology of noncardiogenic pulmonary edema at the alveolar-capillary membrane?",
+          "cachedAnswer": "Noncardiogenic edema arises from injury to the alveolar-capillary membrane, increasing its permeability rather than raising hydrostatic pressure. Endothelial and type I pneumocyte injury, often driven by cytokines and inflammatory mediators, disrupts tight junctions and allows protein-rich fluid to flood the interstitium and alveoli. This high-protein exudate impairs surfactant function and gas exchange, producing hypoxemia. Because capillary hydrostatic pressure is not the primary driver, cardiac filling pressures are typically normal or low. Histologically this corresponds to the exudative phase of diffuse alveolar damage, with hyaline membranes forming along denuded alveolar walls. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "shock-link",
+          "label": "Why edema plus hypotension?",
+          "prompt": "How does the combination of pulmonary edema and hypotension fit together mechanistically?",
+          "cachedAnswer": "In some capillary-leak syndromes, the same permeability defect affects vessels body-wide, causing intravascular volume to shift into tissues and leading to hypotension. Combined with myocardial depression from inflammatory mediators, this can produce shock alongside pulmonary edema. This coupling of leaky lungs and circulatory collapse is a hallmark that separates permeability edema with shock from simple cardiogenic failure. In the teaching context of rodent exposure, hantavirus pulmonary syndrome is described as producing exactly this mid-stage picture. Recognizing that both problems share one underlying vascular mechanism is the key conceptual point. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "This AP chest radiograph shows diffuse bilateral interstitial and air-space opacity with small pleural effusions in a patient with rapidly progressive dyspnea and hypotension after rodent exposure. Your task is to describe the pattern precisely, distinguish it from cardiogenic edema, and build a differential that integrates the exposure history. The combination of a noncardiogenic edema pattern plus shock should raise your concern for a rapidly evolving, high-mortality process. Given the exposure history and hemodynamics, how would you prioritize your differential and initial escalation?",
+      "introQuestions": [
+        {
+          "id": "finding-vs-cause",
+          "label": "Finding versus cause",
+          "prompt": "How do I separate the descriptive radiographic finding from the presumed cause here?",
+          "cachedAnswer": "The film supports a descriptive statement: diffuse bilateral interstitial and air-space opacity with small pleural effusions, without dominant cardiomegaly. That pattern is nonspecific and can be produced by ARDS, cardiogenic edema, diffuse infection, or hemorrhage. The rodent exposure and shock nudge you toward a permeability-edema etiology, but the X-ray alone does not prove hantavirus pulmonary syndrome. Discipline in reporting means stating the pattern first, then offering a differential informed by the history. This avoids anchoring on one diagnosis and keeps you alert to mimics. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Build the differential",
+          "prompt": "What is a reasonable differential for this presentation?",
+          "cachedAnswer": "Key considerations include ARDS from any cause, cardiogenic pulmonary edema, severe pneumonia (including atypical and viral), diffuse alveolar hemorrhage, and toxic or aspiration injury. The rodent exposure raises hantavirus pulmonary syndrome and, depending on region, leptospirosis and plague-related pneumonia. The rapid tempo plus shock and noncardiogenic-appearing edema make an increased-permeability process most fitting. Cardiogenic edema is less likely without cardiomegaly or vascular redistribution but should be excluded with echo, BNP, and clinical assessment. Ask about geography, occupation, and specifics of rodent contact to refine probability. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "escalation",
+          "label": "Escalation and next steps",
+          "prompt": "What are the urgent next steps in management and escalation?",
+          "cachedAnswer": "Treat this as a potential critical-care emergency: secure the airway and oxygenation, anticipate need for lung-protective ventilation, and involve ICU early. Manage shock cautiously, because aggressive fluids can worsen permeability edema; vasopressor support and close hemodynamic monitoring are often preferred once volume status is assessed. Obtain confirmatory data (labs, echo to exclude cardiogenic cause, infectious workup) while not delaying escalation. Notify infectious disease and public health if hantavirus or other reportable zoonoses are suspected. The teaching pearl is that noncardiogenic edema plus shock after rodent exposure warrants rapid escalation, not observation. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "AP portable chest radiograph with diffuse bilateral interstitial and air-space opacity and small pleural effusions, normal-appearing cardiomediastinal silhouette, in a patient with rapidly progressive dyspnea and hypotension after rodent exposure. The gestalt is increased-permeability edema/early ARDS physiology rather than a hydrostatic pattern. In the correct exposure context, hantavirus cardiopulmonary syndrome is described with mid-stage bilateral effusions and non-cardiogenic edema, but the film pattern remains nonspecific. Anchor on the pattern, keep hydrostatic causes in view, and escalate for the shock component. How does your Berlin/ARDS framing and fluid strategy change given the concurrent capillary-leak shock?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Radiographic pattern read",
+          "prompt": "Give a concise structured read of this film and note pitfalls.",
+          "cachedAnswer": "Structured read: AP portable technique limits assessment of heart size and vascular pedicle. Findings: diffuse bilateral perihilar and basilar interstitial-to-air-space opacity, likely small bilateral pleural effusions, no dominant cardiomegaly or clear Kerley B lines. Impression: bilateral edema/consolidation favoring increased-permeability physiology, differential includes ARDS, multifocal pneumonia, and DAH. Pitfalls: AP magnification can spuriously enlarge the heart; portable rotation and low lung volumes can mimic or obscure edema; a single film cannot reliably exclude a cardiogenic contribution. Correlate with echo, hemodynamics, and serial imaging. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "hps-phase",
+          "label": "HPS phases and mimics",
+          "prompt": "How does the described HPS radiographic evolution fit, and what mimics must I keep in view?",
+          "cachedAnswer": "CDC-described hantavirus cardiopulmonary syndrome progresses from a febrile prodrome to a cardiopulmonary phase with rapidly developing bilateral interstitial edema, often with pleural effusions and hemodynamic collapse, followed by diuretic and convalescent phases. This film is consistent with that mid-stage pattern but is not pathognomonic. Mimics to retain: ARDS of other etiology, severe CAP/viral pneumonitis, leptospirosis with pulmonary hemorrhage, DAH, and cardiogenic edema. Hemoconcentration, thrombocytopenia, and a left shift with immunoblasts support HPS in the right region. Confirmatory serology/PCR and public-health notification are appropriate. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "resus-strategy",
+          "label": "Resuscitation and ventilation strategy",
+          "prompt": "What is the guideline-aware resuscitation and ventilation approach for capillary-leak edema with shock?",
+          "cachedAnswer": "Apply lung-protective ventilation principles (low tidal volume ~6 mL/kg PBW, plateau pressure limits, appropriate PEEP) consistent with ARDS management. Because this is permeability edema with capillary-leak shock, favor a conservative-to-judicious fluid strategy and early vasopressor support rather than large-volume resuscitation, which can worsen pulmonary edema. In HPS specifically, the cardiogenic component from myocardial depression means inotropic support and consideration of ECMO in refractory cases per referral-center protocols. Monitor for rapid deterioration and the abrupt diuretic transition. Involve critical care, cardiology if myocardial dysfunction is present, and infectious disease/public health early. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

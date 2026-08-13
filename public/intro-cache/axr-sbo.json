@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "axr-sbo",
+  "lessonPlanSha256": "859ff33d9a301da552305d212fe940bdf22f95605448dd2328cb4ae95fc17881",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "92db31a7b1a7cb633b157887272b5fbd33965bd7a157af170805ea30c51e90b7",
+    "generatedAt": "2026-08-13T14:24:23.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an X-ray of a woman's belly. She has had two days of stomach pain, bloating, and throwing up, and she had her appendix taken out years ago. On the picture, the dark shapes are pockets of gas trapped inside her intestines, and some show a flat top where gas sits on top of liquid. Normally food and gas move smoothly through the gut, but here something seems to be blocking the flow. What do you think happens to the intestine when something blocks it and food cannot pass through?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the dark shapes on this X-ray?",
+          "prompt": "What are the dark shapes I see on this belly X-ray?",
+          "cachedAnswer": "The dark shapes are pockets of gas (air) trapped inside loops of the intestine. On an X-ray, gas looks black because it lets the rays pass through easily, while denser things like bone look white. Here you can see several rounded dark loops that look swollen or puffed up. Some of them have a straight, flat line across the top, like water sitting in a glass with air above it. These flat lines are called air-fluid levels, and they are a clue that liquid and gas are stuck in the gut instead of moving along.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-vomiting",
+          "label": "Why is she throwing up?",
+          "prompt": "Why would a blockage in the intestine make someone vomit?",
+          "cachedAnswer": "Think of the intestine like a long garden hose that food and liquid flow through. If something clamps the hose shut, everything backs up behind the blockage, just like water backing up in a clogged sink. The gut keeps making fluid and swallowed air keeps arriving, so the loops in front of the block swell up and get bigger. When there is nowhere for that backed-up material to go forward, the body pushes it the other way, which comes out as vomiting. That is also why her belly feels bloated and painful.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-worry",
+          "label": "Why is this an emergency?",
+          "prompt": "Why should a blocked intestine be taken seriously and treated quickly?",
+          "cachedAnswer": "A blockage is serious because the trapped intestine can keep swelling and get stretched very tight. If it stretches too much, the blood supply to that part of the gut can get squeezed off, and without blood the tissue can start to die. Constant vomiting also makes a person lose a lot of water and salts, which can leave them dehydrated and weak. That is why someone with these symptoms needs to be seen by doctors quickly rather than waiting at home. Warning signs like severe constant pain, fever, or a hard, tender belly mean help is needed right away.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This frontal abdominal radiograph belongs to a 45-year-old woman with two days of worsening abdominal pain, bloating, and vomiting, and a history of appendix removal. On the film, gas appears black because air barely absorbs X-rays, while soft tissue and fluid appear gray to white. Notice the several dilated, gas-filled bowel loops and the flat horizontal boundaries where gas meets fluid. These findings suggest that normal forward movement of intestinal contents is interrupted. Based on the physics of gas versus fluid, why do you think we see those straight, level lines inside the bowel loops?",
+      "introQuestions": [
+        {
+          "id": "identify-features",
+          "label": "What features stand out on this film?",
+          "prompt": "What key features can I identify on this abdominal radiograph?",
+          "cachedAnswer": "The most striking features are multiple dilated loops of bowel filled with gas, appearing as rounded dark structures. Within several of these loops you can see air-fluid levels, which are the flat, horizontal edges where lighter gas sits above denser fluid. The loops appear centrally located and somewhat stacked. Gas shows up black because it absorbs very little of the X-ray beam, while the surrounding tissue and fluid absorb more and appear gray or white. Together, dilated loops plus air-fluid levels point toward a bowel that is backed up rather than emptying normally.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "air-fluid-physics",
+          "label": "Why do air-fluid levels form?",
+          "prompt": "What causes the flat air-fluid levels seen inside the bowel loops?",
+          "cachedAnswer": "Air-fluid levels form because gas is much less dense than liquid, so gravity pulls fluid to the bottom of a loop while gas rises to the top. The boundary between them is flat and horizontal because a still liquid surface always levels out under gravity. This appearance is best seen on an upright or cross-table X-ray, where the beam runs parallel to that flat surface. When bowel contents cannot move forward, secreted fluid and swallowed gas accumulate and separate out this way inside each trapped loop. Seeing many such levels in dilated small bowel is a classic sign of obstruction.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "surgery-link",
+          "label": "Why does past surgery matter here?",
+          "prompt": "How could her previous appendix surgery be connected to a bowel blockage?",
+          "cachedAnswer": "Any abdominal surgery, including an appendectomy, can lead to adhesions, which are bands of internal scar tissue that form as the body heals. These bands can loop around or tether segments of intestine, kinking or squeezing them and blocking the passage of contents. Adhesions are one of the most common reasons the small intestine becomes obstructed later in life. So her surgical history is an important clue that links her current symptoms to a possible mechanical blockage. This connection between history and imaging is a big part of putting the whole picture together.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This supine/frontal abdominal radiograph is from a 45-year-old woman with two days of worsening pain, distension, and vomiting, and a prior appendectomy. Multiple dilated, gas-filled loops of small bowel are seen centrally, with air-fluid levels reflecting accumulated secretions and swallowed air proximal to an obstructing point. The clinical picture and post-surgical history are consistent with adhesive small bowel obstruction. Recall that the small bowel normally measures under about 3 cm in diameter and that valvulae conniventes cross its full width. Given the pathophysiology, what sequence of events links a mechanical block to the dilation and air-fluid levels you see here?",
+      "introQuestions": [
+        {
+          "id": "sbo-vs-lbo",
+          "label": "How to tell small vs large bowel?",
+          "prompt": "How do I distinguish dilated small bowel from large bowel on this radiograph?",
+          "cachedAnswer": "Small bowel loops tend to lie centrally, dilate beyond roughly 3 cm, and show valvulae conniventes—thin folds that cross the entire lumen. Large bowel is more peripheral, contains haustra that only partially cross the lumen, and typically dilates to larger calibers before the same alarm. In this film the loops are relatively central and stacked with numerous air-fluid levels, favoring small bowel. A useful supportive sign is a relative paucity of colonic and rectal gas distal to an obstruction. Identifying the involved segment helps localize and characterize the obstruction.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophys-cascade",
+          "label": "Mechanism of dilation and levels",
+          "prompt": "What is the pathophysiologic cascade that produces bowel dilation and air-fluid levels in obstruction?",
+          "cachedAnswer": "A mechanical block halts aboral transit, so swallowed air and continued intestinal secretion accumulate proximally, distending the lumen. Rising intraluminal pressure and wall stretch trigger increased secretion and impaired absorption, a self-amplifying cycle that worsens distension and third-spaces fluid, contributing to hypovolemia. Gas and fluid stratify by density within loops, producing the horizontal air-fluid levels on upright imaging. As wall tension climbs, venous outflow is compromised first, causing edema and congestion; progression can threaten arterial supply. This sequence links the radiographic appearance directly to the underlying physiology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ischemia-transition",
+          "label": "When does obstruction become dangerous?",
+          "prompt": "What features suggest that a simple obstruction is progressing toward strangulation or ischemia?",
+          "cachedAnswer": "Simple obstruction becomes dangerous when the compromised segment loses viable perfusion, termed strangulation. Radiographic and clinical clues include a closed-loop configuration, bowel wall thickening, pneumatosis intestinalis, portal venous gas, and free intraperitoneal air indicating perforation. Clinically, constant rather than colicky pain, fever, tachycardia, peritoneal signs, and rising lactate raise concern for ischemia. The plain film here shows dilated loops and air-fluid levels but should always prompt a search for these ominous features. When present, they mark a shift from a manageable problem to a surgical emergency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 45-year-old woman presents with two days of progressive colicky abdominal pain, distension, and vomiting on a background of prior appendectomy. The abdominal radiograph shows multiple dilated, centrally located small bowel loops with air-fluid levels and relatively little distal colonic gas—a pattern consistent with small bowel obstruction, most likely adhesive given her surgical history. Your initial task is to characterize the obstruction, assess for high-risk features, and initiate appropriate resuscitation and workup. What elements of your history, exam, and labs would most change your management pathway here?",
+      "introQuestions": [
+        {
+          "id": "read-the-film",
+          "label": "How do I read this film for SBO?",
+          "prompt": "How should I systematically interpret this radiograph to support small bowel obstruction?",
+          "cachedAnswer": "Confirm dilated small bowel (>3 cm) with valvulae conniventes crossing the lumen and a central distribution, then note the multiple air-fluid levels indicating stasis. Assess the transition to collapsed distal bowel and the paucity of colonic/rectal gas that supports a mechanical small bowel process. Scan for free air under the diaphragm, pneumatosis, and portal venous gas as danger signs. Correlate with the clinical history of appendectomy, which makes adhesions the leading etiology. Remember that plain films are supportive but CT with contrast is the standard for confirming, localizing the transition point, and evaluating for ischemia.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What is my differential?",
+          "prompt": "What is the differential diagnosis for this presentation and imaging pattern?",
+          "cachedAnswer": "The leading diagnosis is adhesive small bowel obstruction given prior surgery, but consider incarcerated hernia, so a careful hernia exam is essential. Other mechanical causes include neoplasm, intussusception, gallstone ileus, and internal hernia. Non-mechanical mimics such as paralytic ileus can produce diffuse dilation but usually involve both small and large bowel without a discrete transition point. Closed-loop and strangulating obstruction must be actively excluded because they change urgency. History, exam, and CT findings narrow this list quickly and guide operative versus non-operative decisions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "initial-management",
+          "label": "What are the first management steps?",
+          "prompt": "What are the initial management priorities for suspected small bowel obstruction?",
+          "cachedAnswer": "Begin with IV fluid resuscitation, correction of electrolyte abnormalities, and antiemetics, since vomiting causes significant volume and electrolyte losses. Place the patient NPO and consider nasogastric decompression for symptomatic relief and to reduce distension. Obtain labs including CBC, electrolytes, renal function, and lactate, and pursue CT to define the transition point and screen for ischemia. Many uncomplicated adhesive obstructions resolve with a trial of non-operative management, sometimes aided by water-soluble contrast challenge. Escalate to surgery for signs of strangulation, closed-loop obstruction, peritonitis, or failure of conservative management.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "45F with two days of colicky pain, distension, and bilious emesis; prior appendectomy. Supine AXR demonstrates multiple dilated central small bowel loops with air-fluid levels and a gasless distal colon, consistent with mechanical SBO—adhesive etiology most probable. Your job is to stratify risk, decide on the water-soluble contrast pathway versus early operative intervention, and avoid the pitfall of missing a closed-loop or strangulating process on plain film. Which findings would push you from a non-operative trial toward the OR, and how does the Gastrografin challenge fit your algorithm?",
+      "introQuestions": [
+        {
+          "id": "pattern-pitfalls",
+          "label": "Plain-film pitfalls in SBO",
+          "prompt": "What are the pattern-recognition pearls and pitfalls when interpreting AXR for small bowel obstruction?",
+          "cachedAnswer": "Pearls: central dilated loops >3 cm with valvulae conniventes, differential air-fluid levels within the same loop, a 'string of pearls' sign, and paucity of colonic gas support mechanical SBO. Pitfalls: supine films underestimate air-fluid levels, so a gasless abdomen with fluid-filled loops can hide high-grade obstruction; closed-loop and early strangulation are frequently occult on plain film. Do not be reassured by absence of free air—perforation can be subtle, and pneumatosis or portal venous gas are easily missed. AXR sensitivity is limited, so a negative or equivocal film in a convincing clinical picture warrants CT. Always interpret the film against the surgical history and exam.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ct-role",
+          "label": "When and why CT changes management",
+          "prompt": "How does CT refine the assessment beyond this radiograph, and what specific findings alter management?",
+          "cachedAnswer": "CT with IV contrast localizes the transition point, defines partial versus high-grade obstruction, and identifies etiology such as adhesive band, hernia, or mass. Critically, it assesses viability: reduced wall enhancement, wall thickening, mesenteric edema/fat stranding, and free fluid suggest ischemia, while pneumatosis and portal venous gas indicate advanced injury. A closed-loop configuration with a C- or U-shaped loop and mesenteric swirl mandates urgent operative planning. CT also screens for the small subset with malignant or non-adhesive causes that will not resolve conservatively. These findings directly separate candidates for a non-operative trial from those needing prompt surgery.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "escalation-algorithm",
+          "label": "Non-operative trial vs OR",
+          "prompt": "Walk through the escalation algorithm, including the water-soluble contrast challenge, for adhesive SBO.",
+          "cachedAnswer": "For uncomplicated adhesive SBO without ischemia or peritonitis, initiate NG decompression, resuscitation, and a non-operative trial. A water-soluble contrast (Gastrografin) challenge is both prognostic and therapeutic: contrast reaching the colon on follow-up imaging within roughly 8–24 hours predicts successful non-operative resolution, while failure to progress predicts the need for surgery. Escalate immediately to the OR for peritonitis, signs of strangulation or closed-loop obstruction, free air, or clinical deterioration such as rising lactate, tachycardia, and worsening pain. Failure of the conservative trial, typically at 48–72 hours, also warrants operative exploration. Throughout, guideline-aware practice emphasizes early CT, avoiding prolonged trials in high-risk patients, and low threshold to operate when viability is in question.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

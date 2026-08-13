@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-lung-mass",
+  "lessonPlanSha256": "5eaadc8ac29d0dc562a29410cc9d7a3a2b77ea00f2223617d546dd6193838a95",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "c5f74512d3a7d2397be6dc4bca1b7a3fe2b0da47bc5b7374817639510f53bbc0",
+    "generatedAt": "2026-08-13T14:58:25.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a picture that uses invisible rays to look inside the body. The dark areas are the air-filled lungs, and the lighter ribbons crossing them are the ribs and spine. Somewhere in one lung there is a rounded, cloudy patch that stands out from the normal dark lung. Doctors call a lump like this a \"mass,\" but seeing it on the picture does not tell us exactly what it is made of. What clues in the picture help you spot the unusual cloudy area?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at in this X-ray?",
+          "prompt": "What are the main things I can see in this chest X-ray?",
+          "cachedAnswer": "This is a chest X-ray, a flat photo made with special rays that pass through the body. The two big dark areas are the lungs, which look dark because they are full of air that the rays pass through easily. The pale curved stripes are the ribs, and the bright column down the middle is the spine and breastbone. In one lung there is a rounded cloudy spot that is lighter than the dark lung around it, which means something denser than air is there. Spotting that the spot looks different from normal lung is the first important step.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-does-it-look-white",
+          "label": "Why does the lump look pale?",
+          "prompt": "Why does the lump show up as a pale or white area instead of black like the rest of the lung?",
+          "cachedAnswer": "X-rays make a picture based on how much of the rays get blocked. Air lets almost all the rays through, so healthy lungs look black. Solid things like bone, or a lump of packed-together tissue, block more rays, so they show up pale or white. The rounded cloudy patch looks pale because it is denser than the airy lung around it. That is why an unusual solid growth stands out against the dark background.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What would doctors do next?",
+          "prompt": "If doctors see a lump like this, what would they usually do next to learn more?",
+          "cachedAnswer": "Seeing a pale lump on an X-ray tells doctors that something is there, but not what it is. To get a clearer, more detailed view, they usually order a CT scan, which takes many X-ray pictures and builds a 3-D image. This helps them measure the lump and see it from all sides. Even then, the only way to know exactly what the lump is made of is to take a tiny sample of it, which is called a biopsy. So the picture is a starting clue, not a final answer.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a frontal chest radiograph. The air-filled lungs appear radiolucent (dark), while denser structures like bone and soft tissue appear radiopaque (light). Within one lung there is a focal rounded opacity that is denser than the surrounding aerated lung. A finding like this is described as a pulmonary mass, but detecting it on a radiograph does not reveal its underlying tissue makeup. Which features of the opacity would you describe to communicate exactly where and how big it is?",
+      "introQuestions": [
+        {
+          "id": "how-xray-works",
+          "label": "How does an X-ray create this image?",
+          "prompt": "How does a chest X-ray produce the light and dark areas I see here?",
+          "cachedAnswer": "A radiograph is formed as X-ray photons pass through the body and strike a detector on the other side. Tissues that absorb more photons (bone, calcium, dense soft tissue) leave fewer to reach the detector and appear white; air-filled lung absorbs little and appears dark. This difference in absorption is called radiographic contrast. The rounded opacity appears lighter because it is denser than the aerated lung surrounding it. Because a radiograph flattens 3-D anatomy into 2-D, structures also overlap, which is one reason a single view can be hard to interpret.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "describe-the-mass",
+          "label": "How should I describe this opacity?",
+          "prompt": "What features of the rounded opacity should I describe to localize and characterize it?",
+          "cachedAnswer": "Start by noting which lung and roughly which zone (upper, middle, or lower) it sits in, using the ribs and midline structures as landmarks. Then describe its shape (rounded), its borders (well- or ill-defined), and its approximate size relative to nearby structures. You can also note whether it looks uniform or patchy. Careful, neutral description keeps you from jumping to conclusions about what the opacity actually is. Localization and description are separate from identifying the tissue type.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "detection-vs-diagnosis",
+          "label": "Does the X-ray tell us what it is?",
+          "prompt": "Does finding a mass on this X-ray tell us what the mass actually is?",
+          "cachedAnswer": "No. A radiograph shows that a denser-than-air structure is present, but it cannot reveal the cells or composition of that structure. Many different things can create a rounded opacity, so detection and tissue diagnosis are two separate steps. To characterize it further, clinicians typically obtain cross-sectional imaging such as a CT scan for detail. A definitive answer about the tissue itself requires sampling, not imaging alone. Keeping these steps separate helps avoid premature conclusions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This frontal chest radiograph shows a focal rounded opacity in one lung, denser than the surrounding aerated parenchyma. On plain film, a solid pulmonary lesion silhouettes against air-filled lung, allowing detection but not tissue characterization. Your task at this stage is to localize the lesion accurately and to recognize that a radiographic mass is a morphologic finding, not a histologic diagnosis. What anatomic landmarks would you use to localize this opacity within the thorax?",
+      "introQuestions": [
+        {
+          "id": "localize-lesion",
+          "label": "How do I localize this lesion?",
+          "prompt": "What anatomic and radiographic landmarks help me localize this opacity within the thorax?",
+          "cachedAnswer": "Use the midline structures (trachea, spine, mediastinal borders) and the posterior ribs to assign a side and lung zone. The silhouette sign is useful: loss of a normal border (heart, diaphragm, aortic knob) implies the lesion contacts that structure and localizes it in the anatomic plane. On a single frontal film, depth is ambiguous, so a lateral view or cross-sectional imaging helps place the lesion in an anterior-to-posterior position. Note its relationship to the hila and mediastinum, since central versus peripheral location has different implications. Describe borders and margins neutrally rather than assigning a diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "detection-vs-tissue",
+          "label": "Why isn't this a tissue diagnosis?",
+          "prompt": "Why does identifying a mass on radiography not equal a tissue diagnosis, and what could produce this appearance?",
+          "cachedAnswer": "Radiographic density reflects photon attenuation, not cellular identity, so a mass is a morphologic descriptor only. A rounded opacity can arise from neoplastic, infectious, inflammatory, vascular, or benign processes that overlap in appearance on plain film. Detection (something is there) and characterization (what it is made of) are distinct steps in the workup. Even features like calcification patterns or cavitation only shift probability; they do not confer histology. Definitive tissue diagnosis requires sampling and pathologic evaluation. Maintaining this distinction prevents anchoring on a single etiology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-imaging",
+          "label": "What is the next imaging step?",
+          "prompt": "What cross-sectional imaging is appropriate to further evaluate a pulmonary mass found on radiograph?",
+          "cachedAnswer": "Contrast-enhanced CT of the chest is the standard next step for characterizing a pulmonary mass detected on radiography. CT provides superior spatial resolution, defines size and margins, evaluates the mediastinum and hila, and assesses adjacent structures. It can identify features like calcification, fat, cavitation, or associated adenopathy that narrow the differential. Functional imaging and tissue sampling are considered based on CT findings and clinical context, but they follow rather than replace initial cross-sectional assessment. The goal is systematic evaluation, not premature staging from a single radiograph.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An older adult with a smoking history and unintentional weight loss presents with a persistent cough, and the radiograph shows a focal rounded opacity in one lung. The clinical context raises concern, but the image alone establishes only that a mass is present, not its nature. Your job is to localize the lesion, keep detection separate from tissue diagnosis, and select an appropriate next imaging step without prematurely staging. How would you frame a working differential while avoiding anchoring on any single diagnosis?",
+      "introQuestions": [
+        {
+          "id": "differential",
+          "label": "What is my differential for this mass?",
+          "prompt": "Given the vignette, what differential should I consider for a rounded pulmonary mass, and how do I avoid anchoring?",
+          "cachedAnswer": "In an older smoker with weight loss, primary lung malignancy is a serious consideration, but the differential for a focal pulmonary mass remains broad. It includes infectious and inflammatory causes (granuloma, organizing pneumonia, abscess, prior TB or fungal disease), benign neoplasms such as hamartoma, and other entities like a rounded atelectasis or a vascular lesion. Clinical risk factors shift pretest probability but do not confirm any diagnosis. Explicitly listing benign and infectious possibilities helps counter anchoring on cancer. The radiograph documents a mass; characterization and tissue confirmation come next.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "detection-not-staging",
+          "label": "Why avoid staging from this film?",
+          "prompt": "Why is it inappropriate to stage or apply screening criteria based on this radiograph?",
+          "cachedAnswer": "A radiograph can neither establish histology nor accurately assess nodal or metastatic extent, so staging from it is premature and unreliable. Lung cancer screening criteria apply to asymptomatic eligible patients undergoing low-dose CT, not to a symptomatic patient who already has a visible mass; this patient is now in a diagnostic pathway, not a screening one. Detection must be separated from tissue diagnosis and from staging, which are sequential steps. Committing to a stage early risks miscommunication and inappropriate management. The correct posture is to characterize with CT and pursue tissue sampling.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step",
+          "label": "What is the next best step?",
+          "prompt": "What is the next best imaging and diagnostic step for this patient, and how does it inform management?",
+          "cachedAnswer": "Obtain a contrast-enhanced CT of the chest (typically extending through the adrenals) to characterize the lesion and survey the mediastinum, hila, and pleura. CT findings guide the choice and route of tissue sampling (bronchoscopic, image-guided percutaneous, or surgical) and inform whether functional imaging like PET-CT is warranted. Management decisions follow tissue diagnosis and formal staging, not the radiograph. Coordinate with pulmonology, radiology, and, if indicated, a multidisciplinary tumor board. The sequence is characterize, sample, stage, then treat.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Frontal chest radiograph in an older smoker with weight loss and persistent cough demonstrates a focal rounded pulmonary opacity. This is a classic detection-versus-diagnosis scenario: the film localizes a mass but confers neither histology nor stage. Resist the pull toward premature staging or misapplied screening logic, and drive the workup toward structured cross-sectional characterization and tissue confirmation. Which imaging and sampling pathway would you outline, and what pitfalls would you flag to the team?",
+      "introQuestions": [
+        {
+          "id": "systematic-read",
+          "label": "How do I read this systematically?",
+          "prompt": "How would you approach a systematic read of this radiograph and describe the mass?",
+          "cachedAnswer": "Confirm patient identifiers, projection, and technical adequacy (rotation, penetration, inspiration) before interpretation. Localize the opacity by side and zone, apply the silhouette sign to infer contact with mediastinal or diaphragmatic borders, and correlate with a lateral if available. Characterize margins, size, and any secondary signs (volume loss, hilar prominence, effusion, rib involvement), while keeping description separate from etiologic labeling. Use comparison priors when available to assess interval change, which meaningfully shifts probability. The read should generate a localized, described finding and a clear recommendation for cross-sectional imaging rather than a definitive diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "What pitfalls should I flag?",
+          "prompt": "What common pitfalls should I flag when a mass is detected on radiograph in this clinical setting?",
+          "cachedAnswer": "Key pitfalls include anchoring on malignancy given the risk profile while ignoring infectious, inflammatory, and benign mimics that overlap radiographically. Another is conflating detection with staging or invoking lung cancer screening criteria in a symptomatic patient, who belongs in a diagnostic, not screening, pathway. Beware satisfaction of search—a single dominant mass can distract from additional lesions, nodal disease, or a subtle effusion. Overcalling depth or invasion on a 2-D film and skipping prior comparison are also common errors. Finally, avoid attaching a specific label from an external caption without pathologic confirmation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workup-pathway",
+          "label": "What is the guideline-aware workup?",
+          "prompt": "Outline the guideline-aware cross-sectional and tissue workup pathway for this pulmonary mass.",
+          "cachedAnswer": "Proceed to contrast-enhanced CT chest through the adrenals for lesion characterization and mediastinal/pleural assessment, integrating morphology and any interval growth. Based on CT, use PET-CT for functional characterization and to guide staging when malignancy is suspected, and select the tissue sampling route (bronchoscopic including EBUS for central lesions and nodal staging, image-guided transthoracic for peripheral lesions, or surgical) per lesion location and staging needs. Reserve brain imaging for staging or symptoms as guidelines indicate. Diagnosis and staging drive management through multidisciplinary discussion; the radiograph is only the entry point. Sequence remains characterize, confirm tissue, stage, then treat.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}
