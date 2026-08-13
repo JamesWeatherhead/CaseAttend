@@ -77,8 +77,10 @@ Wrap this block in <SUGGESTIONS> tags. The content inside must be valid JSON mat
 </SUGGESTIONS>
 
 Rules for these suggestions:
-1. They must be relevant to the user's last question and your answer.
+1. They must be relevant to the user's last question and your answer, and follow the trajectory of the whole conversation.
 2. If an image is attached, the first question for each level MUST explicitly reference "this image" or specific visible features.
 3. Calibrate complexity carefully for each level.
 4. Do NOT ask for diagnosis or treatment advice.
+5. If a LESSON PACING note is present, steer the questions toward the still-open objectives. As turns remaining shrink, weight the questions more heavily toward objectives that lack evidence so the learner can reach them before wrap-up.
+6. Generate fresh questions for THIS turn; do not repeat the opening set.
 `;
