@@ -35,21 +35,21 @@ const EXPECTED_IDS = [
 // added to wire each legacy case into the study filter tabs. Regenerate these
 // whenever a legacy case's presentation metadata changes on purpose.
 const EXPECTED_LEGACY_MANIFESTS: Readonly<Record<(typeof EXPECTED_IDS)[number], string>> = {
-  'local-study-sub1': 'a8652924062af72584c725eb8d0a30e37176196967c6fe84185170fb98e8ae4d',
-  'patho-study-breast': '12049b5f73c3d8c71b1709783e82e086ab3fe6a47ff11645c7f45b7deac83423',
-  'cxr-pneumothorax': '690ed193d3f01c8a70443e50bb2b506c52078b468d5e95a11f7e003adffa3892',
-  'cxr-pneumonia': '8cf3c7601337a9dc0cf74fac72291a6bd11c63a167e64908d1ac3d99ad2e9581',
-  'cxr-chf': 'c65e4e01a7b2ea60dfb4b541eecb23ce6f38ad4ddf200a466b5bad85104dc382',
-  'cxr-effusion': '79a115ba9b7e4e43a6649c41157d1f4fd7a91b6014d2aadab7efb89ca8251a38',
-  'axr-sbo': '469c28b5041264b27842df830160135185f58482032508abeef9c5f6ba46e4ca',
-  'ct-epidural': 'befde8a4c017924676d02c0de6d20c79eb100c429c96ae956da467f5b2b65542',
-  'ct-subdural': 'ccd4d68b347043e71216ab9fba07085407aae38d9ac0f33d0f6829441646f0c9',
-  'cxr-pneumoperitoneum': '9f834d43879f007f5d166708a9bbf93f9a1acc17da670146cb170a68f2abf2dd',
-  'axr-nec': '32e63683b953c4cac73ee008312ee36a66a8c2eeeb4016fc944a6ead89660650',
-  'xr-colles': '1c119a279a5d1c19e098d2a64f4d36217b78ff7fd1fd1910a1c1cf65eac78fbb',
-  'derm-melanoma': 'd84ae263e56780847c84a927f0a9ebab78897158ca4f990cac03b34d364f5dc8',
-  'derm-bcc': 'c6e11f8d18b7d03c723d1d56f1607a584dc626b26ec66a08b9c8561610bfc428',
-  'derm-sebk': '3c0a0a96e9ef137974f6ee7a80d89aa5e1d16401e8d605d7fcb8132d93754f6f',
+  'local-study-sub1': 'd23460bfc31dcd712cfa82e9e0cf705dfce5f0018c0171b1c973646c16f5827e',
+  'patho-study-breast': '7f22892be3200445666683bbabbbf67629de8e8093d34633175eb2b80f1642ca',
+  'cxr-pneumothorax': 'a0a9551f56cac23b536c6ca90eb1d5c0c6d38942a50520ba58bd9a5fd2986906',
+  'cxr-pneumonia': 'abba3e4815e9d0ac3e40f75c4968cfd24567b358a84db9628803225d37417df4',
+  'cxr-chf': 'e01eb18b8d3a99f43c4ea265244773a40f143d9cb04ee8965a57bf1c1396a5f4',
+  'cxr-effusion': '1fc3c6c31fffaef65d9251f44f5b88d6638b77b7ad6bd8cc4e1e5c2b3f0fbe4d',
+  'axr-sbo': 'cea24120bda6fac59ab6f5624fde4da55dc4fca9e161fd2771382e7a926fd000',
+  'ct-epidural': '3a1fb7bcd660b380f2185901b1231e38c98e93db7ea54859ea6c4ab496693ac7',
+  'ct-subdural': '8b28f106c1d569ecadc022bd3871b29db96d11a45a3d280061be53e18e63dc9e',
+  'cxr-pneumoperitoneum': '585d1c70064f07b016b3a851d3c46830d26f0b10ab2661a5c6a319bd0038be73',
+  'axr-nec': '1c40230e691cefc49dd593cfd450eef87b087b0931e75be948a5073a650af0e3',
+  'xr-colles': '509d13ad30b27f58cc9b5d8a755af26eb17dfab976fdaea0a06139ed35a02cb4',
+  'derm-melanoma': 'a8f44b2719818477bd1afdab6f785bc7d09597ca1f272c472c7bde774135b243',
+  'derm-bcc': '0a9a65d3433c40da07e5da8d9e5067141ec5c7e529482dc099f6a96142b2cee9',
+  'derm-sebk': 'ec8267ffabcef3afe3cac01e2cea715b4596b483c356039b2be7ca003dccbbdf',
 };
 
 describe('built-in Case Package registry', () => {

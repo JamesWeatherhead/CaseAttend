@@ -777,8 +777,18 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setIsPinnedToBottom(true);
   };
 
-  // Derived suggestions: prefer pre-cached intro Q&A (free, instant, no key),
-  // else dynamic model suggestions, else lesson hints, else the domain default.
+  // Derived suggestions.
+  //
+  // Precedence follows the login/turn state so the pre-cached intro chips stay
+  // the no-key hook and dynamic per-turn suggestions surface as soon as a keyed
+  // learner starts a live conversation (issue #75):
+  //   - No key: pre-cached intro questions only (free, instant, no network).
+  //   - Connected, dynamic suggestions received: dynamic chips regenerated each
+  //     turn from the tutor's response (already conditioned on lesson pacing
+  //     via the silent steer). dynamicSuggestionsMap is set only by the live
+  //     stream, so its presence == at least one live turn happened.
+  //   - Connected, before the first live turn: intro cache is an acceptable
+  //     starter set; otherwise fall back to lesson hints or the domain default.
   // Auto-capture means the panel always has a view to reference, so the
   // with-image suggestions are always the right starting set when a study is loaded.
   type IntroSuggestion = {
@@ -789,17 +799,19 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     source: 'intro-cache' | 'lesson-hint' | 'domain' | 'dynamic';
   };
   const introQuestionsForLevel = introCache?.levels[learnerLevel]?.introQuestions;
-  const currentSuggestions: IntroSuggestion[] = (introQuestionsForLevel && introQuestionsForLevel.length > 0)
-    ? introQuestionsForLevel.map((q) => ({
-        key: `intro-cache:${q.id}`,
-        label: q.label,
-        prompt: q.prompt,
-        cachedAnswer: q.cachedAnswer,
-        source: 'intro-cache' as const,
+  const dynamicSuggestionsForLevel = dynamicSuggestionsMap?.[learnerLevel] ?? [];
+  const hasLiveDynamicSuggestions = byokConnected && dynamicSuggestionsForLevel.length > 0;
+  const currentSuggestions: IntroSuggestion[] = hasLiveDynamicSuggestions
+    ? dynamicSuggestionsForLevel.map((s, i) => ({
+        key: `dynamic:${i}`, label: s, prompt: s, source: 'dynamic' as const,
       }))
-    : dynamicSuggestionsMap
-      ? (dynamicSuggestionsMap[learnerLevel] ?? []).map((s, i) => ({
-          key: `dynamic:${i}`, label: s, prompt: s, source: 'dynamic' as const,
+    : (introQuestionsForLevel && introQuestionsForLevel.length > 0)
+      ? introQuestionsForLevel.map((q) => ({
+          key: `intro-cache:${q.id}`,
+          label: q.label,
+          prompt: q.prompt,
+          cachedAnswer: q.cachedAnswer,
+          source: 'intro-cache' as const,
         }))
       : lessonPlan
         ? lessonPlan.allowedHints.slice(0, 3).map((hint) => ({
@@ -1655,7 +1667,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     <div data-tour-id="ai-suggestions" className="mt-3 animate-in fade-in duration-300">
                         <div className="mb-2 text-[10px] text-slate-500 uppercase font-bold ml-1 flex items-center gap-2">
                             <span>Suggested Follow-ups</span>
-                            {introQuestionsForLevel && introQuestionsForLevel.length > 0 && (
+                            {!byokConnected && introQuestionsForLevel && introQuestionsForLevel.length > 0 && (
                                 <span
                                     className="text-emerald-400 normal-case font-medium"
                                     title="These are pre-cached, human-reviewed answers. Clicking is free and instant."

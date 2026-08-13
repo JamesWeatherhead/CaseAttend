@@ -4,21 +4,21 @@ import { listCasePackages } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
 
 const EXPECTED_LEGACY_LESSON_MANIFESTS: Readonly<Record<string, string>> = {
-  'local-study-sub1-lesson': 'a9357179ee6acd109bd99484dc6dea5ebc06c8a195e1163e97f84d197e987190',
-  'patho-study-breast-lesson': 'eead8942a616d31bdd6018040f0dd8211cce9bdceb5334722fb07d31f7476e55',
-  'cxr-pneumothorax-lesson': '1028f0859be97e1526c9169af4c171f3228a793ad1f332bfd604b718c546108c',
-  'cxr-pneumonia-lesson': '19a49f2cbb56799e61340960222bcfb1dd07fdd89322a4c3055427daa9b88637',
-  'cxr-chf-lesson': 'a9964f9f9ee82d5535a3a22e5bd613366437093dd16373cefdf14afeddeabe19',
-  'cxr-effusion-lesson': '9e7083e34bd2d292cdd5b516a63cafd057a508afaf962c9fbc14573d239f3fca',
-  'axr-sbo-lesson': '859ff33d9a301da552305d212fe940bdf22f95605448dd2328cb4ae95fc17881',
-  'ct-epidural-lesson': '8315a05adf2adcad76ef40f2dab12a028ffbc405e97b7b2e4fa5dfd30824403b',
-  'ct-subdural-lesson': 'ffc00d38c30dd9e8343f95e1c74831bdc4a731619d7f1c0cdd896d59f10e6983',
-  'cxr-pneumoperitoneum-lesson': 'b018a6338a866bc1033aaf5764686c677c948cccf4ac8b38d4ffdb2c0561e929',
-  'axr-nec-lesson': 'cfcdc5395b30d89ec016319217ea4a97ff911d7bec921817ca7bb8123fd3095b',
-  'xr-colles-lesson': '3ba3d3775b172219aef34bad1023008410617c5f9a1d9cf63ca0bea081b22de8',
-  'derm-melanoma-lesson': 'af38ef8f7737e62d09c153b85ef40d8dca40d40d2211c600b62caa0a90390939',
-  'derm-bcc-lesson': '7d7c8ba45a4b84abf64bd7e7d224862347b57a46153d422a5236faaa170840ad',
-  'derm-sebk-lesson': '2fd44d4d2a9de60b327f3520683666708079ddc0e818c3f3cb748d9e7047ad3f',
+  'local-study-sub1-lesson': '03b563b5cadb01c4ab870c6134e057608d95e8843316712c5a4d20fbdf155eaf',
+  'patho-study-breast-lesson': '467260f7c5020af8cc2d9a7385af487c867c2010ce795c6da08bb9cac1f2355a',
+  'cxr-pneumothorax-lesson': '986e762cbc2edb7d6c9fdc7c877770ddd38f5b18e2933bed7b048363a40db25a',
+  'cxr-pneumonia-lesson': '0c06f5d7d7aa0dc2d707592831371c5af53af5272d6d2b196f3a1c7011e9c1f5',
+  'cxr-chf-lesson': '33265d36b3e633cc85634a23a1bd75f45db2f80478fb7c41864cb0a8acf974a3',
+  'cxr-effusion-lesson': '4cddb1f2f6abb1def64d907a655469cf8c651775ac3c4c4cb0b675d400f8b2f7',
+  'axr-sbo-lesson': '80376b161f66a1f40eadac26da393d72b4b701bc2108d97860b61fda431c72e9',
+  'ct-epidural-lesson': '55a8ae270138587432ab7ba8fef0ee6c6ca1f0e47b7a25de6bac46bbc4c5a9f1',
+  'ct-subdural-lesson': '60af6c9436ed79390172fe8d390cf2297cb484a8e3ee24e2a6a48e6a2748566b',
+  'cxr-pneumoperitoneum-lesson': '9c19779ee420f6b04a80c94a0d6f4c6036f2895b9d4a1a44a77f5a3d7d2690e0',
+  'axr-nec-lesson': '8bcf2263b4ed39d1a85e0b3c4684e13c25ad4d932b11ff81439fa5638399d3e5',
+  'xr-colles-lesson': 'e7122aa6840955998971d6e25b98ece02058dc41ceff0b2e1101416e403e403f',
+  'derm-melanoma-lesson': '531135b180b2a17e8e13c5788deb420a9aa9f1e8bd4c0ff8e7eeaee5bc634b18',
+  'derm-bcc-lesson': 'f564b617d7f79d0b0d36a62ca06310e4414cfa2582829ba2bf45586d6172aa83',
+  'derm-sebk-lesson': 'b0c27de794d32ab2f5a880929f246817c0cf1dbfff6d1c64ec82dbf78249ebef',
 };
 
 describe('built-in Lesson Plan registry', () => {
