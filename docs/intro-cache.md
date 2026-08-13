@@ -1,6 +1,6 @@
 # Intro cache pipeline
 
-The intro cache is the shipped artifact that lets a learner with **no OpenRouter key** open any lesson, see a tailored intro prompt for their learner level, and click at least one pre-cached question that renders its answer instantly. It is the delivery vehicle for issue [#68](https://github.com/JamesWeatherhead/CaseAttend/issues/68); companion issue #70 will make this happen automatically when a new lesson is authored.
+The intro cache is the shipped artifact that lets a learner with **no OpenRouter key** open any lesson, see a tailored intro prompt for their learner level, and click any of about three pre-cached questions that render their answers instantly. It is the delivery vehicle for issue [#68](https://github.com/JamesWeatherhead/CaseAttend/issues/68) and the full corpus backfill [#73](https://github.com/JamesWeatherhead/CaseAttend/issues/73); companion issue #70 will make this happen automatically when a new lesson is authored.
 
 **Runtime contract**
 
@@ -48,9 +48,14 @@ Every `cachedAnswer` must end with the exact `SAFETY_FOOTER` in `lib/prompts/sha
 
 ### 1) Generate drafts
 
-The batch generator reads every built-in lesson (`src/data/caseRegistry.ts` + `src/data/builtinContentPacks.ts`), samples up to four representative images per case, and calls a frontier multimodal model on OpenRouter with the frozen system prompt in `scripts/introCache/systemPrompt.mts`. It writes `intro-cache-drafts/<caseId>.json` with `review.status = "draft"`.
+The batch generator reads every built-in lesson (`src/data/caseRegistry.ts` + `src/data/builtinContentPacks.ts`), samples up to four representative images per case, and calls a frontier multimodal model with the frozen system prompt in `scripts/introCache/systemPrompt.mts`. It writes `intro-cache-drafts/<caseId>.json` with `review.status = "draft"`. Each level receives a tailored intro prompt plus **about three** pre-cached follow-ups; the schema still enforces a floor of one.
 
-Idempotent per case: reruns skip any case whose existing draft matches both `lessonPlanSha256` and `mediaSha`. `--force` regenerates anyway. If a returned payload is missing any level, missing the safety footer, or otherwise breaks the per-level guarantee, the draft is **not written** and the run reports `skipped-error`.
+Two provider back-ends are supported, selected by `INTRO_CACHE_PROVIDER`:
+
+- `openrouter` (default) — OpenAI-shape chat completions via OpenRouter; used by author-time BYOK generation (issue #70).
+- `anthropic` — Anthropic Messages API, pointed at any endpoint via `ANTHROPIC_BASE_URL`. This is the maintainer-run path for the corpus-wide backfill.
+
+Runs are sequential (one case at a time), pace between calls (`INTRO_CACHE_INTER_CALL_MS`, default 6000ms), and exponentially back off on 429 / 5xx. A partial run is resumable: reruns skip any case whose existing draft matches both `lessonPlanSha256` and `mediaSha`. `--force` regenerates anyway. If a returned payload is missing any level, missing the safety footer, or otherwise breaks the per-level guarantee, the draft is **not written** and the run reports `skipped-error`.
 
 **Enumerate the roster:**
 
@@ -64,11 +69,21 @@ npx tsx scripts/introCache/generate.mts --list
 npx tsx scripts/introCache/generate.mts --case=cxr-pneumothorax --dry-run
 ```
 
-**Real batch (frontier model):**
+**Real batch on OpenRouter (author-time BYOK path):**
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-...
 # default model is anthropic/claude-opus-4; override with --model
+npx tsx scripts/introCache/generate.mts --all
+```
+
+**Real batch on a direct Anthropic Messages endpoint (maintainer backfill path):**
+
+```bash
+export INTRO_CACHE_PROVIDER=anthropic
+export ANTHROPIC_API_KEY=...             # never commit
+export ANTHROPIC_BASE_URL=https://.../v1 # endpoint base for Messages API
+export INTRO_CACHE_MODEL=claude-opus-4-8 # or your maintainer-configured model
 npx tsx scripts/introCache/generate.mts --all
 ```
 
@@ -102,25 +117,22 @@ REVIEWER_NAME="Full Name" REVIEWER_CREDS="MD; institution" \
   - Free-typing without a key is disabled; focusing the input opens the Connect with OpenRouter modal.
 - Batch generator: `scripts/introCache/generate.mts`
 - Human-review gate: `scripts/introCache/review.mts`
-- Sample committed cache (human-authored seed, pipeline-validated) for three lessons across three domains:
-  - `public/intro-cache/cxr-pneumothorax.json` (radiology, chest)
-  - `public/intro-cache/derm-melanoma.json` (dermatology)
-  - `public/intro-cache/patho-study-breast.json` (pathology)
+- Full corpus cache (issue #73): `public/intro-cache/<caseId>.json` for all 48 built-in lessons, each with a tailored `introPrompt` and ~3 pre-cached `introQuestions` per learner level. Generated with Claude Opus 4.8 from Anthropic; three of the 48 (`cxr-pneumothorax`, `derm-melanoma`, `patho-study-breast`) remain from the human-authored seed set as pipeline validators.
 - Tests: `src/tests/introCache.test.ts`, `src/tests/introCacheStore.test.ts` (all passing).
 
 ## Running the full corpus
 
-The current built-in roster is 48 lessons (`--list` prints them all). Given one call per case (all five levels in one JSON payload), rough cost expectations with Claude Opus 4 at the time of writing:
+The current built-in roster is 48 lessons (`--list` prints them all). One call per case emits all five levels in one JSON payload, with about three tailored follow-ups per level:
 
-| Item                              | Estimate               |
-|-----------------------------------|------------------------|
-| Cases enumerated (`--list`)       | 48                     |
-| Model calls (one per case)        | 48                     |
-| Input tokens per call             | 3-6k (text + up to 4 base64 images) |
-| Output tokens per call            | 3-6k (all 5 levels)    |
-| Approx. total cost, Opus-class    | Low tens of USD        |
+| Item                              | Value                                |
+|-----------------------------------|--------------------------------------|
+| Cases enumerated (`--list`)       | 48                                   |
+| Model calls (one per case)        | 48                                   |
+| Follow-ups produced per level     | ~3 (schema floor: 1)                 |
+| Input tokens per call             | 3-6k (text + up to 4 base64 images)  |
+| Output tokens per call            | 5-8k (all 5 levels x ~3 follow-ups)  |
 
-`scripts/introCache/generate.mts --all` is safe to leave running; it is idempotent, checkpoints per case, and skips already-current drafts on rerun. When the corpus grows past 100 (issue #70's auto-create path), the same command scales without changes.
+`scripts/introCache/generate.mts --all` is safe to leave running: it is idempotent, checkpoints per case, paces requests, backs off on 429/5xx, and skips already-current drafts on rerun. When the corpus grows past 100 (issue #70's auto-create path), the same command scales without changes.
 
 ## Fail-closed guarantees
 

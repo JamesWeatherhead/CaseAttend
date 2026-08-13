@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "ct-subdural",
+  "lessonPlanSha256": "ffc00d38c30dd9e8343f95e1c74831bdc4a731619d7f1c0cdd896d59f10e6983",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "7e0ae1ceefc5489a086c17cd656c0edf305323239899c13ea41f9fce24188db3",
+    "generatedAt": "2026-08-13T14:26:52.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a CT scan, a special kind of X-ray that takes pictures of the head in slices. The bright white ring around the outside is the skull (bone shows up bright), and the gray blob inside is the brain. This case is about an 80-year-old woman who has had a headache getting worse over several days, and she takes medicine that keeps her blood from clotting easily. Look along the middle line that separates the two halves of the brain — a thin bright stripe runs down it. What do you think a bright stripe usually means on this kind of scan?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What are the main things I can see in this brain CT image?",
+          "cachedAnswer": "You are looking at a slice through the head, like a photo taken from above. The bright white ring on the outside is the skull bone, which blocks X-rays and shows up white. Inside is the brain, which looks gray. Down the middle is a natural dividing line between the two halves of the brain, and here you can see a thin bright stripe following that line. On this kind of scan, fresh blood also looks bright white, so a bright stripe in an area that should be darker is worth a closer look. Noticing where the brightness is helps doctors figure out what is going on.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-blood-thinner",
+          "label": "Why do blood thinners matter?",
+          "prompt": "Why is it important that this patient takes blood thinners?",
+          "cachedAnswer": "Blood thinners are medicines that make it harder for blood to form clots, which is helpful for people with certain heart problems. But the downside is that if a small blood vessel breaks, the bleeding does not stop as quickly and more blood can leak out. In older people, tiny veins around the brain can tear easily, sometimes even without a big injury. With a blood thinner on board, a small leak can slowly grow into a bigger pool of blood. That is why the doctors pay special attention to her medicines when they see any bright area that could be blood.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-symptoms",
+          "label": "Why headache and confusion?",
+          "prompt": "Why might blood in the head cause a headache and confusion?",
+          "cachedAnswer": "The skull is a hard box that cannot stretch, so anything extra inside it — like a pool of blood — takes up space and presses on the brain. That pressure can cause pain, which is why she has a headache. When the brain gets squeezed or pushed, the parts that handle thinking and alertness may not work normally, which can make a person confused. Because the bleeding grew slowly over days, her symptoms also came on slowly instead of all at once. That is a clue that helps doctors tell this apart from a sudden injury.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a non-contrast head CT, where density determines brightness: bone and fresh blood appear bright, brain tissue is mid-gray, and fluid or air is dark. The image shows normal-looking brain hemispheres separated in the midline by the falx, a fibrous sheet. In this 80-year-old woman on anticoagulation with several days of worsening headache and confusion, notice the bright material tracking along the midline. Blood that collects between the brain's coverings can hug this region. What anatomical space do you think blood would occupy to produce a stripe running along the midline?",
+      "introQuestions": [
+        {
+          "id": "how-ct-brightness",
+          "label": "Why is blood bright on CT?",
+          "prompt": "Why does fresh blood appear bright (dense) on a CT scan?",
+          "cachedAnswer": "CT measures how much X-ray energy each tissue absorbs, and denser material absorbs more and appears brighter (whiter). Fresh blood contains hemoglobin with iron and becomes concentrated as it clots, so it absorbs more X-rays than normal brain tissue and looks bright. Bone is even denser, which is why the skull is the brightest thing on the image. Water-like fluid absorbs little and appears dark. This is why a recent bleed shows up as a bright area against the mid-gray brain. Over days the blood breaks down and gradually becomes less bright.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "midline-anatomy",
+          "label": "What is the midline structure?",
+          "prompt": "What normal anatomy runs down the midline of the brain here?",
+          "cachedAnswer": "Down the midline runs the falx cerebri, a tough fold of dura mater (the outer brain covering) that dips between the two cerebral hemispheres. Large veins called bridging veins travel from the brain surface across a thin space to drain into the superior sagittal sinus near this midline. Because these veins cross a small gap, they can be stretched and torn, especially in older people whose brains have shrunk slightly with age. Blood from a torn bridging vein can collect right alongside the falx. Recognizing this anatomy explains why a collection can appear as a bright stripe along the midline.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "age-shrinkage",
+          "label": "How does aging change the picture?",
+          "prompt": "How does the aging brain affect the risk of this kind of bleed?",
+          "cachedAnswer": "As people age, the brain slowly loses some volume, so it sits slightly further from the skull with a bit more space around it. This means the small bridging veins that connect the brain surface to the large drainage channels have to stretch across a wider gap. A stretched vein tears more easily, sometimes from only minor movement or trauma. If the person also takes anticoagulants, even a small tear can keep bleeding rather than sealing off quickly. This combination makes older adults on blood thinners more prone to slow collections of blood between the brain coverings.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This non-contrast head CT (axial and coronal views) is presented for an 80-year-old anticoagulated woman with subacute headache and confusion. Note the hyperdense material tracking along the interhemispheric midline adjacent to the falx cerebri, a parafalcine distribution. Subdural hematomas arise in the space between dura and arachnoid, classically from torn bridging veins draining into the superior sagittal sinus. Consider how cerebral atrophy, anticoagulation, and bridging-vein anatomy together shape this pattern. Which vascular structures, when disrupted, best explain a hyperdense collection hugging the falx?",
+      "introQuestions": [
+        {
+          "id": "describe-density-distribution",
+          "label": "Describe density and distribution",
+          "prompt": "How would you describe the density and distribution of the collection in this case?",
+          "cachedAnswer": "The collection appears as hyperdense (bright) material tracking along the interhemispheric fissure, hugging the falx cerebri in a parafalcine distribution rather than spreading over the entire convexity. Hyperdensity relative to gray matter suggests acute-to-subacute blood, since clot retraction concentrates hemoglobin. Subdural collections classically form a crescentic, concave-toward-brain shape that can cross suture lines because they lie in the potential space beneath the dura. A medial parafalcine location follows the dural reflection of the falx. Describing both density (acute vs chronic vs mixed) and distribution (convexity, parafalcine, tentorial) is essential for characterizing these collections.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "bridging-vein-mechanism",
+          "label": "Bridging-vein mechanism",
+          "prompt": "What is the pathophysiologic mechanism linking bridging veins to subdural hematoma?",
+          "cachedAnswer": "Bridging veins traverse the subdural space to drain cortical blood into the dural venous sinuses, particularly the superior sagittal sinus at the vertex and along the midline. These veins are relatively unsupported as they cross the subdural potential space, making them vulnerable to shear forces. With age-related cerebral atrophy the veins are stretched over a widened gap, lowering the threshold for tearing, sometimes with trivial or no recalled trauma. Because the bleeding is venous and low-pressure, it may accumulate slowly, producing the subacute time course seen here. Anticoagulation impairs hemostasis, so a small venous tear can continue to bleed and enlarge.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mass-effect-signs",
+          "label": "What signs of mass effect matter?",
+          "prompt": "What features of mass effect should I look for on this CT?",
+          "cachedAnswer": "Mass effect is assessed by looking for effacement of sulci and cisterns, compression or asymmetry of the lateral ventricles, and midline shift relative to the falx. In a parafalcine collection you would watch whether adjacent gyri and the interhemispheric sulci are compressed. Coronal images help judge downward or transtentorial displacement and status of the basal cisterns. Even without dramatic shift, a collection raises the question of whether pressure could progress, particularly given ongoing anticoagulation. Documenting the presence or absence of mass effect frames the urgency and guides whether the collection is stable or expanding.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An 80-year-old woman on anticoagulation for a cardiac indication presents with several days of progressive headache and confusion. Her non-contrast head CT shows hyperdense material in a parafalcine/interhemispheric distribution consistent with a subdural hematoma. The subacute presentation, advanced age, and anticoagulation fit the classic bridging-vein mechanism. As you review the images, weigh how the density, distribution, and any mass effect translate into clinical decisions. What immediate management questions does this picture raise?",
+      "introQuestions": [
+        {
+          "id": "clinical-pattern",
+          "label": "Read the pattern clinically",
+          "prompt": "What clinical pattern is suggested by a parafalcine subdural hematoma in this patient?",
+          "cachedAnswer": "A parafalcine (interhemispheric) subdural hematoma in an elderly anticoagulated patient fits the bridging-vein mechanism, where minor or unrecognized trauma tears a stretched vein and slow venous bleeding accumulates over days. The subacute timeline matches her progressive headache and confusion rather than a hyperacute deterioration. Density on CT helps stage the bleed: hyperdense favors acute, isodense or hypodense favors chronic, and mixed density raises concern for rebleeding in an anticoagulated patient. Interhemispheric collections can be subtle and are easily overlooked if attention stays on the convexities. Correlating the imaging with her exam and coagulation status frames severity and urgency.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for midline hyperdensity",
+          "prompt": "What is the differential for hyperdensity along the interhemispheric midline?",
+          "cachedAnswer": "A hyperdense midline stripe can represent an interhemispheric/parafalcine subdural hematoma, which is the leading concern here given her risk profile. Mimics include a normally dense or calcified falx, subarachnoid hemorrhage tracking into the interhemispheric fissure, and dural venous sinus hyperdensity. A calcified falx tends to be symmetric and stable across prior imaging, while subarachnoid blood also fills adjacent sulci and cisterns. Correlating with the coronal plane, prior studies, and the clinical story helps distinguish true subdural blood from a normal dense falx. When uncertain, comparison studies and clinical context resolve most cases.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-questions",
+          "label": "First management steps",
+          "prompt": "What are the key initial management considerations for this patient?",
+          "cachedAnswer": "Initial priorities include a focused neurologic assessment (GCS, focal deficits), review of the anticoagulant type and last dose, and coagulation labs. Management centers on anticoagulation reversal decisions balanced against her cardiac indication, blood pressure control, and neurosurgical consultation. The imaging questions guiding disposition are size, density (age of blood and rebleeding), and mass effect including midline shift and cistern status. Serial exams and repeat imaging track stability versus expansion, which is a real risk while anticoagulated. Whether operative evacuation versus close observation is appropriate depends on collection size, neurologic status, and trajectory, decided with neurosurgery.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Non-contrast head CT in an 80-year-old anticoagulated woman with subacute headache and confusion demonstrates hyperdensity in a parafalcine/interhemispheric subdural distribution. This is a classic bridging-vein territory bleed accentuated by atrophy and impaired hemostasis. Interhemispheric SDH is a recognized pitfall — easily mistaken for a dense or calcified falx and often subtle without careful windowing and multiplanar review. Consider density staging, mass-effect assessment, and reversal/neurosurgical decision-making. What features would push you toward intervention versus observation here?",
+      "introQuestions": [
+        {
+          "id": "characterize-collection",
+          "label": "Characterize the collection",
+          "prompt": "How would you characterize this subdural collection and its distribution on CT?",
+          "cachedAnswer": "The collection is a parafalcine/interhemispheric subdural hematoma, hyperdense to cortex and hugging the falx rather than the lateral convexity. Interhemispheric SDH classically produces an asymmetric, flame-shaped or medial straight border along the falx with a shaggy medial margin, distinguishing it from the smooth, symmetric density of a calcified falx. Density staging matters: hyperdense suggests acute blood, but heterogeneous or mixed density in an anticoagulated patient raises suspicion for active/recurrent bleeding or unretracted clot from coagulopathy. Multiplanar (coronal) review confirms extent and helps separate parafalcine subdural from subarachnoid blood in the fissure. Always compare with priors when available to avoid over- or under-calling.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "risk-anatomy-integration",
+          "label": "Integrate risk and anatomy",
+          "prompt": "How do age, anticoagulation, and bridging-vein anatomy converge in this presentation?",
+          "cachedAnswer": "Parasagittal bridging veins draining into the superior sagittal sinus are the anatomic substrate; they cross the subdural space with little support and are vulnerable to shear. Age-related parenchymal atrophy increases the traversed distance and vein tension, lowering the trauma threshold — often trivial or unwitnessed. Anticoagulation removes the hemostatic brake on low-pressure venous bleeding, favoring slow accumulation and the subacute clinical arc of progressive headache and encephalopathy. A hypodense or mixed-density appearance can develop as blood ages or with dilutional coagulopathy, sometimes masking volume. This triad explains both the parafalcine location and the insidious clinical course.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls-management",
+          "label": "Pitfalls and disposition",
+          "prompt": "What are the key pitfalls and management/disposition considerations here?",
+          "cachedAnswer": "The main radiologic pitfall is dismissing interhemispheric hyperdensity as a normal dense/calcified falx or missing a subtle collection at inappropriate windows — widen windows and review multiplanar reconstructions. Assess mass effect thoroughly: midline shift, sulcal effacement, ventricular compression, and cistern patency, recognizing that parafalcine bleeds may cause less shift yet still threaten cingulate/subfalcine dynamics. Management hinges on rapid anticoagulant characterization and guideline-based reversal (e.g., PCC/vitamin K for warfarin, specific reversal agents for DOACs) balanced against thromboembolic risk from her cardiac indication. Early neurosurgical involvement, blood-pressure control, serial neuro exams, and short-interval repeat CT to detect expansion guide operative-versus-conservative decisions. Document baseline neurologic status to trend deterioration.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

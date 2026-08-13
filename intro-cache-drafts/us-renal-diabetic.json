@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-renal-diabetic",
+  "lessonPlanSha256": "14e7532584c3bd868af7905cb2b76c9ba5b85991515fb47bde08faf03172f202",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "fa68fb0d5308ce1dc01cd17d915647e1d5959ff0d3ab595fb46b76bbf984fb24",
+    "generatedAt": "2026-08-13T14:38:37.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an ultrasound picture of a kidney. Ultrasound uses sound waves (like a bat's echoes) to make pictures of the inside of the body, and tissues that bounce back more sound look brighter or 'whiter' on the screen. In this image, the outer part of the kidney looks brighter than it usually would compared to nearby body tissue. The patient has had diabetes for a long time and their kidneys are slowly working less well. Why might a doctor be careful about guessing exactly *what* is wrong just from a brightness change on a picture?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What am I looking at in this kidney ultrasound picture?",
+          "cachedAnswer": "You are looking at a kidney seen with ultrasound, a machine that makes pictures using echoes of sound waves. Tissues that send back more sound show up brighter (whiter) on the screen, and tissues that send back less look darker. In this picture, the outer shell of the kidney (called the cortex) looks brighter than normal compared to the tissue next to it. Brightness on ultrasound is called 'echogenicity,' which just means how much echo something makes. Doctors compare the kidney's brightness to a nearby organ to decide if it seems too bright. A brighter-than-normal kidney can be a clue that something is going on, but it is only a clue.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-brighter",
+          "label": "Why can a kidney look brighter?",
+          "prompt": "Why would a kidney look brighter than normal on ultrasound?",
+          "cachedAnswer": "A kidney can look brighter on ultrasound when its inside structure changes, for example when normal soft tissue is partly replaced by scar-like or stiffer material. These changes make the sound waves bounce back more strongly, so the area appears whiter. Long-lasting illnesses that affect the kidney over many years can cause this kind of change. However, many different problems can make a kidney look brighter, so the brightness does not tell you the exact cause. It only tells you that the kidney tissue is not completely normal. That is why doctors combine the picture with blood tests and the patient's story.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "can-picture-tell-cause",
+          "label": "Can the picture tell us the exact cause?",
+          "prompt": "Can this ultrasound picture tell us exactly what disease the kidney has?",
+          "cachedAnswer": "No, a single ultrasound picture cannot tell you the exact disease. It can describe things like how big the kidney is and how bright it looks, but many different conditions can produce the same bright appearance. Think of it like seeing smoke: you know something is happening, but smoke alone does not tell you exactly what is burning. To find the real cause, doctors add other information such as blood tests, urine tests, the patient's history, and sometimes a small tissue sample. So the honest way to talk about this image is to *describe* what we see, not to *name* one disease from the picture alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a grayscale renal ultrasound. Ultrasound forms images from reflected sound waves, and structures that reflect more sound appear brighter (more 'echogenic'). Here the renal cortex appears brighter than the adjacent reference tissue, a finding radiologists judge by side-by-side comparison. The patient has longstanding diabetes with slowly declining kidney function. Before we name any disease, how would you carefully *describe* this kidney's appearance using size and echogenicity?",
+      "introQuestions": [
+        {
+          "id": "echogenicity-basics",
+          "label": "What does 'echogenicity' mean?",
+          "prompt": "What does echogenicity mean and how is it judged on renal ultrasound?",
+          "cachedAnswer": "Echogenicity describes how bright a tissue appears on ultrasound, which reflects how strongly it bounces sound waves back to the probe. Denser or more structurally disorganized tissue tends to reflect more sound and appears brighter (hyperechoic), while fluid appears dark (anechoic). On renal ultrasound, the cortex is normally similar to or slightly darker than the liver or spleen next to it. To judge echogenicity, you compare the renal cortex directly with that adjacent reference organ in the same image. In this case the cortex looks brighter than the neighboring tissue, which is described as increased cortical echogenicity. This is a description of appearance, not a diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "size-and-shape",
+          "label": "Why do size and shape matter?",
+          "prompt": "Why do doctors measure kidney size and describe its shape on ultrasound?",
+          "cachedAnswer": "Kidney size and shape help indicate whether a process is acute or chronic. Chronic, long-standing kidney damage often leads to smaller kidneys with a thinner cortex, while some conditions can leave kidneys normal-sized or even enlarged. Combining size with echogenicity gives a fuller picture than either alone. For example, small bright kidneys suggest a chronic scarring process, whereas normal-sized bright kidneys can occur in certain 'medical renal' conditions. Because the image only shows structure, these features guide but do not confirm a cause. A careful description records both the size and the echogenicity so that other clinicians can interpret the trend over time.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "description-vs-diagnosis",
+          "label": "Description versus diagnosis",
+          "prompt": "Why is it important to separate an imaging description from a diagnosis?",
+          "cachedAnswer": "An imaging description states only what is observable, such as 'increased cortical echogenicity' or 'reduced kidney size.' A diagnosis names an underlying disease, which usually requires more than one type of information. Many different diseases can produce the same bright appearance, so imaging cannot single out one cause by itself. Keeping the description separate protects against premature conclusions and keeps the reasoning honest. Clinicians then combine the imaging with lab results, history, and sometimes biopsy to reach a diagnosis. This habit of describing before diagnosing is a core skill in medicine.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This longitudinal grayscale renal ultrasound shows a kidney with cortical echogenicity that appears increased relative to the adjacent reference parenchyma. Increased echogenicity generally correlates with altered parenchymal microstructure, such as interstitial fibrosis, glomerulosclerosis, or tubular changes that increase acoustic interfaces. The clinical context is longstanding diabetes with progressive decline in function. Describe the pattern of chronic parenchymal disease you can support from this image, and explain why the histologic substrate cannot be specified from ultrasound alone.",
+      "introQuestions": [
+        {
+          "id": "echo-correlate",
+          "label": "Histologic basis of echogenicity",
+          "prompt": "What histologic changes underlie increased cortical echogenicity on renal ultrasound?",
+          "cachedAnswer": "Increased cortical echogenicity is thought to reflect an increase in acoustic interfaces within the parenchyma, produced by structural remodeling. Interstitial fibrosis, tubular atrophy, glomerulosclerosis, and cellular infiltration all disrupt the normal architecture and raise the number of reflecting boundaries. In chronic parenchymal disease these processes accumulate, correlating loosely with the degree of chronic damage on histology. However, the correlation is nonspecific: many distinct diseases converge on similar fibrotic endpoints. Ultrasound therefore detects the *consequence* of injury rather than its specific *mechanism*. This is why echogenicity is reported as a descriptive finding, not as a histologic diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "chronic-pattern",
+          "label": "Pattern of chronic disease",
+          "prompt": "What imaging features together suggest a pattern of chronic renal parenchymal disease?",
+          "cachedAnswer": "A chronic parenchymal pattern is suggested by increased cortical echogenicity, cortical thinning, loss of clear corticomedullary differentiation, and reduced overall renal size. Together these indicate long-standing rather than acute injury, since scarring and atrophy take time to develop. Bilateral, symmetric involvement further supports a diffuse medical renal process rather than a focal or obstructive one. In this image the increased cortical echogenicity is the anchoring finding; assessment of size and corticomedullary differentiation refines the interpretation. Still, this pattern is a category, not a single disease. The features describe chronicity, leaving etiology to be established by other data.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-not-specific",
+          "label": "Why not diabetic nephropathy by imaging?",
+          "prompt": "Why can't ultrasound specify diabetic nephropathy as the cause of these findings?",
+          "cachedAnswer": "Diabetic nephropathy produces glomerular changes such as mesangial expansion, basement membrane thickening, and eventually nodular glomerulosclerosis, but these are microscopic and not resolvable by ultrasound. Ultrasound shows only bulk tissue properties like echogenicity and size, which are shared by many chronic renal diseases. Hypertensive nephrosclerosis, chronic glomerulonephritis, and chronic interstitial disease can all appear identically bright. Even with a strong diabetic history, imaging cannot confirm the specific glomerular pathology or exclude a superimposed second process. Definitive attribution generally requires clinical correlation, laboratory data, and in some cases biopsy. Thus the image supports 'chronic parenchymal disease,' not a named etiology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with longstanding diabetes and progressively declining GFR has this renal ultrasound, showing cortical echogenicity increased relative to the adjacent reference organ. Your task is to report the findings descriptively and reason toward a differential for chronic parenchymal disease without over-reading. Note both the echogenicity and, where assessable, kidney size and corticomedullary differentiation. Given the clinical picture, how would you frame these findings for the referring team while respecting the limits of ultrasound?",
+      "introQuestions": [
+        {
+          "id": "structured-report",
+          "label": "How to describe this on a report",
+          "prompt": "How should these ultrasound findings be described in a clinical report?",
+          "cachedAnswer": "Report descriptively: state that the renal cortex demonstrates increased echogenicity relative to the adjacent reference parenchyma, and comment on kidney size, cortical thickness, and corticomedullary differentiation as visualized. Note laterality and symmetry if both kidneys are assessed, and mention the absence of hydronephrosis, focal mass, or obvious stones when applicable. Conclude with a phrase such as 'findings consistent with medical renal disease' rather than naming a specific etiology. Recommend clinical and laboratory correlation. This structure communicates chronicity and severity while avoiding an unsupported diagnosis. It gives the referring team actionable, honest information.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for bright kidneys",
+          "prompt": "What is the differential diagnosis for increased cortical echogenicity in this clinical setting?",
+          "cachedAnswer": "In longstanding diabetes with declining function, diabetic nephropathy is a plausible cause, but the differential for increased cortical echogenicity is broad. It includes hypertensive nephrosclerosis, chronic glomerulonephritis, chronic tubulointerstitial disease, and other systemic causes of chronic kidney disease. Superimposed processes—such as an acute injury on chronic disease, or a non-diabetic renal disease in a diabetic patient—should be considered, particularly with atypical features like heavy proteinuria without retinopathy, active urinary sediment, or rapid decline. These 'red flags' may prompt nephrology referral and consideration of biopsy. Ultrasound narrows the category to chronic medical renal disease but cannot rank these entities. The clinical trajectory and labs drive the differential more than the image.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "Sensible next steps",
+          "prompt": "What are appropriate next steps after finding increased cortical echogenicity?",
+          "cachedAnswer": "Correlate with serial creatinine and eGFR to establish chronicity and rate of decline, and review urinalysis with quantified proteinuria and sediment. Assess blood pressure, glycemic control, and medications that affect the kidney. If features are atypical for diabetic nephropathy—such as absent diabetic retinopathy, nephrotic-range proteinuria of abrupt onset, hematuria, or unexpectedly rapid progression—consider nephrology referral and possible biopsy. Ensure obstruction has been excluded on the same study. Management otherwise centers on slowing progression: blood pressure and glycemic control, RAAS blockade where appropriate, and avoidance of nephrotoxins. The imaging finding supports, but does not by itself dictate, this plan.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Longitudinal renal sonogram in a diabetic patient with progressive CKD demonstrating cortical echogenicity greater than the adjacent reference organ. Anchor your interpretation to a validated comparison (cortex versus liver/spleen) and integrate size and corticomedullary differentiation before offering a category. The teaching draft attributes this to diabetic nephropathy, but sonography cannot specify the medical renal disease. How would you phrase the impression to convey chronic parenchymal disease while flagging the pitfalls of over-attribution?",
+      "introQuestions": [
+        {
+          "id": "grading-pitfalls",
+          "label": "Grading echogenicity and pitfalls",
+          "prompt": "How is cortical echogenicity graded and what are the interpretive pitfalls?",
+          "cachedAnswer": "Cortical echogenicity is conventionally graded by comparison with the adjacent liver (right) or spleen (left): normal cortex is iso- to hypoechoic relative to these organs. Increased echogenicity is often described qualitatively, and semiquantitative scales exist but are operator-dependent. Pitfalls include a confounding hepatic or splenic parenchymal abnormality invalidating the reference, gain and depth settings altering perceived brightness, and increased echogenicity being sensitive but nonspecific for chronic disease. Correlation with cortical thickness and corticomedullary differentiation improves reliability. Interobserver variability is real, so trend and clinical context matter. Document technique factors to keep the comparison meaningful.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "atypical-features",
+          "label": "When to doubt diabetic nephropathy",
+          "prompt": "What findings should prompt doubt about attributing CKD to diabetic nephropathy?",
+          "cachedAnswer": "Diabetic nephropathy typically progresses over years and, in type 1, is usually accompanied by retinopathy; its absence should raise suspicion for non-diabetic renal disease. Other red flags include abrupt onset of nephrotic-range proteinuria, active urinary sediment with dysmorphic RBCs or cellular casts, rapidly declining GFR, systemic features suggesting vasculitis or paraproteinemia, and asymmetric kidney size. Ultrasound cannot resolve these microscopic distinctions, so it does not confirm or exclude a superimposed process. These features often justify nephrology referral and biopsy. Attributing bright kidneys to diabetes by imaging alone risks anchoring and missing a treatable alternative. Keep the sonographic impression at the level of chronic medical renal disease.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "impression-language",
+          "label": "Impression wording that avoids over-read",
+          "prompt": "How should the impression be worded to avoid over-attribution while remaining useful?",
+          "cachedAnswer": "Phrase the impression as 'increased cortical echogenicity with [preserved/reduced] renal size and [preserved/decreased] corticomedullary differentiation, compatible with chronic medical renal disease; no hydronephrosis or focal lesion.' Avoid naming diabetic nephropathy as a sonographic diagnosis; instead note it as a clinical consideration if relevant. Recommend correlation with renal function, proteinuria quantification, and urinary sediment, and flag atypical features that would warrant nephrology input. If the study is limited by body habitus or technique, say so. This wording conveys chronicity and severity, supports management, and respects the modality's limits. It also protects the patient from premature diagnostic closure.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

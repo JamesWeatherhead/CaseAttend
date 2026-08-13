@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-background-dr",
+  "lessonPlanSha256": "725610c461b7c6d722e77286833854052eedcd6a9933b21d5885dcc35e3a357b",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "a663e852fdc43c5f158807c7d5b10aded99c99eaba15fc9233367038c25a519a",
+    "generatedAt": "2026-08-13T16:06:28.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph taken of the inside back wall of an eye, called the retina. It comes from a person with type 2 diabetes who has no trouble seeing but is getting a yearly checkup picture. The orange background is normal, and the dark curved lines are blood vessels; if you look closely you can spot some tiny red dots scattered around. Doctors take these pictures because diabetes can slowly damage the tiny blood vessels in the eye before a person notices any change in vision. What do you think those tiny red dots might tell us about the eye's blood vessels?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the tiny red dots?",
+          "prompt": "What are the small red dots in this retina photo and why do they appear?",
+          "cachedAnswer": "The retina is like the film in the back of a camera, and it is covered with very thin blood vessels. In diabetes, high blood sugar over many years can weaken the walls of these tiny vessels, so they may bulge out into little balloons or leak a small amount of blood. Those bulges and tiny leaks show up in the photo as small red dots and spots. In this picture the dots are few and scattered, which suggests early, mild change rather than something severe. The person cannot feel or see this happening, which is exactly why the yearly photo is so useful. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-photo",
+          "label": "Why photograph a healthy-feeling eye?",
+          "prompt": "Why do doctors take these eye photos if the patient can see fine?",
+          "cachedAnswer": "Diabetes can quietly harm the eye's blood vessels long before a person notices any change in their sight. By the time vision blurs, a lot of damage may already be done, so waiting for symptoms is risky. A yearly photograph lets doctors catch the very first warning signs, like the small red dots here, while everything can still be watched or treated. Think of it like checking the tires on a car regularly instead of waiting for a flat on the highway. Early pictures give the best chance to protect eyesight. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What happens after this picture?",
+          "prompt": "If someone has these early changes, what would the doctor likely do next?",
+          "cachedAnswer": "When only a few small changes are seen and vision is normal, doctors usually do not rush into treatment. Instead they often recommend keeping blood sugar, blood pressure, and cholesterol well controlled and coming back for another photo, sometimes in about a year. This is called close follow-up, which means watching carefully over time. If the changes grow or new blood vessels appear, then more urgent treatment might be needed. The main message is that healthy habits and regular checkups matter a great deal. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a color fundus photograph showing the posterior pole of the retina from a patient with type 2 diabetes attending routine screening. The bright spot on the left is the optic disc where vessels enter, and the branching lines are retinal arteries and veins. Scattered along the vessels are small red dots and spots, which represent early microvascular change. The patient reports no visual symptoms. Based on what you can see, how might chronically elevated blood glucose lead to these tiny vascular abnormalities?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What structures can I identify?",
+          "prompt": "What normal and abnormal structures are visible in this fundus photograph?",
+          "cachedAnswer": "The pale round area on the left side is the optic disc, where the retinal blood vessels and nerve fibers exit the eye. From it, arteries (thinner, brighter) and veins (wider, darker) branch out across the orange-red retina, whose color comes from the underlying blood supply. Scattered across the posterior pole are small red dots and spots, which are the abnormal findings and represent tiny vessel changes. There is no obvious swelling of the disc or large patches of new abnormal vessels. Recognizing the normal landmarks first makes the subtle abnormal dots easier to spot. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mechanism-basic",
+          "label": "How does diabetes damage vessels?",
+          "prompt": "How does chronic high blood sugar cause these small retinal vessel changes?",
+          "cachedAnswer": "Persistently high blood glucose damages the smallest blood vessels, called capillaries, by weakening their walls and the supporting cells that keep them tight. Weak spots can balloon outward, forming microaneurysms that appear as tiny red dots. These fragile vessels can also leak small amounts of blood or fluid, producing dot-shaped hemorrhages and areas of leakage. Because the retina needs a steady, well-controlled blood supply, this early damage is an important warning sign even when vision is still normal. The changes here are few and scattered, consistent with an early stage. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "urgent-or-not",
+          "label": "Is this an emergency?",
+          "prompt": "Do these findings suggest an emergency, or a plan for monitoring?",
+          "cachedAnswer": "These findings appear mild and early: a few small red dots without large hemorrhages, without new abnormal vessel growth, and with no reported vision loss. That pattern generally points toward monitoring rather than emergency treatment. The main plan is usually to optimize control of blood sugar, blood pressure, and cholesterol and to repeat imaging on a regular schedule. If more severe features appeared, such as extensive bleeding or newly growing vessels, that would raise the urgency. Distinguishing early from advanced disease is a key skill in reading these photographs. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This color fundus photograph of the posterior pole comes from a patient with type 2 diabetes undergoing asymptomatic annual screening. The optic disc is visible nasally with normal-caliber vessels radiating outward, and there are scattered small red dots and spots along the vascular arcades. These represent early microvascular pathology rather than proliferative disease. The macula does not show gross exudate rings, and no obvious neovascularization is present. Given the pericyte loss and basement membrane changes of diabetic microangiopathy, what histopathologic lesions would you expect these red dots to correspond to?",
+      "introQuestions": [
+        {
+          "id": "lesion-correlation",
+          "label": "What lesions do the red dots represent?",
+          "prompt": "What specific retinal lesions do these small red dots and spots represent histopathologically?",
+          "cachedAnswer": "The small round red dots most likely correspond to microaneurysms, which are focal outpouchings of retinal capillaries. Slightly larger blot- or dot-shaped lesions represent intraretinal hemorrhages, typically in the deeper compact layers of the retina where blood pools into a rounded shape. Histologically these reflect the loss of contractile pericytes, thickening of the capillary basement membrane, and weakening of the endothelial wall in diabetic microangiopathy. Areas of leakage arise from a compromised inner blood-retinal barrier allowing plasma and lipid extravasation. Together these define background (nonproliferative) diabetic retinopathy. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "background-vs-prolif",
+          "label": "Background vs proliferative?",
+          "prompt": "What features distinguish background retinopathy from proliferative diabetic retinopathy here?",
+          "cachedAnswer": "Background (nonproliferative) retinopathy is defined by intraretinal changes such as microaneurysms, dot/blot hemorrhages, hard exudates, and cotton-wool spots, without new vessel formation. Proliferative diabetic retinopathy is defined by neovascularization at the disc or elsewhere, driven by VEGF released from ischemic retina. In this image the findings are limited to scattered intraretinal red dots without visible fine tufts of new vessels, preretinal or vitreous hemorrhage, or fibrovascular proliferation. The absence of neovascularization is the key discriminator placing this in the nonproliferative category. Recognizing this distinction determines urgency and management pathway. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ischemia-pathway",
+          "label": "How does this progress to ischemia?",
+          "prompt": "Explain the pathophysiologic pathway from these early changes toward ischemia and neovascularization.",
+          "cachedAnswer": "Chronic hyperglycemia drives pericyte dropout, basement membrane thickening, and endothelial dysfunction, producing microaneurysms and increased vascular permeability. Progressive capillary occlusion leads to areas of retinal nonperfusion and ischemia. Ischemic retina upregulates hypoxia-inducible factors and secretes VEGF, which increases permeability (contributing to macular edema) and can eventually stimulate neovascularization, marking the transition to proliferative disease. The scattered lesions in this photo represent an early point on that continuum, before significant ischemic burden. Understanding this sequence explains why early changes are monitored closely rather than ignored. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with type 2 diabetes and no visual complaints presents for annual screening fundus photography. The image shows scattered microaneurysms and dot hemorrhages in the posterior pole along the arcades, with no visible neovascularization or extensive hemorrhage. Your task is to grade the retinopathy severity and decide between urgent referral and a routine follow-up interval. Note that the case source label is a draft and not adjudicated, so this is a teaching exercise rather than a diagnosis. How would you classify this severity and what follow-up plan follows from it?",
+      "introQuestions": [
+        {
+          "id": "grade-severity",
+          "label": "How do I grade this severity?",
+          "prompt": "How should I grade the diabetic retinopathy severity based on the visible findings?",
+          "cachedAnswer": "The visible findings, a limited number of microaneurysms and dot hemorrhages confined to the posterior pole without other high-risk features, are consistent with mild nonproliferative diabetic retinopathy. Severity grading looks for the number of hemorrhages/microaneurysms per quadrant, venous beading, intraretinal microvascular abnormalities (IRMA), and any neovascularization. Mild NPDR shows microaneurysms only or few hemorrhages, whereas moderate to severe NPDR shows more extensive lesions and the 4-2-1 features. Here the sparse, scattered lesions favor the milder end of the spectrum. As always, a single 2D photo has limits and should be interpreted alongside the full clinical exam and macular assessment. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "urgent-vs-routine",
+          "label": "Urgent referral or routine follow-up?",
+          "prompt": "Does this warrant urgent treatment or routine monitoring, and why?",
+          "cachedAnswer": "With mild nonproliferative changes, no neovascularization, and no evidence of center-involving macular edema, this does not warrant urgent treatment such as anti-VEGF or panretinal photocoagulation. The appropriate pathway is continued screening with optimization of systemic risk factors. Urgent or expedited referral would be triggered by signs of proliferative disease, vitreous hemorrhage, or suspected macular edema affecting vision. Because photography can miss subtle edema, low threshold for OCT or dilated exam is reasonable if the macula looks suspicious. The teaching point is matching intervention intensity to the actual grade rather than over-treating early findings. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "follow-up-interval",
+          "label": "What screening interval fits?",
+          "prompt": "What follow-up interval and systemic management should accompany mild background retinopathy?",
+          "cachedAnswer": "Mild nonproliferative diabetic retinopathy is typically managed with rescreening in roughly 6 to 12 months, depending on local guidelines and overall risk, rather than the standard 1- to 2-year interval used when no retinopathy is present. Equally important is aggressive systemic optimization: glycemic control (targeting an individualized HbA1c), blood pressure control, lipid management, and smoking cessation, all of which slow progression. Patient counseling should emphasize that current normal vision does not mean the disease is inactive. Documentation of the grade allows tracking of progression at future visits. Referral pathways should be clarified so worsening triggers timely ophthalmology involvement. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Asymptomatic type 2 diabetic, annual screening color fundus photo of the posterior pole. Findings are limited to scattered microaneurysms and dot hemorrhages along the arcades without visible IRMA, venous beading, NVD/NVE, or preretinal/vitreous hemorrhage, consistent with mild NPDR. The source label is an unadjudicated draft describing background retinopathy with small-vessel change and leakage, so treat this as pattern-recognition practice. Your job is to grade, screen for masqueraders of urgency, and set the interval and referral threshold. How would you defend a monitoring plan while safeguarding against under-detection of DME?",
+      "introQuestions": [
+        {
+          "id": "pattern-pearls",
+          "label": "Pattern recognition and pitfalls",
+          "prompt": "What are the pattern-recognition pearls and pitfalls in reading this photo as mild NPDR?",
+          "cachedAnswer": "Mild NPDR is defined by microaneurysms only, but on a single mydriatic-quality photo you must actively exclude the higher-grade markers: multiple blot hemorrhages across quadrants, venous beading, and IRMA (the 4-2-1 rule signals severe NPDR). A key pitfall is missing subtle NVE at the arcades or fine NVD masquerading as normal disc vessels, and another is over-reading media opacities or artifact as lesions. Photography is 2D and cannot reliably detect center-involving macular edema, so a normal-appearing macula does not exclude DME. Field coverage limits also mean peripheral neovascularization or ischemia can be underrepresented on a single posterior-pole image. Correlate with prior images to assess progression velocity. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "dme-safeguard",
+          "label": "Guarding against missed DME",
+          "prompt": "How do I safeguard against missing diabetic macular edema in an otherwise mild NPDR photo?",
+          "cachedAnswer": "DME is the leading cause of vision loss in this population and is graded largely independently of NPDR severity, so mild background disease does not exclude clinically significant or center-involving edema. On color photos, look for retinal thickening cues, hard exudate rings near the fovea, and any circinate patterns, but recognize these are insensitive. Any suspicion, or unexplained visual symptoms, should prompt macular OCT and/or dilated biomicroscopy. Center-involving DME with vision impact generally warrants anti-VEGF referral rather than watchful waiting. Building OCT triage into the screening pathway is the practical safeguard. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "interval-referral",
+          "label": "Interval and referral logic",
+          "prompt": "What guideline-aware follow-up interval and referral threshold applies to mild NPDR here?",
+          "cachedAnswer": "For mild NPDR without DME, guideline-aligned practice generally supports rescreening around 6 to 12 months, shorter than the interval for no retinopathy, with the exact cadence influenced by systemic control, pregnancy status, and progression on prior images. Referral to ophthalmology is escalated for moderate-to-severe NPDR, any proliferative features, or suspected DME, with proliferative disease and center-involving DME being the expedited triggers. Systemic optimization (HbA1c, blood pressure, lipids) remains a core intervention that measurably slows progression and should be documented. Pregnancy and rapid glycemic tightening are known accelerators warranting closer follow-up. Because the source label here is unadjudicated, specialist confirmation is required before any clinical application. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

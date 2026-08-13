@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "derm-sebk",
+  "lessonPlanSha256": "2fd44d4d2a9de60b327f3520683666708079ddc0e818c3f3cb748d9e7047ad3f",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "28aebfe3f3f8d35aecd4fd4b79d75b0a3712e4a8335eb34d0700dc67597b23a1",
+    "generatedAt": "2026-08-13T14:34:10.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a close-up photo of a brown skin spot on someone's body. It looks a bit bumpy and waxy, almost like a small piece of something stuck onto the skin. The person is 65 years old and has several of these spots that have been there for years without changing or hurting. In this teaching case, we are learning how to describe what we see and why some spots are reassuring. **What words would you use to describe how this spot looks and feels?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What does this spot look like?",
+          "prompt": "What does this brown skin spot look like in the photo?",
+          "cachedAnswer": "The spot is a small, oval, brown patch that sits on the skin. It has a bumpy, slightly rough surface with tiny dots and looks a little waxy or greasy, like candle wax. It seems to sit on top of the skin rather than being buried deep, which is why doctors often say it looks \"stuck-on,\" like a sticker. The edges are pretty clear and the color is mostly even shades of brown. Around it, the normal skin looks pale and smooth. These features are the kind of thing you would carefully describe when looking at any skin spot.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-stuck-on",
+          "label": "Why does it look stuck-on?",
+          "prompt": "Why do some skin spots look like they are stuck onto the skin?",
+          "cachedAnswer": "Some harmless skin growths build up extra skin cells right at the surface instead of going deep. This makes them sit up on top of the skin, a bit like a small blob of wax dropped onto a table. Because they are raised and have a clear edge, they look like they could be peeled off, even though they cannot easily. The waxy, bumpy surface comes from these extra surface cells packing together. This \"stuck-on\" look is a clue that helps tell a friendly spot apart from something that needs more attention.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "when-to-worry",
+          "label": "When should someone see a doctor?",
+          "prompt": "When should someone have a skin spot checked by a doctor?",
+          "cachedAnswer": "A spot that stays the same for years and does not hurt is usually reassuring. But it is a good idea to see a doctor if a spot changes shape, gets bigger quickly, changes color a lot, has very uneven edges, bleeds, or becomes itchy or sore. If a person is not sure, it is always okay to ask a doctor to look. Doctors are trained to tell harmless spots from ones that need testing. The safest habit is to notice your own skin and speak up when something changes.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This clinical photograph shows a small oval brown lesion on the skin with a waxy, bumpy surface. In this teaching case, a 65-year-old has multiple such spots that have been stable for years and cause no symptoms. We will practice describing the visible surface texture and the impression that the lesion sits on top of the skin. Notice the sharp border and the little surface dots. **How would you describe the shape, color, and surface of this lesion in plain, precise terms?**",
+      "introQuestions": [
+        {
+          "id": "describe-features",
+          "label": "Describe the visible features",
+          "prompt": "What are the key visible features of this skin lesion?",
+          "cachedAnswer": "The lesion is a small, oval, light-to-medium brown growth that is raised above the surrounding pale skin. Its surface looks waxy and slightly rough, with tiny darker dots and a pebbly texture. The border is fairly well defined, giving a clean edge between the lesion and normal skin. It gives the impression of being \"stuck on\" the surface rather than growing from deep within. There are no signs of bleeding, and the surrounding skin looks unremarkable. These plain descriptive terms—shape, color, border, and surface texture—are the building blocks of describing any skin finding.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "skin-layers",
+          "label": "Which skin layer is involved?",
+          "prompt": "Which layer of the skin builds up in a waxy, raised, stuck-on lesion like this?",
+          "cachedAnswer": "The skin has an outer layer called the epidermis and a deeper layer called the dermis. A raised, waxy, stuck-on lesion like this builds up mainly in the outer epidermis, where extra surface skin cells (keratinocytes) accumulate. Because the growth stays superficial, it perches on top of the skin rather than invading deeper tissue. The tiny surface dots often represent small plugs of the tough surface protein keratin trapped within the growth. This superficial location is why such lesions look raised and sharply bordered. Understanding basic skin anatomy helps explain why the lesion has this appearance.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "stable-meaning",
+          "label": "Why is being stable reassuring?",
+          "prompt": "Why is a lesion that has been unchanged for years generally reassuring?",
+          "cachedAnswer": "A lesion that has looked the same for many years, without growing, bleeding, or causing symptoms, is generally reassuring because harmful growths more often change over time. Stability suggests the growth is not behaving aggressively. Features like a symmetric oval shape, even coloring, and a clear border also point toward a benign process. In contrast, rapid change, new bleeding, or irregular borders are the kinds of features that would prompt a closer look. Careful history—how long it has been there and whether it has changed—is a simple but powerful part of evaluating skin lesions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This is a close clinical photograph of a small, sharply demarcated, waxy oval brown lesion with a verrucous, pebbly surface studded with tiny keratotic dots. The teaching scenario describes a 65-year-old with multiple such lesions that have been stable for years and are asymptomatic—a classic seborrheic keratosis presentation. Note the \"stuck-on\" appearance created by an exophytic, epidermal proliferation. We will connect this morphology to the underlying histopathology. **What histologic features of a seborrheic keratosis would explain this stuck-on, keratotic surface?**",
+      "introQuestions": [
+        {
+          "id": "morphology-terms",
+          "label": "Name the morphologic features",
+          "prompt": "Using dermatologic terminology, describe the morphology of this lesion.",
+          "cachedAnswer": "This is a well-circumscribed, ovoid, tan-to-brown plaque that appears raised and \"stuck-on\" against the surrounding skin. The surface is verrucous and waxy with a pebbly, cobblestone texture and scattered punctate dark dots consistent with keratin-filled openings. The border is sharp, and the pigmentation is relatively uniform in shades of brown. There is no ulceration, and the surrounding skin appears normal. These features—sharp margins, waxy verrucous surface, and horn-cyst-like dots—are hallmark descriptors of seborrheic keratosis. Precise morphologic vocabulary allows this appearance to be communicated and compared.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "histology",
+          "label": "What is the histopathology?",
+          "prompt": "What histopathologic features underlie a seborrheic keratosis and its stuck-on appearance?",
+          "cachedAnswer": "Seborrheic keratoses show a benign proliferation of basaloid keratinocytes forming an acanthotic, often exophytic epidermal lesion. Characteristic features include hyperkeratosis, papillomatosis, and horn (pseudohorn) cysts—invaginations of keratin that correspond to the surface dots seen clinically. The lesion typically has a flat base that sits above the level of the adjacent epidermis, producing the clinically \"stuck-on\" quality. Increased melanin within the basaloid cells accounts for the brown pigmentation. The proliferation is confined to the epidermis without dermal invasion, consistent with its benign behavior. Dermoscopically, this correlates with milia-like cysts and comedo-like openings.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "benign-vs-worry",
+          "label": "Reassuring vs concerning features",
+          "prompt": "Which features here are reassuring and which would raise concern for a mimicker?",
+          "cachedAnswer": "Reassuring features include the sharp demarcation, uniform brown pigmentation, symmetric ovoid shape, verrucous waxy surface, and a stable, asymptomatic multi-year history. Concerning features that would argue against a benign seborrheic keratosis include marked pigment variegation, irregular or notched borders, asymmetry, ulceration or bleeding, and documented recent change or rapid growth. Melanoma is the key mimicker to keep in mind, and pigmented basal cell carcinoma can also enter the differential. When morphology is atypical or the history reports change, dermoscopy and possible biopsy become important. Recognizing which features are reassuring versus atypical is central to this teaching case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 65-year-old presents with multiple waxy, stuck-on brown lesions on the trunk that have been present for years, unchanged and asymptomatic; the photograph shows a sharply demarcated verrucous tan-brown plaque with a pebbly, keratotic surface. This is a classic seborrheic keratosis teaching case emphasizing benign morphology, look-alikes, and counseling. Your task is to reason through the clinical impression and articulate a monitoring plan. **How would you formulate your assessment and what would you counsel this patient?**",
+      "introQuestions": [
+        {
+          "id": "clinical-impression",
+          "label": "Form a clinical impression",
+          "prompt": "What is your clinical impression and reasoning for this lesion?",
+          "cachedAnswer": "The most likely diagnosis is seborrheic keratosis: a benign lesion supported by the waxy, stuck-on appearance, sharply demarcated verrucous surface with keratin-filled dots, uniform brown color, and stable asymptomatic history over years, plus the presence of multiple similar lesions. The multiplicity and chronic stability strengthen the benign impression. Dermoscopy typically confirms milia-like cysts and comedo-like openings with a cerebriform or fissured pattern. Key differentials to keep in mind include melanoma, pigmented basal cell carcinoma, and a verrucous or pigmented actinic keratosis. When the clinical and dermoscopic picture is characteristic and stable, no intervention is required beyond reassurance and routine monitoring.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-checkpoints",
+          "label": "What would change your mind?",
+          "prompt": "What features would prompt reassessment or biopsy rather than reassurance?",
+          "cachedAnswer": "Reassess if the lesion shows asymmetry, border irregularity, color variegation, or a diameter that is enlarging, or if the patient reports recent change, bleeding, itching, or pain in a previously stable lesion. A solitary new pigmented lesion that stands out from the patient's other lesions—the \"ugly duckling\"—warrants closer scrutiny for melanoma. Dermoscopic findings such as an atypical pigment network, blue-white veil, or irregular vessels argue against a benign seborrheic keratosis. The abrupt eruption of numerous seborrheic keratoses (sign of Leser-Trélat) should prompt consideration of an internal malignancy workup. Any diagnostic uncertainty is an indication for dermoscopy and, if still unresolved, biopsy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "counseling-plan",
+          "label": "How would you counsel this patient?",
+          "prompt": "Outline a monitoring and counseling approach for this benign lesion.",
+          "cachedAnswer": "Reassure the patient that these lesions are benign, common with age, and not contagious or precancerous. Explain that treatment is optional and typically cosmetic; options such as cryotherapy, curettage, or shave removal can be offered if lesions are irritated by clothing, bleed, or are cosmetically bothersome. Provide clear safety-netting: advise self-monitoring and prompt return for any lesion that grows, bleeds, changes color, becomes symptomatic, or looks different from the others. Encourage general sun protection and periodic skin self-examination. Document baseline appearance, and consider a follow-up or photographic monitoring if there is any diagnostic uncertainty. This combination of reassurance plus explicit warning signs is the core of counseling in this teaching case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "A 65-year-old with multiple chronic, stable, asymptomatic waxy truncal plaques; the image shows a well-demarcated verrucous tan-brown lesion with a pebbly surface and comedo-like keratotic dots—a textbook seborrheic keratosis. The teaching emphasis is efficient pattern recognition, avoiding overcall of pigmented mimickers, and structured counseling. Consider dermoscopic correlation and the pitfalls that catch people out. **What is your dermoscopic reasoning, and where are the diagnostic traps?**",
+      "introQuestions": [
+        {
+          "id": "dermoscopy-pattern",
+          "label": "Dermoscopic pattern recognition",
+          "prompt": "What dermoscopic features support seborrheic keratosis and how do they map to histology?",
+          "cachedAnswer": "Classic dermoscopic criteria for seborrheic keratosis include milia-like cysts (corresponding to intraepidermal horn pseudocysts), comedo-like openings (keratin-filled invaginations), a cerebriform or gyri-and-sulci \"brain-like\" pattern, sharply demarcated moth-eaten borders, and fat fingers. Fissures and ridges plus a dull, waxy surface reinforce the impression. These features map onto the acanthotic, papillomatous epidermal proliferation with horn cysts seen histologically. A lesion demonstrating multiple of these criteria without a melanocyte-specific pattern is confidently benign. The key is recognizing the keratinocytic pattern rather than defaulting to a melanocytic algorithm.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Key diagnostic pitfalls",
+          "prompt": "What are the main pitfalls when evaluating a presumed seborrheic keratosis?",
+          "cachedAnswer": "The principal pitfall is a melanoma masquerading as, or colliding with, a seborrheic keratosis—so any lesion with a melanocytic dermoscopic pattern, blue-white structures, atypical network, or negative pigment network deserves scrutiny and a low threshold for biopsy. Pigmented basal cell carcinoma can mimic an irritated seborrheic keratosis; look for arborizing vessels, blue-gray ovoid nests, and leaf-like areas. Irritated or inflamed seborrheic keratoses may show reactive vessels and lose classic criteria, obscuring the diagnosis. Do not anchor on multiplicity, since a patient with many seborrheic keratoses can still harbor one malignant lesion—apply the ugly-duckling principle. Finally, eruptive seborrheic keratoses (Leser-Trélat) warrant consideration of paraneoplastic workup. When in doubt, biopsy rather than freeze.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-counseling",
+          "label": "Management and counseling pearls",
+          "prompt": "What is a guideline-aware management and counseling approach for this benign lesion?",
+          "cachedAnswer": "For a confidently benign, stable seborrheic keratosis, reassurance and observation are appropriate—no removal is medically necessary. Offer removal (cryotherapy, curettage, or shave) for symptomatic, irritated, recurrently traumatized, or cosmetically bothersome lesions, and counsel that a shave specimen should be sent for histology if there is any diagnostic doubt. Avoid destroying pigmented lesions without histologic confirmation when the diagnosis is uncertain, to prevent obscuring a melanoma. Deliver explicit safety-netting for change, growth, bleeding, or new symptoms, and reinforce routine skin self-examination and photoprotection. Document baseline morphology and consider dermoscopic or photographic monitoring for equivocal cases. Recognize sign of Leser-Trélat as a prompt for age-appropriate malignancy evaluation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

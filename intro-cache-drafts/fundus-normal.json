@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-normal",
+  "lessonPlanSha256": "d234be58637adfa8b0ec0574b7a9f9343db3384379146b23f603316eb4cf4189",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "620b193b5c706a2133f72108995a0a9f1b145a21a5010e60df8c1988cb0d7e76",
+    "generatedAt": "2026-08-13T14:59:54.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph taken of the inside back wall of the eye, called the retina. Doctors use a special camera to look at the light-sensitive tissue and the blood vessels that feed it. In this picture you can see a bright roundish spot toward one side, thin red lines branching out like a tree, and a slightly darker area near the center. Learning to name these parts is the first step before spotting anything unusual. Which part of this picture do you think is the 'exit door' where the nerve and blood vessels leave the eye?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the parts I'm looking at?",
+          "prompt": "What are the main parts I can see in this photo of the inside of the eye?",
+          "cachedAnswer": "This is the back inside surface of the eye, called the retina, which acts like the film in a camera that catches light. The bright, pale round spot toward one side is the optic disc, which is the 'exit door' where the nerve cable and blood vessels leave the eye and travel to the brain. The thin red lines are blood vessels that branch out like the limbs of a tree to feed the tissue. The slightly darker spot near the middle is the macula, the small area you use for sharp, detailed central vision. The orange-red color comes from all the blood in the tissue behind the retina.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-red",
+          "label": "Why is the picture orange-red?",
+          "prompt": "Why does the inside of the eye look orange or red in this photo?",
+          "cachedAnswer": "The retina itself is thin and see-through, so the camera actually sees the layers of tissue underneath it that are full of tiny blood vessels. Blood is red, so the overall glow is orange-red, kind of like how your hand looks red if you shine a flashlight through it. The brighter or paler patch (the optic disc) looks lighter because that is where the nerve fibers gather and there is less blood-rich tissue. Skin tone and eye pigment can make the background lighter or darker in different people. So the color is normal and expected, not a sign of anything wrong.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-to-look",
+          "label": "How should I look at a photo like this?",
+          "prompt": "What is a good order to look at the parts of an eye photo so I don't miss anything?",
+          "cachedAnswer": "A good habit is to always look in the same order so nothing gets skipped. First find the bright optic disc (the exit door). Next follow the blood vessels outward as they branch toward the edges. Then look at the center darker spot, the macula, which handles sharp vision. Finally scan the outer background tissue all around. Using the same routine every single time trains your eye to notice when something looks different later.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a color fundus photograph, an image of the posterior pole of the retina captured through the pupil. Visible landmarks include the optic disc (the bright pale structure), the branching retinal arteries and veins, and the macula near the center. This normal-appearing image is your reference point before any disease is introduced. Notice how all the vessels seem to originate from one location. From which structure do the retinal vessels emerge, and why does that make anatomical sense?",
+      "introQuestions": [
+        {
+          "id": "identify-landmarks",
+          "label": "Name the main landmarks",
+          "prompt": "What are the major anatomical landmarks visible on this fundus photograph?",
+          "cachedAnswer": "The most obvious landmark is the optic disc, the bright, well-defined circular structure toward one side, where the optic nerve and central retinal vessels enter and leave the eye. Radiating from the disc are the retinal blood vessels: arteries tend to be brighter red and slightly thinner, while veins are darker and a bit wider. Near the center of the image is the macula, a slightly darker zone specialized for high-detail central vision, with the fovea at its very middle. The surrounding orange-red tissue is the general retinal background, colored by the vascular layer beneath. Together these are the parts you should be able to name in any fundus image.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vessel-origin",
+          "label": "Where do the vessels come from?",
+          "prompt": "Why do all the retinal vessels appear to emerge from the optic disc?",
+          "cachedAnswer": "The central retinal artery and vein pass through the middle of the optic nerve and enter the eye at the optic disc, so this is the single point where the retinal circulation begins and ends. From the disc the vessels branch outward in an arcing pattern to supply the four quadrants of the retina. The arteries deliver oxygenated blood and the veins carry it back toward the disc and out of the eye. Because they share this common entry point, tracing any vessel backward leads you to the disc, which is a useful navigation trick. This branching, tree-like arrangement is the expected normal pattern.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-macula-darker",
+          "label": "Why is the macula slightly darker?",
+          "prompt": "Why does the macula appear slightly darker than the rest of the retina?",
+          "cachedAnswer": "The macula appears darker mainly because it contains higher concentrations of pigment (including luteal pigments) and its underlying support cells are more densely packed with pigment granules. This region is also almost free of large blood vessels because they would block the incoming light needed for sharp central vision. The very center, the fovea, is a small pit specialized for the highest visual acuity. This darker, vessel-sparse appearance is a normal feature, not a lesion. Recognizing the normal macula helps you later distinguish it from real central pathology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This color fundus photograph shows the posterior pole with the optic disc, macula, and the branching central retinal vasculature. Before examining pathology, you should anchor the normal appearance: disc margins, the cup-to-disc relationship, the arteriovenous pattern, and the foveal reflex zone. This lets you build a repeatable scanning sequence. Consider the layers involved: how does retinal anatomy explain the reddish background and the pale appearance of the optic disc?",
+      "introQuestions": [
+        {
+          "id": "structured-landmarks",
+          "label": "Identify disc, macula, vessels",
+          "prompt": "Describe the optic disc, macula, and retinal vessels as seen on this normal fundus photograph.",
+          "cachedAnswer": "The optic disc is the pale, roughly circular structure where the optic nerve axons and central retinal vessels traverse the lamina cribrosa; it appears lighter than surrounding retina because it lacks the pigmented and vascular layers. The macula lies temporal to the disc as a slightly darker, relatively avascular region, with the foveal center specialized for cone-mediated high acuity. The central retinal artery and vein branch at the disc into superior and inferior arcades supplying the four quadrants; arterioles are narrower with a brighter reflex, venules broader and darker. The reddish-orange background reflects light returning from the choroidal vasculature seen through the transparent neurosensory retina and variably pigmented RPE. Naming these structures reliably is the foundation for detecting deviation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cup-disc",
+          "label": "Cup-to-disc and vessel pattern",
+          "prompt": "What is the normal cup-to-disc relationship and expected pattern of vessel emergence?",
+          "cachedAnswer": "The optic cup is the central depression within the disc; a normal cup-to-disc ratio is typically around 0.3 or less, though it varies with disc size. The surrounding neuroretinal rim should follow the ISNT rule, being thickest Inferiorly, then Superiorly, Nasally, and thinnest Temporally. The central retinal artery and vein emerge from the cup region and divide into superotemporal, inferotemporal, superonasal, and inferonasal branches, arcing around the macula rather than crossing it. Vessels should show a gentle taper and normal arteriovenous crossings without nicking. Establishing what normal cupping and branching look like makes glaucomatous or vascular changes easier to recognize later.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "scan-sequence",
+          "label": "Build a scanning sequence",
+          "prompt": "What structured sequence should I use to examine every fundus photograph consistently?",
+          "cachedAnswer": "A reproducible sequence prevents omissions. Start at the optic disc: assess margins, color, and cup-to-disc ratio. Then trace each of the four vascular arcades outward, noting caliber, crossings, and any interruptions. Next evaluate the macula and foveal reflex for pigment changes, exudate, or elevation. Then systematically survey the four peripheral quadrants of the visible field. Finally note the overall background color and any lesions against it. Applying the identical order to every image, normal or abnormal, builds the pattern recognition that clinical practice depends on.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "You are reviewing a color fundus photograph labeled as a normal posterior pole. The optic disc, macula, and retinal arcades are all visible and this serves as your normal template. Developing a fixed examination order now pays off when subtle pathology appears later. Note that the case source label is not adjudicated ground truth, so treat this as a teaching reference rather than a certified normal. How would you systematically confirm this fundus is within normal limits, and what features would you document?",
+      "introQuestions": [
+        {
+          "id": "confirm-normal",
+          "label": "How to confirm this is normal",
+          "prompt": "How would you systematically confirm and document that this fundus appears normal?",
+          "cachedAnswer": "Work through a fixed checklist and document each element. For the disc: note round, sharp margins, healthy rim color, and estimate the cup-to-disc ratio (roughly 0.3 here appears within normal), applying the ISNT rule. For vessels: comment on normal arteriovenous ratio (about 2:3), smooth arcades, and absence of nicking, sheathing, emboli, or new vessels. For the macula: note an intact foveal region without hemorrhage, exudate, drusen, or edema. Survey the visible periphery for lesions, then describe the background as uniformly reddish-orange without pallor or pigmentary change. Documenting normal findings explicitly is good practice because it establishes a baseline and demonstrates a complete exam.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mimics-normal",
+          "label": "Normal variants vs pathology",
+          "prompt": "What normal variants might be mistaken for pathology on a fundus like this?",
+          "cachedAnswer": "Several benign findings can mislead the unwary. A physiologically large cup or a tilted disc can raise false concern for glaucoma, so correlate rim appearance and the ISNT pattern. Myelinated nerve fibers, a bright feathery patch near the disc, can be mistaken for exudate or cotton-wool spots. Fundus color varies widely with pigmentation; a lightly pigmented tessellated fundus can look abnormal but is a normal variant. The foveal reflex and normal macular darkening should not be read as a lesion. Recognizing these variants against a solid normal template reduces over-referral and unnecessary anxiety.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "teaching-pearl",
+          "label": "Documentation and next steps",
+          "prompt": "What is a key teaching pearl for reading and reporting a fundus photograph?",
+          "cachedAnswer": "The pearl is that a single photograph is one modality within a broader exam: it captures the posterior pole well but under-represents the periphery, and image quality and monocular framing limit stereoscopic assessment of disc cupping and macular elevation. Always correlate with history, visual acuity, and dilated exam when available, and obtain OCT or repeat imaging when the disc or macula is questionable. Use the same reporting order every time and explicitly state pertinent negatives. For any case, remember that source labels—even authoritative-looking ones—warrant specialist confirmation before clinical use. Consistency and correlation beat pattern-spotting in isolation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This is a color fundus photograph presented as a normal posterior pole for orientation. The disc, macula, and arcades are demonstrated for anchoring your systematic read before pathology cases. Note the teaching caveat: the source label is unadjudicated and requires specialist review before any clinical extrapolation. As you scan, mentally apply your disc and macula protocol. What quantitative and qualitative features would you record to defend a read of within-normal-limits, and what pitfalls threaten that call?",
+      "introQuestions": [
+        {
+          "id": "structured-read",
+          "label": "Defend a within-normal read",
+          "prompt": "What features would you document to support reading this fundus as within normal limits?",
+          "cachedAnswer": "Document disc: round contour, distinct margins, healthy rim without pallor or notching, cup-to-disc ratio estimate with ISNT rim distribution intact, and no disc hemorrhage or peripapillary atrophy. Vessels: normal A/V ratio approximately 2:3, physiologic arteriolar light reflex, no AV nicking, no emboli, sheathing, collaterals, or neovascularization; arcades arc symmetrically around the macula. Macula: intact foveal architecture, no drusen, hard exudate, hemorrhage, RPE change, or suggestion of edema. Periphery within the visible frame free of lesions, and a homogeneous background without pallor. Explicit pertinent negatives plus a quantified cup-to-disc make the WNL read defensible and reproducible.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Pitfalls and mimics",
+          "prompt": "What are the main pitfalls and normal-variant mimics when reading a normal-appearing fundus?",
+          "cachedAnswer": "Key pitfalls include over-calling a physiologically large or tilted disc as glaucomatous without asymmetry, RNFL, or field correlation; misreading myelinated retinal nerve fibers as exudate; and interpreting a tessellated or blond fundus as pathologic hypopigmentation. Monocular photography limits stereo assessment of cupping and macular contour, so borderline discs and subtle edema can be missed or overcalled without OCT. Media opacity, artifact, and uneven illumination (note the bright reflex near the disc here) can simulate or obscure lesions. Peripheral pathology falls outside a single posterior-pole frame. Guard against anchoring on the 'normal' label and read each image on its merits.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "workflow",
+          "label": "Protocol and adjuncts",
+          "prompt": "How does a fundus photograph fit into a broader imaging and examination workflow?",
+          "cachedAnswer": "Treat the color fundus photo as a screening and documentation tool that pairs with adjuncts rather than replacing the dilated exam. When the disc is ambiguous, correlate with OCT RNFL and ganglion cell analysis, and with visual fields for glaucoma; for macular concerns, macular OCT is the reference for edema and structural change; for vascular pathology, consider fluorescein angiography and OCT-angiography. Standardize your reporting sequence—disc, vessels, macula, periphery, background—so normals and abnormals are read identically. Maintain image-quality thresholds and repeat imaging when media or framing degrade the read. And, consistent with this case's caveat, confirm any labeled diagnosis with specialist adjudication before clinical use.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "us-cholecystitis",
+  "lessonPlanSha256": "e081e4c614935c61dc502e3e3cece1617a7cb1f1578b2ead095525fb382d5a9c",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "9b8db75158e49fbec0a2a877b60b6183805e7de893bbc2d7ddb7d0ccf80f2ca1",
+    "generatedAt": "2026-08-13T14:37:07.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an ultrasound picture of the gallbladder, a small sac under the liver that stores a fluid called bile to help digest fatty food. The dark area is fluid inside the gallbladder, and the bright spots are things that don't let sound waves pass through easily. A person in this case has pain on the upper right side of their belly, a fever, and nausea after eating a fatty meal. Ultrasound uses sound waves that bounce off the body to make pictures, kind of like how bats use echoes to 'see.' What do you think those bright spots inside the gallbladder might be?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the bright spots in the picture?",
+          "prompt": "What are the bright spots in this gallbladder ultrasound?",
+          "cachedAnswer": "The bright (echogenic) spots are areas where the sound waves bounce back strongly, which often means something hard is there, like a stone. In the gallbladder, these can be gallstones, which are hard little lumps made from hardened bile. Behind them you may see a dark stripe called a 'shadow,' because the stone blocks the sound waves from going any deeper. The wall of the gallbladder also looks thicker than normal, which can be a sign of swelling. There is also a thin dark line of extra fluid just outside the gallbladder. Together these clues suggest the gallbladder is irritated or inflamed.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-pain-after-fatty-meal",
+          "label": "Why does eating fatty food cause pain?",
+          "prompt": "Why would eating a fatty meal cause pain in someone with gallstones?",
+          "cachedAnswer": "When you eat fatty food, your body tells the gallbladder to squeeze and push bile into the intestine to help break down the fat. If a stone is blocking the exit, the gallbladder squeezes against the blockage, which causes pain. Think of it like squeezing a water balloon with the opening pinched shut. If the blockage lasts and the gallbladder gets inflamed, you can also get a fever and feel sick to your stomach. That combination of pain, fever, and nausea after a fatty meal is a classic clue that the gallbladder is the problem.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What would a doctor check next?",
+          "prompt": "What simple bedside check could a doctor do to learn more?",
+          "cachedAnswer": "A doctor could gently press on the upper right part of the belly with the ultrasound probe right over the gallbladder. If the person suddenly stops breathing in because it hurts so much at that exact spot, that is a helpful sign the gallbladder is inflamed. This is called a 'sonographic Murphy sign.' It is useful because it links the picture on the screen to where the pain actually is. The doctor would also check the person's temperature and might do blood tests. All of these clues are combined, because no single picture proves the diagnosis by itself.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an abdominal ultrasound of the gallbladder, an organ that stores bile made by the liver. The dark region is bile-filled lumen, while the bright echogenic foci represent dense material that reflects sound waves strongly. In this case a 48-year-old has eight hours of right upper quadrant pain, fever, and nausea after a fatty meal. Ultrasound works by sending high-frequency sound waves into the body and measuring the echoes that bounce back from different tissues. Given the bright foci, the thickened wall, and the thin rim of fluid, what physical process explains why some structures appear bright and others dark?",
+      "introQuestions": [
+        {
+          "id": "identify-findings",
+          "label": "What three findings are visible here?",
+          "prompt": "What are the three main findings on this gallbladder ultrasound?",
+          "cachedAnswer": "Three findings stand out. First, echogenic (bright) foci within the gallbladder that often cast a dark posterior shadow, consistent with gallstones. Second, the gallbladder wall appears thickened rather than thin and crisp. Third, there is a thin rim of fluid just outside the gallbladder wall, called pericholecystic fluid. These are exactly the features described for this case. On their own they are static images, so they need to be interpreted alongside the person's symptoms of pain, fever, and nausea.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "physics-of-shadow",
+          "label": "Why do stones make a dark shadow?",
+          "prompt": "Why do gallstones appear bright with a dark shadow behind them on ultrasound?",
+          "cachedAnswer": "Ultrasound images are built from echoes. When sound waves hit a dense, hard object like a stone, most of the energy reflects back, making the surface appear very bright (highly echogenic). Because so little sound passes through the stone, the region directly behind it receives almost no sound waves and returns no echoes, producing a dark band called an acoustic shadow. Bile, by contrast, is a fluid that lets sound pass through easily and reflects very little, so it appears dark (anechoic). This difference in how tissues reflect sound is what lets us distinguish stones, walls, and fluid. Recognizing the bright-focus-plus-shadow pattern is a key skill in identifying gallstones.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "colic-vs-inflammation",
+          "label": "Stone pain vs. an inflamed gallbladder?",
+          "prompt": "How is simple gallstone pain different from an inflamed gallbladder?",
+          "cachedAnswer": "Simple biliary colic happens when a stone temporarily blocks the gallbladder outlet; the pain comes and goes and there is usually no fever and no inflammation of the wall. When the blockage persists, the gallbladder wall can become inflamed, leading to wall thickening, fluid around the gallbladder, fever, and more constant pain. This case shows the inflammatory features plus fever and prolonged pain, which points toward inflammation rather than simple colic. The imaging and the symptoms together tell a more complete story than either alone. This is why clinicians always correlate the pictures with how the patient actually feels.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This gallbladder ultrasound demonstrates echogenic foci with posterior acoustic shadowing, wall thickening, and a thin rim of pericholecystic fluid in a 48-year-old with eight hours of right upper quadrant pain, fever, and nausea after a fatty meal. The bright intraluminal foci reflect the marked acoustic impedance mismatch of calculi, while the dark lumen represents anechoic bile. Wall thickening and pericholecystic fluid are markers of a possible inflammatory process but are nonspecific. Consider the pathophysiologic sequence linking cystic duct obstruction to gallbladder inflammation. Which cell-level and mechanical events connect an impacted stone to wall edema and pericholecystic fluid?",
+      "introQuestions": [
+        {
+          "id": "recognize-triad",
+          "label": "Describe the imaging triad shown.",
+          "prompt": "Describe the imaging findings and their sonographic basis in this case.",
+          "cachedAnswer": "The image shows echogenic intraluminal foci with posterior acoustic shadowing, consistent with cholelithiasis, arising from the impedance mismatch between calculi and surrounding bile. The gallbladder wall appears thickened; normal wall is typically under 3 mm, and thickening may appear layered or striated when edematous. A thin anechoic stripe adjacent to the wall represents pericholecystic fluid. Anechoic bile fills the lumen and provides an acoustic window. Individually each finding is nonspecific, but the combination in the right clinical context raises concern for acute inflammatory gallbladder disease. Static images require clinical correlation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophys-inflammation",
+          "label": "Mechanism from obstruction to inflammation.",
+          "prompt": "Explain the pathophysiology linking cystic duct obstruction to gallbladder wall thickening and pericholecystic fluid.",
+          "cachedAnswer": "Impaction of a calculus in the cystic duct or gallbladder neck obstructs bile outflow, especially after a fatty meal stimulates CCK-mediated contraction. Continued mucosal secretion against the obstruction raises intraluminal pressure and distends the gallbladder, compromising mucosal blood flow. Retained bile and phospholipase-mediated conversion of lecithin to lysolecithin cause chemical mucosal injury and inflammation. The inflamed wall becomes edematous, producing sonographic thickening and a layered appearance, and inflammatory exudate leaks to form pericholecystic fluid. Secondary bacterial colonization can supervene. This mechanical-then-inflammatory cascade explains why persistent obstruction produces the imaging triad rather than transient colic alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "wall-thickening-ddx",
+          "label": "Why is wall thickening nonspecific?",
+          "prompt": "Why is gallbladder wall thickening nonspecific, and what else can cause it?",
+          "cachedAnswer": "Wall thickening reflects edema, inflammation, or infiltration and is not unique to gallbladder pathology. Non-cholecystitis causes include hypoalbuminemia, heart failure, hepatic cirrhosis with portal hypertension and ascites, hepatitis, and renal failure, all of which produce interstitial edema. A physiologically contracted gallbladder in the postprandial state can also appear falsely thick-walled. Adenomyomatosis and gallbladder carcinoma are structural mimics. Because of this broad differential, wall thickness alone should never establish acute cholecystitis. It must be integrated with stones, fluid, distension, and clinical signs.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 48-year-old presents with eight hours of right upper quadrant pain, fever, and nausea following a fatty meal, and this ultrasound shows shadowing echogenic foci, wall thickening, and pericholecystic fluid. The imaging plus systemic features raise concern for acute cholecystitis rather than uncomplicated biliary colic. Remember that each static finding is nonspecific and must be synthesized with the exam and labs. The vignette specifically asks which additional bedside finding would strengthen the assessment. What would you elicit at the bedside, and how would you build your differential from here?",
+      "introQuestions": [
+        {
+          "id": "synthesize-picture",
+          "label": "Does this favor cholecystitis over colic?",
+          "prompt": "How do the imaging findings and symptoms distinguish acute cholecystitis from biliary colic here?",
+          "cachedAnswer": "Biliary colic is typically self-limited pain lasting minutes to a few hours from transient cystic duct obstruction, without fever or inflammatory imaging findings. This patient has pain for eight hours plus fever and nausea, and the ultrasound adds wall thickening and pericholecystic fluid on top of cholelithiasis. That constellation shifts the picture toward acute cholecystitis. Supportive labs would include leukocytosis, and normal or near-normal bilirubin argues against concurrent choledocholithiasis. The key point is synthesis: stones alone are common and often incidental, but stones plus wall thickening, pericholecystic fluid, and systemic signs make an inflammatory process more likely. Correlate before committing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "murphy-sign",
+          "label": "The bedside sign that adds most value.",
+          "prompt": "What additional bedside finding would strengthen the assessment, and what is its role?",
+          "cachedAnswer": "The highest-value bedside maneuver is the sonographic Murphy sign: place the probe directly over the visualized gallbladder and note maximal tenderness with inspiratory arrest at that exact spot. A positive sonographic Murphy sign combined with stones and wall thickening substantially raises the probability of acute cholecystitis and outperforms the palpated Murphy sign because it localizes tenderness to the imaged organ. It has limitations, though: it may be falsely negative in gangrenous cholecystitis due to denervation, blunted in elderly or diabetic patients, or unreliable in obtunded or analgesed patients. It also can be positive with other RUQ pathology. Use it to strengthen, not to solely confirm, the assessment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "What are the next diagnostic/management steps?",
+          "prompt": "What are appropriate next diagnostic and management steps for suspected acute cholecystitis?",
+          "cachedAnswer": "Confirm the clinical picture with a focused exam, vitals, CBC, LFTs, lipase, and often blood cultures if febrile. Consider whether the transaminase or bilirubin pattern suggests choledocholithiasis or cholangitis, which would prompt MRCP or ERCP evaluation. If ultrasound is equivocal but suspicion remains high, cholescintigraphy (HIDA) can assess cystic duct patency. Initial management includes analgesia, antiemetics, IV fluids, and antibiotics per local guidance, with early surgical consultation. Definitive treatment for acute cholecystitis is typically cholecystectomy, ideally early in the admission for appropriate candidates. Risk stratification and comorbidities guide timing and whether percutaneous cholecystostomy is needed.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "RUQ POCUS in a 48-year-old with eight hours of pain, fever, and nausea postprandially shows shadowing calculi, wall thickening, and pericholecystic fluid. The gestalt suggests acute cholecystitis, but treat each sign as a nonspecific data point and pursue integrated interpretation with a sonographic Murphy sign. Be alert to mimics of wall thickening and to sonographic patterns of complicated disease. The vignette asks which bedside finding tightens the assessment. Walk through your pattern recognition, pitfalls, and disposition thinking.",
+      "introQuestions": [
+        {
+          "id": "sono-criteria",
+          "label": "Which sonographic criteria drive your read?",
+          "prompt": "Which sonographic criteria support acute cholecystitis and how do you weight them?",
+          "cachedAnswer": "The core POCUS criteria are cholelithiasis, wall thickening greater than 3 mm, pericholecystic fluid, gallbladder distension, and a positive sonographic Murphy sign. No single criterion is diagnostic; combinations improve specificity, and stones plus a positive sonographic Murphy sign carry high positive predictive value. Look for a striated or hypoechoic layered wall suggesting edema, and for hyperemia on color Doppler. Watch for complicated features: intramural or intraluminal gas (emphysematous), sloughed membranes or wall irregularity (gangrenous), and pericholecystic fluid collections suggesting perforation. Weight the findings against the clinical context and pretest probability rather than a checklist. Static findings still require correlation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "murphy-pitfalls",
+          "label": "Sonographic Murphy sign: value and pitfalls.",
+          "prompt": "Discuss the utility and pitfalls of the sonographic Murphy sign as the strengthening bedside finding.",
+          "cachedAnswer": "A sonographic Murphy sign, maximal tenderness elicited by probe pressure over the sonographically identified gallbladder with inspiratory arrest, is the bedside finding that most strengthens this assessment because it couples anatomy to symptom localization. Combined with stones it has high sensitivity in classic presentations. Pitfalls: it is unreliable in gangrenous or perforated cholecystitis where mural necrosis blunts the response, attenuated in diabetic or elderly patients with neuropathy, and confounded by analgesia, altered mental status, or an operator applying inconsistent pressure. It can also be falsely positive with hepatic capsular or duodenal pathology. Interpret it as a probability-raising adjunct within the full picture, not a standalone confirmatory test.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition-pitfalls",
+          "label": "Disposition, mimics, and Tokyo framing.",
+          "prompt": "How do you frame diagnosis and disposition, including mimics and guideline-aware grading?",
+          "cachedAnswer": "Frame the diagnosis using an imaging-plus-clinical-plus-lab construct akin to Tokyo Guidelines: local signs (Murphy sign, RUQ mass/pain), systemic signs (fever, leukocytosis, elevated CRP), and imaging findings support acute cholecystitis, with severity grading guiding urgency. Exclude mimics of wall thickening such as hypoalbuminemia, heart failure, cirrhosis with ascites, hepatitis, and a physiologically contracted postprandial gallbladder, plus structural mimics like adenomyomatosis and carcinoma. Screen LFTs and lipase for choledocholithiasis, cholangitis, and biliary pancreatitis, escalating to MRCP or ERCP as indicated. Management: fluids, analgesia, antiemetics, antibiotics, and early surgical consultation for cholecystectomy, reserving percutaneous cholecystostomy for poor operative candidates. Reassess if the patient deteriorates or if complicated features appear on imaging.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

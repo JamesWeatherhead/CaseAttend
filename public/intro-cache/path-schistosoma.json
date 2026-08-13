@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-schistosoma",
+  "lessonPlanSha256": "b293c70e43c4c53af03883cc4931ea62731431d584fe94735bbdfdf156adff9c",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "e45e2794b970f14180b20219c0e7c0b3d6c42168d5584f7b590ac3ce71165f5a",
+    "generatedAt": "2026-08-13T16:17:08.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "Welcome! This is a super-zoomed-in photo of tissue from the wall of a bladder (the organ that holds urine). The pink and purple stains help us see cells and structures. Scattered around are several oval-shaped objects — these are the eggs of a tiny water parasite that a person can pick up by swimming in certain lakes and rivers. Around each egg, the body has sent lots of immune cells to fight back, which is why those areas look crowded and dark. Looking at these clustered oval shapes, what do you think the body is trying to do around them?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the oval shapes?",
+          "prompt": "What are the oval-shaped objects in this bladder tissue picture?",
+          "cachedAnswer": "The oval, glassy-looking objects are parasite eggs (called ova) that have gotten stuck in the wall of the bladder. They came from a tiny worm that lives in some freshwater lakes and rivers. The pink and purple 'busy' areas around each egg are crowds of the body's defense cells trying to wall off and destroy the eggs. Think of it like your body building a tiny fence around a splinter it cannot easily remove. This reaction is what causes symptoms like blood in the urine. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-caught",
+          "label": "How does someone catch this?",
+          "prompt": "How does a person get this parasite from freshwater?",
+          "cachedAnswer": "A person can catch this parasite by swimming, bathing, or wading in freshwater that contains a certain kind of snail. Tiny larvae of the parasite live in the water and can burrow through a person's skin — you often don't even feel it happen. Once inside, the worms grow up and lay eggs, and some of those eggs end up in the bladder wall like the ones in this picture. This is why the person's history of swimming in local waterways is such an important clue. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-blood",
+          "label": "Why is there blood in the urine?",
+          "prompt": "Why would this cause painless blood in the urine?",
+          "cachedAnswer": "The eggs stuck in the bladder wall cause a lot of irritation and swelling as the body tries to fight them. This irritated tissue has fragile, leaky blood vessels that can bleed a little, and the blood mixes into the urine. Often it appears at the very end of urinating and doesn't hurt, which is a clue doctors pay attention to. Over many years this constant irritation can damage the bladder, so treating it matters. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This photomicrograph shows a section of bladder wall stained with H&E (the standard pink-and-purple biology stain). Embedded in the tissue you can see clusters of oval parasite eggs surrounded by dense collections of inflammatory cells. This pattern is characteristic of a freshwater fluke infection acquired through skin contact with contaminated water. The eggs trigger the immune system, and the surrounding cellular reaction is the body's attempt to contain them. Given that the eggs are lodged in the tissue rather than passing freely, what kind of long-term change to the bladder wall might you predict?",
+      "introQuestions": [
+        {
+          "id": "identify-features",
+          "label": "What structures can I identify?",
+          "prompt": "What structures and cells can I identify in this bladder histology image?",
+          "cachedAnswer": "The most striking features are the oval, refractile parasite eggs (ova) scattered through the tissue in small clusters. Surrounding them are dense sheets of darkly-staining inflammatory cells — a mixture of immune cells recruited to the site. Between the inflammatory clusters is the pink connective tissue and muscle of the bladder wall. The overall picture is chronic inflammation focused around foreign material (the eggs). *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "lifecycle",
+          "label": "How does the parasite reach the bladder?",
+          "prompt": "How does a freshwater parasite end up laying eggs in the bladder wall?",
+          "cachedAnswer": "Larval forms of the parasite live in freshwater after developing inside snails, and they penetrate human skin during water contact. Once inside, they mature into adult worms that live in blood vessels, and certain species prefer the veins around the bladder. The females lay eggs there, and many eggs become trapped in the bladder wall instead of being excreted. The trapped eggs are foreign to the body, which is why they draw a strong immune response. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "immune-response",
+          "label": "Why the strong immune reaction?",
+          "prompt": "Why do the parasite eggs cause such a strong local immune reaction?",
+          "cachedAnswer": "The eggs release substances (antigens) that the immune system recognizes as foreign, but the egg is too large and durable for immune cells to simply engulf and remove. So the body instead surrounds each egg with a wall of specialized immune cells to isolate it. This walling-off process is a form of chronic inflammation. Over time, repeated inflammation like this leads to scarring, which stiffens and damages the bladder. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This H&E section of bladder wall demonstrates multiple oval schistosome ova embedded within the lamina propria and muscularis, each surrounded by a mixed granulomatous and chronic inflammatory infiltrate. The clinical context — freshwater exposure in an endemic region and painless terminal hematuria — points toward *Schistosoma haematobium* infection. Note how the host response organizes around the ova rather than clearing them, the hallmark of an egg-driven granulomatous process. What are the downstream tissue consequences you would expect as this inflammation becomes chronic?",
+      "introQuestions": [
+        {
+          "id": "morphology",
+          "label": "Describe the ova and granulomas",
+          "prompt": "Describe the morphology of the schistosome ova and the surrounding granulomatous inflammation seen here.",
+          "cachedAnswer": "The image shows numerous oval, thick-shelled ova with a refractile appearance, clustered within the bladder wall. Each cluster is enveloped by a granulomatous reaction composed of epithelioid macrophages, lymphocytes, plasma cells, and typically eosinophils, sometimes with multinucleated giant cells. Older ova may become calcified. The granulomas represent a delayed-type (Th2-skewed) hypersensitivity response to soluble egg antigens. In S. haematobium the ova classically bear a terminal spine, distinguishing them from S. mansoni's lateral spine, though spine orientation is not always resolvable at this magnification. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophys-hematuria",
+          "label": "Mechanism of terminal hematuria",
+          "prompt": "Explain the pathophysiologic mechanism of painless terminal hematuria in urinary schistosomiasis.",
+          "cachedAnswer": "Adult S. haematobium worms reside in the vesical and pelvic venous plexuses, and females deposit eggs that migrate toward the bladder lumen. Ova traversing and lodging in the bladder wall incite granulomatous inflammation, mucosal ulceration, and fragile hypervascular granulation tissue. Bleeding from these friable mucosal lesions, most pronounced as the bladder contracts at the end of micturition, produces terminal hematuria. It is characteristically painless because the process is chronic and inflammatory rather than acutely obstructive. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "chronic-sequelae",
+          "label": "Chronic sequelae and malignancy",
+          "prompt": "What chronic complications, including malignancy, arise from long-standing bladder schistosomiasis?",
+          "cachedAnswer": "Chronic egg deposition drives progressive fibrosis of the bladder wall, causing a contracted, poorly compliant bladder, and calcified ova can produce the classic 'sandy patches.' Ureteral involvement leads to obstruction, hydronephrosis, and predisposition to bacterial infection and stone formation. The persistent inflammation and reparative squamous metaplasia of the urothelium are associated with an elevated risk of squamous cell carcinoma of the bladder — a notable contrast to the transitional cell (urothelial) carcinoma more typical in non-endemic settings. This links chronic irritation to a defined neoplastic risk. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient from a schistosomiasis-endemic region presents with painless terminal hematuria and a history of freshwater exposure; cystoscopic bladder biopsies show ova with surrounding granulomatous inflammation. This histology, shown here, together with the epidemiologic history, strongly supports urinary schistosomiasis (S. haematobium). Your clinical task is to confirm the diagnosis, treat the active infection, and risk-stratify for long-term complications. Before ordering tests, how would you structure your differential for painless hematuria in this specific patient?",
+      "introQuestions": [
+        {
+          "id": "differential",
+          "label": "Differential for painless hematuria",
+          "prompt": "What is your differential diagnosis for painless terminal hematuria in a patient from an endemic region, and what favors schistosomiasis?",
+          "cachedAnswer": "Painless hematuria always warrants consideration of urothelial and other bladder malignancy, urolithiasis, glomerular disease, tuberculosis of the urinary tract, and infection. In a patient with childhood freshwater exposure in an endemic region, urinary schistosomiasis rises sharply on the list, especially with terminal (end-of-stream) hematuria. The biopsy finding of ova surrounded by granulomatous inflammation is essentially diagnostic here. Importantly, chronic schistosomiasis and bladder cancer are not mutually exclusive, so malignancy must still be excluded, particularly in older or long-standing cases. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirm-workup",
+          "label": "How to confirm the diagnosis",
+          "prompt": "How would you confirm urinary schistosomiasis and evaluate this patient?",
+          "cachedAnswer": "Diagnosis is classically confirmed by detecting terminal-spined ova on microscopy of urine, ideally a midday or post-exertion specimen, with concentration techniques improving yield. Serology and antigen assays support diagnosis, especially in low-burden or ectopic cases, and the biopsy already provides tissue confirmation. Assess for complications with urinalysis, renal function, and upper-tract imaging (ultrasound is first-line) to look for hydronephrosis, bladder wall thickening, and calcification. Given hematuria, cystoscopy plus biopsy — already performed here — also serves to exclude coexisting malignancy. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Management and follow-up",
+          "prompt": "What are the principles of management and long-term follow-up for this patient?",
+          "cachedAnswer": "First-line antiparasitic treatment is praziquantel, which is highly effective against adult worms; note it is less active against immature stages, so timing and possible repeat dosing matter. Anti-inflammatory therapy may be considered for heavy acute reactions, and any obstructive uropathy or bladder outlet complications may need urologic intervention. Because chronic schistosomiasis carries an elevated squamous cell carcinoma risk, patients with long-standing disease warrant surveillance and prompt evaluation of new or persistent hematuria. Counsel on avoiding re-exposure and consider screening household or community contacts in endemic settings. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Bladder biopsies from a patient with painless terminal hematuria and remote freshwater exposure show clustered ova within the wall, ringed by granulomatous and chronic inflammation — a pattern consistent with S. haematobium. As the reviewing clinician-in-training, integrate the histology with epidemiology while remembering that a source-label diagnosis is not adjudicated ground truth and specialist confirmation is required. Focus your reasoning on egg identification, complication surveillance, and the SCC association. What pitfalls in ova identification and staging would you flag before signing out?",
+      "introQuestions": [
+        {
+          "id": "ova-id-pitfalls",
+          "label": "Ova ID and mimics",
+          "prompt": "How do you identify schistosome ova on histology and what are the pitfalls and mimics to avoid?",
+          "cachedAnswer": "S. haematobium ova are oval with a terminal spine and are acid-fast negative, whereas S. mansoni bears a lateral spine and S. japonicum is smaller with a rudimentary spine — spine orientation may be obscured by sectioning plane, so avoid overcalling species from one field. Viable ova show internal miracidia; degenerate or calcified ova indicate older, treated, or burnt-out disease and can mimic other calcified debris. Distinguish the granulomatous reaction from tuberculous or foreign-body granulomas by identifying the ova themselves. Because deposition can be patchy, ova may be sparse; correlate with urine microscopy, serology/antigen testing, and clinical history rather than relying on a single slide. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "malignancy-surveillance",
+          "label": "SCC risk and surveillance",
+          "prompt": "How does chronic schistosomiasis alter bladder cancer risk and surveillance, and what should I look for on biopsy?",
+          "cachedAnswer": "Chronic S. haematobium infection is an established risk factor for squamous cell carcinoma of the bladder, often presenting at a younger age and more frequently as muscle-invasive disease than sporadic urothelial carcinoma. On biopsy, note keratinizing squamous metaplasia, dysplasia, and any invasive squamous component, and remember urothelial carcinoma also occurs and can coexist. Persistent or recurrent hematuria after appropriate praziquantel therapy should prompt repeat cystoscopy and imaging rather than attribution to residual inflammation alone. Correlate mucosal 'sandy patch' calcification and bladder wall changes on imaging with histologic findings. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "treatment-nuance",
+          "label": "Treatment timing nuances",
+          "prompt": "What are the guideline-aware nuances of praziquantel treatment and complication management in urinary schistosomiasis?",
+          "cachedAnswer": "Praziquantel is the mainstay and is most effective against mature adult worms; because it has limited activity against immature schistosomula, a delayed or repeat course several weeks after presumed exposure or an initial dose is often used to improve cure. Heavy egg burdens can provoke a transient inflammatory flare after treatment, and some clinicians add corticosteroids in severe or ectopic (e.g., neurologic) disease. Manage sequelae such as obstructive uropathy, contracted bladder, and secondary infection with urology involvement, and image the upper tracts. Confirm the diagnosis and any malignancy call with specialist and pathology review before finalizing management, consistent with the caveat that source labels are not adjudicated ground truth. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

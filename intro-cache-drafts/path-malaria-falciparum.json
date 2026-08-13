@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-malaria-falciparum",
+  "lessonPlanSha256": "63907452f2df804d0733090249722e21ece6bd43700536851d53c9eaf9bd9c09",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "60d47227d1af58b0cb78b9cb3de8795abf971094dd309827eca13df5a2abb579",
+    "generatedAt": "2026-08-13T16:10:54.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photo of blood seen under a microscope, stained with a purple dye so tiny things stand out. The round shapes are red blood cells, and among them you can spot some banana-shaped or curved purple objects, which are not normal parts of blood. A patient came home from a trip to a place where a disease called malaria spreads through mosquito bites and now has a fever. Malaria is caused by a tiny parasite that lives inside blood cells. What clues in this picture suggest something has invaded the blood?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What are the shapes I see in this blood smear picture?",
+          "cachedAnswer": "The pale purple circles are red blood cells, the cells that carry oxygen around the body. Scattered among them are a couple of curved, banana-like purple shapes that do not belong there. These curved shapes are stained parasites, tiny living invaders much smaller than the blood cells. Some blood cells may also show small ring-like specks inside them, which are early forms of the parasite. This is exactly the kind of thing a lab technician looks for when checking for malaria. Seeing these clues means the blood needs an expert to confirm what is going on.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-malaria-spreads",
+          "label": "How does someone get malaria?",
+          "prompt": "How does a person catch malaria and why does travel matter?",
+          "cachedAnswer": "Malaria spreads when a certain kind of mosquito bites a person and passes a tiny parasite into their blood. The parasite then hides inside red blood cells, grows, and makes the person sick with fevers and chills. This is why travel matters: some parts of the world have many of these mosquitoes, so people returning from those areas can bring the infection with them. The parasite is like a stowaway that boards the blood cell and multiplies inside. Because it lives inside blood, doctors examine a drop of blood under the microscope to find it. Knowing where someone traveled helps doctors decide what to test for.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-hurry",
+          "label": "Why is this an emergency?",
+          "prompt": "Why might a fever after travel be treated quickly?",
+          "cachedAnswer": "Some types of malaria can get very serious very fast, sometimes within a day or two. The parasite multiplies inside blood cells and can damage many of them, which makes a person extremely ill. That is why a fever in someone who just returned from a malaria area is taken seriously and checked right away. Doctors act quickly because getting the right medicine early can prevent the illness from becoming dangerous. Only trained lab and medical staff can confirm the diagnosis and choose treatment.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a Giemsa-stained peripheral blood smear, a standard way to look at blood cells and anything living inside them. The faint purple discs are red blood cells (erythrocytes), and you can see a few darkly stained, crescent-shaped organisms plus tiny ring-like inclusions inside some cells. The patient recently traveled to a region where malaria is common and now has a fever. Malaria parasites (genus Plasmodium) invade red cells and grow inside them. Which features here tell you a parasite is present, and why might the crescent shape be an important clue?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "What structures are visible?",
+          "prompt": "What cellular and parasite structures can I identify in this smear?",
+          "cachedAnswer": "The dominant round, pale-staining cells are erythrocytes (red blood cells), which lack a nucleus. Inside some of them you may notice small ring-shaped inclusions, which are early parasite stages called ring-form trophozoites. Some red cells appear to contain more than one ring, meaning they are multiply infected. The prominent crescent or banana-shaped purple structures are gametocytes, the sexual forms of the parasite. The Giemsa stain colors parasite nuclei dark and cytoplasm bluish, which makes these organisms visible against the paler cells. Together these clues point to a Plasmodium infection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "lifecycle-basics",
+          "label": "How does the parasite live in blood?",
+          "prompt": "How does the malaria parasite grow inside red blood cells?",
+          "cachedAnswer": "After a mosquito injects the parasite, it eventually reaches red blood cells and enters them. Inside the cell it starts as a small ring form, then grows and divides, producing many new parasites that burst the cell and infect more red cells. This cycle of invasion, growth, and rupture repeats and causes the recurring fevers of malaria. Some parasites develop into sexual forms called gametocytes, the crescent shapes seen here, which can be picked up by another mosquito to continue the cycle. Because the parasite depends on red cells, examining stained blood is the classic way to detect it. The number of infected cells reflects how heavy the infection is.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step-lab",
+          "label": "What would the lab do next?",
+          "prompt": "What are the next steps after seeing parasites on a smear?",
+          "cachedAnswer": "The next steps include preparing both thick and thin blood films: the thick film is more sensitive for detecting parasites, while the thin film helps identify the species and estimate how many cells are infected. Labs also estimate parasitemia, the percentage of red cells that are infected, because higher numbers suggest more severe disease. Rapid diagnostic tests that detect parasite proteins may be run alongside the smear. Confirming the exact species matters because different species behave differently and need different treatment. All of this should be interpreted by trained laboratory and clinical staff before any decisions are made.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This Giemsa-stained peripheral smear shows erythrocytes containing ring-form trophozoites, with some cells demonstrating multiple infection, plus crescentic gametocyte forms. The clinical context is a febrile returned traveler from a malaria-endemic region. These morphologic features raise concern for Plasmodium infection, and several point toward P. falciparum specifically. Consider how ring morphology, multiply-infected erythrocytes, and gametocyte shape inform species reasoning. Which findings favor falciparum, and which require definitive confirmation before you commit?",
+      "introQuestions": [
+        {
+          "id": "morphology-features",
+          "label": "Which morphologic features stand out?",
+          "prompt": "What morphologic features on this smear are diagnostically relevant?",
+          "cachedAnswer": "The key findings are delicate ring-form trophozoites within erythrocytes, some cells harboring more than one ring (multiply-infected red cells), and elongated crescent- or banana-shaped gametocytes. Ring forms with fine cytoplasm and small chromatin dots, occasional applique/accolé forms at the cell margin, and high proportions of infected cells without enlargement of the host cell are features associated with P. falciparum. The classic falciparum gametocyte is the crescentic (falciform) shape, which is essentially pathognomonic when clearly seen. Notably, infected erythrocytes in falciparum are typically normal in size, unlike the enlarged cells of P. vivax or ovale. Absence of later asexual stages (schizonts) in peripheral blood also fits falciparum, since these sequester in the microvasculature.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "sequestration-mechanism",
+          "label": "Why do falciparum stages sequester?",
+          "prompt": "What is the pathophysiologic basis of sequestration in P. falciparum?",
+          "cachedAnswer": "P. falciparum-infected erythrocytes express parasite-derived adhesion proteins (notably PfEMP1) on the red cell surface via knob structures. These mediate cytoadherence to endothelial receptors such as CD36 and ICAM-1, causing infected cells to bind within capillaries and postcapillary venules. As a result, maturing trophozoites and schizonts sequester in deep vasculature and are often absent from the peripheral smear, so mainly ring forms are seen circulating. This microvascular sequestration contributes to organ-specific complications, including cerebral malaria when it occurs in the brain. Rosetting and reduced red cell deformability further impair microcirculatory flow. This mechanism links the smear appearance to the disease's potential for rapid, severe deterioration.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirmation-needed",
+          "label": "What still needs confirmation?",
+          "prompt": "Why do these findings still require definitive species confirmation?",
+          "cachedAnswer": "Morphology can be suggestive but is not infallible, especially with low parasitemia, atypical forms, or mixed infections. Ring forms of different species can overlap in appearance, and multiply-infected cells are not unique to falciparum. Species confirmation typically relies on an experienced microscopist reviewing both thick and thin films, supported by rapid antigen tests and, when available, PCR for definitive speciation. Correct speciation matters because P. vivax and P. ovale require additional therapy targeting hypnozoites, whereas falciparum drives urgent severity concerns. In this teaching case, the source label naming the species is not adjudicated ground truth, so specialist review is required before any clinical conclusion.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A febrile returned traveler presents, and thick and thin films reveal ring-form trophozoites, multiply-infected erythrocytes, and crescentic gametocytes. This constellation is concerning for Plasmodium falciparum, which is a potential medical emergency. Your reasoning should integrate species clues, parasitemia estimation, and severity criteria to gauge urgency. Beyond confirming the diagnosis, what immediate steps and severity features would change your management?",
+      "introQuestions": [
+        {
+          "id": "smear-interpretation",
+          "label": "How do I read this smear clinically?",
+          "prompt": "How should I interpret these smear findings in a febrile returned traveler?",
+          "cachedAnswer": "In a febrile returned traveler, ring forms within erythrocytes plus multiply-infected cells and crescentic gametocytes strongly suggest malaria, with features favoring P. falciparum. Clinically you should treat this as possible severe malaria until proven otherwise, given falciparum's capacity for rapid deterioration. The thick film maximizes sensitivity for detection; the thin film supports speciation and parasitemia quantification. Correlate with symptoms, travel dates, prophylaxis adherence, and vital signs. Importantly, a single negative smear does not exclude malaria—repeat films every 12–24 hours over 48–72 hours are standard if suspicion remains. Rapid diagnostic tests can complement microscopy while awaiting expert review.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "severity-criteria",
+          "label": "What defines severe malaria?",
+          "prompt": "Which severity criteria and parasitemia thresholds signal severe falciparum malaria?",
+          "cachedAnswer": "Severe falciparum malaria is defined by end-organ dysfunction or high parasite burden. WHO criteria include impaired consciousness or seizures (cerebral malaria), severe anemia, acute kidney injury, ARDS/pulmonary edema, circulatory collapse, hypoglycemia, acidosis, hyperlactatemia, significant bleeding, and jaundice with organ dysfunction. A parasitemia commonly cited as high-risk is greater than 5% in non-immune patients, and very high levels (e.g., >10%) are strongly associated with severe disease. Any single severity criterion warrants management as severe malaria. These thresholds and features directly drive escalation decisions and the choice of parenteral therapy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "immediate-management",
+          "label": "What are the immediate next steps?",
+          "prompt": "What are the immediate management steps if severe falciparum malaria is suspected?",
+          "cachedAnswer": "Treat suspected severe falciparum malaria as an emergency: obtain urgent expert microscopy and parasitemia estimation, and do not delay therapy for confirmation if suspicion is high. IV artesunate is the first-line agent for severe malaria in current guidance, with supportive care for hypoglycemia, fluid balance, and organ dysfunction. Admit for monitoring, involve infectious disease/tropical medicine specialists, and consider ICU-level care for those meeting severity criteria. Repeat parasitemia to track response, and follow local public health reporting requirements. Uncomplicated cases with confirmed falciparum are typically treated with oral artemisinin-based combination therapy, but species and severity must be confirmed by experts before finalizing the regimen.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Thin and thick Giemsa films from a febrile returned traveler show fine ring-form trophozoites, multiply-infected erythrocytes without host-cell enlargement, and a falciform gametocyte—a pattern classically attributed to P. falciparum. Treat this as a potential emergency and reason through speciation pitfalls, parasitemia quantification, and severity-driven escalation. Note that in this teaching case the source species label is not adjudicated ground truth and mandates specialist confirmation. Given the morphology and context, what is your prioritized diagnostic and therapeutic pathway?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "What pattern favors falciparum?",
+          "prompt": "Which smear features favor P. falciparum, and what are the pitfalls?",
+          "cachedAnswer": "Features favoring falciparum include predominance of small delicate rings, headphone/double-chromatin-dot rings, appliqué (accolé) forms, high parasitemia, multiply-infected normocytic erythrocytes, absence of circulating late asexual stages due to sequestration, and crescentic (banana) gametocytes. Maurer's clefts may be seen versus Schüffner's dots in vivax/ovale, and lack of host-cell enlargement helps distinguish from vivax/ovale. Pitfalls include mixed infections, low parasitemia obscuring speciation, platelet overlay mimicking parasites, artefactual stain deposits, and Babesia rings (lacking hemozoin/gametocytes, sometimes with tetrads). Knowlesi can mimic both falciparum ring forms and malariae band forms, so molecular confirmation is prudent when epidemiologically plausible. Expert microscopy plus RDT and PCR reconcile these uncertainties.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "parasitemia-quant",
+          "label": "How do I quantify and act on parasitemia?",
+          "prompt": "How is parasitemia quantified, and how does it drive escalation?",
+          "cachedAnswer": "Parasitemia is expressed as percent of infected erythrocytes on the thin film (parasites per ~1000 RBCs) or as parasites/µL on the thick film using WBC counts. In non-immune patients, >5% is a severity criterion and >10% typically prompts strong consideration of adjuncts and ICU care; any level with end-organ dysfunction qualifies as severe. Serial parasitemia (e.g., at 12–24h intervals) monitors therapeutic response and should decline appropriately after IV artesunate. A paradoxical early rise can occur as sequestered forms are released, so trend interpretation matters. Combine the number with clinical criteria rather than treating a threshold in isolation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "escalation-guidelines",
+          "label": "What is guideline-aware escalation?",
+          "prompt": "What is the guideline-aware escalation and treatment pathway here?",
+          "cachedAnswer": "Manage suspected severe falciparum as an emergency: IV artesunate is first-line per WHO and CDC guidance, transitioning to a full oral ACT course once tolerating orals and improving. Uncomplicated confirmed falciparum receives oral ACT (e.g., artemether-lumefantrine) or atovaquone-proguanil depending on availability and resistance patterns. Provide supportive care for hypoglycemia, acidosis, AKI, and anemia; monitor for post-artesunate delayed hemolysis with follow-up hemoglobin. Consult infectious disease/tropical medicine early, admit for monitoring, and report per public health requirements. Confirm species before finalizing therapy, and remember that in this teaching case the labeled species is not adjudicated ground truth and requires specialist verification.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

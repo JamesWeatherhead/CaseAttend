@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-histoplasmosis",
+  "lessonPlanSha256": "cbf4c158f44a546a944587a049d4b4c3d561666177bd0dcbec8f00e496e74ccf",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "9f5f42a3bad10cf2a3b6f918979bf5666c41f237d80466373eeecab243f276ba",
+    "generatedAt": "2026-08-13T14:55:28.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, which is a picture that lets us see inside the chest using a small amount of radiation. The white curved lines are ribs, and the darker areas are the air-filled lungs. In this image, both lungs show scattered patchy cloudy spots instead of being clear and dark. The person in the case got a fever and cough after stirring up dust in a place where bats lived. What might tiny particles breathed in from dusty air do to someone's lungs?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What does this chest X-ray show in simple terms?",
+          "cachedAnswer": "A chest X-ray is like a shadow picture of the inside of your chest. The bright white curved bars are the ribs, and the big dark spaces are your lungs, which are dark because they are full of air. In this picture, both lungs have scattered cloudy or speckled spots, like little smudges on a clean window. Normally lungs look mostly dark and even, so these smudges suggest something is filling up small parts of the lungs. Doctors describe these spots carefully before deciding what caused them.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-dust-matters",
+          "label": "Why does dusty air matter?",
+          "prompt": "How could breathing dusty air from a bat area make someone sick?",
+          "cachedAnswer": "When you disturb old dust, especially where birds or bats have lived, tiny particles float into the air. Some of these particles can carry microscopic living things like fungus spores that you can breathe deep into your lungs. Your body reacts to these invaders with inflammation, which can cause fever, cough, and those cloudy spots on an X-ray. Think of it like breathing in tiny seeds that your body then fights, causing swelling in the lungs. This is why the story of what someone was doing before getting sick is so important.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "one-picture-enough",
+          "label": "Is one X-ray enough to know?",
+          "prompt": "Can doctors be sure what is wrong just from this X-ray?",
+          "cachedAnswer": "No, one picture is not enough to be sure. Many different illnesses can make similar cloudy spots on a lung X-ray, so the image alone cannot tell the whole story. Doctors combine the picture with the person's history, a physical exam, and special lab tests before deciding. The exposure clue plus the X-ray only points them in a direction; it is not a final answer. This is a good reminder that pictures need a trained clinician to interpret them.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This chest radiograph uses X-rays passing through the body to create shadows based on tissue density; bone appears white, air-filled lung appears dark. Here, both lungs contain scattered patchy opacities rather than uniformly dark lung fields. The clinical setup describes fever and cough after disturbing a bat-inhabited structure in an endemic region. Environmental exposures like this can introduce inhaled agents that trigger a lung inflammatory response. What kinds of inhaled particles could produce scattered opacities like these, and how would you confirm the cause?",
+      "introQuestions": [
+        {
+          "id": "reading-densities",
+          "label": "How does an X-ray create this image?",
+          "prompt": "How does a chest X-ray form, and what makes areas appear light or dark?",
+          "cachedAnswer": "An X-ray beam passes through the body, and dense tissues absorb more of the beam while air absorbs less. Bone absorbs a lot, so ribs and the spine appear white; air-filled healthy lung lets most X-rays through, so it appears dark. When lung tissue fills with fluid, cells, or inflammatory material, it absorbs more X-rays and shows up as lighter, hazy areas called opacities. In this image, the scattered light patches in otherwise dark lungs indicate areas where something is replacing normal air. Radiologists describe these patterns by location, size, and distribution.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "exposure-biology",
+          "label": "How does exposure cause lung disease?",
+          "prompt": "Biologically, how can inhaling material from a bat-inhabited dusty space cause lung findings?",
+          "cachedAnswer": "Soil and debris enriched by bat or bird droppings can harbor fungal spores. When the dust is disturbed, these microscopic spores become airborne and can be inhaled deep into the alveoli, the tiny air sacs where gas exchange happens. The immune system responds with inflammation, recruiting white blood cells and fluid into the affected areas. This inflammatory filling of air spaces is what shows up as scattered opacities on the radiograph. The systemic response, like fever and cough, reflects the body's reaction to the inhaled agent.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirming-cause",
+          "label": "How would the cause be confirmed?",
+          "prompt": "What kinds of tests would help confirm the underlying cause of these findings?",
+          "cachedAnswer": "Because many conditions can produce similar scattered opacities, confirmation requires more than the image. Doctors gather a detailed history of the exposure and symptoms, then may order laboratory tests such as antigen or antibody assays, cultures, or examination of respiratory samples. Sometimes additional imaging or specialist consultation is needed. The exposure history narrows the possibilities but does not by itself confirm a specific organism. Combining history, imaging, and targeted testing is how a reliable conclusion is reached.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This frontal chest radiograph demonstrates bilateral scattered pulmonary opacities against otherwise aerated lung. The vignette pairs fever and cough with disturbance of a bat-inhabited structure in an endemic region, an exposure classically linked to inhalation of soil-dwelling fungal microconidia. Inhaled organisms may reach the alveoli, be phagocytosed by macrophages, and provoke a granulomatous inflammatory response. Describe the opacities systematically, then consider which pathophysiologic processes could yield this pattern. How does a cell-mediated immune response translate into the radiographic findings you see?",
+      "introQuestions": [
+        {
+          "id": "systematic-description",
+          "label": "Describe the opacities systematically",
+          "prompt": "How should I systematically describe the pulmonary opacities on this radiograph?",
+          "cachedAnswer": "Begin with distribution: the opacities appear bilateral and scattered across both lung fields rather than confined to a single lobe. Characterize morphology: note whether they are nodular, reticular, patchy airspace, or a mixed pattern; here they read as patchy, somewhat ill-defined opacities superimposed on aerated lung. Comment on size and confluence, and check for associated features such as cavitation, hilar or mediastinal adenopathy, effusion, and lung volumes. Use anatomic landmarks (zones, silhouette sign) to localize. A structured description avoids premature pattern-matching and keeps the differential open.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophysiology",
+          "label": "Mechanism linking exposure to findings",
+          "prompt": "What is the pathophysiologic mechanism linking this environmental exposure to the radiographic opacities?",
+          "cachedAnswer": "Disturbing bat- or bird-enriched soil aerosolizes fungal microconidia, which are inhaled and deposit in the alveoli. Alveolar macrophages phagocytose the organisms, but the pathogen can survive and replicate intracellularly early on, spreading via lymphatics. Over one to three weeks, a T-cell-mediated (Th1) response develops, activating macrophages and forming granulomas. This inflammatory and granulomatous filling of airspaces and interstitium produces the scattered opacities seen radiographically, and regional lymphatic involvement can cause hilar adenopathy. The systemic cytokine response drives the fever and constitutional symptoms.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "broad-differential",
+          "label": "What else fits this pattern?",
+          "prompt": "What differential processes should stay on the list for bilateral scattered opacities in this setting?",
+          "cachedAnswer": "Even with a suggestive exposure, keep a broad differential: endemic fungal infection (e.g., histoplasmosis), mycobacterial disease including tuberculosis, other fungi like blastomycosis or coccidioidomycosis, and atypical or viral pneumonias. Non-infectious mimics include hypersensitivity pneumonitis, sarcoidosis, and malignancy such as metastatic or lymphangitic disease. The distribution, tempo, and associated adenopathy help weight these possibilities. Importantly, an exposure history plus an image is a hypothesis generator, not a diagnosis. Confirmatory testing and clinical correlation remain essential before narrowing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient in an endemic region presents with fever and cough after disturbing a bat-inhabited structure; the chest radiograph shows bilateral scattered pulmonary opacities. This exposure-symptom-image triad is a classic teaching scenario, but the image alone is nonspecific. Your task is to describe the film systematically, build a prioritized differential anchored by the exposure, and select confirmatory testing rather than committing to a label. Which diagnosis rises to the top, and what would you order to confirm it while keeping key mimics in play?",
+      "introQuestions": [
+        {
+          "id": "describe-and-frame",
+          "label": "Describe the film and frame the case",
+          "prompt": "How would you describe this radiograph and frame the clinical problem?",
+          "cachedAnswer": "I would report bilateral, scattered patchy pulmonary opacities without a lobar consolidation clearly dominating, and I would comment on the presence or absence of hilar/mediastinal adenopathy, cavitation, effusion, and nodularity. Clinically, this is a subacute febrile respiratory illness with a strong environmental exposure to a bat-inhabited structure in an endemic area. That framing raises endemic fungal infection high on the list while keeping the presentation nonspecific. I would correlate with symptom tempo, immune status, and severity. The key move is to describe objectively before assigning a diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "prioritized-differential",
+          "label": "Prioritize the differential",
+          "prompt": "What is your prioritized differential given exposure plus bilateral opacities?",
+          "cachedAnswer": "Given the bat exposure in an endemic region, acute pulmonary histoplasmosis moves toward the top of the differential. Close competitors include tuberculosis, other endemic mycoses (blastomycosis, coccidioidomycosis depending on geography), and community-acquired or atypical pneumonia. Non-infectious considerations such as hypersensitivity pneumonitis, sarcoidosis, and malignancy deserve a place, especially if the course is atypical or fails to resolve. Immune status heavily influences the ranking and the risk of disseminated disease. The exposure narrows but does not close the list, so confirmation is required.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "confirmatory-testing",
+          "label": "Choose confirmatory testing",
+          "prompt": "What confirmatory testing and management principles apply here?",
+          "cachedAnswer": "For suspected histoplasmosis, urine and serum Histoplasma antigen testing is a useful, relatively rapid tool, complemented by serology (immunodiffusion/complement fixation), with cultures and histopathology of respiratory or tissue samples when needed. Concurrently, evaluate for TB (sputum studies) since management diverges sharply. Most immunocompetent patients with mild acute pulmonary histoplasmosis are self-limited and managed supportively, while moderate-to-severe or disseminated disease and immunocompromised hosts warrant antifungal therapy per guidelines. Assess severity, oxygenation, and host factors to guide disposition. Above all, avoid anchoring: confirm before treating and reassess if the course diverges.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Frontal CXR shows bilateral scattered nodular/patchy opacities in a patient with subacute fever and cough following heavy inoculum exposure in a bat-inhabited structure within an endemic region. Acute pulmonary histoplasmosis fits the gestalt, but the radiograph is nonspecific and anchoring on the exposure is a documented pitfall. Work the film systematically, weight the differential, and select stewardship-conscious confirmatory testing while explicitly excluding TB. How do inoculum burden, host immunity, and antigen test performance shape your workup and disposition?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Read the pattern and pitfalls",
+          "prompt": "What radiographic pattern and pitfalls should I flag on this film?",
+          "cachedAnswer": "The film shows bilateral scattered patchy/nodular opacities, a pattern compatible with acute pulmonary histoplasmosis after high-inoculum exposure, which can also produce diffuse miliary-type nodularity and hilar/mediastinal adenopathy. Pitfalls include over-reading exposure as diagnostic, missing adenopathy that shifts weighting toward granulomatous disease, and failing to consider miliary TB, which can look identical. Early CXR may be normal or lag symptoms, and CT is more sensitive for nodular and nodal disease. Note that later films may show calcified nodes or splenic calcifications suggesting prior/chronic disease. Document distribution, nodal status, and cavitation explicitly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "host-and-severity",
+          "label": "Host, inoculum, and severity",
+          "prompt": "How do inoculum and host immunity change risk stratification and disposition?",
+          "cachedAnswer": "High-inoculum exposures (e.g., disturbing bat guano in enclosed spaces) can overwhelm even immunocompetent hosts, producing diffuse disease, hypoxemia, and occasionally ARDS. Immunocompromised patients (HIV/AIDS, TNF-alpha inhibitors, transplant, high-dose steroids) are at markedly increased risk of progressive disseminated histoplasmosis and warrant a lower threshold for aggressive workup and antifungals. Risk stratify by oxygenation, extent of infiltrates, hemodynamics, and host factors to decide outpatient supportive care versus admission. Screen HIV status when disseminated disease is suspected. Severity plus host category, not the CXR alone, drives disposition and therapy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "testing-and-therapy",
+          "label": "Guideline-aware testing and therapy",
+          "prompt": "What confirmatory testing and treatment approach align with guidelines here?",
+          "cachedAnswer": "Send Histoplasma urine and serum antigen (highest yield in diffuse/severe and disseminated disease) plus serology by immunodiffusion and complement fixation, recognizing serology can be falsely negative early and antigen can cross-react with other endemic mycoses. Obtain cultures and histopathology (yeast forms) when tissue is available, and evaluate for TB in parallel given management divergence. Per IDSA guidance, mild acute pulmonary disease in immunocompetent hosts is often self-limited and observed; symptoms beyond about one month or moderate-to-severe disease warrant itraconazole, with lipid amphotericin B (often followed by itraconazole, plus steroids in respiratory failure) for severe or disseminated disease. Avoid anchoring: confirm, treat by severity/host, and involve ID and pharmacy stewardship for azole drug interactions and level monitoring.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

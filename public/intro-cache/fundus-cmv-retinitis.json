@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-cmv-retinitis",
+  "lessonPlanSha256": "82c9b26f3a661231fd72f6a8c060622429f7bedb1efa4176ae059272839fcf44",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "77c27e2dab2436246f1fb0263d285336940c1b1430c21a235f12eff7d59731b5",
+    "generatedAt": "2026-08-13T15:05:38.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a photograph of the inside back wall of an eye, called the retina, which is the light-sensing layer that works like the film in a camera. The orange color is normal, but notice the fuzzy pale-white patches and the darker red smudges near the center. This person has a very weak immune system and is seeing floating specks and losing part of their side vision. When the body's defenses are down, germs that are usually harmless can attack the eye. What do you notice in this picture that looks different from the smooth orange background?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What are the main things I can see in this eye photo?",
+          "cachedAnswer": "You are looking at the retina, the light-sensing layer at the back of the eye, seen through the pupil. The bright branching lines are blood vessels, and the round bright area on the right is where the nerve leaves the eye. The important abnormal findings are the fuzzy pale-white patches (areas where the retina is damaged and swollen) and the darker reddish areas (small bleeds). These patches follow along the blood vessels, which is a clue that something is spreading through the tissue. In a healthy eye the background is a smooth even orange without these blotches.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-weak-immune",
+          "label": "Why does a weak immune system matter?",
+          "prompt": "Why is a weak immune system important in a case like this?",
+          "cachedAnswer": "Your immune system is like a security team that keeps germs out and controls ones already inside your body. Many people carry certain viruses quietly for years without any problem because their security team keeps them in check. When the immune system becomes very weak, from an untreated infection like HIV or from strong medicines after a transplant, those quiet germs can wake up and cause serious harm. In the eye, that can mean an infection eating away at the delicate retina. That is why doctors pay very close attention to eye symptoms in someone whose defenses are down.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-urgent",
+          "label": "How urgent is this?",
+          "prompt": "Should this person wait for a normal appointment or be seen right away?",
+          "cachedAnswer": "This is a same-day emergency, not something to wait weeks for. The retina does not grow back once it is destroyed, so any delay can mean permanent loss of vision. Symptoms like new floaters and a shrinking field of vision in someone with a weak immune system are warning signs that need an eye specialist quickly. Getting treated fast can stop the damage from spreading to the central vision. The key lesson is: act early, because time equals sight.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a color fundus photograph, an image of the retina taken through the pupil. You can see the optic disc (the bright oval where the optic nerve exits), branching retinal arteries and veins, and, near the center, patches of pale retinal whitening mixed with darker hemorrhage that track along the vessels. The patient is severely immunocompromised and reports floaters and loss of peripheral vision. This combination should be treated as sight-threatening. Based on the pattern, why might infection follow the paths of the blood vessels?",
+      "introQuestions": [
+        {
+          "id": "identify-structures",
+          "label": "Identify the structures and abnormalities",
+          "prompt": "What normal structures and abnormal findings can I identify in this fundus photo?",
+          "cachedAnswer": "The normal structures include the optic disc (the pale oval where the optic nerve and central vessels enter), the retinal arteries and veins radiating outward, and the uniform orange-red background from the underlying vascular layer. The abnormal findings are areas of retinal whitening, which represent swollen and damaged retinal tissue, and reddish hemorrhages. Notice that both the whitening and the bleeding cluster around and along the vessels rather than being scattered randomly. This perivascular pattern is an important observation clue. A healthy retina would show a smooth background without these pale patches or blood.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-vessels",
+          "label": "Why does damage follow the vessels?",
+          "prompt": "Why would retinal damage and hemorrhage track along the blood vessels?",
+          "cachedAnswer": "Blood vessels deliver oxygen and nutrients to the retina, but they can also serve as a route by which an infection reaches and spreads through tissue. When the retinal cells are attacked and die, the tiny vessels feeding that area become leaky or break, producing the hemorrhages you see. Inflammation and tissue death cause the retina to swell and lose its transparency, which shows up as white patches. Because the damage centers on the vascular supply, the pattern tends to follow the course of the vessels. This is why observers describe such infections as spreading along the vascular arcades.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "immune-link",
+          "label": "Link to the immune system",
+          "prompt": "How does the patient's weakened immune system connect to this eye finding?",
+          "cachedAnswer": "A functioning immune system, especially certain white blood cells, normally keeps many latent viruses and organisms suppressed. In advanced immunosuppression, such as untreated HIV with very low CD4 T-cell counts or heavy anti-rejection medication after a transplant, that control is lost. Organisms that rarely cause disease in healthy people can then invade the retina, an event called an opportunistic infection. The lower the immune function, the higher the risk of these sight-threatening infections. This is why doctors correlate the depth of immune compromise with the likelihood and severity of retinal infection.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This fundus photograph shows a necrotizing retinitis pattern: confluent areas of retinal whitening (opacification from full-thickness necrosis and edema) intermixed with intraretinal hemorrhage, distributed along the vascular arcades near the posterior pole and optic disc. The patient is severely immunocompromised and presents with floaters and progressive visual field constriction. This appearance is classically taught as consistent with CMV retinitis. Given the histopathology of necrotizing viral retinitis, what mechanism produces the combination of retinal opacification and hemorrhage seen here?",
+      "introQuestions": [
+        {
+          "id": "describe-pattern",
+          "label": "Describe the necrotizing pattern",
+          "prompt": "Describe the fundus findings and why they fit a necrotizing retinitis pattern.",
+          "cachedAnswer": "The photograph shows geographic areas of dense retinal whitening representing full-thickness retinal necrosis and cytotoxic edema, with adjacent intraretinal and flame-shaped hemorrhages. The lesions are perivascular and track along the arcades, extending toward the optic disc and posterior pole. This granular-to-confluent whitening combined with hemorrhage is the hallmark of a necrotizing retinitis, sometimes described as a 'brushfire' or 'pizza-pie' appearance when the two components coexist. The involvement of the retinal vasculature reflects vascular invasion and endothelial infection. In an immunocompromised host this pattern is classically taught as consistent with CMV retinitis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mechanism",
+          "label": "Mechanism of whitening and hemorrhage",
+          "prompt": "What is the pathophysiologic mechanism behind the retinal whitening and hemorrhage?",
+          "cachedAnswer": "Cytomegalovirus infects retinal cells and vascular endothelium, producing a productive cytolytic infection with intranuclear and cytoplasmic inclusion bodies. Infected cells swell and undergo necrosis, causing loss of retinal transparency that appears clinically as dense white opacification. Endothelial infection and necrosis compromise vessel wall integrity, leading to intraretinal hemorrhage that accompanies the whitening. Because host T-cell immunity is impaired, there is minimal inflammatory containment, allowing the necrosis to advance in a slowly progressive, spreading fashion. The full-thickness necrosis explains why healed areas leave atrophic, sometimes detached retina behind.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cd4-correlation",
+          "label": "Immune status correlation",
+          "prompt": "How does the degree of immune compromise correlate with risk of this infection?",
+          "cachedAnswer": "CMV retinitis in HIV classically occurs when CD4+ T-cell counts fall below roughly 50 cells/microliter, reflecting a critical loss of cellular immunity needed to control latent CMV. In transplant patients, intense pharmacologic T-cell suppression produces an analogous window of vulnerability to opportunistic reactivation. The severity and rate of progression tend to be greater with deeper immunosuppression. This is a key teaching point: quantifying the degree of immune compromise directly informs the pretest probability of opportunistic retinal infection. Restoring immune function (for example, effective antiretroviral therapy) is central to durable control alongside antiviral therapy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A severely immunocompromised patient presents with new floaters and progressive peripheral field loss, and this fundus photo shows perivascular retinal whitening with associated hemorrhage near the disc and posterior pole. The clinical gestalt points to a sight-threatening necrotizing retinitis, classically taught as CMV retinitis in this host. Note this is educational material and the source label has not been adjudicated, so specialist confirmation is required. How would you frame your differential and immediate disposition for this presentation?",
+      "introQuestions": [
+        {
+          "id": "differential",
+          "label": "Build the differential",
+          "prompt": "What is the differential diagnosis for this necrotizing retinitis in an immunocompromised patient?",
+          "cachedAnswer": "The leading consideration in a severely immunocompromised host with perivascular whitening and hemorrhage is CMV retinitis, which classically shows granular or confluent whitening with hemorrhage and slow indolent progression. Key alternatives include acute retinal necrosis and progressive outer retinal necrosis (herpesviruses, VZV/HSV), which tend to progress more rapidly and may show less hemorrhage. Toxoplasma retinochoroiditis typically produces a focal creamy lesion with overlying vitritis, often adjacent to an old scar. Syphilitic and tubercular chorioretinitis and, in the right context, fungal endophthalmitis should also be considered. Distinguishing features include tempo, amount of hemorrhage, vitritis, and immune status, but definitive attribution requires specialist exam and sometimes aqueous or vitreous PCR.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "disposition",
+          "label": "Immediate disposition",
+          "prompt": "What is the appropriate disposition and why is routine follow-up inadequate here?",
+          "cachedAnswer": "This warrants same-day ophthalmology evaluation, not routine outpatient scheduling, because necrotizing retinitis can progress toward the macula and cause irreversible vision loss and carries a significant risk of retinal detachment. Concurrent infectious disease involvement is essential to guide systemic antiviral therapy and to address the underlying immunosuppression. Expedited workup typically includes dilated exam, CD4 count and HIV status if unknown, and consideration of anterior chamber or vitreous sampling for PCR. Management principles center on prompt antiviral therapy (for example ganciclovir/valganciclovir for CMV) and immune reconstitution. Deferring care risks bilateral and macular involvement, making urgency the dominant teaching point.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "history-workup",
+          "label": "Targeted history and workup",
+          "prompt": "What history and initial workup would sharpen this diagnosis?",
+          "cachedAnswer": "Ask about the cause and depth of immunosuppression: HIV status and last CD4 count, adherence to antiretroviral therapy, transplant history and current immunosuppressants, and any chemotherapy. Characterize the visual symptoms, laterality, tempo of field loss, and associated pain or redness (necrotizing viral retinitis is often relatively painless). Review for systemic opportunistic infections and constitutional symptoms. Initial workup includes a dilated fundus exam by ophthalmology, CD4/viral load, and targeted infectious serologies (toxoplasma, syphilis, sometimes TB), with aqueous/vitreous PCR reserved for atypical or diagnostically uncertain cases. This information localizes the risk and helps prioritize antiviral coverage while confirmation is pending.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Posterior pole fundus photo in an advanced immunocompromised patient: confluent perivascular retinal opacification with intraretinal hemorrhage tracking along the arcades and abutting the disc, in the setting of floaters and progressive field constriction. The pattern is classically taught as CMV retinitis, though this is unadjudicated teaching material requiring specialist confirmation. Consider tempo, hemorrhage burden, and immune status as discriminators against ARN/PORN, toxoplasmosis, and syphilis. What pitfalls in recognition and disposition would you want a junior learner to avoid here?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Refine pattern recognition",
+          "prompt": "What features distinguish CMV retinitis from other necrotizing retinitides on this image and clinically?",
+          "cachedAnswer": "CMV retinitis classically presents in two overlapping phenotypes: a fulminant/edematous form with dense whitening and abundant hemorrhage along vessels ('pizza-pie' or 'cottage cheese and ketchup') and an indolent granular form with a leading edge of satellite lesions and minimal hemorrhage. Progression is typically slow (weeks) with relatively little vitritis given the impaired immune response. In contrast, ARN shows rapidly progressive peripheral confluent necrosis with prominent occlusive vasculitis and vitritis in relatively immunocompetent or partially immune hosts, while PORN shows multifocal outer retinal opacification with minimal hemorrhage and vasculitis in profoundly immunocompromised patients. Toxoplasmosis favors a focal creamy lesion with overlying dense vitritis, often near an old scar. Immune status, tempo, hemorrhage burden, and degree of vitritis are the practical discriminators.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Recognition and disposition pitfalls",
+          "prompt": "What are the key pitfalls in recognizing and dispositioning this presentation?",
+          "cachedAnswer": "A major pitfall is anchoring on 'floaters' as benign posterior vitreous detachment and scheduling routine follow-up, missing time-sensitive necrotizing retinitis. Another is mistaking hemorrhage-rich CMV for a vascular occlusion or diabetic retinopathy without accounting for the immune context. Underestimating detachment risk is common; necrotic atrophic retina is highly prone to rhegmatogenous detachment. Failing to loop in infectious disease and to quantify immune status (CD4, viral load, transplant regimen) delays both antiviral therapy and immune reconstitution. Finally, do not treat an unconfirmed image label as ground truth; atypical features should prompt aqueous/vitreous PCR and specialist adjudication before committing to a single organism.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-guideline",
+          "label": "Guideline-aware management",
+          "prompt": "What are the guideline-aware management principles once CMV retinitis is confirmed?",
+          "cachedAnswer": "Standard first-line therapy for CMV retinitis is oral valganciclovir induction followed by maintenance, with IV ganciclovir/valganciclovir and intravitreal injections (ganciclovir or foscarnet) reserved for sight-threatening zone 1 disease near the fovea or optic nerve. Foscarnet or cidofovir are alternatives for ganciclovir-resistant or intolerant cases. Immune reconstitution is essential and durable control in HIV depends on initiating or optimizing ART, while remaining alert for immune recovery uveitis once CD4 rises. Coordinate with infectious disease and, in transplant patients, adjust immunosuppression in concert with the transplant team. Serial dilated exams monitor the leading edge, response, and detachment risk, and prophylaxis/maintenance continues until sustained immune recovery.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

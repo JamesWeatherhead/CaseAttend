@@ -4,71 +4,131 @@
   "caseId": "patho-study-breast",
   "lessonPlanSha256": "eead8942a616d31bdd6018040f0dd8211cce9bdceb5334722fb07d31f7476e55",
   "provenance": {
-    "modelId": "human-authored (pipeline-validated seed)",
-    "systemPromptSha256": "f12643a613b503fc0a081ed8d96e105c3a32675f31a4a9479d8f0f3719f4c70c",
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
     "requestTemplateVersion": "1.0",
     "mediaSha": "80fb69346955beac10bf0b758b2c1ba0945e144db21388b21929e8fabcb5d41c",
-    "generatedAt": "2026-08-13T13:39:56.000Z"
+    "generatedAt": "2026-08-13T16:00:09.000Z"
   },
   "review": {
     "status": "approved",
     "reviewer": "James Weatherhead",
     "credentials": "MD/PhD/MPH candidate; principal investigator",
-    "reviewedAt": "2026-08-13T13:43:29.000Z"
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
   },
   "levels": {
     "highschool": {
-      "introPrompt": "**62-year-old woman, biopsy of a breast lump**\n\nA lump was found in her breast during a routine check, so a doctor took a very small sample to look at under a microscope.\n\nYou are looking at those pictures. The pink and purple colors come from a stain called H&E that lets us tell different parts of the tissue apart: purple stains the nuclei (the control centers of cells), and pink stains the surrounding structure.\n\nBefore we try to name anything, get a sense of the big picture: does the tissue look organized like a normal gland, or does it look messy?",
+      "introPrompt": "These pictures show a tiny slice of breast tissue that has been stained with pink and purple dyes so we can see it under a microscope. The purple dots are the centers (nuclei) of cells, and the pink parts are the supporting material between them. In the low-power view you can see a large purple mass filling most of the tissue, with some pale, bubbly fat cells at one edge. As you zoom in, the purple cells crowd together in nests and clumps. What differences do you notice between the crowded purple area and the pale fatty area at the edge?",
       "introQuestions": [
         {
-          "id": "big-picture-first",
-          "label": "Start with the big picture",
-          "prompt": "How should I look at these images at first — what is the big-picture pattern?",
-          "cachedAnswer": "Start zoomed OUT, not in. Normal breast tissue is organized: it has neat clusters of little tubes (ducts) surrounded by softer supporting tissue. When something goes wrong, that organization breaks down. In these images look for areas where the tubes lose their round shape, where cells crowd together in disorganized sheets, and where the boundary between the ducts and the surrounding tissue becomes blurry. At high power (zoomed in), the individual cells might look different from each other, and their nuclei (the darker purple centers) might look bigger or more variable in size. Do not try to make a diagnosis; instead, describe what you see step by step, moving from low power to high power. That is how pathologists actually work.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What am I seeing in these stained breast tissue images?",
+          "cachedAnswer": "You are looking at a very thin slice of breast tissue that was colored with two dyes, called H&E, to make its parts visible. The deep purple areas are groups of cells packed tightly together, because purple dye sticks to the control center of each cell (the nucleus). The pale pink and bubbly patch near one edge is normal fat tissue. As the pictures zoom in from far away to close up, you can see that the purple region is made of many small cells crowded into clumps and nests. This close-up detail is what doctors study to understand what kind of tissue this is.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-zoom",
+          "label": "Why zoom from far to close?",
+          "prompt": "Why do scientists look at the tissue from low power to high power?",
+          "cachedAnswer": "Looking from far away first is like looking at a whole city from an airplane before walking down one street. At low power (zoomed out) you can see the overall shape and layout of the tissue and where the big mass sits compared to the normal fat. Then zooming in lets you study individual cells, like their size, shape, and how neat or messy they look. If you started zoomed all the way in, you might miss the big picture. Moving from low to high power helps you understand both the whole pattern and the tiny details.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-doctors-check",
+          "label": "Why do doctors study a lump like this?",
+          "prompt": "Why is it important for doctors to look at a breast lump under a microscope?",
+          "cachedAnswer": "A lump can be caused by many things, and most of them are harmless, but some are not. Feeling the lump or seeing it on a scan is not enough to know for sure what it is made of. By taking a tiny sample (a biopsy) and looking at the cells up close, doctors can tell whether the cells look normal or unusual. This information helps them decide whether treatment is needed and what kind. Studying tissue this way is one of the most reliable ways to answer these questions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "undergrad": {
-      "introPrompt": "**62F, core biopsy of a suspicious breast mass**\n\nH&E-stained sections at 4x, 10x, and 40x are available. Normal breast lobules have a two-cell-layer architecture: an inner luminal epithelium and an outer myoepithelial layer surrounded by basement membrane. Loss of that two-layer arrangement, particularly infiltration of single cells or irregular nests into surrounding stroma, is the hallmark of invasion.\n\nMove low-to-high power. What features would push you toward invasion, and how do they differ from ductal carcinoma in situ (DCIS)?",
+      "introPrompt": "This is breast tissue on a glass slide, stained with hematoxylin (which colors nuclei blue-purple) and eosin (which colors proteins and support tissue pink). The lowest-power image shows a large cellular mass occupying most of the sample, with a small region of clear, rounded fat cells at one margin. At higher magnification the mass is made of nests and clusters of cells embedded in pink fibrous tissue. Notice how the cells are arranged compared with the orderly fat at the edge. What does the boundary between the crowded cell groups and the surrounding pink tissue tell you about how these cells are behaving?",
       "introQuestions": [
         {
-          "id": "invasion-vs-dcis",
-          "label": "Invasion vs. DCIS",
-          "prompt": "How do I tell invasion apart from DCIS on H&E?",
-          "cachedAnswer": "DCIS keeps the abnormal cells confined to the duct — the myoepithelial layer and the basement membrane remain intact around the involved ducts. Under H&E it can look expansile, cribriform (little punched-out spaces), solid, or comedonecrotic (central necrosis), but the outline is still that of a duct. Invasion loses the duct outline. You see irregular nests, sheets, or single cells infiltrating the surrounding stroma, often with a desmoplastic (reactive) stromal response — pink, fibrous, wavy — around them. Perineural or lymphovascular spread of tumor cells is a strong invasion clue. When the H&E is ambiguous, myoepithelial immunohistochemistry (p63, SMM-HC, calponin) helps: DCIS retains a full peripheral rim of myoepithelium, invasive carcinoma does not. Recognizing this difference matters clinically because DCIS is stage 0 disease and invasive carcinoma is not.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "stain-basics",
+          "label": "What do the pink and purple colors mean?",
+          "prompt": "What do the pink and purple colors in H&E staining represent?",
+          "cachedAnswer": "H&E stands for hematoxylin and eosin, the two most common dyes in tissue study. Hematoxylin is attracted to acidic material like DNA, so it stains the nuclei of cells a blue-purple color. Eosin binds to proteins in the cytoplasm and the connective tissue, giving them a pink color. So the purple dots are cell nuclei crowded together, and the pink strands and background are the supporting fibrous tissue (stroma). Reading these two colors together lets you see both the cells and their surroundings.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "normal-vs-mass",
+          "label": "How is the mass different from normal tissue?",
+          "prompt": "How does the cellular mass differ from the normal fat tissue at the edge?",
+          "cachedAnswer": "Normal breast tissue includes fat cells, which appear as large, clear, rounded spaces because their fat washes out during processing, plus orderly glands and ducts. In these images, the fat at one margin looks pale and evenly bubbly. The mass, by contrast, is densely packed with small dark nuclei arranged in irregular nests and clusters. The organized, low-cell fat looks very different from the crowded, disorganized mass. This contrast in cellularity and arrangement is what draws the eye when scanning a slide.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "stroma-role",
+          "label": "What is the pink stroma doing here?",
+          "prompt": "What is the pink fibrous tissue between the cell groups and why does it matter?",
+          "cachedAnswer": "The pink strands weaving between the cell clusters are stroma, the connective tissue framework that normally supports glands. When groups of cells are found scattered within this stroma rather than staying inside neat glands, it suggests the cells are growing into the surrounding tissue. A dense, reactive-looking stroma can form in response to that growth. Learning to recognize where cells sit relative to the stroma is a key skill for understanding tissue behavior. This is why students are taught to study both the cells and the space around them.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "ms_preclinical": {
-      "introPrompt": "**62F, core biopsy of a suspicious breast mass**\n\nH&E sections at 4x, 10x, and 40x. Read low-to-high: architecture first, cellular detail second. In invasive ductal carcinoma of no special type (IDC/NST), the ductal architecture is lost, malignant epithelial cells infiltrate the stroma as irregular nests, cords, or single files, and there is a variable desmoplastic response.\n\nApply Nottingham grading (mitotic count, nuclear pleomorphism, tubule formation). Which components are observable on these images, and how do they relate to prognosis and molecular subtyping?",
+      "introPrompt": "This H&E breast specimen is presented at 4x, 10x, and 40x. At scanning power a highly cellular mass replaces most of the tissue, abutting residual adipose tissue at one margin. At intermediate and high power the lesion is composed of nests, cords, and irregular clusters of epithelial cells set within a desmoplastic-appearing stroma. Assess the tumor architecture, the relationship of the epithelial nests to the stroma, and the nuclear features of individual cells. Given these observations, what architectural clues suggest invasion rather than an in-situ process?",
       "introQuestions": [
         {
-          "id": "nottingham-components",
-          "label": "Nottingham grading components",
-          "prompt": "How do the three Nottingham components look at the microscope, and what do they say about prognosis?",
-          "cachedAnswer": "Nottingham scores three things and adds them (each 1 to 3, sum 3-9 → grade 1, 2, or 3). Tubule formation: what percentage of the tumor forms recognizable glandular structures (>75% = 1, 10-75% = 2, <10% = 3). Nuclear pleomorphism: how variable and atypical the nuclei look at high power — small and uniform (1), moderate variation (2), or marked variation with prominent nucleoli (3). Mitotic count: number of mitotic figures per 10 consecutive high-power fields in the most active area, calibrated to the field diameter of the microscope. Grade 3 tumors have worse recurrence-free survival independent of stage, and grading feeds into decisions about chemotherapy alongside receptor status. The molecular context you will layer on top is ER/PR (ER positive tumors respond to endocrine therapy), HER2 (positive tumors get HER2-targeted therapy), and Ki-67 (proliferation marker); together these produce the luminal A / luminal B / HER2-enriched / triple-negative subtypes.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "low-power-architecture",
+          "label": "Describe the low-power architecture",
+          "prompt": "What are the key architectural features visible at low power in this breast specimen?",
+          "cachedAnswer": "At scanning magnification a densely cellular, expansile mass replaces most of the section and abuts residual lobulated adipose tissue at one edge. The lesion lacks the orderly lobular arrangement of normal breast and instead shows sheets and nests of epithelium separated by variably dense pink stroma. The infiltrating fronts appear irregular rather than sharply circumscribed. Bands of collagenous stroma course through the tumor, giving a somewhat trabeculated appearance. This disorganized, stroma-rich architecture is the reason to move to higher power for confirmation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "evidence-invasion",
+          "label": "What suggests stromal invasion?",
+          "prompt": "What histologic features suggest invasion and a stromal response in this case?",
+          "cachedAnswer": "Invasion is suggested when epithelial nests and cords sit directly within stroma without an investing myoepithelial layer or basement membrane, arranged in irregular, haphazard groups rather than as smooth-contoured ducts. Here the clusters infiltrate the pink fibrous stroma in an angulated, disorderly pattern. The stroma itself appears desmoplastic, a reactive fibroblastic response to the infiltrating epithelium. Small irregular cell groups scattered between larger nests further support an infiltrative process. Definitive confirmation of absent myoepithelium would use immunostains such as p63 or smooth muscle myosin, but the architectural pattern is highly suggestive.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "nuclear-features",
+          "label": "What nuclear details to note at 40x",
+          "prompt": "What cytologic and nuclear features should I evaluate at high power?",
+          "cachedAnswer": "At 40x you evaluate nuclear size relative to a small lymphocyte or red cell, degree of pleomorphism (variation in size and shape), chromatin coarseness, and nucleolar prominence. You also look for mitotic figures, which reflect proliferative activity. In this lesion the nuclei are enlarged and crowded with irregular contours. The amount of gland or tubule formation versus solid sheets is also assessed, since tubule formation reflects differentiation. Together, nuclear detail, tubule formation, and mitotic count are the histologic components that feed into grading systems.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "ms_clinical": {
-      "introPrompt": "**62F, suspicious mass on imaging, core biopsy performed**\n\nH&E sections at 4x, 10x, and 40x. Confirm invasion vs. DCIS and, if invasive, grade using Nottingham. Then plan the ancillary workup: ER, PR, HER2 (IHC with reflex FISH for equivocal), Ki-67, and molecular assays if indicated (Oncotype DX in ER-positive, HER2-negative, node-negative disease).\n\nHow do you fold pathology into a stage-and-treatment plan for this patient, including who gets neoadjuvant therapy, when sentinel lymph node biopsy is appropriate, and how receptor status changes the algorithm?",
+      "introPrompt": "A 62-year-old woman had a lump on routine exam, a suspicious mass on imaging, and now a core biopsy shown here at 4x, 10x, and 40x. The H&E sections show an infiltrative, stroma-rich epithelial proliferation forming irregular nests and cords, consistent with an invasive breast carcinoma teaching case. Correlate the imaging-detected mass with these histologic findings and think about how the pathology report will drive management. What observable microscopic components will the pathologist grade and report to guide her treatment planning?",
       "introQuestions": [
         {
-          "id": "workup-and-plan",
-          "label": "Ancillary workup + treatment plan",
-          "prompt": "What ancillary workup and treatment plan should follow this pathology finding?",
-          "cachedAnswer": "Ancillary workup: ER, PR, HER2 by IHC on the tumor block (with reflex FISH for HER2 2+); Ki-67 to inform proliferation; and, for early-stage ER-positive, HER2-negative, node-negative tumors, a multigene recurrence assay such as Oncotype DX to help decide whether adjuvant chemotherapy adds benefit over endocrine therapy alone. Local staging is by breast MRI in selected cases; systemic staging is imaging-based only for clinically node-positive or higher-stage disease per NCCN. Surgical planning: for a resectable primary, options are breast-conserving surgery with radiation or mastectomy, with SLNB in a clinically node-negative axilla. Neoadjuvant chemotherapy is favored for HER2-positive and triple-negative cancers ≥T2 or node-positive and for locally advanced disease, both to downstage the tumor and to assess pathologic response, which carries prognostic and adjuvant-therapy implications. Endocrine therapy is standard for hormone receptor-positive disease and is typically 5 to 10 years. All of this is multidisciplinary and should be planned in a tumor board, with genetic counseling considered given the age and personal history.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "histo-imaging-correlate",
+          "label": "How do the slide and imaging correlate?",
+          "prompt": "How do the microscopic findings correlate with a suspicious imaging mass in this patient?",
+          "cachedAnswer": "An imaging-detected suspicious mass with irregular or spiculated features often corresponds histologically to an infiltrative lesion that provokes a desmoplastic stromal reaction, which is exactly what these sections show. The dense collagenous stroma and infiltrative epithelial nests explain the firm, ill-defined mass appreciated clinically and radiographically. Core biopsy provides tissue to confirm invasion and to obtain grade and biomarkers. This tissue-imaging correlation is essential before definitive management. Triple assessment, combining exam, imaging, and pathology, underpins the workup of a breast mass.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "grading-components",
+          "label": "What goes into the grade and report?",
+          "prompt": "What components will the pathologist grade and report to guide management?",
+          "cachedAnswer": "For an invasive carcinoma the Nottingham (modified Bloom-Richardson) grade combines three scored features: tubule/gland formation, nuclear pleomorphism, and mitotic count, each scored 1 to 3 and summed for grade 1 to 3. The report also documents tumor type, size, margins, lymphovascular invasion, and any associated in-situ component. Predictive and prognostic biomarkers, ER, PR, HER2, and often Ki-67, are added by immunohistochemistry. These results feed into staging and systemic therapy decisions. On a core biopsy grade and biomarkers may be preliminary and reconfirmed on the excision.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-steps",
+          "label": "What are the next management steps?",
+          "prompt": "In general terms, what management steps follow a biopsy like this?",
+          "cachedAnswer": "After a biopsy confirming invasive carcinoma, management is multidisciplinary and individualized. General steps include completing biomarker testing (ER/PR/HER2), staging to assess nodal and distant disease, and discussion at a multidisciplinary tumor board. Local therapy typically involves surgery (breast-conserving or mastectomy) with axillary evaluation, often followed by radiation. Systemic therapy, such as endocrine therapy, chemotherapy, or HER2-targeted agents, is guided by grade, stage, and receptor status. The specific plan depends on the full pathology, patient factors, and shared decision-making.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     },
     "resident": {
-      "introPrompt": "**62F, core biopsy of a suspicious breast mass**\n\nSections at 4x, 10x, and 40x. Confirm invasion vs. DCIS, subtype (NST vs. lobular vs. special types — mucinous, tubular, cribriform, medullary), and grade by Nottingham. Then discuss: the pitfalls of grading on a core biopsy versus a resection, the interpretation of ER/PR/HER2 (including HER2-low), Ki-67 caveats, and how neoadjuvant response (pCR vs. residual disease) feeds into adjuvant escalation for TNBC and HER2-positive disease.",
+      "introPrompt": "Core biopsy from a 62-year-old with a mammographically suspicious mass, H&E at 4x, 10x, and 40x. Scanning power shows a cellular, stroma-rich infiltrative epithelial neoplasm abutting adipose tissue; higher power reveals nests, cords, and clusters within desmoplastic stroma with enlarged pleomorphic nuclei, an invasive ductal (NST) teaching pattern. Work through the Nottingham components deliberately and consider grading pitfalls on limited core material. Which of the three Nottingham parameters is most reproducibly assessable here, and where might interobserver variability or sampling limit your scoring?",
       "introQuestions": [
         {
-          "id": "biopsy-grading-pitfalls",
-          "label": "Grading pitfalls on core biopsy",
-          "prompt": "At resident level, what are the pitfalls of Nottingham grading on a core biopsy vs. the resection specimen?",
-          "cachedAnswer": "Core biopsies sample only a fraction of the tumor, so Nottingham components can be under- or over-estimated. Tubule formation is often over-scored on cores because heterogeneous glandular differentiation across the tumor is missed. Mitotic count is the most volume-sensitive of the three because true mitotic activity may cluster in a single focus that a core misses, and pre-analytic delays or crushed edges can obscure figures. Nuclear pleomorphism is the most robust across specimens but is still observer-variable. Practically, the accepted approach is to grade on a core when it is representative, but to regrade on the resection because that specimen sets the definitive grade. Ancillary considerations at this level include HER2-low (IHC 1+ or 2+ FISH-negative) as an emerging category driving trastuzumab deruxtecan eligibility in metastatic disease, awareness that Ki-67 cutoffs vary by lab, and integration of neoadjuvant pathologic response (RCB score) into adjuvant decision-making. Multidisciplinary review and rebiopsy for discordant clinical-radiologic-pathologic findings remain the resident-level defaults.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+          "id": "pattern-recognition",
+          "label": "Key features and pattern here",
+          "prompt": "Summarize the pattern-recognition features supporting invasive carcinoma of no special type in these images.",
+          "cachedAnswer": "The scanning image shows an infiltrative, poorly circumscribed cellular proliferation replacing parenchyma and interfacing with adipose tissue, with trabeculating desmoplastic stroma. Intermediate and high power demonstrate irregular nests, cords, and solid clusters of epithelial cells lacking a peripheral myoepithelial layer, set in reactive stroma, favoring invasion over an in-situ process. Nuclei are enlarged and pleomorphic; tubule formation appears limited across much of the field. The absence of a specialized architecture (cribriform, tubular, mucinous, lobular cytology) fits invasive carcinoma of no special type. Confirmation of myoepithelial loss with p63/SMM-HC and characterization with ER/PR/HER2 would follow.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "nottingham-scoring",
+          "label": "Apply Nottingham scoring rigorously",
+          "prompt": "How should each Nottingham parameter be scored on this material, and what are the observable elements?",
+          "cachedAnswer": "Tubule formation is scored by the percentage of tumor forming glandular structures with central lumina (>75% = 1, 10-75% = 2, <10% = 3); here tubules appear sparse, suggesting a higher score. Nuclear pleomorphism is graded by size, contour irregularity, chromatin, and nucleolar prominence relative to normal epithelium. Mitotic count must be performed in the most active area over a defined field area calibrated to your microscope's field diameter, then converted per the current cut-points. The three scores sum to grade 1 (3-5), 2 (6-7), or 3 (8-9). On a core, evaluate tubules only within tumor and count mitoses at the invasive front's hotspot.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Grading pitfalls on a core",
+          "prompt": "What pitfalls affect grading and reporting on this core biopsy?",
+          "cachedAnswer": "Core biopsy grading is limited by sampling: mitotic hotspots and the least-differentiated area may not be represented, and crush or edge artifact can degrade mitotic and nuclear assessment. Mitotic counting requires correct field-area calibration; uncalibrated counts skew the score. Distinguishing true mitoses from apoptotic or hyperchromatic nuclei and avoiding poorly fixed regions is essential. Grade on core may be revised on excision, and Nottingham grade should be reconciled with the full specimen. Biomarker testing (ER/PR/HER2, Ki-67) and, if lobular morphology is suspected, E-cadherin, complete the workup; note pre-analytic fixation requirements for HER2.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
         }
       ]
     }

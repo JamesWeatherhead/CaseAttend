@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "cxr-chf",
+  "lessonPlanSha256": "a9964f9f9ee82d5535a3a22e5bd613366437093dd16373cefdf14afeddeabe19",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "7a576e30076a1c10cbb8c27ea6528a99ac7b9279de496dd1c7c9c33751193630",
+    "generatedAt": "2026-08-13T14:21:18.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a chest X-ray, a picture that uses a small amount of radiation to see inside the chest. On an X-ray, air looks dark and dense things like bone or fluid look white. In this case, a 68-year-old man is short of breath, cannot lie flat, and is coughing up pink frothy spit — classic signs of fluid building up in the lungs. Notice how the middle of the chest (the heart shadow) looks large and the lungs look hazy and cloudy instead of dark. What do you think the cloudy white areas in the lungs might be?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What is this image and what are the main things I can see on it?",
+          "cachedAnswer": "This is a chest X-ray taken from the front, showing the ribs, the spine, and the two lungs on either side of a large white shadow in the middle, which is the heart. Normally healthy lungs look mostly dark because they are full of air. Here the lungs look cloudy and hazy, which suggests fluid has leaked into the air spaces. The heart shadow in the center also looks wider than normal, like a balloon that is a bit too big. You can also spot some thin white lines and small devices — these are medical wires and tubes placed by the care team. All of this fits with the patient's trouble breathing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-fluid",
+          "label": "Why is there fluid in the lungs?",
+          "prompt": "Why would fluid build up in someone's lungs?",
+          "cachedAnswer": "Think of the heart as a pump with two sides. If the left side of the pump gets weak or stiff, blood backs up behind it, kind of like water backing up in a clogged sink. That backed-up pressure pushes fluid out of the tiny blood vessels and into the lungs' air sacs. When the air sacs fill with fluid instead of air, it is hard to breathe — like trying to breathe through a wet sponge. That fluid can even bubble up as the pink frothy spit described in this case. This is why the person cannot lie flat, because lying down makes even more fluid pool in the lungs.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-serious",
+          "label": "How serious does this look?",
+          "prompt": "How can you tell how serious this situation might be?",
+          "cachedAnswer": "The combination of the symptoms and the X-ray suggests this is a serious, urgent situation. Coughing up pink frothy sputum and not being able to lie flat are warning signs that the lungs are quite full of fluid. On the picture, the widespread haziness across both lungs and the enlarged heart shadow support that the heart is struggling. In real life, doctors would act quickly to help the person breathe and remove the extra fluid. As a learner, the key takeaway is recognizing that these clues together paint a picture of a heart that cannot keep up.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a frontal (AP) chest radiograph of a 68-year-old man who is short of breath, cannot lie flat (orthopnea), and is coughing up pink frothy sputum. X-rays pass through the body and are absorbed more by dense tissue, so bone and fluid appear white while air-filled lung appears dark. Notice that the central heart shadow appears enlarged and both lungs show hazy, cloud-like opacity rather than clear dark lung. There are also lines and small devices from monitoring/support equipment. Based on the patient's symptoms, what physiologic problem could cause both an enlarged heart and hazy lungs at the same time?",
+      "introQuestions": [
+        {
+          "id": "visible-findings",
+          "label": "What findings stand out?",
+          "prompt": "What are the key visible findings on this chest radiograph?",
+          "cachedAnswer": "The most striking features are an enlarged central heart shadow and diffuse hazy opacity spreading through both lungs, especially toward the central (perihilar) regions. Healthy lung is mostly dark because it is air-filled, so this increased whiteness signals that something denser — most likely fluid — has replaced some of the air. The lung markings look indistinct and 'fuzzy,' which is typical when fluid collects around the airways and blood vessels. You can also see thin bright lines and small hardware, which are catheters, wires, and monitoring devices. Together these findings suggest fluid overload in the lungs paired with a struggling, enlarged heart.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pressure-mechanism",
+          "label": "How does heart pressure cause this?",
+          "prompt": "How does pressure inside the heart lead to fluid in the lungs?",
+          "cachedAnswer": "Blood returning from the lungs enters the left side of the heart, which pumps it out to the body. If the left ventricle cannot pump effectively, blood backs up into the left atrium and then into the pulmonary veins and capillaries, raising the pressure inside those vessels. According to basic fluid balance across a capillary wall (higher pressure inside pushes fluid out), this elevated pressure forces watery fluid out of the blood vessels and into the surrounding lung tissue and air sacs. That fluid is what makes the lungs appear hazy on the X-ray and what produces the frothy sputum. The enlarged heart shadow reflects a heart that has grown or dilated as it struggles with its workload.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-orthopnea",
+          "label": "Why can't he lie flat?",
+          "prompt": "Why does lying flat make breathing worse in this situation?",
+          "cachedAnswer": "When a person lies flat, blood that was pooling in the legs and abdomen redistributes back toward the chest, increasing the volume the heart has to handle. In someone whose left heart already cannot keep up, this extra returning blood raises lung vessel pressure even more and worsens the fluid leak into the lungs. That is why the patient feels more breathless lying down and prefers to sit up — a symptom called orthopnea. Sitting upright lets gravity keep some fluid lower in the body, easing the pressure on the lungs. This bedside clue nicely matches the fluid seen on the radiograph.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This frontal chest radiograph belongs to a 68-year-old man with dyspnea, orthopnea, and pink frothy sputum — a presentation consistent with cardiogenic pulmonary edema. The film shows cardiomegaly with diffuse bilateral airspace and interstitial opacity in a perihilar distribution, plus indwelling lines/support hardware. Recall that pulmonary edema arises when pulmonary capillary hydrostatic pressure exceeds the forces keeping fluid within the vasculature (Starling relationship). Consider how left-sided filling pressures translate into the specific radiographic pattern you see. What is the sequence of events linking a failing left ventricle to alveolar flooding?",
+      "introQuestions": [
+        {
+          "id": "edema-pattern",
+          "label": "Describe the edema pattern",
+          "prompt": "What radiographic pattern of pulmonary edema and cardiac findings are visible here?",
+          "cachedAnswer": "The film demonstrates an enlarged cardiac silhouette (cardiomegaly) and bilateral, roughly symmetric hazy opacity concentrated in the perihilar and central lung zones. This central 'bat-wing' or perihilar distribution is characteristic of cardiogenic pulmonary edema, reflecting fluid accumulation around the bronchovascular bundles and within alveoli. Interstitial changes such as thickened septal markings and indistinct vessel margins accompany the airspace haze as fluid tracks through the interstitium. Progression typically follows the sequence of vascular redistribution, then interstitial edema (Kerley lines, peribronchial cuffing), then frank alveolar edema. Support lines and monitoring devices are also present, indicating an acute inpatient setting.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "starling-path",
+          "label": "Trace the pressure pathway",
+          "prompt": "Trace the pathophysiology from elevated left-sided filling pressure to alveolar edema.",
+          "cachedAnswer": "When the left ventricle fails or becomes noncompliant, left ventricular end-diastolic pressure rises and is transmitted backward to the left atrium and then to the pulmonary veins and capillaries. Elevated pulmonary capillary hydrostatic pressure shifts the Starling balance so that filtration exceeds reabsorption and lymphatic clearance. Fluid first accumulates in the interstitium (interstitial edema), producing septal thickening and peribronchial cuffing, and once interstitial and lymphatic capacity is overwhelmed, fluid spills into alveoli (alveolar edema). Alveolar flooding impairs gas exchange, causing hypoxemia and the sensation of dyspnea, and frothy protein-poor fluid can be expectorated as pink sputum. The enlarged heart reflects chronic remodeling or acute dilation of the failing ventricle.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cardiogenic-vs-not",
+          "label": "Cardiogenic vs non-cardiogenic?",
+          "prompt": "What features help distinguish cardiogenic from non-cardiogenic pulmonary edema on imaging?",
+          "cachedAnswer": "Cardiogenic (hydrostatic) edema classically shows cardiomegaly, a central/perihilar 'bat-wing' distribution, vascular redistribution to the upper zones, Kerley B lines, peribronchial cuffing, and often pleural effusions. Non-cardiogenic edema, such as ARDS from increased capillary permeability, tends to show a more peripheral, patchy distribution with a normal-sized heart and typically lacks septal lines and effusions. In this case the enlarged heart plus central symmetric opacity and the clinical story of orthopnea and frothy sputum favor a cardiogenic mechanism. Understanding this distinction matters because the underlying physiology — pressure overload versus membrane leak — differs fundamentally. Correlating imaging with the clinical picture is essential rather than relying on the film alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 68-year-old man presents with acute dyspnea, orthopnea, and pink frothy sputum; the AP chest radiograph shows cardiomegaly with diffuse bilateral perihilar airspace opacity and indwelling support lines. This constellation is a classic picture of acute decompensated heart failure with pulmonary edema. Your task is to integrate the vignette with the imaging to reason about severity and next steps without offering patient-specific advice. Consider what bedside and radiographic features escalate your concern. Given the presentation, how would you frame the initial clinical reasoning and prioritization?",
+      "introQuestions": [
+        {
+          "id": "read-the-film",
+          "label": "How do I read this film?",
+          "prompt": "Walk through a structured read of this chest radiograph in the clinical context.",
+          "cachedAnswer": "Start with technique and lines: this is an AP portable film with several catheters and monitoring devices, implying an acutely ill, monitored patient. The cardiac silhouette is enlarged, though AP projection magnifies the heart, so interpret cardiomegaly with that caveat. The lungs show bilateral, symmetric perihilar haze consistent with pulmonary edema, and you should look for supporting signs — vascular cephalization, septal (Kerley) lines, peribronchial cuffing, and blunted costophrenic angles suggesting effusions. Pair this with the vignette of orthopnea and pink frothy sputum, which strongly supports cardiogenic edema over alternatives like pneumonia or ARDS. A structured read plus clinical correlation is what separates pattern recognition from anchoring.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What's the differential?",
+          "prompt": "What is the differential diagnosis for this presentation and imaging?",
+          "cachedAnswer": "The leading consideration is acute decompensated heart failure causing cardiogenic pulmonary edema, given cardiomegaly, central edema pattern, orthopnea, and frothy sputum. Alternatives to weigh include non-cardiogenic pulmonary edema/ARDS (typically peripheral pattern, normal heart size, permeability-driven), multifocal pneumonia (asymmetric consolidation, fever, focal signs), and diffuse alveolar hemorrhage (hemoptysis, dropping hematocrit). Fluid overload from renal failure can produce a similar hydrostatic picture and should be considered. Distinguishing these relies on history, exam, labs (e.g., natriuretic peptides, renal function), and sometimes echocardiography rather than the radiograph alone. The clinical gestalt here strongly favors a cardiogenic process, but keeping the differential open prevents premature closure.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "severity-framing",
+          "label": "How do I gauge severity?",
+          "prompt": "How would you discuss severity using the image and vignette together, in general educational terms?",
+          "cachedAnswer": "Severity is judged by integrating symptoms, work of breathing, oxygenation, and imaging extent rather than any single finding. Concerning features in this teaching scenario include inability to lie flat and pink frothy sputum, both suggesting substantial alveolar flooding, alongside diffuse bilateral opacity on the film. The presence of monitoring lines implies the team already recognizes acuity. In general terms, clinicians categorize decompensated heart failure by perfusion and congestion ('wet/dry, warm/cold') and by respiratory compromise, escalating support accordingly. This is meant as conceptual framing for learning; actual management decisions require real-time assessment by the treating team and are outside the scope of this educational case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "AP portable chest radiograph in a 68-year-old man with acute dyspnea, orthopnea, and pink frothy sputum: cardiomegaly, bilateral perihilar/central airspace opacity, and several indwelling lines and monitoring leads. The gestalt is acute cardiogenic pulmonary edema, and the film supports elevated left-sided filling pressures. Anticipate the interpretive pitfalls of portable AP technique and the value of serial comparison. Consider how you would confirm line positions and grade congestion. How would you structure a concise, guideline-aware read and identify what could mislead you here?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Key findings and line check",
+          "prompt": "Summarize the salient findings, including support hardware, and note what to verify.",
+          "cachedAnswer": "Salient findings are an enlarged cardiac silhouette with bilateral, symmetric central airspace and interstitial opacity in a perihilar distribution, the expected pattern of hydrostatic pulmonary edema. Ancillary signs to seek include vascular redistribution, indistinct hila, peribronchial cuffing, Kerley B lines, and small pleural effusions with blunted costophrenic angles. Several lines and monitoring leads are present; on any acute film you should confirm the course and tip position of central venous or other catheters and exclude complications such as malposition or pneumothorax. AP magnification limits cardiothoracic ratio reliability, so avoid overcalling cardiomegaly on portable technique. Serial comparison is often more informative than a single frame for trending congestion.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pressure-correlation",
+          "label": "Radiographic-hemodynamic link",
+          "prompt": "How do the radiographic findings correlate with left-sided filling pressures and edema stages?",
+          "cachedAnswer": "There is a rough radiographic-hemodynamic correlation with rising pulmonary capillary wedge pressure: cephalization/redistribution appears at mildly elevated pressures, interstitial edema (septal lines, peribronchial cuffing) at moderate elevation, and frank alveolar edema at higher pressures. This film's diffuse alveolar-pattern opacity implies significant elevation of left atrial and pulmonary venous pressure transmitted from a failing or noncompliant left ventricle. Keep in mind the correlation is imperfect and lags clinical status by hours, and prior chronic changes or lung disease can blunt or distort the appearance. Cardiomegaly favors a chronic cardiac substrate, though acute mitral pathology can produce edema without a large heart. Integrating natriuretic peptides and echocardiography refines the hemodynamic picture beyond the plain film.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls-mimics",
+          "label": "Pitfalls and mimics",
+          "prompt": "What interpretive pitfalls and mimics should you keep in mind for this presentation?",
+          "cachedAnswer": "Common pitfalls include over-reading cardiomegaly on AP portable projection, mistaking dependent or gravitational atelectasis for edema, and attributing asymmetric edema (which can occur with positioning or mitral regurgitation jets) to pneumonia. Mimics of a bilateral central opacity pattern include ARDS/non-cardiogenic edema (usually peripheral, normal heart, permeability-driven), diffuse alveolar hemorrhage, multifocal pneumonia, and even pulmonary alveolar processes. Renal failure and volume overload can reproduce the hydrostatic pattern without primary cardiac dysfunction. Always confirm hardware positions and exclude iatrogenic complications on the same film. Ultimately, correlate with exam, labs, and echocardiography rather than committing to a diagnosis on imaging alone, and use guideline-based congestion assessment as a framework for teaching.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

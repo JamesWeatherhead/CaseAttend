@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "derm-bcc",
+  "lessonPlanSha256": "7d7c8ba45a4b84abf64bd7e7d224862347b57a46153d422a5236faaa170840ad",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "e2c05822cacefb144e53fe51427d8235e3b662d705a11631e482951efafdb5d5",
+    "generatedAt": "2026-08-13T14:32:39.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a close-up photo of a bump on an older man's nose. He has spent many years in the sun, and the bump is shiny, slightly raised, and has a small sore spot in the middle that sometimes bleeds. You can also see tiny thread-like red lines on its surface, which are small blood vessels. Doctors pay close attention to skin spots that slowly change over time, especially in sun-exposed areas.\n\nWhat features of this bump would make you want to show it to a doctor?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What does this bump look like?",
+          "prompt": "What do I actually see in this photo of the nose bump?",
+          "cachedAnswer": "You see a small, raised, shiny bump on the side of the nose. In the middle there is a dip or little sore that looks red and raw, like it has been scraped. Around and on the bump are tiny thread-like red lines, which are small blood vessels near the skin surface. The surrounding skin looks weathered and a bit pink, which can happen after years of sun exposure. This is exactly the kind of skin spot people are taught to notice: shiny, slow to heal, and it bleeds now and then.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-sun",
+          "label": "Why does sun matter for skin?",
+          "prompt": "Why does spending lots of time in the sun matter for skin bumps like this?",
+          "cachedAnswer": "Sunlight contains invisible rays called UV (ultraviolet) light. Over many years, these rays can damage the tiny instruction manuals (DNA) inside skin cells. When that damage builds up, some cells can start growing when they should not, forming a lump. This is why sun-exposed areas like the nose, ears, and face are common places for skin growths in older people. Protecting skin with sunscreen, hats, and shade helps lower the risk.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What should someone do about it?",
+          "prompt": "If someone had a shiny bump like this that bleeds, what should they do?",
+          "cachedAnswer": "The safest step is to have a doctor, usually a skin doctor called a dermatologist, take a look at it. A spot that is shiny, slowly growing, and bleeds now and then is worth checking, even if it does not hurt. The doctor might take a tiny sample of the skin to look at under a microscope. Trying to pop it or scrape it off at home is not a good idea. Catching skin problems early usually makes them much easier to treat.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This clinical photograph shows a raised lesion on the side of the nose of an older adult with a history of long-term sun exposure. The lesion appears pearly and slightly translucent, with a central dip that is red and crusted, and you can see fine branching blood vessels across its surface. The surrounding skin shows signs of chronic sun damage. Features like these are important clues that biology students learn to recognize when studying how UV light affects skin over time.\n\nWhich visible features here suggest this lesion has been growing slowly rather than appearing suddenly?",
+      "introQuestions": [
+        {
+          "id": "describe-features",
+          "label": "Describe the visible features",
+          "prompt": "What are the key visible features of this nasal lesion?",
+          "cachedAnswer": "The lesion is a raised, dome-shaped bump with a shiny, pearly, somewhat see-through (translucent) surface. In the center there is an ulcerated area, meaning the skin has broken down, leaving a red, crusted crater that explains the reported bleeding. Fine, branching surface blood vessels (called telangiectasias) run across the bump. The edges look slightly rolled and raised compared to the center. All of this sits on skin that appears weathered from years of sun exposure.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "uv-mechanism",
+          "label": "How does UV light damage skin?",
+          "prompt": "How does chronic UV exposure lead to abnormal skin growths?",
+          "cachedAnswer": "UV light, especially UVB, is absorbed by DNA in skin cells and creates specific errors in the genetic code. Normally cells repair this damage or destroy themselves if the damage is too great. Over decades, repeated exposure overwhelms these repair systems, and mutations accumulate in genes that control cell growth. When growth-controlling pathways are disrupted, certain skin cells can multiply slowly and form a lump. This is why sun-exposed sites like the nose are common locations, and why lifetime UV dose matters so much.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-bleed",
+          "label": "Why does it bleed?",
+          "prompt": "Why would a slow-growing lesion like this bleed occasionally?",
+          "cachedAnswer": "The lesion has many fragile new blood vessels near its surface, which you can see as the fine red lines crossing it. These vessels are delicate and can break with minor trauma like washing the face or drying with a towel. The lesion also has a central ulcer where the protective top layer of skin has worn away, exposing tissue underneath. Together, fragile vessels plus a broken surface make occasional bleeding common. A sore that repeatedly bleeds and does not fully heal is a feature worth medical evaluation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This is a close clinical photograph of a nodular lesion on the nasal sidewall of a 72-year-old man with chronic actinic exposure. Note the pearly, translucent papule with rolled borders, central ulceration with crust, and prominent arborizing telangiectasias overlying the surface. The background skin shows features of photodamage. These morphologic features are classic teaching points for a common UV-associated cutaneous neoplasm.\n\nBased on the surface vasculature and border morphology, what pathophysiologic process would you expect at the tissue level?",
+      "introQuestions": [
+        {
+          "id": "morphology",
+          "label": "Characterize the lesion morphology",
+          "prompt": "Describe this lesion's morphology, border, surface, and vessels in precise terms.",
+          "cachedAnswer": "This is a nodular lesion with a pearly, translucent (waxy) quality and a raised, rolled border. The center demonstrates ulceration with overlying serosanguineous crust, correlating with the history of intermittent bleeding. Arborizing (tree-branching) telangiectasias are visible coursing over the surface, a hallmark superficial vascular pattern. The surrounding skin shows actinic changes consistent with chronic photodamage. The combination of a pearly papule, rolled edge, central ulceration, and arborizing vessels on a sun-exposed nasal site is the textbook description of nodular basal cell carcinoma.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "histo-mechanism",
+          "label": "Underlying pathophysiology",
+          "prompt": "What is the pathophysiology and expected histology of this lesion type?",
+          "cachedAnswer": "Chronic UVB exposure induces characteristic pyrimidine-dimer mutations, and in basal cell carcinoma the key driver is dysregulation of the Hedgehog signaling pathway, often via loss-of-function mutations in PTCH1 or activating mutations in SMO. This leads to unchecked proliferation of basaloid keratinocytes derived from the basal layer or follicular epithelium. Histologically you expect nests of basaloid cells with peripheral palisading, retraction (clefting) artifact between tumor nests and stroma, and a mucinous stroma. The prominent surface telangiectasias reflect tumor-associated angiogenesis. This tumor is locally invasive but rarely metastasizes.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Focused differential",
+          "prompt": "What is a focused differential for a pearly ulcerated nasal nodule?",
+          "cachedAnswer": "The leading consideration is nodular basal cell carcinoma given the pearly border, central ulceration, and arborizing vessels on chronically sun-exposed skin. Squamous cell carcinoma is a key alternative but tends to be more hyperkeratotic, indurated, and tender. Amelanotic melanoma must always be considered for any nonhealing nodule and can mimic BCC. Benign entities like sebaceous hyperplasia (yellow lobules with a central dell) or an intradermal nevus can appear as flesh-colored papules but usually lack ulceration and arborizing vessels. Merkel cell carcinoma is rarer but also a fast-growing UV-associated nodule to keep in mind.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 72-year-old man with significant cumulative sun exposure presents with a slowly enlarging, shiny nasal lesion that occasionally bleeds. On exam there is a pearly nodule on the nasal sidewall with a rolled border, central ulceration, and arborizing telangiectasias. This presentation and location are high-yield for clinical reasoning about diagnosis, biopsy, and site-specific management.\n\nHow would the location on the nose change your management approach compared with the same lesion on the trunk?",
+      "introQuestions": [
+        {
+          "id": "exam-description",
+          "label": "Frame the exam findings",
+          "prompt": "How would you document this lesion and its concerning features in a clinical note?",
+          "cachedAnswer": "You would document a solitary pearly, translucent nodule on the left nasal sidewall with a rolled, well-defined border, central ulceration with hemorrhagic crust, and overlying arborizing telangiectasias, on a background of actinic damage. The history of slow growth with intermittent bleeding and failure to heal is clinically important. You should note approximate size, whether it is fixed or mobile, and any tenderness. Given the high-risk anatomic location (central face/H-zone), documenting these features supports the need for tissue diagnosis and careful surgical planning. This constellation is classic for nodular basal cell carcinoma.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential-workup",
+          "label": "Differential and diagnosis",
+          "prompt": "What is your differential and how would you confirm the diagnosis?",
+          "cachedAnswer": "The top differential is nodular basal cell carcinoma; also consider squamous cell carcinoma, amelanotic melanoma, sebaceous hyperplasia, and adnexal tumors. Dermoscopy can support BCC by revealing arborizing vessels, blue-gray ovoid nests, and absence of a pigment network, but definitive diagnosis requires histology. A shave or punch biopsy of the lesion establishes tissue diagnosis and, importantly, the histologic subtype (nodular versus infiltrative/morpheaform), which drives treatment. Because the lesion is on the central face, subtype and margin behavior matter for planning. Any nonhealing, bleeding facial nodule warrants biopsy rather than watchful waiting.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Management principles",
+          "prompt": "What are the management principles for a lesion like this on the nose?",
+          "cachedAnswer": "Management depends on confirmed diagnosis, subtype, and location. For a biopsy-proven BCC on the nose (a high-risk, cosmetically sensitive H-zone site), Mohs micrographic surgery is often preferred because it offers the highest cure rate while sparing maximal tissue for reconstruction. Standard surgical excision with defined margins is an alternative for lower-risk lesions. Non-surgical options such as topical agents or curettage are generally reserved for superficial, low-risk lesions and are less appropriate for an ulcerated nodular facial lesion. Radiation may be considered when surgery is contraindicated, and hedgehog-pathway inhibitors are reserved for locally advanced or metastatic disease. Counseling on sun protection and skin surveillance is essential.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "72M, chronic actinic damage, presents with a pearly nodule on the nasal sidewall showing rolled borders, central ulceration, and arborizing telangiectasias, with intermittent bleeding. This is a prototypical nodular BCC in a high-risk anatomic zone. The teaching focus is subtype recognition, dermoscopic correlation, and tissue-sparing management with attention to guideline-based risk stratification.\n\nWhat features here would push you toward Mohs over standard excision, and what pitfalls would you watch for in subtyping?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Pattern recognition and dermoscopy",
+          "prompt": "What clinical and dermoscopic features anchor this as nodular BCC, and what mimics should you exclude?",
+          "cachedAnswer": "Clinically: a pearly, translucent nodule with rolled telangiectatic borders and central ulceration on chronically photodamaged nasal skin—textbook nodular BCC. Dermoscopy typically shows arborizing (branching) vessels, blue-gray ovoid nests, spoke-wheel or leaf-like structures, and ulceration, with absence of a pigment network. Exclude amelanotic melanoma (atypical vessels, regression, chaotic pattern), SCC (keratin, hairpin/glomerular vessels, more induration), Merkel cell carcinoma, and adnexal neoplasms. Sebaceous hyperplasia shows crown vessels that do not cross the midline and central umbilication. The nonhealing ulcerated nodule should not be dismissed as benign without histology.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "subtype-pitfalls",
+          "label": "Biopsy and subtyping pitfalls",
+          "prompt": "How does histologic subtyping guide management, and what are the biopsy pitfalls?",
+          "cachedAnswer": "Subtype is prognostically critical: nodular and superficial are low-risk patterns, whereas infiltrative, micronodular, morpheaform, and basosquamous are high-risk with higher recurrence and subclinical extension. A pitfall is sampling error—a superficial shave may capture only a nodular component and miss a deeper aggressive pattern, so an adequately deep biopsy and clinicopathologic correlation matter. Perineural invasion and mixed histology should be actively sought and reported. Because this lesion is central-face (H-zone), any high-risk subtype further supports margin-controlled surgery. Documenting subtype directly informs whether Mohs versus standard excision is appropriate.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "tissue-sparing",
+          "label": "Tissue-sparing management",
+          "prompt": "Compare tissue-sparing and other treatment options for a high-risk nasal BCC.",
+          "cachedAnswer": "For a biopsy-proven BCC in the H-zone, Mohs micrographic surgery is first-line per NCCN high-risk criteria: complete margin assessment maximizes cure (~99% for primary tumors) while sparing tissue for reconstruction on a cosmetically and functionally demanding site like the nose. Standard excision with 4 mm margins is reasonable only for low-risk, well-defined lesions, but is less ideal here. Electrodessication and curettage and topical therapies (imiquimod, 5-FU) are reserved for low-risk superficial lesions, not an ulcerated nodular facial tumor. Radiation is an option for nonsurgical candidates. Hedgehog inhibitors (vismodegib, sonidegib) are reserved for locally advanced or metastatic BCC or when surgery/RT are unsuitable. Reinforce sun protection and structured skin surveillance given field cancerization risk.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

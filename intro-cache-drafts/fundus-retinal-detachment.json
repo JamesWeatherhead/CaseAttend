@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "fundus-retinal-detachment",
+  "lessonPlanSha256": "715051ab6bbdb93f10ad6b70361bf7a81502e9295b83aceca81ca485e4f9e5fe",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "b31aee8f6c3ffa4a315db7c5bba7b987057cff46f44b6449790c23b7ed818d6b",
+    "generatedAt": "2026-08-13T15:07:13.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a close-up photo of the inside of a person's eye. The story is about a young adult who suddenly saw flashes of light and felt like a curtain was sliding across the edge of their vision. In the picture you can see the back layer of the eye looks raised and wrinkled, with reddish blood vessels crossing over it. This kind of change can be a real eye emergency. What do you think it might mean when part of the eye's back wall lifts up like a wave?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at in this eye photo?",
+          "prompt": "What am I looking at in this eye photo, in simple terms?",
+          "cachedAnswer": "You are looking at the inside of an eye, photographed through the round black opening called the pupil. The back inner wall of the eye is covered by a thin layer called the retina, which works like the film in an old camera, catching light so you can see. In this image, part of that layer looks lifted, bulging, and wrinkled instead of smooth and flat. The thin red lines are tiny blood vessels, and there are bright reflections from the camera flash. When the retina peels away from the wall behind it, it can no longer do its job well.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-flashes-curtain",
+          "label": "Why flashes and a curtain in vision?",
+          "prompt": "Why would someone see flashes of light and a curtain moving across their vision?",
+          "cachedAnswer": "The retina does not feel pain, but when it gets tugged or pulled it can misfire and send the brain a signal that looks like a flash of light. Think of it like a doorbell that rings when it is bumped, even though no one pushed the button. When the retina lifts away from the wall, the lifted part stops sending picture signals, so that area of vision goes dark or gray. Because the lifting often starts at the edge and spreads, the dark area can feel like a curtain slowly sliding across the view. That spreading curtain is a warning sign to get help fast.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-to-do",
+          "label": "What should this person do next?",
+          "prompt": "If someone has these symptoms, what should they do and why does it matter?",
+          "cachedAnswer": "Sudden flashes, lots of new floaty specks, or a curtain across the vision should be treated as an emergency, meaning the person should be seen by an eye doctor right away rather than waiting. The faster the retina is put back in place, the better the chance of saving good vision. The case also mentions a family history of certain tumors, which is a hint that doctors might check other body parts too, like the brain and kidneys, not just the eye. This shows how one clue in the eye can lead doctors to look at the whole body. Being curious and asking questions is exactly how good medical thinking works.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This color fundus photograph shows the interior back surface of the eye seen through the pupil. Notice the elevated, billowing region of tissue and the delicate network of blood vessels running across it, along with bright flash reflections. The retina is the light-sensing layer lining the back of the eye, and normally it lies flat against the underlying tissue. A young adult in this case reports flashes and a curtain-like loss of peripheral vision, plus a family history of retinal and nervous-system tumors. Based on the appearance, what might be happening to the retinal layer here?",
+      "introQuestions": [
+        {
+          "id": "visible-findings",
+          "label": "What features stand out in this image?",
+          "prompt": "What anatomical features and abnormalities can I identify in this fundus photograph?",
+          "cachedAnswer": "You are viewing the fundus, the interior back wall of the eye, through the pupil. The most striking feature is an elevated, folded area of tissue that appears raised rather than smoothly flat, which suggests the retina has lifted off the wall behind it. Thin branching red lines are retinal blood vessels, and the yellowish and reddish patches may represent underlying tissue and small hemorrhage. The bright white spots are reflections of the camera flash and are not part of the eye. Compared to a normal fundus, which looks like a smooth, evenly colored curved surface, this one shows disruption of that smooth architecture.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-vision-works",
+          "label": "How does retinal lifting affect vision?",
+          "prompt": "How does the retina normally work, and why does lifting it away cause vision loss?",
+          "cachedAnswer": "The retina contains photoreceptor cells that convert incoming light into electrical signals, which travel to the brain to form images. These photoreceptors depend on the layer directly beneath them for oxygen and nutrients, since that layer sits against the eye's blood supply. When the retina separates from that supporting layer, the photoreceptors lose their support and stop signaling properly, so that part of the visual field goes dark. Mechanical tugging on the retina can also stimulate photoreceptors abnormally, producing the sensation of flashes. This is why a detachment produces both flashes and a spreading area of missing vision.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "family-history-link",
+          "label": "Why does family history matter here?",
+          "prompt": "Why is a family history of retinal and nervous system tumors relevant to this eye finding?",
+          "cachedAnswer": "Some inherited conditions can cause both eye problems and tumors in other organs, because a single gene change affects multiple tissues throughout the body. A family history of retinal and central-nervous-system tumors is a clue that the eye finding might be one part of a larger, body-wide pattern. In that situation, doctors do not just treat the eye; they also screen organs like the brain, kidneys, and adrenal glands for related growths. This is a good example of how genetics links seemingly unrelated body parts. Recognizing the pattern early can help catch other problems before they cause harm.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This fundus photograph demonstrates an elevated, billowing segment of retina with overlying vasculature and areas of reddish and yellowish discoloration. The retina normally adheres to the retinal pigment epithelium (RPE), which itself rests on Bruch membrane and the choroid. In this case, a young adult presents with photopsias and a progressive curtain-like peripheral field deficit, with a family history of retinal and CNS tumors. Consider the layered microanatomy of the posterior eye as you interpret this image. Which anatomical plane of separation would explain both the elevated appearance and the clinical symptoms?",
+      "introQuestions": [
+        {
+          "id": "identify-pathology",
+          "label": "What pathology does this image suggest?",
+          "prompt": "Based on the visible elevated retina, what pathologic process should I recognize, and what layers are involved?",
+          "cachedAnswer": "The elevated, billowing appearance of the retina is consistent with retinal detachment, a separation of the neurosensory retina from the underlying retinal pigment epithelium. The potential space that reopens here is the embryologic subretinal space, between photoreceptor outer segments and the RPE. The overlying retinal vessels remain with the elevated neurosensory retina, which is why they appear draped over the raised tissue. Reddish areas may reflect associated hemorrhage, and the loss of the normal flat, uniform fundus contour signals disruption of retinal architecture. Photoreceptors deprived of RPE support and choroidal oxygen begin to lose function, correlating with the visual field deficit.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mechanism-symptoms",
+          "label": "Mechanism of photopsias and field loss",
+          "prompt": "What is the pathophysiologic mechanism behind photopsias and a curtain-like field deficit in retinal detachment?",
+          "cachedAnswer": "Photopsias arise from mechanical traction on the retina, often from the vitreous pulling on the retinal surface, which depolarizes photoreceptors and is perceived as flashes of light. Floaters may accompany this when the vitreous separates or when blood or pigment cells enter the vitreous cavity. As subretinal fluid accumulates and the detachment extends, the corresponding retinotopic region stops transmitting signals, producing a scotoma. Because the visual field is inverted and reversed relative to retinal position, a detachment advancing from one region produces a curtain seeming to close from the opposite side of the field. The progression of that curtain reflects the spreading plane of retinal separation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "syndromic-context",
+          "label": "Syndromic and multisystem context",
+          "prompt": "How does a hereditary syndrome tie retinal findings to CNS, renal, and adrenal surveillance?",
+          "cachedAnswer": "The teaching context pairs a retinal finding with a family history of retinal and CNS tumors, which is the classic teaching pattern for von Hippel-Lindau disease, an autosomal dominant tumor suppressor syndrome. Loss of VHL function leads to stabilization of hypoxia-inducible factors and increased angiogenic drive, promoting highly vascular lesions. Characteristic manifestations include retinal capillary hemangioblastomas, CNS (especially cerebellar and spinal) hemangioblastomas, clear cell renal cell carcinoma, pheochromocytoma, and pancreatic lesions. Retinal hemangioblastomas can exude fluid and precipitate exudative retinal detachment, linking the eye finding to the broader syndrome. This is why one retinal clue triggers multisystem surveillance of retina, brain, kidney, and adrenal. Note that this source label requires specialist adjudication before any clinical use.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A young adult presents with photopsias and a progressive curtain-like peripheral field deficit; this fundus image shows an elevated, billowing retina with draped vessels and areas of hemorrhage. The added detail is a family history of retinal and CNS tumors, prompting consideration of a hereditary tumor syndrome. Your task is to recognize the time-critical eye emergency while also framing the multisystem workup this history demands. Consider both the acute ophthalmologic triage and the broader surveillance implications. How would you prioritize evaluation and referral for this patient?",
+      "introQuestions": [
+        {
+          "id": "recognize-emergency",
+          "label": "Recognizing and triaging the emergency",
+          "prompt": "How do I recognize retinal detachment clinically, and why is this an emergency requiring urgent referral?",
+          "cachedAnswer": "The classic history of new flashes, a shower of floaters, and a progressive curtain or shadow crossing the peripheral field strongly suggests a rhegmatogenous or exudative retinal detachment. On fundus exam or photography, the detached retina appears elevated, corrugated, and billowing, often with overlying vessels and sometimes hemorrhage, as seen here. The key clinical priority is whether the macula is still attached (macula-on) versus detached (macula-off), because macula-on detachments warrant emergent same-day surgical referral to preserve central vision. Any acute detachment or high suspicion for one requires urgent ophthalmology evaluation, ideally within hours to a day. Delay risks irreversible photoreceptor loss and permanent vision deficit.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Differential for the elevated retina",
+          "prompt": "What is the differential diagnosis for an elevated retinal lesion or detachment in a young adult with this history?",
+          "cachedAnswer": "The differential for an elevated retina includes rhegmatogenous retinal detachment (retinal break with subretinal fluid), tractional detachment (fibrovascular traction, as in proliferative retinopathy), and exudative/serous detachment (leakage from a vascular or inflammatory lesion). In a young adult with a family history of retinal and CNS tumors, a retinal capillary hemangioblastoma causing exudation and secondary detachment moves high on the list and points toward von Hippel-Lindau disease. Other considerations include Coats disease, posterior uveitis, and choroidal mass lesions. Distinguishing exudative from rhegmatogenous detachment matters because management differs substantially. Look for a feeder vessel, an orange-red tumor nodule, and shifting subretinal fluid as clues to an exudative etiology.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "multisystem-workup",
+          "label": "Multisystem surveillance plan",
+          "prompt": "Given the family history, what multisystem workup and surveillance would you initiate?",
+          "cachedAnswer": "The combination of a retinal lesion and a family history of retinal and CNS tumors should prompt evaluation for von Hippel-Lindau disease, ideally with genetics referral and germline VHL testing. Surveillance principles include dilated retinal exams, MRI of the brain and spine for hemangioblastomas, abdominal imaging of the kidneys and pancreas, and screening for pheochromocytoma with plasma or urinary metanephrines. Because manifestations emerge across the lifespan, affected and at-risk relatives enter age-based surveillance protocols. Care is best coordinated in a multidisciplinary setting including ophthalmology, neurosurgery, urology, and endocrinology. Importantly, this teaching case's source label is not adjudicated ground truth and requires specialist confirmation before clinical application.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This fundus image shows an elevated, billowing retina with draped vasculature and subretinal/intraretinal hemorrhage, in a young adult presenting with photopsias and a progressive peripheral curtain. The stated context adds a family history of retinal and CNS tumors, raising the phakomatosis question—teaching label suggests VHL-associated detachment, though it is unadjudicated. Your job is to integrate emergent detachment triage with syndromic surveillance and to avoid anchoring pitfalls. Consider mechanism (rhegmatogenous vs tractional vs exudative), macula status, and the genetics-driven workup. How would you structure your assessment and disposition?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Read the fundus and characterize the RD",
+          "prompt": "How do I characterize the detachment mechanism and macular status from this image and history, and what pitfalls apply?",
+          "cachedAnswer": "The corrugated, elevated retina with overlying vessels indicates a detachment; the task is to classify it as rhegmatogenous, tractional, or exudative. A young patient with a hereditary tumor history and possible retinal capillary hemangioblastoma should raise suspicion for exudative detachment from an angiomatous lesion, characterized by shifting subretinal fluid, a smooth convex configuration, and a feeder artery–draining vein pair leading to an orange-red nodule. Pitfalls include anchoring on rhegmatogenous RD and missing the causative hemangioblastoma, and mislabeling exudative fluid as a break-related detachment, which would misdirect management. Determine macula-on versus macula-off status, since macula-on lesions drive urgency of surgical timing. Wide-field imaging, OCT, and fluorescein angiography help characterize the lesion and fluid. Correlate with IOP, RAPD, and peripheral break search.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-timing",
+          "label": "Management and referral timing",
+          "prompt": "What are the management principles and timing considerations for this detachment, including lesion-directed therapy?",
+          "cachedAnswer": "Management depends on mechanism: rhegmatogenous detachments require prompt surgical repair (pneumatic retinopexy, scleral buckle, or vitrectomy), with macula-on cases favored for expedited intervention to protect central acuity. If the detachment is exudative from a retinal capillary hemangioblastoma, therapy targets the lesion—laser photocoagulation for small peripheral tumors, cryotherapy, photodynamic therapy, anti-VEGF, or plaque radiotherapy for larger or juxtapapillary lesions—with the goal of arresting exudation and reattaching the retina. Timing is urgent, and vitreoretinal referral should not be delayed. Larger or posterior lesions carry higher complication risk and often require subspecialty tumor expertise. Document baseline acuity and fields, and counsel on prognosis tied to macular involvement and lesion location.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vhl-surveillance",
+          "label": "VHL genetics and surveillance strategy",
+          "prompt": "How should I approach VHL genetic evaluation and multisystem surveillance, and what caveats apply to this teaching label?",
+          "cachedAnswer": "A retinal capillary hemangioblastoma with a supportive family history warrants VHL evaluation: germline VHL testing, genetic counseling, and cascade testing of relatives. Guideline-aware surveillance includes serial dilated ophthalmoscopy, contrast MRI of brain and total spine for hemangioblastomas, abdominal MRI for renal cell carcinoma and pancreatic lesions, and biochemical screening (plasma free or fractionated urinary metanephrines) for pheochromocytoma and paraganglioma, with age-based initiation and interval protocols. Multidisciplinary coordination across ophthalmology, neurosurgery, urology, and endocrinology is standard. Pitfalls include failing to screen asymptomatic organs and neglecting at-risk family members. Critically, the source label for this case is not adjudicated ground truth—treat it as a teaching hypothesis and require specialist confirmation before any clinical extrapolation.\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

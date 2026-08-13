@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "ecg-cvp",
+  "lessonPlanSha256": "95bad79610f0070b352f7dd26bd871b3b885ac7596163b9987d40c1330d3df96",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "d4ebf2615e15f88d7d92372b5be4471fec2f6979da039dd25f994bf620c5a842",
+    "generatedAt": "2026-08-13T14:49:29.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This picture shows two wavy lines from a heart monitor stacked on top of each other. The green line on top is the **ECG**, which records the tiny electrical signals that tell the heart to squeeze. The red line on the bottom is the **venous pressure**, which shows the actual pressure of blood in the big vein near the heart as it fills and empties. The white vertical lines connect matching moments in time between the two signals. Looking at both together, can you spot how an electrical signal (the spike) comes just *before* the pressure changes?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "What are the two lines in this heart monitor picture showing?",
+          "cachedAnswer": "The top green line is an **ECG**, which is a recording of the heart's electrical signals, like the spark that fires before an engine turns. The tall spike (labeled R) is the biggest electrical burst, right before the heart's main pumping chambers squeeze. The bottom red line is the **venous pressure**, showing the pressure of blood inside a large vein near the heart as it goes up and down with each heartbeat. The white vertical lines line up matching moments so you can see which electrical event causes which pressure bump. The big number 70 is likely the heart rate, meaning about 70 beats per minute. This is a teaching diagram, not a report about a real sick person.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "electric-before-squeeze",
+          "label": "Why does the spike come first?",
+          "prompt": "Why does the electrical spike happen before the pressure changes?",
+          "cachedAnswer": "Think of the electrical signal as the light switch and the muscle squeeze as the light turning on. The electricity has to fire *first*, and then the heart muscle responds a tiny fraction of a second later. So on the picture, the electrical spike on the green line comes just before the matching bump on the red pressure line. This tiny delay is normal and happens because it takes a moment for muscle to react to a signal. That is the whole idea of showing both lines together: you can see cause (electricity) and effect (pressure) side by side.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-two-signals",
+          "label": "Why show two lines at once?",
+          "prompt": "Why is it helpful to look at both signals at the same time?",
+          "cachedAnswer": "Using two signals together is like watching both the lightning and hearing the thunder to understand a storm. The ECG tells you *when* the electrical command happens, and the pressure line tells you *what the heart muscle actually did* in response. If the electricity fires but the pressure bump doesn't follow the way it should, that mismatch is a clue that something isn't working smoothly. One line alone can't show you that timing story. That is why doctors sometimes line up several monitor signals at once.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a paired physiology tracing: the green **ECG** on top records the heart's electrical activity, and the red **central venous pressure (CVP)** waveform on the bottom shows pressure changes in a large central vein. The ECG is labeled with P, Q, R, S, and T, while the CVP curve is labeled with its characteristic **a, c, v** peaks and **x, y** descents. Thin white lines connect electrical events to their mechanical consequences. The core idea is that electrical events *trigger* mechanical events a moment later. Which electrical wave do you think produces the venous **a** wave, and why?",
+      "introQuestions": [
+        {
+          "id": "identify-waves",
+          "label": "What are the a, c, and v waves?",
+          "prompt": "What do the a, c, and v waves on the venous pressure tracing represent?",
+          "cachedAnswer": "The **a wave** is a small rise in venous pressure caused by the right atrium contracting and pushing back against the vein. The **c wave** is a tiny bump that happens as the ventricle begins to contract and bulges the closed tricuspid valve slightly upward into the atrium. The **v wave** is a rise caused by blood returning and filling the atrium while the tricuspid valve is still closed. Between them, the **x descent** reflects the atrium relaxing and the valve pulling downward, and the **y descent** happens when the valve opens and blood empties into the ventricle. Together these form the classic venous pressure pattern seen on the red line. The white alignment lines help you match each of these to the electrical events above.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "p-to-a-link",
+          "label": "How does the P wave link to the a wave?",
+          "prompt": "How does the electrical P wave relate to the venous a wave?",
+          "cachedAnswer": "The **P wave** on the ECG represents the electrical signal spreading across the atria, which is the trigger for atrial muscle to contract. A short moment after that electrical signal, the atrium actually squeezes, which raises pressure in the vein and produces the **a wave**. So the sequence is: electrical P wave first, then mechanical atrial contraction, then the a wave shows up on the pressure line. This built-in delay between the electrical command and the mechanical response is a general rule in the heart. Seeing the two tracings aligned makes this cause-and-effect relationship visible.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "electrical-vs-mechanical",
+          "label": "Electrical vs mechanical events",
+          "prompt": "What is the difference between an electrical event and a mechanical event here?",
+          "cachedAnswer": "An **electrical event** is a change in the heart's voltage, like the P wave or the QRS complex, and it represents the signal telling muscle to act. A **mechanical event** is the actual physical response, such as a chamber contracting or a valve moving, which shows up as a pressure change on the venous waveform. The ECG shows only electrical events; the CVP shows only mechanical events. This distinction matters because the electrical signal always comes first and the mechanical result follows slightly later. Confusing the two would lead you to misjudge timing, so keeping them separate in your mind is a key skill.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This schematic aligns a lead-II style **ECG** (green, with P-QRS-T labeled) against a **central venous pressure (CVP)** waveform (red, with a-c-v peaks and x-y descents). Vertical fiducial lines map each electrical event to its mechanical consequence in the right atrium and ventricle. The learning point is the physiologic delay of excitation-contraction coupling: depolarization precedes the pressure event it drives. Trace each electrical wave to its corresponding jugular/venous deflection and note where the descents fall in the cardiac cycle. Which venous descent corresponds to atrial relaxation, and which to early ventricular filling?",
+      "introQuestions": [
+        {
+          "id": "wave-timing-map",
+          "label": "Map P/QRS/T to a/c/v",
+          "prompt": "Map each ECG wave to its corresponding CVP deflection and explain the timing.",
+          "cachedAnswer": "The **P wave** (atrial depolarization) precedes and triggers atrial systole, producing the **a wave** just after P. The **QRS complex** initiates ventricular systole; as the ventricle contracts, the closed tricuspid valve bulges toward the atrium, generating the **c wave** shortly after QRS. Atrial relaxation and downward valve displacement during ventricular ejection produce the **x descent**. The **v wave** reflects passive atrial filling against a still-closed tricuspid valve during late ventricular systole, roughly around the T wave. Tricuspid opening then yields the **y descent** as the atrium empties in early diastole. Each mechanical event lags its electrical trigger, illustrating excitation-contraction coupling delay.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "ec-coupling",
+          "label": "Why mechanical lags electrical",
+          "prompt": "Why does each mechanical pressure event lag behind its electrical trigger?",
+          "cachedAnswer": "Depolarization on the ECG reflects ion flux across cardiomyocyte membranes, but this only begins the process. **Excitation-contraction coupling** requires the action potential to trigger calcium entry, calcium-induced calcium release from the sarcoplasmic reticulum, and cross-bridge cycling before measurable tension and pressure develop. This introduces a reproducible electromechanical delay of tens of milliseconds. Consequently the a wave follows P, and the c wave follows QRS rather than coinciding with them. Recognizing that the electrical signal is a cause and the pressure deflection is its delayed effect prevents you from misassigning timing. The aligned tracings make this delay directly observable.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "descents-meaning",
+          "label": "What do x and y descents mean?",
+          "prompt": "What physiologic events produce the x and y descents on the venous waveform?",
+          "cachedAnswer": "The **x descent** results from atrial relaxation after the a wave combined with downward (basal) displacement of the tricuspid annulus during ventricular systole, which drops atrial pressure. The **y descent** follows the v wave and represents rapid atrial emptying once the tricuspid valve opens at the start of diastole. Thus x is a systolic-phase event and y is an early-diastolic event. On the aligned tracing, x falls near the ST segment and y falls after the T wave. Changes in these descents carry diagnostic meaning in later clinical study, but here the goal is simply to place them correctly in the cardiac cycle. Correlating them with the ECG anchors your understanding of cycle phases.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "You are shown a synchronized **ECG** and **central venous pressure** display, with fiducial lines aligning P-QRS-T to the a, c, v waves and x, y descents. Reading them together lets you use the ECG as a timing reference to interpret the venous waveform and detect mechanical abnormalities. The instruction is explicitly to look for a **timing mismatch** between electrical and mechanical events. Consider how an abnormal a wave or a lost x descent would change your interpretation. If a large a wave appeared without a preceding P wave, what would that suggest?",
+      "introQuestions": [
+        {
+          "id": "read-together",
+          "label": "Why read ECG and CVP together?",
+          "prompt": "Why does simultaneous display of the ECG and CVP waveform improve interpretation?",
+          "cachedAnswer": "The ECG provides a precise electrical timing reference, so each venous deflection can be assigned confidently to a phase of the cardiac cycle. Without it, an ambiguous CVP bump could be mistaken for an a wave when it is actually a c or v wave. Aligning the tracings lets you detect a **timing mismatch**, where a mechanical event fails to follow its expected electrical trigger, which points toward specific pathologies. For example, cannon a waves that occur without a preceding P wave suggest AV dissociation. The dual display converts a single ambiguous waveform into an interpretable, cycle-anchored signal. This is why bedside monitoring often displays multiple synchronized channels.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "abnormal-a-waves",
+          "label": "What do abnormal a waves suggest?",
+          "prompt": "How do you interpret abnormal a waves using the aligned ECG?",
+          "cachedAnswer": "**Cannon a waves** occur when the atrium contracts against a closed tricuspid valve; using the ECG you can distinguish regular cannon waves (as in AV nodal or junctional rhythm) from irregular ones (complete heart block with AV dissociation). **Absent a waves** in the setting of an irregularly irregular rhythm with no P waves suggest atrial fibrillation, since organized atrial contraction is lost. **Large a waves** with normal sinus timing can reflect increased resistance to atrial emptying, as in tricuspid stenosis or right ventricular hypertrophy/pulmonary hypertension. The key is that the P wave anchors whether an a wave is present, absent, or occurring at the wrong time. That electrical anchor is what makes the venous finding diagnostic rather than merely descriptive.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "schematic-limits",
+          "label": "Limits of a schematic curve",
+          "prompt": "What are the limitations of using this schematic curve for clinical decisions?",
+          "cachedAnswer": "This is an idealized teaching schematic, not a calibrated bedside tracing, so absolute pressure values and waveform morphology should not be read as diagnostic. Real CVP is affected by transducer zeroing, patient position, respiratory variation, PEEP, and catheter tip location, none of which a schematic captures. A single CVP value correlates poorly with intravascular volume and should never be used alone to guide fluid resuscitation. Clinically, waveform interpretation must be integrated with the full picture: echocardiography, physical exam, and dynamic measures of fluid responsiveness. Use this diagram to master timing and morphology, then verify everything against a properly acquired, clinically contextualized waveform. The teaching value is in the electromechanical relationship, not in the specific numbers.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This paired **ECG/CVP** display fiducializes P-QRS-T against a, c, v, x, and y, inviting waveform-based rhythm and hemodynamic inference. The task framing emphasizes hunting for an electromechanical **timing mismatch**, the kind that distinguishes AV dissociation, junctional rhythms, and tricuspid pathology. Treat the ECG as your timing gate and read the venous morphology against it. Given regular cannon a waves versus intermittent cannon a waves, how would your rhythm differential diverge?",
+      "introQuestions": [
+        {
+          "id": "cannon-a-differential",
+          "label": "Regular vs intermittent cannon a waves",
+          "prompt": "How does the pattern of cannon a waves refine the rhythm differential?",
+          "cachedAnswer": "**Regular cannon a waves** on every beat imply consistent atrioventricular contraction against a closed valve, seen in AV junctional/nodal rhythms and some ventricular rhythms with retrograde 1:1 VA conduction. **Intermittent, irregular cannon a waves** indicate variable AV timing, classically complete (third-degree) AV block with AV dissociation, or ventricular tachycardia with intermittent dissociated atrial capture. Correlating the CVP with the ECG lets you confirm whether P waves march independently of QRS. This same reasoning underlies the physical exam sign of variable S1 intensity and irregular cannon waves in the JVP. The venous waveform effectively externalizes the atrial mechanical activity that the surface ECG may obscure. Anchor every cannon wave to its temporal relationship with the P and QRS.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "morphology-pitfalls",
+          "label": "Waveform pattern pitfalls",
+          "prompt": "What morphology patterns and pitfalls should I recognize on the CVP waveform?",
+          "cachedAnswer": "Key patterns: **large a waves** with tricuspid stenosis, RVH, or pulmonary hypertension; **absent a waves** in atrial fibrillation; a prominent **c-v (fused 'cv') wave** with blunted or absent x descent in severe tricuspid regurgitation (ventricularization of the atrial trace); and **exaggerated x and y descents** producing an M or W pattern in constrictive pericarditis, versus a **blunted y descent** in tamponade. A steep, deep y descent also suggests restrictive physiology. Pitfalls include respiratory swing misread as pathology, transducer leveling error, over/underdamping, and mistaking a fused cv wave for a normal v wave. Always confirm the fiducial alignment before assigning morphology. Reading these against the ECG rhythm and clinical context prevents overcalling from the waveform alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "clinical-integration",
+          "label": "Integrating into management",
+          "prompt": "How should venous waveform interpretation be integrated into hemodynamic management?",
+          "cachedAnswer": "Waveform morphology and its ECG timing are qualitative diagnostic clues, not standalone volume metrics; a static CVP number correlates poorly with fluid responsiveness and should not drive resuscitation in isolation. Favor dynamic assessment (pulse pressure or stroke volume variation, passive leg raise, POCUS/echo) alongside waveform interpretation. Use the CVP trace to flag mechanical or rhythm problems, tamponade, constriction, severe TR, or dissociation, then confirm with echocardiography. Remember this teaching schematic is idealized and cannot substitute for a properly zeroed, position-controlled bedside waveform. Guideline-concordant practice integrates the waveform into a multimodal hemodynamic picture rather than treating any single value. The residency-level skill is knowing when the waveform changes management versus when it merely raises a question.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

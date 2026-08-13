@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-giardia",
+  "lessonPlanSha256": "8dc787f6735a57a2d5cacd8171ba322ed86a5f2fe47dd362cddd353e29e8521f",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "7dbdf681c39caf44db93d1abef154ac196912e4efa019554dda29c6b22dd45a3",
+    "generatedAt": "2026-08-13T16:14:11.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This black-and-white picture was taken with a special microscope called a scanning electron microscope, which lets us see tiny living things in 3D. The organism looks like a teardrop or a kite, with a smooth rounded top, a dented middle, and several thin whip-like tails hanging off the bottom. In this teaching case, a hiker got sick with diarrhea and bloating after drinking from a stream that hadn't been cleaned or filtered. Scientists think this teardrop-shaped germ might be the cause. **Looking at the shape and those tail-like structures, what do you think this organism might use them for?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at?",
+          "prompt": "Describe what is visible in this microscope image in simple terms.",
+          "cachedAnswer": "You are looking at a single tiny organism, far too small to see with your eyes, magnified thousands of times. It has a teardrop or pear shape with a wide, smooth rounded end and a narrower tail end. There is a dip or hollow area near the middle of its body, like a shallow scoop. Several thin, string-like tails trail off the bottom, which are called flagella and work like little whips to help it move. The dark background is just empty space around the organism. This image is used as a teaching bridge to help you recognize the shape, not as a real medical test.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-tails",
+          "label": "Why does it have tails?",
+          "prompt": "What are the whip-like tails for and how do they help this organism?",
+          "cachedAnswer": "The thin, string-like tails are called flagella, and they act like tiny propellers or whips. By moving them back and forth, the organism can swim through liquid, such as the watery contents inside a person's gut. Being able to move helps it stay in the parts of the intestine where it can feed and grow. The scooped-out dent on its belly works a bit like a suction cup, letting it grip onto the lining of the gut so it doesn't get washed away. Together, these features help the organism survive and cause the tummy troubles described in this case.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "how-stay-safe",
+          "label": "How could the hiker have stayed safe?",
+          "prompt": "How can hikers avoid getting sick from untreated stream water?",
+          "cachedAnswer": "Streams can look clean and clear but still carry tiny germs you cannot see. To stay safe, hikers should treat water before drinking it. Boiling water for a minute kills most germs, and special filters or purifying tablets can also make it safer. Carrying enough clean water from home is another good option. The lesson here is that clear-looking water is not the same as clean water, which is why the hiker in this case got sick.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This scanning electron micrograph shows a single-celled organism (a protozoan) with a distinctive teardrop or pear shape. Notice the bilaterally symmetric body, a concave scoop-like region on the ventral surface, and multiple long flagella extending from the posterior end. In this case, a hiker developed foul-smelling, non-bloody diarrhea and bloating after drinking untreated stream water. The image is a morphology teaching bridge, not the test that would actually be ordered in a clinic. **Based on the symmetric shape and ventral concavity, how might this organism attach to and interact with the intestinal lining?**",
+      "introQuestions": [
+        {
+          "id": "identify-features",
+          "label": "What features stand out?",
+          "prompt": "What key structural features are visible in this SEM and what are they called?",
+          "cachedAnswer": "The organism is a protozoan trophozoite (the active, feeding form). It has a teardrop or pear-shaped body with bilateral symmetry, meaning the left and right halves mirror each other. On its ventral (belly) side you can see a large concave depression, which is a ventral adhesive disc used for attachment. Several long, whip-like flagella project from the posterior end and are used for movement. Although not clearly visible as separate objects here, this type of organism characteristically has paired nuclei, giving stained specimens a famous face-like appearance. These features together are typical of Giardia.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "attachment-mechanism",
+          "label": "How does it attach to the gut?",
+          "prompt": "Explain simply how this organism attaches to the intestine and why that matters.",
+          "cachedAnswer": "The concave ventral disc you can see works like a suction cup, letting the organism clamp onto the surface cells lining the small intestine. This attachment keeps it from being swept away by the normal flow of gut contents. When large numbers of these organisms coat the intestinal surface, they physically interfere with the absorption of nutrients, especially fats and sugars. That interference is why the diarrhea in this kind of infection is often foul-smelling and greasy, and why bloating occurs. The organism does not usually invade deep into tissue or cause bleeding, which is why the diarrhea is non-bloody.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "water-source",
+          "label": "Why does the water source matter?",
+          "prompt": "Why is untreated stream water an important clue in this case?",
+          "cachedAnswer": "Many intestinal protozoa spread through a hardy dormant form called a cyst, which is passed in feces and can survive for a long time in cold freshwater. Animals like beavers and other wildlife can contaminate streams, so even remote, clear-looking water can carry cysts. When a hiker drinks untreated water, they swallow cysts that then transform into the active trophozoite form in the gut. Standard chlorination alone may not reliably kill these cysts, which is why boiling or filtering is recommended. The travel and water-exposure history is therefore a strong clue that narrows the list of likely causes.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This SEM depicts a flagellated protozoan trophozoite with a pyriform (teardrop) body, bilateral symmetry, a prominent concave ventral adhesive disc, and multiple flagella arising posteriorly. The clinical bridge is a hiker with malabsorptive, non-bloody, foul-smelling diarrhea and bloating following ingestion of untreated stream water. The source label suggests Giardia lamblia, but for this teaching case that label is not adjudicated ground truth. **Given this morphology and the malabsorptive pattern, what is the pathophysiologic mechanism linking trophozoite attachment to the clinical presentation?**",
+      "introQuestions": [
+        {
+          "id": "morphology-recognition",
+          "label": "Trophozoite morphology to recognize",
+          "prompt": "What morphologic features of the Giardia trophozoite are illustrated here and how do they aid recognition?",
+          "cachedAnswer": "The trophozoite shows the classic pyriform, dorsoventrally flattened, bilaterally symmetric body. The dominant feature is the large concave ventral adhesive disc occupying the anterior belly, used for epithelial attachment. Multiple flagella (Giardia has four pairs: anterior, ventral, posterolateral, and caudal) provide the characteristic falling-leaf motility and are visible here as long posterior projections. In stained light-microscopy preparations the two nuclei with central karyosomes and the axonemes create the well-known owl-face or smiley-face appearance, though this SEM emphasizes surface topology rather than internal structures. Recognizing the disc plus flagella plus teardrop shape is the intended morphology anchor. Remember this SEM is a teaching bridge, not the diagnostic modality used clinically.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pathophysiology",
+          "label": "Mechanism of malabsorptive diarrhea",
+          "prompt": "Explain the pathophysiology by which Giardia trophozoites produce malabsorptive, non-inflammatory diarrhea.",
+          "cachedAnswer": "Trophozoites attach non-invasively to the duodenal and jejunal epithelium via the ventral adhesive disc, causing a predominantly non-inflammatory, non-bloody process. Heavy colonization leads to villous blunting, brush-border enzyme deficiencies (notably lactase), and impaired absorption of fats and carbohydrates. The resulting steatorrhea explains the foul-smelling, greasy quality, while unabsorbed osmotically active solutes and secondary lactose intolerance contribute to osmotic diarrhea and bloating. There is no significant tissue invasion or dysentery, which is why stool is non-bloody and fever is usually mild or absent. Symptoms can persist for weeks because the organism remains luminal and disrupts absorption without provoking rapid immune clearance.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "life-cycle",
+          "label": "Cyst vs trophozoite and transmission",
+          "prompt": "Describe the Giardia life cycle and why the cyst form matters for freshwater transmission.",
+          "cachedAnswer": "Giardia alternates between the environmentally resistant cyst and the active trophozoite. Cysts are shed in feces and can survive in cold freshwater and resist standard chlorination, making waterborne transmission efficient. Ingestion of as few as 10 to 100 cysts can establish infection; gastric acid and pancreatic proteases trigger excystation in the proximal small bowel, releasing trophozoites that attach and multiply by binary fission. Some trophozoites encyst again as they move distally, and cysts are passed to continue the cycle. This explains the epidemiologic link to untreated stream water, wilderness travel, and the recommendation to boil or filter rather than rely on chlorination alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A hiker presents with roughly a week of foul-smelling, greasy, non-bloody diarrhea, bloating, and flatulence after drinking untreated stream water. This SEM of a flagellated, teardrop-shaped trophozoite with a ventral disc serves as a morphology bridge toward Giardia, but it is not what you would order at the bedside. Consider how the malabsorptive, afebrile, non-dysenteric pattern and water exposure shape your differential and workup. **What is your focused differential for this presentation, and what test would you actually order to confirm it?**",
+      "introQuestions": [
+        {
+          "id": "differential",
+          "label": "Focused differential for this diarrhea",
+          "prompt": "Build a focused differential for foul-smelling non-bloody diarrhea after untreated freshwater exposure.",
+          "cachedAnswer": "The subacute, foul-smelling, greasy, non-bloody, afebrile presentation with bloating after freshwater exposure points strongly toward giardiasis. Other freshwater/travel-associated parasites include Cryptosporidium (watery diarrhea, especially if immunocompromised) and Cyclospora. Bacterial causes such as enterotoxigenic E. coli are usually more acute and self-limited, while dysenteric organisms (Shigella, Campylobacter, invasive E. coli, Entamoeba histolytica) tend to cause bloody or inflammatory stools and fever, which are absent here. Non-infectious mimics of persistent diarrhea (new lactose intolerance, IBS, celiac) matter if an infectious workup is negative, and post-giardial lactose intolerance is common. The malabsorptive, non-inflammatory quality with prominent bloating is the key discriminator favoring Giardia.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-to-order",
+          "label": "What test do you actually order?",
+          "prompt": "What is the real-world diagnostic test for suspected giardiasis, and how does it differ from this SEM?",
+          "cachedAnswer": "In practice you do not diagnose Giardia with electron microscopy. The preferred first-line tests are stool Giardia antigen assays (EIA) or multiplex stool PCR/GI pathogen panels, which are more sensitive than microscopy. Traditional ova-and-parasite (O&P) examination can show trophozoites or cysts but is less sensitive because of intermittent shedding, so multiple samples on different days improve yield. This SEM is a teaching morphology bridge, not a clinical assay; it illustrates the trophozoite you are conceptually chasing. Choose testing based on availability, and use antigen or PCR when giardiasis is specifically suspected. Correlate results with the exposure history and clinical picture.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Management principles",
+          "prompt": "Outline the management approach for confirmed or strongly suspected giardiasis.",
+          "cachedAnswer": "Cornerstones are rehydration and treatment with an appropriate antiparasitic. First-line options include tinidazole (single dose) or metronidazole for several days; nitazoxanide is an alternative and is useful in children. Counsel patients that post-infectious lactose intolerance is common and may prolong symptoms even after cure, so a temporary lactose-reduced diet can help. Address public-health aspects: hand hygiene and avoiding untreated water, since transmission is fecal-oral and waterborne. Prevention counseling for future travel includes boiling, filtering, or appropriately treating wilderness water. Reserve retesting or referral for treatment failures, immunocompromise, or persistent symptoms after adequate therapy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "SEM shows a pyriform binucleate flagellate with a ventral adhesive disc and paired flagella, consistent with a Giardia trophozoite used here as a morphology anchor rather than a diagnostic modality. The vignette is a classic subacute malabsorptive, non-dysenteric diarrhea after untreated surface-water ingestion. Note the draft source label attributing this image to a CDC Giardia lamblia SEM is unadjudicated for this teaching case and warrants review before any clinical use. **How do you reconcile pretest probability, test selection, and treatment thresholds here, and what pitfalls should you anticipate?**",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Morphology anchors and pitfalls",
+          "prompt": "What morphologic features anchor Giardia identification, and what are the pitfalls of relying on morphology?",
+          "cachedAnswer": "Anchors include the pyriform, dorsoventrally flattened trophozoite, the ventral adhesive disc creating a concave belly, four pairs of flagella, two nuclei with central karyosomes, and paired median bodies giving the owl-face gestalt on trichrome. On SEM, surface topology dominates, so you rely on the disc and flagellar arrangement rather than internal organelles. Pitfalls: microscopy has low and intermittent sensitivity due to variable cyst/trophozoite shedding, and fixation artifacts can distort morphology. Equally important for this case, the source label is a draft note and not adjudicated ground truth, so morphology alone should never substitute for validated antigen or molecular confirmation. Treat any single labeled image as illustrative, not diagnostic.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "test-selection",
+          "label": "Test selection and stewardship",
+          "prompt": "How do you select diagnostics for suspected giardiasis in a guideline-aware, cost-conscious way?",
+          "cachedAnswer": "For targeted suspicion, a stool Giardia antigen EIA offers high sensitivity and specificity at lower cost than broad panels. Multiplex GI PCR panels are highly sensitive and detect co-pathogens but should be used judiciously given cost and the risk of detecting incidental colonizers; reserve them for broader differentials, immunocompromise, or diagnostic uncertainty. Classic O&P requires multiple specimens across several days to overcome intermittent shedding and is now second-line where antigen/PCR are available. Match the assay to pretest probability: a strong Giardia-specific history favors antigen testing, whereas an undifferentiated persistent diarrhea may justify a panel. Avoid EM entirely for clinical diagnosis; it is a research and teaching tool.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "treatment-nuance",
+          "label": "Treatment nuance and refractory cases",
+          "prompt": "Discuss treatment choices, refractory giardiasis, and persistent post-infectious symptoms.",
+          "cachedAnswer": "First-line therapy is tinidazole (single 2 g dose) or a metronidazole course; nitazoxanide is an effective alternative with a favorable pediatric profile. For treatment failure, first confirm adherence and reinfection risk, then consider a different-class agent or combination regimens (for example, a nitroimidazole plus quinacrine or albendazole) for refractory disease, ideally with specialist input. Anticipate post-infectious lactase deficiency and post-infectious IBS, which can persist after microbiologic cure and do not warrant repeat antiparasitics. Test-of-cure is generally reserved for persistent symptoms, immunocompromise, or public-health settings rather than routine cases. In refractory presentations, revisit the differential, including underlying immunodeficiency such as IgA deficiency or CVID.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

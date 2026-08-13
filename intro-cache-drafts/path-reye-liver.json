@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-reye-liver",
+  "lessonPlanSha256": "4ccbf95b9f739519b3ad6cb2b9315ac5cee4c4df004cfc5b9abc8e1f3a8b4b5d",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "c1b28a34ada6ecb9d9ca447b59d95eed95c778b7371884e7eb17e3a18d8f919b",
+    "generatedAt": "2026-08-13T16:15:40.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This pink-and-purple picture is a super close-up of liver tissue, stained so we can see it under a microscope. The liver cells look puffy and pale, almost like they are filled with tiny bubbles of fat. In this teaching case, a young child got sick with a virus, was given aspirin at home, and then started throwing up and acting confused. The liver is the body's chemical factory, so when it stops working, the whole body — including the brain — can get into trouble. **What tiny changes do you notice inside these liver cells, and why might a sick liver affect a child's brain?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What are the pink cells and the pale bubbles in this liver picture?",
+          "cachedAnswer": "This is a magnified slice of liver, colored with a common stain that turns proteins pink and cell centers (nuclei) purple. The big pink cells are hepatocytes, the main worker cells of the liver. Many of them look pale and puffy because tiny droplets of fat have collected inside them, giving a foamy, bubbly look. In this teaching example the fat is in many very small droplets spread through the cell, rather than one big droplet. Fat building up like this is a sign the cell's tiny energy factories are not working right.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-brain-confused",
+          "label": "Why did the child get confused?",
+          "prompt": "Why would a liver problem make a child confused and sleepy?",
+          "cachedAnswer": "The liver acts like a cleaning and recycling plant for the blood. One of its jobs is to turn a waste product called ammonia into something safe the body can get rid of. When liver cells are damaged, ammonia builds up in the blood and travels to the brain, where it acts like a poison and causes confusion and sleepiness. The liver also stores and releases sugar, so a struggling liver can let blood sugar drop, which also makes thinking foggy. That is why a liver illness can show up as brain symptoms.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "aspirin-kids",
+          "label": "Why avoid aspirin in kids?",
+          "prompt": "Why is aspirin usually not given to children with viral illnesses?",
+          "cachedAnswer": "In this teaching scenario, aspirin was given during a viral illness, and this combination is linked to a rare but serious condition that harms the liver and brain in children. Because of this risk, doctors generally recommend other fever medicines for kids instead of aspirin. This is an important safety lesson, not a diagnosis of any real child. The takeaway is that some medicines that are fine for adults can be risky for children in certain situations. Always follow a doctor or pharmacist's guidance about children's medicines.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is an H&E-stained photomicrograph of liver tissue. The hepatocytes show fine, pale vacuolation of their cytoplasm — many tiny clear spaces rather than one big empty bubble. In the teaching vignette, a child recovering from a viral illness who received aspirin develops vomiting and confusion. The liver's mitochondria (the cells' energy factories) are central to processing fats and clearing waste, so their failure has body-wide effects. **What does the pattern of fat accumulation tell you about which part of the cell may be failing?**",
+      "introQuestions": [
+        {
+          "id": "describe-pattern",
+          "label": "Describe the fat pattern",
+          "prompt": "How would you describe the fatty change visible in these hepatocytes?",
+          "cachedAnswer": "The hepatocytes are enlarged and their cytoplasm looks pale and foamy, filled with many small clear droplets. This is called microvesicular steatosis — 'micro' meaning small and 'vesicular' meaning droplet-like. Importantly, the nucleus tends to stay in the center of the cell because no single large droplet pushes it aside. This contrasts with a pattern where one large fat droplet fills the cell and shoves the nucleus to the edge. The many small droplets suggest a problem with how the cell burns and packages fat.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "mitochondria-role",
+          "label": "Why do mitochondria matter?",
+          "prompt": "How does mitochondrial dysfunction lead to fat building up in liver cells?",
+          "cachedAnswer": "Mitochondria are where cells break down fatty acids for energy, a process called beta-oxidation. When mitochondria are injured or their enzymes are inhibited, fatty acids cannot be burned, so they build up inside the hepatocyte as many small droplets. At the same time, the liver's ability to make sugar and to clear nitrogen waste (ammonia) depends on healthy mitochondria. So mitochondrial failure produces both the visible fat and body-wide effects like low blood sugar and rising ammonia. This links a microscopic finding to whole-body symptoms.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "systemic-effects",
+          "label": "How does this affect the whole body?",
+          "prompt": "What systemic problems can arise when liver mitochondria fail like this?",
+          "cachedAnswer": "The liver normally maintains blood sugar and converts ammonia into urea for excretion. When hepatocyte mitochondria fail, blood sugar can fall (hypoglycemia) and ammonia can accumulate (hyperammonemia). Elevated ammonia is toxic to the brain and causes confusion and altered consciousness, called encephalopathy. This explains why a liver-centered problem presents with brain symptoms in the vignette. It shows how one organ's metabolism keeps the rest of the body in balance.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This H&E section demonstrates hepatocytes with diffuse, fine cytoplasmic vacuolation and centrally retained nuclei — the pattern of microvesicular steatosis. The clinical setting is a child with post-viral vomiting and encephalopathy following aspirin exposure, a scenario classically used to teach mitochondrial hepatotoxicity. Recognizing this pattern and linking it to impaired beta-oxidation and urea-cycle function is the goal. **How does microvesicular steatosis differ mechanistically and morphologically from macrovesicular steatosis?**",
+      "introQuestions": [
+        {
+          "id": "identify-microvesicular",
+          "label": "Identify the steatosis pattern",
+          "prompt": "What histologic features identify microvesicular steatosis in this image?",
+          "cachedAnswer": "Microvesicular steatosis is characterized by hepatocytes with numerous small lipid droplets that impart a foamy, pale cytoplasm, while the nucleus remains centrally located. In this image the swollen hepatocytes show diffuse fine vacuolation without a single large clear vacuole displacing the nucleus. The change tends to be panlobular in mitochondrial injury. There is often minimal accompanying inflammation, though scattered mononuclear cells and hemorrhage may be seen. This morphology reflects a metabolic, not primarily inflammatory, process.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "beta-oxidation-urea",
+          "label": "Mechanism: beta-oxidation & urea cycle",
+          "prompt": "Explain how mitochondrial dysfunction produces microvesicular fat, hypoglycemia, and hyperammonemia.",
+          "cachedAnswer": "Mitochondrial injury impairs fatty-acid beta-oxidation, so non-esterified fatty acids accumulate and are stored as multiple small cytoplasmic droplets, producing microvesicular steatosis. Reduced fatty-acid oxidation also depletes acetyl-CoA and NADH needed to sustain gluconeogenesis, contributing to hypoglycemia. Several urea-cycle enzymes (e.g., carbamoyl phosphate synthetase I, ornithine transcarbamylase) are mitochondrial, so mitochondrial dysfunction reduces ammonia clearance and causes hyperammonemia. Elevated ammonia crosses the blood-brain barrier and, with astrocyte glutamine accumulation, produces cerebral edema and encephalopathy. Thus one subcellular lesion links the hepatic histology to metabolic and neurologic findings.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "micro-vs-macro",
+          "label": "Micro vs macrovesicular",
+          "prompt": "How do you distinguish microvesicular from macrovesicular steatosis, and what causes each?",
+          "cachedAnswer": "In macrovesicular steatosis, a single large lipid vacuole fills the hepatocyte and displaces the nucleus peripherally; it is the pattern seen in alcohol-related liver disease, obesity, diabetes, and other metabolic-associated fatty liver disease. In microvesicular steatosis, many tiny droplets surround a central nucleus and reflect impaired mitochondrial fatty-acid oxidation. Microvesicular causes include mitochondrial toxins/inherited fatty-acid oxidation defects, acute fatty liver of pregnancy, certain drug toxicities, and the post-viral/aspirin scenario used in this teaching case. Microvesicular disease is often more acutely dangerous because of the associated metabolic derangements. Recognizing the droplet size and nuclear position is the key morphologic distinction.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A young child develops persistent vomiting and progressive encephalopathy during recovery from a viral illness treated with aspirin, and liver histology shows microvesicular steatosis. This constellation is the classic teaching pattern for an acute mitochondrial hepatopathy with hyperammonemic encephalopathy. Your task is to reason from the biopsy and clinical picture toward differential diagnosis and initial management priorities. **Given hypoglycemia, elevated ammonia, and coagulopathy without deep jaundice, how would you prioritize the workup and stabilization?**",
+      "introQuestions": [
+        {
+          "id": "clinical-correlation",
+          "label": "Correlate biopsy with presentation",
+          "prompt": "How does the microvesicular steatosis on biopsy correlate with this child's clinical presentation?",
+          "cachedAnswer": "Microvesicular steatosis signals impaired hepatocyte mitochondrial function rather than a primarily necrotic or cholestatic injury. Clinically this manifests as marked hyperammonemia, hypoglycemia, and rising transaminases, often with coagulopathy but characteristically without prominent hyperbilirubinemia early on. The encephalopathy is driven largely by ammonia-mediated cerebral edema rather than by cholestasis. Persistent vomiting and altered consciousness after a viral prodrome should prompt immediate measurement of glucose, ammonia, transaminases, and coagulation studies. The biopsy finding therefore ties the metabolic labs to a defined hepatic lesion.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Build the differential",
+          "prompt": "What is the differential for a child with encephalopathy and microvesicular steatosis?",
+          "cachedAnswer": "The differential for acute encephalopathy with microvesicular steatosis includes the post-viral/salicylate-associated syndrome depicted here, inborn errors of metabolism such as fatty-acid oxidation defects and urea-cycle disorders, and mitochondrial disorders. Drug or toxin exposures (valproate, certain antiretrovirals, tetracyclines) and, in adolescents/adults, acute fatty liver of pregnancy also produce this pattern. A careful medication and exposure history, plus metabolic screening (acylcarnitine profile, urine organic acids, plasma amino acids), helps distinguish acquired from inherited causes. In young children, recurrent episodes or a suggestive family history should raise concern for an underlying metabolic disorder. The combination of the exposure history and characteristic labs narrows the list.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "Initial management priorities",
+          "prompt": "What are the initial management priorities for this child?",
+          "cachedAnswer": "Management is largely supportive and directed at the metabolic derangements: correct hypoglycemia with IV dextrose, monitor and treat hyperammonemia, and address coagulopathy as needed. Neuroprotective measures for cerebral edema and close monitoring of intracranial pressure are important as encephalopathy progresses. Identify and stop any offending agent and screen for treatable inborn errors of metabolism. Care is best delivered in a setting with pediatric intensive care and access to hepatology and transplant services if hepatic failure worsens. Early recognition and glucose/ammonia control are the highest-yield interventions.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "This liver section shows panlobular microvesicular steatosis with foamy hepatocytes and centrally retained nuclei, in a child with post-viral vomiting, encephalopathy, and salicylate exposure — the archetypal teaching pattern for an acute mitochondrial hepatopathy. Note the teaching caveat: the source label (CDC-identified Reye syndrome) has not been adjudicated for this case, so treat the pattern as illustrative rather than confirmed. Your reasoning should integrate morphology, metabolic labs, and management pitfalls. **What ancillary techniques would you use to confirm microvesicular fat and mitochondrial injury, and what pitfalls could mislead you?**",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Confirming the pattern",
+          "prompt": "What ancillary studies confirm microvesicular steatosis and mitochondrial injury?",
+          "cachedAnswer": "On H&E the foamy, finely vacuolated cytoplasm with central nuclei suggests microvesicular fat, but fixation and processing can extract lipid and mimic hydropic change, so confirmation is worthwhile. Oil Red O or Sudan stains on frozen tissue demonstrate the small neutral-lipid droplets, and electron microscopy classically shows pleomorphic, swollen mitochondria with matrix expansion and loss of dense bodies. Minimal inflammation and absence of significant necrosis or cholestasis support a metabolic mitochondrial process rather than viral or ischemic injury. Trichrome helps exclude significant fibrosis in a chronic mimic. Correlation with acylcarnitine and organic acid profiles strengthens the interpretation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Diagnostic pitfalls",
+          "prompt": "What are the key pitfalls in interpreting this histology and clinical picture?",
+          "cachedAnswer": "A major pitfall is misreading lipid-extracted vacuoles as glycogenated nuclei or simple hydropic swelling, so frozen-section lipid stains or EM should be pursued when the pattern matters. Another is anchoring on the classic post-viral/aspirin narrative and missing an unmasked inborn error of metabolism — recurrent episodes, hypoglycemia, or family history should trigger metabolic screening. Drug-induced microvesicular steatosis (valproate, nucleoside analogues, tetracyclines) can be clinically identical and must be excluded by history. The unadjudicated source label here is itself a reminder not to accept a diagnostic label as ground truth without confirmation. Finally, absence of deep jaundice does not exclude life-threatening hyperammonemia and cerebral edema.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "teaching-pearl",
+          "label": "High-yield teaching pearl",
+          "prompt": "What is a high-yield teaching pearl connecting histology, labs, and management?",
+          "cachedAnswer": "The unifying pearl is that microvesicular steatosis is the morphologic footprint of impaired mitochondrial beta-oxidation, and the same defect explains the triad of hypoglycemia, hyperammonemia, and encephalopathy. Because several urea-cycle enzymes are mitochondrial, ammonia clearance fails in parallel with fatty-acid oxidation, tying the biopsy directly to the neurologic picture. Management is supportive and metabolic: dextrose for hypoglycemia, aggressive ammonia lowering, correction of coagulopathy, and ICU-level neuroprotection for cerebral edema. Guideline-aware practice includes avoiding salicylates in febrile children and low-threshold metabolic workup in atypical or recurrent cases. Recognizing the pattern early changes outcome more than any specific stain.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

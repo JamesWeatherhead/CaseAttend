@@ -1,0 +1,136 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "xr-colles",
+  "lessonPlanSha256": "3ba3d3775b172219aef34bad1023008410617c5f9a1d9cf63ca0bea081b22de8",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "4cc9775e5767690e660c5ef13ccc90234f96ce281427a55189a644be589e6cfa",
+    "generatedAt": "2026-08-13T14:31:11.000Z"
+  },
+  "review": {
+    "status": "approved",
+    "reviewer": "James Weatherhead",
+    "credentials": "MD/PhD/MPH candidate; principal investigator",
+    "reviewedAt": "2026-08-13T16:19:17.000Z"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is an X-ray of a wrist after someone fell and caught themselves on their open hand. An X-ray is a special picture that lets us see bones through the skin, where bones look bright white. The person's wrist looked bent with a bump on the back, and the picture shows a break near the end of the larger forearm bone, close to the wrist. Two views are shown: one from the front and one from the side. Looking at the side view on the right, where do you notice the bone shape changing near the wrist?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What am I looking at in this wrist X-ray?",
+          "cachedAnswer": "You are looking at a wrist X-ray, which is a picture that shows bones as bright white shapes. The long bone running up the middle is the radius, the larger of the two forearm bones, and it ends right at the wrist. Near the wrist, you can see a break in the bone where its smooth line is interrupted. In the side view (the right picture), the end piece of bone is tilted and pushed slightly backward, which matches the bump the person felt on the back of the wrist. The little round bones between the forearm and the hand are the wrist bones.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-broke",
+          "label": "Why did the bone break here?",
+          "prompt": "Why did the bone break in this spot after falling on the hand?",
+          "cachedAnswer": "When you fall and land on an open, outstretched hand, all your body's weight and the force of the ground push up through your palm into your wrist. That force travels into the forearm bones and often snaps the radius near its end, because that spot is a bit weaker than the thicker middle of the bone. The end piece gets pushed backward, toward the back of the hand, which is why the wrist looks bumpy or bent like a fork. Think of it like pressing hard on the end of a stick until it cracks near the tip. This is a very common way to break a wrist.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "what-next",
+          "label": "What happens next for the patient?",
+          "prompt": "What would doctors do next for someone with this kind of wrist break?",
+          "cachedAnswer": "Doctors would first check that the fingers can move and that blood and feeling are normal in the hand. If the broken end is out of place, they gently push the bone back into a good position, then hold it still with a cast or splint so it can heal. Sometimes surgery with pins or a plate is needed if the bone is very crooked. The wrist is usually checked again with X-rays over the following weeks to make sure it heals straight. Healing often takes about six weeks.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This case shows two views of a wrist radiograph taken after a fall onto an outstretched hand (a FOOSH injury). On a radiograph, dense bone absorbs more X-rays and appears white, while soft tissue and air appear darker. The long bone in the center is the radius, and there is a break near its distal end just before the wrist joint. The lateral (side) view on the right shows the distal fragment angled toward the back of the wrist, matching the deformity described. Based on the mechanism and the shape you see, why might the end of the radius be the weakest point?",
+      "introQuestions": [
+        {
+          "id": "identify-bones",
+          "label": "Which bones are shown?",
+          "prompt": "Which bones can I identify in this wrist radiograph?",
+          "cachedAnswer": "The two long forearm bones are the radius (the thicker one on the thumb side) and the ulna (the thinner one). The radius is the central bone here, ending at the wrist where the fracture is visible near its distal end. Between the forearm and the hand sit the carpal bones, the small rounded wrist bones. Above them the metacarpals fan out toward the fingers. The break in this case is in the distal radius, right where the forearm meets the wrist joint.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "physics-mechanism",
+          "label": "How does the fall cause this fracture?",
+          "prompt": "How does the physics of falling on an outstretched hand cause a fracture at the distal radius?",
+          "cachedAnswer": "When a person breaks a fall with an open hand, the ground pushes back with a large force that travels up the palm and into the wrist. This compressive load concentrates at the distal radius, where the bone transitions from a dense outer shell to a thinner region with more spongy inner bone. The extended (dorsiflexed) wrist position channels the force so the distal fragment tends to break and tilt backward, or dorsally. Because bone resists compression better than bending, the sudden bending stress exceeds what the distal radius can absorb, and it fractures. The backward tilt of the fragment produces the visible bump on the back of the wrist.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-two-views",
+          "label": "Why take two X-ray views?",
+          "prompt": "Why are two different X-ray views taken instead of just one?",
+          "cachedAnswer": "A single radiograph flattens a three-dimensional object into two dimensions, so displacement in one direction can be hidden. The front (PA) view shows side-to-side alignment and length, while the side (lateral) view reveals whether a fragment is tilted forward or backward. In this case the lateral view is what makes the backward angulation of the distal fragment obvious, something the front view alone might understate. Taking at least two perpendicular views is a basic rule in radiography so that displacement and angulation can be fully assessed.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "These PA and lateral wrist radiographs follow a FOOSH mechanism. There is a transverse fracture of the distal radial metaphysis with dorsal angulation of the distal fragment, the classic pattern of a Colles fracture. Note the distal radius metaphysis is largely cancellous bone, which influences where these fractures occur. Consider the anatomy of the distal radius, including the volar and dorsal cortices and the nearby distal radioulnar joint. Given the dorsal tilt you see on the lateral view, how would this alter the normal volar tilt of the distal radial articular surface?",
+      "introQuestions": [
+        {
+          "id": "describe-fracture",
+          "label": "Describe the fracture pattern",
+          "prompt": "How would I describe this fracture pattern in precise anatomical terms?",
+          "cachedAnswer": "This is a fracture of the distal radial metaphysis, roughly 2–3 cm proximal to the articular surface, with the distal fragment displaced and angulated dorsally, the hallmark of a Colles fracture. The dorsal tilt reverses or reduces the normal volar (palmar) tilt of the distal radial articular surface, seen on the lateral view. There may be associated radial shortening and often an ulnar styloid avulsion. The location reflects the metaphyseal transition to predominantly cancellous bone with a thinner cortex. Assessment should also address articular involvement, radial inclination, and radial height.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cancellous-anatomy",
+          "label": "Why the metaphysis?",
+          "prompt": "Why does the fracture occur at the metaphysis rather than the diaphysis?",
+          "cachedAnswer": "The distal radial metaphysis is a transitional zone where the cortex thins and trabecular (cancellous) bone predominates, giving it a lower resistance to bending loads than the thick-corticed diaphysis. Under the axial and dorsiflexion loading of a FOOSH, tensile stress develops on the volar cortex and compression dorsally, so the bone typically fails at this metaphyseal weak point. In older adults, decreased trabecular density from osteoporosis further lowers the fracture threshold here. The result is a metaphyseal fracture with dorsal displacement rather than a mid-shaft break. This regional biomechanics explains the reproducible location of the Colles pattern.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "nearby-structures",
+          "label": "What structures are at risk?",
+          "prompt": "What nearby anatomical structures should I consider with this fracture?",
+          "cachedAnswer": "The median nerve runs volarly through the carpal tunnel just distal to the fracture and is at risk from swelling or fragment displacement, potentially causing acute median nerve symptoms. The distal radioulnar joint (DRUJ) and triangular fibrocartilage complex can be disrupted, especially with radial shortening or an ulnar styloid fracture. Dorsally, the extensor tendons, including extensor pollicis longus, are vulnerable and can rupture in a delayed fashion. The radial artery lies laterally, and the surrounding pronator quadratus is a volar landmark. Understanding these relationships explains the neurovascular and tendon complications relevant to follow-up.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient presents after a FOOSH with a clinically deformed, dorsally prominent wrist (the classic 'dinner fork' deformity). The radiographs show a dorsally angulated distal radius fracture consistent with a Colles pattern, with possible ulnar styloid involvement. Your job is to move from the image to a management plan: assess neurovascular status, decide on reduction, and immobilize. Before you look at measurements, what focused exam findings must you document to avoid missing an acute median nerve injury or vascular compromise?",
+      "introQuestions": [
+        {
+          "id": "key-findings",
+          "label": "Key radiographic findings to report",
+          "prompt": "What radiographic parameters and findings should I report for this distal radius fracture?",
+          "cachedAnswer": "Describe the fracture as extra- versus intra-articular, the direction of displacement (dorsal here), and comminution. Quantify the standard measurements: radial height (normal ~11 mm), radial inclination (~22°), and volar tilt (~11°); in a Colles pattern volar tilt is lost or reversed to dorsal tilt. Note radial shortening relative to the ulna (positive ulnar variance), any ulnar styloid fracture, and DRUJ congruity. Comment on articular step-off if the joint surface is involved, since this drives operative decisions. These parameters guide whether closed reduction achieves acceptable alignment or whether surgery is needed.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management",
+          "label": "How is this managed acutely?",
+          "prompt": "How would this distal radius fracture be managed acutely?",
+          "cachedAnswer": "Begin with a neurovascular exam, checking median nerve function, capillary refill, and the radial pulse. Provide analgesia, then perform closed reduction with hematoma block or sedation for displaced fractures, applying traction and correcting the dorsal angulation. Immobilize in a well-molded sugar-tong or below-elbow splint and obtain post-reduction films to confirm alignment. Assess against acceptable criteria (e.g., dorsal tilt, radial shortening, articular step-off); unacceptable alignment, instability, intra-articular involvement, or open fracture prompt orthopedic referral for ORIF or percutaneous fixation. Arrange orthopedic follow-up with repeat imaging to detect loss of reduction.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "complications",
+          "label": "Complications and follow-up",
+          "prompt": "What complications and follow-up questions are relevant to this fracture pattern?",
+          "cachedAnswer": "Acute concerns include median nerve injury (acute carpal tunnel syndrome) and, rarely, compartment syndrome. Subacute and late complications include malunion with residual dorsal tilt and loss of grip, delayed extensor pollicis longus rupture, complex regional pain syndrome, stiffness, and post-traumatic DRUJ dysfunction or arthritis. Loss of reduction is common in the first two weeks, so serial radiographs matter. Ask about ongoing numbness or tingling in the median distribution, thumb extension after healing, and disproportionate pain or swelling. In older patients, this fragility fracture should trigger consideration of osteoporosis evaluation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "PA and lateral wrist views following a FOOSH demonstrate an extra-articular distal radius metaphyseal fracture with dorsal angulation and apparent radial shortening, plus probable ulnar styloid involvement, a Colles pattern. Your read should generate the measurements that determine operative versus nonoperative management and flag stability. Consider what makes this fracture unstable and how that changes your recommendation. On the lateral, how much dorsal tilt would push you toward surgical referral rather than accepting closed reduction?",
+      "introQuestions": [
+        {
+          "id": "structured-read",
+          "label": "Give a structured radiology read",
+          "prompt": "Give a structured read of these distal radius fracture films.",
+          "cachedAnswer": "Findings: extra-articular fracture of the distal radial metaphysis with dorsal angulation and dorsal displacement of the distal fragment; measure radial inclination, radial height, and volar tilt (here reversed to dorsal tilt on the lateral). Assess for dorsal comminution, intra-articular extension into the radiocarpal or DRUJ, and positive ulnar variance from shortening; note the ulnar styloid. Confirm carpal alignment and exclude associated carpal fracture (e.g., scaphoid) or DISI. Impression: dorsally angulated distal radius (Colles-type) fracture. Recommend post-reduction views and orthopedic correlation; flag any instability predictors.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "instability",
+          "label": "Predictors of instability",
+          "prompt": "What features predict instability and guide operative decision-making here?",
+          "cachedAnswer": "Instability predictors include initial dorsal tilt >20°, dorsal comminution involving more than 50% of the cortex, radial shortening >5 mm, intra-articular displacement or step-off >2 mm, associated ulnar fracture, and advanced age with poor bone quality (Lafontaine criteria). Acceptable radiographic parameters commonly cited are dorsal tilt within ~5–10° of neutral, radial shortening <2–3 mm, and articular step-off <2 mm. Fractures failing these after reduction, or with high instability scores, warrant fixation, typically volar locking plate for displaced or unstable patterns. Intra-articular comminution may favor bridging external fixation or fragment-specific fixation. Track loss of reduction on serial films, most likely within the first two weeks.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "pitfalls",
+          "label": "Pitfalls and pattern recognition",
+          "prompt": "What pitfalls and related patterns should I keep in mind with this presentation?",
+          "cachedAnswer": "Don't anchor on the obvious distal radius; scrutinize the scaphoid and lunate, as concomitant carpal injury and perilunate patterns are missed on cursory reads. Distinguish Colles (dorsal angulation) from Smith (volar angulation), Barton (intra-articular shear with carpal subluxation), and chauffeur (radial styloid) fractures, since management differs. Evaluate the DRUJ and ulnar variance for TFCC and instability implications. Watch for acute median nerve dysfunction pre- and post-reduction, and counsel about delayed EPL rupture and CRPS. Finally, treat a fragility distal radius fracture as a sentinel event prompting bone health workup.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

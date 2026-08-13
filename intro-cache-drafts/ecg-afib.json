@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "ecg-afib",
+  "lessonPlanSha256": "cb50b2fcfcac0a747d1e42fc2b26d039e83e3bd5179e32d1abcce4eed8aedcb9",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "3cca95bb2d3a51531d62511c0f0483547e77c6ce1bb91cff8279909f89e68898",
+    "generatedAt": "2026-08-13T14:47:54.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture of an ECG, which is a recording of the heart's electrical activity as wavy lines on grid paper. You are looking at the chest leads (labeled V1 through V6) from an older adult who feels sick to their stomach and has an uneven pulse. Notice that the spikes (heartbeats) are not evenly spaced apart, and there are no clear small bumps before each big spike. The person is also taking a heart medicine that can build up and become dangerous. **What does an uneven, unpredictable heartbeat pattern tell you about how well the heart is keeping its own rhythm?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at on this strip?",
+          "prompt": "What are the main things I should notice on this ECG picture?",
+          "cachedAnswer": "An ECG is a graph of the heart's electrical signals over time, printed on grid paper. Each tall spike is one heartbeat, and normally these spikes come at even, steady intervals like a ticking clock. On this tracing, the spikes are spaced unevenly, so the rhythm looks jumpy and unpredictable. Also, before each big spike there is usually a small bump that shows the top chambers of the heart firing, but here that small bump is hard to find. This messy, uneven pattern is a clue that the heart's electrical timing is not organized. Doctors call an uneven-in-an-uneven-way heartbeat 'irregularly irregular.'\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-uneven",
+          "label": "Why is the heartbeat so uneven?",
+          "prompt": "Why would a heart beat in an uneven, unpredictable way like this?",
+          "cachedAnswer": "A healthy heart has a natural 'pacemaker' spot that sends out one steady signal at a time, keeping the beats evenly spaced. When many parts of the top chambers start firing at once in a chaotic way, the heart gets flooded with signals. Only some of these random signals make it through to the pumping chambers, and they arrive at random moments, so the heartbeat becomes uneven. Think of it like a crowd all shouting at once instead of one person calling out a steady beat. The result is the irregular pattern you see on this strip. This kind of chaos is why the small 'top chamber' bumps disappear from the tracing.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "medicine-danger",
+          "label": "Why can the heart medicine be risky?",
+          "prompt": "Why might the heart medicine this person takes be dangerous, and what should the care team check?",
+          "cachedAnswer": "Some heart medicines have a narrow safety window, meaning the helpful amount and the harmful amount are very close together. If too much builds up in the body, it can cause nausea, vomiting, and dangerous heart-rhythm problems. In older adults, the kidneys may not clear the medicine as fast, so it can pile up even at a normal dose. That is why the person's nausea plus an uneven pulse is a warning sign worth taking seriously. The care team would check how the kidneys are working, the level of certain body salts (like potassium), and the actual amount of medicine in the blood. This case shows why medicine amounts must be watched carefully in older patients.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This 12-lead ECG shows the precordial (chest) leads V1 through V6 from an older adult on a cardiac glycoside who reports nausea and an irregular pulse. Look at the spacing between the tall QRS complexes (the ventricular beats) and search for P waves, the small deflections that normally precede each beat and represent atrial activity. Here the beats are irregularly irregular and organized P waves are absent. The medication involved has a narrow therapeutic range, so its blood level, the patient's kidney function, and electrolytes all matter. **Given the absent P waves and irregular spacing, what is happening in the atria to produce this pattern?**",
+      "introQuestions": [
+        {
+          "id": "identify-features",
+          "label": "What features define this rhythm?",
+          "prompt": "What ECG features should I use to identify this rhythm?",
+          "cachedAnswer": "To identify a rhythm, look at three things: the regularity of the R-R intervals, whether P waves are present, and the relationship between P waves and QRS complexes. On this tracing the QRS complexes are spaced unevenly with no repeating pattern, which is described as 'irregularly irregular.' There are no clear, consistent upright P waves before the QRS complexes; the baseline instead looks wavy or flat. Because the atria are not producing a single organized depolarization, no distinct P wave forms. The combination of irregular spacing plus absent organized P waves is the classic fingerprint of atrial fibrillation. The QRS complexes themselves look narrow, meaning the ventricles are still activated through the normal conduction pathway.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "atrial-mechanism",
+          "label": "What are the atria actually doing?",
+          "prompt": "What is happening in the atria to cause absent P waves and an irregular ventricular response?",
+          "cachedAnswer": "Normally the sinoatrial node fires once, and a wave of electricity sweeps across both atria to produce a single clean P wave. In this rhythm, many tiny wavelets of electrical activity circulate chaotically through the atrial tissue at the same time. Because these signals cancel and overlap, no single organized P wave appears on the ECG; instead you may see a fine wavy baseline. These rapid, disorganized impulses bombard the AV node, which acts like a gatekeeper and only lets some of them pass to the ventricles at unpredictable times. That random gating is what makes the ventricular beats irregularly spaced. The result is fast, uncoordinated atrial activity with an irregular ventricular response.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "drug-electrolytes",
+          "label": "Why do kidneys and electrolytes matter?",
+          "prompt": "Why are kidney function and electrolytes important for a patient on a cardiac glycoside?",
+          "cachedAnswer": "A cardiac glycoside works by influencing the pumps and ion balances inside heart cells, which changes how the heart contracts and conducts. Many of these drugs are cleared mainly by the kidneys, so reduced kidney function lets the drug accumulate to toxic levels. Electrolytes matter because the drug competes with potassium at its site of action, so low potassium makes toxicity worse even at the same drug level. Magnesium and calcium levels also influence how the heart responds. Nausea is a common early sign that the drug level may be too high. This is why the care team would measure the drug concentration, kidney markers, and electrolytes together rather than in isolation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This precordial 12-lead tracing (V1–V6) comes from an older adult on a cardiac glycoside presenting with nausea and an irregular pulse. The rhythm is irregularly irregular with an absence of organized P waves and a fibrillatory baseline, and the QRS complexes are narrow. The teaching source labels this atrial fibrillation, though cardiology adjudication is still required. Consider both the electrophysiologic substrate of the rhythm and the pharmacodynamics of glycoside toxicity, which is potentiated by hypokalemia and impaired renal clearance. **What electrophysiologic mechanism accounts for the loss of discrete P waves and the irregular ventricular response?**",
+      "introQuestions": [
+        {
+          "id": "ecg-morphology",
+          "label": "Describe the diagnostic ECG morphology",
+          "prompt": "What morphologic features on this ECG support atrial fibrillation, and what should I confirm?",
+          "cachedAnswer": "Atrial fibrillation is recognized by irregularly irregular R-R intervals, absent discrete P waves, and a variable fibrillatory baseline that may be coarse or fine. On this strip the QRS complexes across V1–V6 occur at inconsistent intervals with no reproducible atrial deflection preceding them. The QRS complexes are narrow, indicating conduction through the His-Purkinje system rather than an aberrant or ventricular focus. You should confirm the finding on a full 12-lead with limb leads and a rhythm strip, since baseline artifact can mimic fibrillatory waves. Rate should be assessed as an atrial fibrillation with controlled versus rapid ventricular response. Note that the printed rate annotation on a photographed ECG is not a substitute for measuring intervals directly.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "electrophysiology",
+          "label": "Mechanism of AF and toxicity",
+          "prompt": "What is the electrophysiologic basis of atrial fibrillation and how does glycoside toxicity interact with it?",
+          "cachedAnswer": "Atrial fibrillation arises from multiple reentrant wavelets and/or ectopic foci, often triggered near the pulmonary veins, producing continuous disorganized atrial depolarization at rates around 350–600/min. Because depolarization is spatially chaotic, no summed P wave is generated, and the AV node filters impulses irregularly, yielding an irregular ventricular response. Cardiac glycosides inhibit the Na+/K+-ATPase, raising intracellular sodium and, via the sodium-calcium exchanger, intracellular calcium, which enhances contractility but also increases automaticity and vagal tone at the AV node. In toxicity, increased ectopy plus AV block can coexist, and hypokalemia intensifies binding to the pump. Impaired renal clearance in an older adult raises serum drug concentration. The interplay of rhythm disturbance and toxic conduction effects is why rhythm identification alone is insufficient.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "labs-to-obtain",
+          "label": "What immediate data would you obtain?",
+          "prompt": "What immediate laboratory and clinical data should be obtained given the drug history?",
+          "cachedAnswer": "Given a cardiac glycoside and toxicity concern, obtain a serum drug concentration with the timing relative to the last dose documented. Measure potassium, magnesium, and calcium, since hypokalemia and hypomagnesemia potentiate toxicity and hyperkalemia can accompany severe acute toxicity. Assess renal function with creatinine and estimated GFR, because reduced clearance drives accumulation. Correlate with the clinical picture: nausea, visual changes, and rhythm disturbances are recognized toxicity features. A full 12-lead ECG and continuous monitoring help detect conduction abnormalities and ectopy that a single photographed strip may miss. These data separate a toxicity-driven presentation from a primary rate-control problem.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "An older adult on a cardiac glycoside presents with nausea and an irregularly irregular pulse; the precordial tracing shows narrow QRS complexes without organized P waves. The source labels this atrial fibrillation, but the presence of nausea in a glycoside-treated patient should immediately raise concern for drug toxicity rather than framing this as a simple rate-control problem. Your reasoning should separate identifying the rhythm from deciding on management, and should incorporate renal and electrolyte status before reaching for AV-nodal blocking agents. **How does the suspicion of glycoside toxicity change your management approach compared with uncomplicated atrial fibrillation with rapid ventricular response?**",
+      "introQuestions": [
+        {
+          "id": "rhythm-vs-rate",
+          "label": "Separate rhythm ID from rate decisions",
+          "prompt": "How do I separate identifying the rhythm from making rate-control decisions here?",
+          "cachedAnswer": "Rhythm identification answers 'what is the underlying electrical pattern,' while rate control answers 'what is the ventricular response and does it need modification.' Here the rhythm is irregularly irregular without organized P waves, consistent with atrial fibrillation, and the QRS complexes are narrow. Whether to control rate depends on the ventricular rate, symptoms, and hemodynamic stability, none of which are settled by a photographed strip alone. Critically, if glycoside toxicity is present, standard AV-nodal blockers may be inappropriate or harmful. So you first confirm the rhythm, then measure the actual rate and assess stability, and only then decide on rate strategy in the context of the drug history. Conflating the two steps risks treating a toxic patient as if they had uncomplicated fast AF.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "toxicity-management",
+          "label": "Management if toxicity is suspected",
+          "prompt": "What is the management approach if cardiac glycoside toxicity is suspected in this patient?",
+          "cachedAnswer": "Suspected glycoside toxicity shifts management toward stabilization and reversal rather than aggressive rate control. Obtain the drug level, potassium, magnesium, renal function, and a full ECG with continuous monitoring. Correct hypokalemia and hypomagnesemia, as these potentiate toxicity and arrhythmias, while being cautious in acute severe toxicity where hyperkalemia may indicate need for antibody therapy. Avoid or use extreme caution with calcium and with agents that further slow AV conduction. Digoxin-specific antibody fragments are the definitive treatment for significant toxicity with life-threatening arrhythmias or hyperkalemia. Consult cardiology and toxicology, and note that the source label of atrial fibrillation with elevated drug concentration still requires independent adjudication.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What else could this rhythm be?",
+          "prompt": "What is the differential for an irregularly irregular narrow-complex rhythm, and what pitfalls apply?",
+          "cachedAnswer": "The differential for an irregularly irregular narrow-complex rhythm includes atrial fibrillation, multifocal atrial tachycardia (which has multiple distinct P-wave morphologies), and atrial flutter or tachycardia with variable AV block. Frequent premature atrial or ventricular complexes can also create apparent irregularity on a short strip. A key pitfall in a glycoside-treated patient is regularized AF or junctional rhythm from toxicity, and 'atrial fibrillation with regular ventricular response' should prompt concern for complete heart block with a junctional escape. Baseline artifact on a photographed ECG can mimic fibrillatory waves, so confirm on clean tracings with limb leads. Always reconcile the rhythm with the clinical and pharmacologic context rather than the label alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Photographed precordial ECG (V1–V6, 50 mm/s, 10 mm/mV) in an older adult on a cardiac glycoside with nausea and an irregularly irregular pulse; narrow QRS complexes without organized atrial activity. The draft label is atrial fibrillation with an elevated digitoxin concentration, but this is unadjudicated source metadata and warrants cardiology review. The clinical framing—glycoside plus nausea plus rhythm disturbance—should push you past pattern-matching AF toward evaluating for toxicity and its characteristic conduction findings. **Which toxicity-specific rhythm pitfalls would change your interpretation of an 'irregular' or later 'regularized' tracing in this patient?**",
+      "introQuestions": [
+        {
+          "id": "read-and-caveats",
+          "label": "Read the strip and state caveats",
+          "prompt": "Give a structured read of this ECG and the interpretation caveats given it is a photograph at 50 mm/s.",
+          "cachedAnswer": "Structured read: irregularly irregular R-R intervals, absent discrete P waves with a fibrillatory baseline, and narrow QRS complexes conducted supraventricularly—consistent with atrial fibrillation. The paper speed is annotated 50 mm/s rather than the conventional 25 mm/s, so interval and rate estimates must be halved accordingly before quoting a rate; the printed HF annotation is unreliable on a photograph. Only precordial leads are shown, so axis, limb-lead P-wave morphology, and ST-T detail cannot be fully assessed. Photographic artifact and baseline wander can mimic or obscure fibrillatory waves, so a clean 12-lead plus rhythm strip is required. The source AF-with-elevated-digitoxin label is metadata, not adjudicated truth. Cardiology overread is indicated before any definitive interpretation.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "toxicity-patterns",
+          "label": "Glycoside toxicity rhythm pitfalls",
+          "prompt": "What glycoside toxicity rhythm patterns and pitfalls should I recognize on serial tracings?",
+          "cachedAnswer": "Glycoside toxicity produces a spectrum: increased automaticity plus impaired AV conduction. Classic patterns include atrial tachycardia with block, accelerated junctional rhythm, bidirectional VT, and various degrees of AV block. A crucial pitfall is 'regularized' atrial fibrillation—when AF develops a regular ventricular response, suspect complete AV block with a junctional or ventricular escape rather than improved rate control. Frequent PVCs and ventricular bigeminy are also common. The scooped ST 'digitalis effect' is a repolarization change and does not itself equal toxicity. Because AV-nodal suppression is the mechanism, adding further AV-blocking agents can be dangerous, and management pivots toward electrolyte correction and Fab fragments in severe cases.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "immediate-workup",
+          "label": "Immediate data and disposition",
+          "prompt": "What immediate data and disposition steps are guideline-aware for suspected glycoside toxicity with AF?",
+          "cachedAnswer": "Immediately obtain serum glycoside concentration with dosing timing, potassium, magnesium, and renal function, plus a full 12-lead ECG and continuous telemetry. In acute toxicity, serum potassium is a prognostic marker and hyperkalemia is an indication for digoxin-specific Fab fragments along with life-threatening arrhythmias or hemodynamic instability. Correct hypomagnesemia and hypokalemia in chronic toxicity, and avoid calcium and avoid abrupt AV-nodal blockade where escape rhythms are being unmasked. Treat symptomatic bradyarrhythmias supportively while arranging antidote; atropine and temporary pacing are bridges. Engage toxicology and cardiology early, and reconcile management with the actual level, renal status, and clinical stability rather than the isolated AF label. Document that the source diagnosis requires independent adjudication.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

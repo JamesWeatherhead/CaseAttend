@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "path-afb-sputum",
+  "lessonPlanSha256": "cfd8cec3970879ad92d153854bfbba82ad3e2b1252176a9caaedd382d7d3c9ea",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "42982d66a14350a3dcc6a32e4ac708bfbd30a9c747139d9f45c5bd621b0c300d",
+    "generatedAt": "2026-08-13T15:14:14.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "This is a picture taken through a microscope of spit (sputum) from someone who has been coughing for weeks and losing weight. Scientists added a special stain, and you can see thin red rod-shaped germs scattered across a yellowish background. These red rods are bacteria that keep the red dye even after a strong washing step, which is unusual and gives us a clue about what they are. Finding these germs is important, but it does not tell the whole story. **What do you notice about the shape and color of the little red objects, and why might their color be a special clue?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What are the red rods in the picture?",
+          "prompt": "What are the small red rod-shaped things I see in this stained spit sample?",
+          "cachedAnswer": "The tiny red rods are bacteria, which are germs too small to see without a microscope. They are shaped like little sticks or curved lines, and they stand out in red against the yellow-orange background. A special stain was used that most germs would lose when washed with an acid solution, but these germs hold onto the red color, which is why they are called \"acid-fast.\" That stubborn red color is a clue that these could be the kind of bacteria that cause a lung disease called tuberculosis (TB). Seeing them means germs are present, but the picture alone cannot name exactly which germ it is.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-stain",
+          "label": "Why does the stain make them red?",
+          "prompt": "Why do these germs stay red after staining when other germs would not?",
+          "cachedAnswer": "These bacteria have a very waxy, greasy outer coat, kind of like a raincoat made of fat. When the red dye soaks in with heat, it gets trapped inside that waxy coat. Then the lab washes the slide with an acid mixture that would normally rinse the dye out of ordinary germs, but the waxy coat protects the dye and keeps it locked in. That is why these germs stay red while everything else turns a different color. Scientists call this ability \"acid-fast,\" and it is a helpful trick for spotting these particular bacteria.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step",
+          "label": "What happens after finding the germs?",
+          "prompt": "If germs are found in the spit, what do doctors do next?",
+          "cachedAnswer": "Finding the red germs is an important first alert, but it is not the end of the process. Because several similar germs can look alike under the microscope, doctors run more tests to find out the exact species. One test grows the germs in the lab (called a culture), and another test reads the germ's DNA to identify it quickly and check if it can be treated with usual medicines. These extra steps help make sure the person gets the right treatment. So the picture starts the story, and the follow-up tests finish it.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This micrograph shows a sputum sample from a patient with weeks of cough, night sweats, and weight loss, prepared with an acid-fast stain. The slender red (magenta) rods against the yellow-orange counterstained background are acid-fast bacilli. Their retention of the red dye reflects an unusual, lipid-rich cell wall. A positive smear tells us organisms are present, but it does not by itself identify which species they are. **Given what you see, what does the red color of these rods tell you about their cell wall, and what does it not tell you?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "Describe what is visible in this smear",
+          "prompt": "Describe the visible features of this acid-fast stained sputum smear.",
+          "cachedAnswer": "The image is a circular microscope field with a yellow-orange background produced by the counterstain. Scattered across it are thin, slightly curved, rod-shaped organisms stained red to magenta; some appear singly and others in small clusters or beaded lines. These red rods are acid-fast bacilli. The surrounding orange material represents cellular debris and mucus from the sputum. The key visual point is the contrast: only the acid-fast organisms hold the red primary stain, while everything else takes the background color.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cell-wall-mechanism",
+          "label": "Why is the cell wall acid-fast?",
+          "prompt": "What is it about the bacterial cell wall that makes these organisms acid-fast?",
+          "cachedAnswer": "Acid-fast bacteria have a cell wall unusually rich in long-chain fatty molecules called mycolic acids. This waxy layer is hydrophobic and resists the alcohol-acid decolorizing step used in the staining process. During staining, heat (or a detergent) helps the red dye penetrate this waxy barrier; once inside, the dye is retained even after the acid-alcohol wash. Ordinary bacteria without this waxy coat lose the red dye and instead pick up the blue or yellow counterstain. So \"acid-fast\" is essentially a readout of a specific cell-wall chemistry, not a species name.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step",
+          "label": "What confirms the diagnosis?",
+          "prompt": "If the smear shows acid-fast bacilli, what further tests confirm what the organism is?",
+          "cachedAnswer": "A positive smear confirms that acid-fast organisms are present and that the sample is likely infectious, but it cannot distinguish among the various acid-fast species. To identify the organism, laboratories grow it in culture, which is definitive but can take weeks. Faster molecular tests amplify and detect the organism's DNA, giving species-level information (and often drug-resistance clues) within hours. Combining microscopy with culture and DNA testing lets scientists move from \"organisms are present\" to \"here is exactly what it is.\" This layered approach balances speed with accuracy.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "This is an acid-fast (e.g., Ziehl-Neelsen type) stained sputum smear from a patient with chronic cough, night sweats, and weight loss. The field shows slender, slightly curved, beaded red bacilli dispersed over a yellow-orange counterstained background of mucus and cellular debris. The morphology and staining are consistent with acid-fast bacilli, whose mycolic-acid-rich cell wall retains carbolfuchsin after acid-alcohol decolorization. Recognize, however, that smear positivity establishes the presence and rough burden of AFB but not the specific species. **How does the mycobacterial cell wall architecture explain both the staining property and the organism's clinical behavior?**",
+      "introQuestions": [
+        {
+          "id": "morphology",
+          "label": "Identify the organisms and morphology",
+          "prompt": "What morphologic and staining features identify these as acid-fast bacilli on this smear?",
+          "cachedAnswer": "The organisms are slender, straight to slightly curved rods, roughly 2-4 micrometers long, often with a beaded or barred internal appearance. They stain red-magenta with the primary carbolfuchsin and resist decolorization, standing out against the methylene-blue or (here) yellow-orange counterstained background. Distribution is scattered, sometimes in small clumps or serpentine arrangements. This combination of beaded, acid-fast, thin bacillary morphology in a sputum specimen is characteristic of mycobacteria. Quantifying the number per field forms the basis of semiquantitative smear grading.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "cell-wall-pathophys",
+          "label": "Link cell wall to staining and virulence",
+          "prompt": "How does the mycobacterial cell wall explain both acid-fastness and pathogenic behavior?",
+          "cachedAnswer": "The mycobacterial cell wall contains an unusually thick layer of mycolic acids covalently linked to arabinogalactan and peptidoglycan, forming a hydrophobic waxy barrier. This lipid-rich envelope traps carbolfuchsin and prevents acid-alcohol from extracting it, producing acid-fastness. The same wall confers resistance to desiccation, complement-mediated killing, and many antibiotics, and it slows growth. Cell-wall lipids such as cord factor (trehalose dimycolate) promote granuloma formation and allow intracellular survival within macrophages. Thus a single structural feature underlies both the diagnostic stain and key virulence properties.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "smear-vs-species",
+          "label": "Smear positive vs species identity",
+          "prompt": "Why does a positive acid-fast smear not equal a species diagnosis, and what confirms species?",
+          "cachedAnswer": "Acid-fast staining detects a shared cell-wall property, so it cannot distinguish Mycobacterium tuberculosis complex from nontuberculous mycobacteria or, in some contexts, partially acid-fast organisms like Nocardia. A positive smear indicates AFB presence and correlates with infectious burden but stops short of identity or drug susceptibility. Definitive speciation requires culture on solid or liquid media, and nucleic acid amplification testing provides rapid molecular identification and can flag resistance markers such as rifampin resistance. Correlating microscopy with these confirmatory methods is essential before assigning a diagnosis. Note that the source label for this teaching image has not been independently adjudicated.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A patient with several weeks of cough, night sweats, and weight loss submits sputum for acid-fast microscopy, and this smear shows scattered red bacilli against an orange background consistent with acid-fast bacilli (AFB). Clinically, this presentation and a positive smear raise concern for pulmonary tuberculosis, but the smear alone does not establish species or drug susceptibility. It does, however, have immediate implications for infectivity and infection control. **Given a smear-positive result in this patient, what are your next diagnostic and public-health steps, and what does the smear actually confirm?**",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "Interpret this smear clinically",
+          "prompt": "How should I interpret this AFB-positive sputum smear in a patient with chronic cough, night sweats, and weight loss?",
+          "cachedAnswer": "The clinical picture—subacute cough, night sweats, and weight loss—is a classic constitutional presentation for pulmonary tuberculosis, and the smear demonstrating acid-fast bacilli supports active mycobacterial infection. A positive smear indicates a relatively high organism burden and, in a TB context, greater infectivity, which drives airborne isolation. However, smear microscopy cannot differentiate M. tuberculosis from nontuberculous mycobacteria, nor confirm drug resistance. It should be interpreted alongside chest imaging, HIV status, and epidemiologic risk factors. Treat the smear as an early, actionable clue rather than a final diagnosis.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "What else can be acid-fast positive?",
+          "prompt": "What is the differential for acid-fast positivity on a sputum smear beyond tuberculosis?",
+          "cachedAnswer": "While M. tuberculosis complex is the priority concern in this vignette, other acid-fast organisms must be considered. Nontuberculous mycobacteria (e.g., M. avium complex, M. kansasii) can appear identical on smear and cause chronic pulmonary disease, especially in patients with structural lung disease or immunosuppression. Partially acid-fast organisms such as Nocardia may also stain, though morphology and clinical context differ. Prior treated TB with residual nonviable bacilli can also give smear positivity without live organisms. This is exactly why culture and molecular testing are required for definitive identification.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "next-step",
+          "label": "Confirmatory workup and next steps",
+          "prompt": "What confirmatory tests and management steps follow a positive AFB smear in suspected pulmonary TB?",
+          "cachedAnswer": "Order a nucleic acid amplification test (e.g., a rapid molecular assay) on sputum to confirm M. tuberculosis complex and screen for rifampin resistance, ideally the same day. Send specimens for mycobacterial culture and drug-susceptibility testing, which remain the gold standard despite longer turnaround. Place the patient in airborne isolation, obtain chest imaging, and test for HIV, since coinfection alters management. Report suspected TB to public health for contact investigation and directly observed therapy planning. Empiric multidrug therapy is started per guidelines once TB is confirmed or strongly suspected, and susceptibility results refine the regimen.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "Acid-fast smear of expectorated sputum in a patient with a several-week constitutional and respiratory illness demonstrates scattered, beaded, slightly curved AFB over an orange counterstained field. In this context the pretest probability of pulmonary TB is substantial, but smear microscopy remains a low-specificity screen: it cannot resolve MTB complex from NTM or confirm resistance, and grading only estimates burden and infectivity. Modern workflows front-load rapid molecular testing to compress time-to-diagnosis and time-to-resistance-detection. **How would you integrate smear grade, NAAT/rifampin-resistance results, and culture to drive isolation and empiric therapy decisions in this patient?**",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Smear morphology and grading pitfalls",
+          "prompt": "What smear morphology and grading considerations apply here, and what are common pitfalls?",
+          "cachedAnswer": "The bacilli are thin, beaded, and serpentine, consistent with mycobacteria; cording (serpentine cords) can suggest MTB complex but is not specific and cannot be relied upon. Semiquantitative grading (e.g., scanty through 3+) correlates with bacillary burden and infectiousness and guides monitoring of treatment response. Pitfalls include false negatives at low burden (smear sensitivity is limited, particularly in paucibacillary and HIV-associated disease), stain artifact and precipitate mimicking organisms, and inability to distinguish viable from nonviable bacilli. Fluorochrome (auramine) methods improve sensitivity over carbolfuchsin-based stains. Always correlate smear with molecular and culture data rather than acting on morphology alone.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "smear-vs-naat",
+          "label": "Smear vs NAAT vs culture roles",
+          "prompt": "How do smear microscopy, NAAT, and culture differ in what they confirm and their turnaround?",
+          "cachedAnswer": "Smear detects acid-fast organisms with rapid turnaround but low specificity and limited sensitivity; it informs infectivity and burden, not identity. NAAT (e.g., cartridge-based assays) rapidly confirms MTB complex and can detect rifampin resistance within hours, dramatically shortening time to targeted therapy and isolation decisions, though a negative NAAT does not fully exclude TB in a high-probability patient. Culture remains the reference standard, enabling species identification, phenotypic drug-susceptibility testing, and detection of paucibacillary disease, at the cost of weeks. A smear-positive/NAAT-positive result strongly supports TB and prompts empiric therapy; discordant results require expert interpretation. Layering the three balances speed against definitive characterization.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "management-guideline",
+          "label": "Isolation, therapy, and reporting logic",
+          "prompt": "What guideline-aware management, isolation, and reporting steps follow this presentation and smear result?",
+          "cachedAnswer": "Initiate airborne infection isolation immediately given a smear-positive presentation and hold until infectious TB is excluded or the patient is clinically improving on effective therapy per local de-isolation criteria. Send NAAT with rifampin-resistance detection, mycobacterial culture, and DST; collect the recommended serial sputum specimens. Test for HIV and screen for drug-resistance risk factors, prior treatment, and exposures that would alter the empiric regimen. Report suspected/confirmed TB to public health for contact investigation and DOT arrangement. Start standard four-drug empiric therapy when TB is confirmed or strongly suspected, then tailor based on susceptibility. Note that the CDC source label for this teaching image is not adjudicated ground truth and warrants specialist review before any clinical use.\n\n*This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}

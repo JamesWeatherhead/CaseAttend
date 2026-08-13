@@ -1,0 +1,133 @@
+{
+  "schema": "caseattend.intro-cache",
+  "schemaVersion": "1.0",
+  "caseId": "local-study-sub1",
+  "lessonPlanSha256": "a9357179ee6acd109bd99484dc6dea5ebc06c8a195e1163e97f84d197e987190",
+  "provenance": {
+    "modelId": "claude-opus-4-8",
+    "systemPromptSha256": "2623a66ebcef10ef3b840871544f59e30c77b1581da8c310a05c8d97910ea787",
+    "requestTemplateVersion": "1.0",
+    "mediaSha": "c4d44506933425873d7b2b340a6bead352642b7635f0e9b45aec883b6b15296f",
+    "generatedAt": "2026-08-13T14:19:44.000Z"
+  },
+  "review": {
+    "status": "draft"
+  },
+  "levels": {
+    "highschool": {
+      "introPrompt": "These are pictures of a brain taken by an MRI machine, which uses a strong magnet (not X-rays) to make detailed images. A 72-year-old woman has been forgetting words and getting lost in places she knows well. She also has an irregular heartbeat, high blood pressure, and diabetes. The MRI shows the same brain photographed in a few different 'settings,' where the same spot can look bright in one and dark in another. Looking at these black-and-white brain pictures, what do you think doctors are trying to compare when they take several different versions of the same brain?",
+      "introQuestions": [
+        {
+          "id": "what-do-i-see",
+          "label": "What am I looking at here?",
+          "prompt": "What are these brain MRI images showing me in simple terms?",
+          "cachedAnswer": "These are slices of a brain, like looking at photos of a loaf of bread one slice at a time. The bright loop around the outside is scalp and skull tissue, and the folded gray-and-white material in the middle is the brain itself. The dark spaces are fluid-filled areas inside the brain. Each of the four images is the same kind of scan taken with different machine settings, so the same area can appear bright in one picture and dark in another. Doctors use these differences to figure out what is happening inside the brain. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "why-many-pictures",
+          "label": "Why take so many different pictures?",
+          "prompt": "Why do doctors take several different types of MRI pictures of the same brain?",
+          "cachedAnswer": "Each MRI setting highlights something different, like using different filters on a camera. One setting shows fluid and swelling clearly, another shows the general shape and structure, and special settings can show if brain tissue was very recently injured. By comparing all of them, doctors can tell whether a problem is brand new or has been there a long time. It's like comparing several photos of the same room to spot exactly what changed. This teamwork of images helps them avoid guessing from just one view. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "heart-brain-link",
+          "label": "How could her heart affect her brain?",
+          "prompt": "How might an irregular heartbeat and high blood pressure connect to brain problems?",
+          "cachedAnswer": "The brain needs a steady flow of blood to stay healthy. An irregular heartbeat can let tiny blood clots form and travel up to the brain, where they can block a small vessel. High blood pressure and diabetes can also slowly damage the small blood vessels over many years. When blood flow is interrupted, brain cells in that area can be harmed, which may affect memory and finding words. This case teaches how heart and blood-vessel health are closely tied to brain health. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "undergrad": {
+      "introPrompt": "This is a brain MRI study of a 72-year-old woman with progressive memory decline, word-finding trouble, and getting lost in familiar places. Her history includes an irregular heartbeat (arrhythmia), hypertension, and diabetes. The images represent different MRI sequences—including FLAIR, T1, DWI, and ADC—each of which emphasizes different tissue properties. On MRI, the brightness of a region depends on the sequence, so the same tissue can appear light or dark depending on the settings. Given that the same brain is imaged multiple ways, why might comparing these sequences reveal more than any single image alone?",
+      "introQuestions": [
+        {
+          "id": "sequences-basics",
+          "label": "What do these MRI sequences show?",
+          "prompt": "What do FLAIR, T1, DWI, and ADC sequences each emphasize on brain MRI?",
+          "cachedAnswer": "Each MRI sequence is a way of weighting the signal so different tissues stand out. FLAIR makes fluid dark but keeps abnormal water in tissue bright, so it highlights swelling and older injury. T1 gives a clear anatomical map where fluid is dark and fat is bright. DWI measures how freely water molecules move; when movement is restricted, DWI lights up bright. ADC is a map that confirms whether that DWI brightness is truly restricted diffusion—restricted areas appear dark on ADC. Comparing them lets you cross-check a finding rather than trust one picture. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "water-movement",
+          "label": "Why does water movement matter?",
+          "prompt": "Why is the movement of water molecules important for detecting recent brain injury?",
+          "cachedAnswer": "In healthy brain tissue, water molecules move around fairly freely between and inside cells. When cells are injured very recently—for example from a sudden loss of blood supply—they swell and trap water inside, which restricts its movement. MRI can detect this restricted movement, showing bright on DWI and dark on ADC. Because this change happens quickly after an injury, it is a clue about timing. As tissue heals or scars over weeks, the water movement pattern shifts again. This is why DWI and ADC are key tools for spotting new versus old damage. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "risk-factors",
+          "label": "How do her health conditions fit in?",
+          "prompt": "How do irregular heartbeat, high blood pressure, and diabetes relate to brain blood vessel damage?",
+          "cachedAnswer": "These three conditions are all classic risk factors for reduced blood flow to the brain. An irregular heartbeat can allow clots to form in the heart and travel to brain vessels. Chronic high blood pressure and diabetes damage the walls of small blood vessels over years, making them narrow or leaky. Together these can produce both sudden blockages and slow, cumulative injury to brain tissue. In this teaching case, the imaging is interpreted alongside these risk factors, but without overstating what any single image proves. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_preclinical": {
+      "introPrompt": "A 72-year-old woman presents with progressive cognitive decline, anomia, and topographical disorientation, with a history of atrial arrhythmia, hypertension, and diabetes mellitus. The provided axial MRI includes FLAIR, T1, DWI, and ADC sequences. Recall that FLAIR nulls CSF signal while highlighting parenchymal water changes, and that cytotoxic edema produces DWI hyperintensity with corresponding ADC hypointensity (true restricted diffusion). Interrogating a lesion across all four sequences is the core skill in stroke-protocol imaging. Using the pathophysiology of cytotoxic versus vasogenic edema, how would you determine whether a bright DWI signal represents acute infarction?",
+      "introQuestions": [
+        {
+          "id": "signal-characteristics",
+          "label": "Describe signal across sequences",
+          "prompt": "How should I systematically describe a brain lesion across FLAIR, T1, DWI, and ADC?",
+          "cachedAnswer": "Approach each sequence in turn and record the signal. On FLAIR, note parenchymal hyperintensity, which reflects increased tissue water from edema, gliosis, or chronic small-vessel change, with CSF suppressed. On T1, characterize the lesion's anatomy and whether it is hypointense (encephalomalacia, fluid) or isointense. On DWI, identify hyperintensity that suggests restricted diffusion, and on ADC confirm whether the same region is hypointense. Concordant DWI-bright and ADC-dark indicates true restricted diffusion; DWI-bright with ADC-bright indicates T2 shine-through rather than acute restriction. This four-sequence correlation is the disciplined way to describe any finding. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "edema-mechanism",
+          "label": "Cytotoxic vs vasogenic edema",
+          "prompt": "What is the mechanism behind restricted diffusion in acute infarction?",
+          "cachedAnswer": "Acute ischemia deprives neurons of ATP, disabling the Na+/K+-ATPase and causing intracellular sodium and water accumulation—cytotoxic edema. This intracellular shift and cell swelling reduce the extracellular space, restricting the Brownian motion of water molecules, which manifests as DWI hyperintensity and ADC hypointensity. Vasogenic edema, by contrast, arises from blood-brain-barrier breakdown with water accumulating extracellularly, so diffusion is relatively increased and ADC is not markedly reduced. This mechanistic difference is why ADC is essential to distinguish acute cytotoxic injury from other causes of FLAIR/DWI brightness. ADC values typically pseudonormalize around 1-2 weeks post-infarct, a key chronicity clue. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "vascular-pattern",
+          "label": "Link imaging to vascular risk",
+          "prompt": "How does the patient's vascular history inform the pathophysiologic interpretation of the imaging?",
+          "cachedAnswer": "Her atrial arrhythmia raises the possibility of cardioembolic infarcts, which classically produce territorial or scattered cortical lesions in multiple vascular distributions. Chronic hypertension and diabetes drive small-vessel arteriolosclerosis, associated with lacunar infarcts and confluent periventricular/deep white matter FLAIR hyperintensity. These mechanisms can coexist, producing a mixed pattern of acute and chronic vascular injury. Cumulative vascular burden is also a recognized contributor to cognitive decline. The teaching point is to correlate imaging pattern with these mechanisms while acknowledging that imaging alone cannot fully establish etiology. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "ms_clinical": {
+      "introPrompt": "A 72-year-old woman with atrial arrhythmia, hypertension, and diabetes presents with progressive memory decline, anomia, and getting lost in familiar environments. The stroke-protocol MRI provides FLAIR, T1, DWI, and ADC sequences for correlation. Your task is to describe any finding, establish chronicity from DWI/ADC concordance, and integrate the vascular history without overcalling a single diagnosis. Remember that the clinical picture spans both acute events and a more chronic cognitive trajectory. How would you build a differential that accounts for both her subacute cognitive symptoms and her substantial vascular risk profile?",
+      "introQuestions": [
+        {
+          "id": "read-the-study",
+          "label": "How do I read this stroke MRI?",
+          "prompt": "What is my systematic approach to reading this brain MRI in the context of memory decline and stroke risk?",
+          "cachedAnswer": "Start by confirming sequences and orientation, then survey FLAIR for parenchymal hyperintensity, white matter disease, and volume loss. Correlate any suspicious focus on DWI with the ADC map to separate true restricted diffusion from T2 shine-through. Assess the distribution—territorial, borderzone, lacunar, or scattered embolic—and look for old encephalomalacia on T1/FLAIR. Note global or regional atrophy patterns that might accompany cognitive decline. Finally, synthesize acute findings against chronic small-vessel burden, keeping the described symptoms and vascular history in view. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "acute-vs-chronic",
+          "label": "Acute vs chronic on DWI/ADC",
+          "prompt": "How do I use DWI and ADC to decide whether a finding is acute or chronic?",
+          "cachedAnswer": "True acute infarction shows DWI hyperintensity with matching ADC hypointensity, appearing within minutes to hours and persisting for roughly the first week. As the infarct ages, ADC pseudonormalizes around 7-14 days, then becomes hyperintense in the chronic phase, while FLAIR hyperintensity and eventual encephalomalacia persist. A FLAIR-bright, DWI-bright, ADC-bright lesion reflects shine-through or subacute-to-chronic change, not fresh restriction. Chronic infarcts show T1 hypointense cavitation, volume loss, and gliosis. Layering these signal timelines lets you estimate lesion age and distinguish a single acute event from accumulated chronic damage. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "differential",
+          "label": "Build the differential",
+          "prompt": "What differential should I consider for progressive cognitive decline with this vascular history and MRI?",
+          "cachedAnswer": "The vascular risk factors make vascular cognitive impairment a strong consideration—cardioembolic infarcts from the arrhythmia and small-vessel ischemic disease from hypertension and diabetes. Mixed dementia, combining vascular contribution with a neurodegenerative process such as Alzheimer disease, is common in this age group and clinical picture. Consider whether medial temporal or hippocampal atrophy accompanies the vascular burden. Reversible contributors—metabolic derangements, medication effects, mood disorder, and thyroid or B12 issues—should be excluded clinically. The imaging refines but does not settle the differential; correlation with cognitive testing and labs is essential, and certainty should not be overstated from one study. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    },
+    "resident": {
+      "introPrompt": "72F with progressive amnestic and topographical decline plus anomia, on a background of atrial arrhythmia, hypertension, and diabetes—imaged with a standard axial stroke protocol (FLAIR, T1, DWI, ADC). The task is disciplined multi-sequence correlation: characterize signal, adjudicate chronicity by DWI/ADC concordance, and map the pattern onto plausible embolic versus small-vessel mechanisms without overcalling. Note the technical caveats visible here, including motion and susceptibility that can mimic or obscure diffusion findings. Given the coexisting cardioembolic and microangiopathic risk, how do you avoid anchoring on a single lesion pattern when the clinical story is a chronic cognitive decline?",
+      "introQuestions": [
+        {
+          "id": "pattern-recognition",
+          "label": "Characterize the pattern",
+          "prompt": "How should I characterize and localize findings across these sequences with attention to pitfalls?",
+          "cachedAnswer": "Correlate every candidate lesion across FLAIR, DWI, and ADC before committing, and beware DWI T2 shine-through masquerading as restriction—always confirm on ADC. Distinguish territorial embolic wedges, borderzone/watershed chains, punctate cortical embolic showers, and lacunar/deep white matter microangiopathy. Confluent periventricular and deep FLAIR hyperintensity favors chronic small-vessel disease, whereas multiterritorial acute restricted foci suggest an embolic source. Screen for microbleeds and superficial siderosis on susceptibility-weighted imaging if available, given hypertensive versus amyloid considerations. Note artifact from motion and the visibly limited FOV/coil signal here, which degrades sensitivity for subtle lesions. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "chronicity-timeline",
+          "label": "Chronicity and pitfalls",
+          "prompt": "What DWI/ADC timeline and pitfalls should guide my chronicity assessment here?",
+          "cachedAnswer": "Hyperacute-to-acute infarcts show DWI hyperintensity with ADC hypointensity from minutes out to roughly day 5-7; ADC pseudonormalization at 1-2 weeks is a classic trap that can render a subacute infarct falsely reassuring on ADC alone—use FLAIR and DWI together. Late subacute and chronic lesions become ADC hyperintense with FLAIR hyperintensity and eventual cystic encephalomalacia and volume loss. Watch for shine-through, cerebellar/brainstem lesions obscured by susceptibility, and small cortical embolic foci lost to motion. Do not date a lesion from a single sequence; concordance across all four is the standard. Timing estimates should be given as ranges, not points. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        },
+        {
+          "id": "integrate-and-manage",
+          "label": "Integrate and next steps",
+          "prompt": "How do I integrate imaging with the vascular context and frame appropriate next steps?",
+          "cachedAnswer": "Frame the impression as a spectrum: acute embolic infarction if concordant restricted diffusion is present, superimposed on a chronic microangiopathic burden fitting the hypertension and diabetes, with the arrhythmia as a plausible embolic source. Recommend correlation with cardiac evaluation for the arrhythmia, vascular risk optimization, and cognitive/neurologic assessment rather than an imaging-only diagnosis. If vascular cognitive impairment versus mixed or neurodegenerative dementia is in play, note the value of hippocampal/mesial temporal assessment and structured cognitive testing. Avoid overstating certainty from a single motion-limited study and suggest follow-up or dedicated protocol as indicated. Communicate incidental microbleed or siderosis findings given their anticoagulation implications. *This information is for EDUCATIONAL USE ONLY and not for diagnosis or treatment.*"
+        }
+      ]
+    }
+  }
+}
