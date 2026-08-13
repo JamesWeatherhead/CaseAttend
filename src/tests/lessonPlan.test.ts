@@ -320,4 +320,43 @@ describe('Lesson Plan v1', () => {
       "clinicalReview.reviewed cannot be true without at least one citation scoped to 'clinical-teaching'.",
     );
   });
+
+  it('accepts an optional turnBudget and rejects a non-positive value', () => {
+    const draft = validDraft();
+    const valid = validateLessonPlanDraftV1({ ...draft, turnBudget: 12 });
+    expect(valid).toEqual({ valid: true, errors: [] });
+
+    const zero = validateLessonPlanDraftV1({ ...draft, turnBudget: 0 });
+    expect(zero.errors).toContain('turnBudget must be a positive integer when provided.');
+
+    const fractional = validateLessonPlanDraftV1({ ...draft, turnBudget: 3.5 });
+    expect(fractional.errors).toContain('turnBudget must be a positive integer when provided.');
+  });
+
+  it('appends the silent lesson-progress steer into the provider prompt only when supplied', async () => {
+    const { schema: _schema, schemaVersion: _schemaVersion, ...input } = validDraft();
+    const plan = await createLessonPlanV1(input);
+    const runtime = {
+      learnerLevel: 'undergrad' as const,
+      mode: 'chat' as const,
+      hasImage: false,
+      caseContext: {
+        id: 'teaching-case',
+        title: 'Teaching case',
+        vignette: 'A deidentified teaching vignette.',
+        neutralDescription: 'A neutral artifact description.',
+        domain: 'radiology',
+      },
+    };
+    const baseline = await composeLessonPrompt(plan, runtime);
+    expect(baseline.runtimeContext.content).not.toContain('LESSON PACING');
+
+    const steered = await composeLessonPrompt(plan, {
+      ...runtime,
+      lessonProgressSteer: 'LESSON PACING (SILENT, NEVER READ VERBATIM TO THE LEARNER)\nTurn 3 of 8.',
+    });
+    expect(steered.runtimeContext.content).toContain('LESSON PACING');
+    expect(steered.runtimeContext.content).toContain('Turn 3 of 8.');
+    expect(steered.providerPrompt).toContain('Turn 3 of 8.');
+  });
 });

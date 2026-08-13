@@ -140,6 +140,15 @@ export interface ObjectiveEvidenceRecordedEvent {
   source: 'learner_turn' | 'model_turn' | 'educator';
 }
 
+export type LessonCompletionReason = 'objectives_met' | 'budget_spent';
+
+export interface LessonCompletedEvent {
+  type: 'lesson_completed';
+  reason: LessonCompletionReason;
+  turnsUsed: number;
+  objectivesMet: number;
+}
+
 export type SessionEventPayloadV1 =
   | SessionStartedEvent
   | SessionEndedEvent
@@ -149,7 +158,8 @@ export type SessionEventPayloadV1 =
   | ModelResponseCompletedEvent
   | ModelResponseFailedEvent
   | TurnCancelledEvent
-  | ObjectiveEvidenceRecordedEvent;
+  | ObjectiveEvidenceRecordedEvent
+  | LessonCompletedEvent;
 
 export interface SessionEventV1 {
   schema: typeof SESSION_EVENT_SCHEMA;
@@ -701,6 +711,20 @@ function validateObjectiveEvidence(event: Record<string, unknown>, errors: strin
   }
 }
 
+function validateLessonCompleted(event: Record<string, unknown>, errors: string[]): void {
+  rejectUnknownKeys(
+    event,
+    ['type', 'reason', 'turnsUsed', 'objectivesMet'],
+    'sessionEvent.event',
+    errors,
+  );
+  if (event.reason !== 'objectives_met' && event.reason !== 'budget_spent') {
+    errors.push("sessionEvent.event.reason must be 'objectives_met' or 'budget_spent'.");
+  }
+  validateNonnegativeInteger(event.turnsUsed, 'sessionEvent.event.turnsUsed', errors);
+  validateNonnegativeInteger(event.objectivesMet, 'sessionEvent.event.objectivesMet', errors);
+}
+
 function validateEventPayload(value: unknown, sessionId: unknown, errors: string[]): void {
   const event = requireRecord(value, 'sessionEvent.event', errors);
   if (!event) return;
@@ -736,6 +760,9 @@ function validateEventPayload(value: unknown, sessionId: unknown, errors: string
       return;
     case 'objective_evidence_recorded':
       validateObjectiveEvidence(event, errors);
+      return;
+    case 'lesson_completed':
+      validateLessonCompleted(event, errors);
       return;
     default:
       rejectUnknownKeys(event, ['type'], 'sessionEvent.event', errors);
