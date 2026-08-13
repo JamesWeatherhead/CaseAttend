@@ -10,6 +10,13 @@ import { LearnerLevel } from '../constants';
 import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains';
 import { getLessonPlanRef, getLessonSocraticOpening, type LessonPlanV1 } from '../core/lessonPlan';
+import {
+  computeLessonProgressFromCounts,
+  formatSilentLessonProgressSteer,
+  type LessonProgress,
+} from '../core/lessonTurnBudget';
+import LessonProgressChip from './LessonProgressChip';
+import { SHOW_TURN_BUDGET_CHIP } from '../constants';
 import { requireCasePackage } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
 import {
@@ -258,6 +265,10 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     { id: 'welcome', role: 'model', text: welcomeText }
   ];
   const [messages, setMessages] = useState(initMsg);
+  const learnerTurnsObserved = messages.filter((m) => m.role === 'user').length;
+  const lessonProgress: LessonProgress | null = lessonPlan
+    ? computeLessonProgressFromCounts(lessonPlan, { turnsUsed: learnerTurnsObserved })
+    : null;
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
@@ -328,6 +339,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setInput('');
     setDynamicSuggestionsMap(null);
     setCaptureError(null);
+    lessonCompletionEmittedRef.current = null;
   }, [sessionContextKey, studyMetadata?.domain, studyMetadata?.studyId]);
 
   // Update the untouched welcome when the resolved lesson or learner level changes.
@@ -396,6 +408,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   };
   const activeRequestRef = useRef<ActiveRequest | null>(null);
   const sessionRecorderRef = useRef<SessionRecorder | null>(null);
+  const lessonCompletionEmittedRef = useRef<string | null>(null);
   const previousSessionRef = useRef<SessionTransitionLink | null>(null);
 
   const recordSessionEvent = (
@@ -1117,6 +1130,19 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         lessonPlanRef: activeLessonRef,
     }]);
 
+    // Include the in-flight learner turn (already appended to `messages`) in
+    // the pacing count that reaches the tutor.
+    const inflightProgress: LessonProgress | null = activeLesson
+      ? computeLessonProgressFromCounts(activeLesson, {
+          turnsUsed: messages.filter((m) => m.role === 'user').length + 1,
+        })
+      : null;
+    // Locked research policy has a frozen sha256 for its system prompt: the
+    // steer must NOT be sent under that policy or the run fails deviation.
+    const silentSteer = !lockedTutor && inflightProgress
+      ? formatSilentLessonProgressSteer(inflightProgress)
+      : '';
+
     try {
         let fullText = '';
         const inferenceResult = await teachingEngine.runTurn(
@@ -1166,6 +1192,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             request.abortController.signal,
             request.requestedModelId,
             lockedTutor?.runtime,
+            silentSteer,
         );
         if (isCurrentRequest(request) && !request.terminalRecorded) {
           if (request.research) {
@@ -1215,6 +1242,22 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
               ...(inferenceResult.usage ? { usage: inferenceResult.usage } : {}),
               ...(inferenceResult.finishReason ? { finishReason: inferenceResult.finishReason } : {}),
             });
+            const completedProgress = inflightProgress;
+            const recorderForCompletion = request.recorder;
+            if (
+              completedProgress?.completed
+              && completedProgress.completionReason
+              && recorderForCompletion
+              && lessonCompletionEmittedRef.current !== recorderForCompletion.sessionId
+            ) {
+              lessonCompletionEmittedRef.current = recorderForCompletion.sessionId;
+              recordSessionEvent(recorderForCompletion, {
+                type: 'lesson_completed',
+                reason: completedProgress.completionReason,
+                turnsUsed: completedProgress.turnsUsed,
+                objectivesMet: completedProgress.objectivesMet,
+              });
+            }
           }
         }
     } catch (error: unknown) {
@@ -1380,6 +1423,10 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                   Lesson v{lessonPlan.version} {lessonPlan.manifest.sha256.slice(0, 7)}
                 </span>
               )}
+              <LessonProgressChip
+                progress={lessonProgress}
+                visible={SHOW_TURN_BUDGET_CHIP && !lockedTutor}
+              />
           </div>
           <div className="flex items-start gap-1">
                <span className="flex items-center gap-1 text-emerald-400 font-medium">

@@ -182,6 +182,7 @@ export const streamChatResponse = async (
   signal?: AbortSignal,
   requestedModelId?: string,
   lockedRuntime?: LockedTutorRuntime,
+  silentSystemNote?: string,
 ): Promise<AIInferenceResult> => {
   try {
     if (!caseId) {
@@ -246,6 +247,9 @@ export const streamChatResponse = async (
       model: lockedRuntime?.openRouterPolicy.model ?? requestedModelId ?? getModel(),
       ...(lockedRuntime ? { lockedPolicy: lockedRuntime.openRouterPolicy } : {}),
       signal,
+      ...(!lockedRuntime && silentSystemNote && silentSystemNote.trim()
+        ? { silentSystemNote }
+        : {}),
     });
     emitOpenRouterChunks(response.chunks, onChunk);
     return { ...response.metadata, promptSha256 };

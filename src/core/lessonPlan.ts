@@ -105,6 +105,11 @@ export interface LessonPlanV1Draft {
   rubric: LessonRubric;
   citations: readonly LessonCitation[];
   clinicalReview: LessonClinicalReview;
+  /**
+   * Optional authored override for the soft turn budget Y. When absent the
+   * runtime derives Y from `objectives.length` (see lessonTurnBudget.ts).
+   */
+  turnBudget?: number;
 }
 
 export interface LessonPlanManifest {
@@ -136,6 +141,12 @@ export interface LessonPromptRuntimeContext {
   mode: LessonPromptMode;
   hasImage: boolean;
   caseContext: LessonPromptCaseContext;
+  /**
+   * Optional silent lesson-pacing note appended to `runtimeContext.content`
+   * and `providerPrompt`. Never rendered to the learner. Callers derive this
+   * from `formatSilentLessonProgressSteer` in `lessonTurnBudget.ts`.
+   */
+  lessonProgressSteer?: string;
 }
 
 export interface LessonTutorPromptSections {
@@ -545,6 +556,7 @@ function validateDraft(
     'rubric',
     'citations',
     'clinicalReview',
+    'turnBudget',
   ];
   if (options.allowManifest) rootKeys.push('manifest');
   rejectUnknownKeys(draft, rootKeys, 'lessonPlan', errors);
@@ -585,6 +597,11 @@ function validateDraft(
     }
   });
   requireString(draft.educatorTutorInstructions, 'educatorTutorInstructions', errors);
+  if (draft.turnBudget !== undefined) {
+    if (!Number.isSafeInteger(draft.turnBudget) || (draft.turnBudget as number) < 1) {
+      errors.push('turnBudget must be a positive integer when provided.');
+    }
+  }
   const coveredObjectives = validateRubric(draft.rubric, objectiveIds, errors);
   objectiveIds.forEach((objectiveId) => {
     if (!coveredObjectives.has(objectiveId)) {
@@ -826,7 +843,10 @@ function composeRuntimeContent(plan: LessonPlanV1, runtime: LessonPromptRuntimeC
     }
   }
 
-  return [
+  const steer = typeof runtime.lessonProgressSteer === 'string'
+    ? runtime.lessonProgressSteer.trim()
+    : '';
+  const lines = [
     `Learner level: ${runtime.learnerLevel}`,
     `Learner instruction: ${LEARNER_LEVEL_INSTRUCTIONS[runtime.learnerLevel]}`,
     `Mode: ${runtime.mode}`,
@@ -840,7 +860,9 @@ function composeRuntimeContent(plan: LessonPlanV1, runtime: LessonPromptRuntimeC
     `Case title: ${runtime.caseContext.title}`,
     `Case vignette: ${runtime.caseContext.vignette}`,
     `Case neutral description: ${runtime.caseContext.neutralDescription}`,
-  ].join('\n');
+  ];
+  if (steer.length > 0) lines.push(steer);
+  return lines.join('\n');
 }
 
 /**
