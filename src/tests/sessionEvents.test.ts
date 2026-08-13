@@ -171,11 +171,44 @@ describe('Session Event v1', () => {
         rubricCriterionId: 'morphology-evidence',
         source: 'learner_turn',
       },
+      {
+        type: 'lesson_completed',
+        reason: 'objectives_met',
+        turnsUsed: 5,
+        objectivesMet: 3,
+      },
+      {
+        type: 'lesson_completed',
+        reason: 'budget_spent',
+        turnsUsed: 12,
+        objectivesMet: 1,
+      },
     ];
 
     variants.forEach((event, index) => {
       expect(validateSessionEventV1(makeEvent(event, index))).toEqual({ valid: true, errors: [] });
     });
+  });
+
+  it('rejects a lesson_completed event with an unknown reason or negative counts', () => {
+    const unknownReason = validateSessionEventV1(makeEvent({
+      type: 'lesson_completed',
+      // @ts-expect-error deliberately unsupported reason for this test
+      reason: 'user_gave_up',
+      turnsUsed: 5,
+      objectivesMet: 3,
+    }));
+    expect(unknownReason.errors).toContain(
+      "sessionEvent.event.reason must be 'objectives_met' or 'budget_spent'.",
+    );
+
+    const negative = validateSessionEventV1(makeEvent({
+      type: 'lesson_completed',
+      reason: 'budget_spent',
+      turnsUsed: -1,
+      objectivesMet: 2,
+    }));
+    expect(negative.errors).toContain('sessionEvent.event.turnsUsed must be a nonnegative integer.');
   });
 
   it('requires exact transition linkage and rejects linkage on an initial case opening', () => {

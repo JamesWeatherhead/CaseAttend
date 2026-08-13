@@ -119,6 +119,31 @@ describe('Session Event v1 exports', () => {
     );
   });
 
+  it('exports the lesson_completed event with its dedicated CSV columns', () => {
+    const completion = makeEvent(SESSION_A, 3, {
+      type: 'lesson_completed',
+      reason: 'objectives_met',
+      turnsUsed: 4,
+      objectivesMet: 2,
+    });
+
+    const jsonl = exportSessionEventsJsonl([completion]);
+    expect(jsonl).toContain('"reason":"objectives_met"');
+    expect(jsonl).toContain('"turnsUsed":4');
+
+    const csv = exportSessionEventsCsv([completion]);
+    const rows = csv.trimEnd().split('\r\n');
+    const headers = rows[0].split(',');
+    const cells = rows[1].split(',');
+    expect(headers).toContain('lesson_completion_reason');
+    expect(headers).toContain('lesson_turns_used');
+    expect(headers).toContain('lesson_objectives_met');
+    expect(cells[headers.indexOf('event_type')]).toBe('lesson_completed');
+    expect(cells[headers.indexOf('lesson_completion_reason')]).toBe('objectives_met');
+    expect(cells[headers.indexOf('lesson_turns_used')]).toBe('4');
+    expect(cells[headers.indexOf('lesson_objectives_met')]).toBe('2');
+  });
+
   it('refuses invalid events before writing either export format', () => {
     const invalid = {
       ...sessionAStart,

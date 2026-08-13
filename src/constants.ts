@@ -72,6 +72,15 @@ export const LEARNER_LEVELS: { id: LearnerLevel; label: string }[] = [
   { id: 'resident', label: 'Resident' },
 ];
 
+/**
+ * When true, a subtle "X of Y exchanges left" chip is rendered next to the
+ * composer. The silent tutor-facing pacing steer is the primary mechanism for
+ * driving lessons to closure; the chip is off by default because a visible
+ * counter can add pressure. Flip locally to preview it or wire it to an
+ * educator setting when ready.
+ */
+export const SHOW_TURN_BUDGET_CHIP = false;
+
 export const FOLLOWUPS_BY_LEVEL: Record<LearnerLevel, { label: string; prompt: string }[]> = {
   highschool: [
     {

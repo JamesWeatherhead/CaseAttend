@@ -57,6 +57,9 @@ export const SESSION_EVENT_CSV_COLUMNS = [
   'objective_id',
   'rubric_criterion_id',
   'evidence_source',
+  'lesson_completion_reason',
+  'lesson_turns_used',
+  'lesson_objectives_met',
 ] as const;
 
 export type SessionEventCsvColumn = (typeof SESSION_EVENT_CSV_COLUMNS)[number];
@@ -170,6 +173,9 @@ function blankRow(event: SessionEventV1): CsvRow {
     objective_id: undefined,
     rubric_criterion_id: undefined,
     evidence_source: undefined,
+    lesson_completion_reason: undefined,
+    lesson_turns_used: undefined,
+    lesson_objectives_met: undefined,
   };
 }
 
@@ -244,6 +250,12 @@ function eventCells(event: SessionEventPayloadV1): Partial<CsvRow> {
         objective_id: event.objectiveId,
         rubric_criterion_id: event.rubricCriterionId,
         evidence_source: event.source,
+      };
+    case 'lesson_completed':
+      return {
+        lesson_completion_reason: event.reason,
+        lesson_turns_used: event.turnsUsed,
+        lesson_objectives_met: event.objectivesMet,
       };
     default: {
       const exhaustive: never = event;

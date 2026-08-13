@@ -249,6 +249,13 @@ export async function getOpenRouterResponse(opts: {
   model: string;
   lockedPolicy?: LockedOpenRouterPolicy;
   signal?: AbortSignal;
+  /**
+   * Silent per-turn lesson-pacing note. Sent as a second system-role message
+   * so it does not alter the cached, sha256-verified base system prompt. Only
+   * applied in public/BYOK mode; ignored under a locked research policy where
+   * the frozen prompt hash must be preserved.
+   */
+  silentSystemNote?: string;
 }): Promise<OpenRouterResponse> {
   const { message, systemPrompt, imageBase64, mode, lockedPolicy, signal } = opts;
   if (lockedPolicy) assertLockedOpenRouterPolicy(lockedPolicy);
@@ -278,6 +285,12 @@ export async function getOpenRouterResponse(opts: {
   const messages: any[] = [];
   if (systemPrompt && systemPrompt.trim()) {
     messages.push({ role: 'system', content: systemPrompt });
+  }
+  const trimmedSilentNote = !lockedPolicy && typeof opts.silentSystemNote === 'string'
+    ? opts.silentSystemNote.trim()
+    : '';
+  if (trimmedSilentNote) {
+    messages.push({ role: 'system', content: trimmedSilentNote });
   }
   messages.push({ role: 'user', content: userContent });
 
