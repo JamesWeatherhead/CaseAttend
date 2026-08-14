@@ -53,10 +53,20 @@ frontier models are VLMs, but the terms are not synonyms.
 learned more, in less time, from a custom AI tutor than from an in-class
 active-learning session, and reported higher engagement and motivation
 ([Kestin et al., *Scientific Reports*, 2025](https://doi.org/10.1038/s41598-025-97652-6)).
-The tutor was purpose-built with the same pedagogical scaffolding as the class
-it was compared to. CaseAttend applies that lesson to case-based visual
-reasoning in medicine: the tutor sees the same artifact the learner sees, and
-the Lesson Plan encodes the teaching intent.
+
+**In medical education specifically.** A quasi-experimental study of 293
+first-year medical students at the University of Toronto deployed a custom
+ChatGPT-4o AI teaching assistant, constrained to course materials and
+instructed to teach via the Socratic method. Students who adopted it closed a
+significant pre-intervention gap with their peers, and academic-difficulty
+rates fell from 24.1% to peer-level (~5%). Thematic analysis identified
+reliable and accurate support, efficient use across learning activities, and
+a psychologically safe space to ask questions as the key advantages
+([Sami et al., *Academic Medicine*, 2026](https://doi.org/10.1093/acamed/wvag208)).
+
+CaseAttend applies these lessons to case-based visual reasoning in medicine:
+the tutor sees the same artifact the learner sees, and the Lesson Plan
+encodes the teaching intent.
 
 Choose the path that fits your work:
 
