@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool"><img src="https://img.shields.io/badge/Winner-DeepMind%20Kaggle%20Hackathon-gold?style=flat-square" alt="Winner: Google DeepMind Kaggle Hackathon"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/JamesWeatherhead/CaseAttend?style=flat-square&color=3178C6" alt="License: AGPL-3.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/JamesWeatherhead/CaseAttend?style=flat-square&color=3178C6" alt="License: MIT"></a>
   <a href="https://github.com/JamesWeatherhead/CaseAttend/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/JamesWeatherhead/CaseAttend/ci.yml?branch=main&style=flat-square&label=build" alt="CI build status"></a>
   <a href="https://caseattend.com"><img src="https://img.shields.io/badge/Live-caseattend.com-2ea44f?style=flat-square" alt="Live at caseattend.com"></a>
 </p>
@@ -307,22 +307,19 @@ https://github.com/JamesWeatherhead/CaseAttend
 
 ## License
 
-CaseAttend's source code is licensed under [AGPL-3.0](LICENSE) © 2026 James Weatherhead.
+CaseAttend's source code is licensed under the [MIT License](LICENSE) © 2026 James Weatherhead.
 Third-party runtime components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 The bundled teaching images are third-party works under their own licenses and
-are not covered by AGPL-3.0. Their canonical source, license, attribution,
-review status, and byte-level SHA-256 digest are recorded in the Case Package v1
-registry at `src/data/caseRegistry.ts`. The images remain under their original
-terms.
+are not covered by CaseAttend's MIT license. Their canonical source, license,
+attribution, review status, and byte-level SHA-256 digest are recorded in the
+Case Package v1 registry at `src/data/caseRegistry.ts`. The images remain under
+their original terms.
 
-**Commercial licensing.** If you distribute covered CaseAttend code, the AGPL
-includes source-sharing obligations. If you modify CaseAttend and let people
-interact with that modified version over a network, those users must have a
-prominent, no-charge way to receive the Corresponding Source for that version.
-If those terms do not fit a closed product or service, a separate commercial
-license is available on request: contact James Weatherhead via
-[github.com/JamesWeatherhead](https://github.com/JamesWeatherhead). This summary
-is not legal advice; the [license text](LICENSE) controls.
+**Building on CaseAttend.** The MIT License lets you use, modify, and
+redistribute the code, including in closed-source and commercial products, at no
+charge. The only condition is that you keep the copyright and license notice in
+copies or substantial portions of the software. This summary is not legal
+advice; the [license text](LICENSE) controls.
 
-<div align="center"><sub>AGPL-3.0 · © 2026 James Weatherhead</sub></div>
+<div align="center"><sub>MIT · © 2026 James Weatherhead</sub></div>

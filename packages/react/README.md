@@ -30,5 +30,4 @@ open, validated learner-level ID when your prompt composer defines one.
 See the repository [SDK guide](https://github.com/JamesWeatherhead/CaseAttend/tree/main/docs/sdk)
 for a complete setup, privacy boundaries, examples, and license information.
 
-Licensed under [AGPL-3.0-only](LICENSE). Separate commercial licensing is
-available from the copyright holder; the complete `LICENSE` file controls.
+Licensed under the [MIT License](LICENSE). The complete `LICENSE` file controls.

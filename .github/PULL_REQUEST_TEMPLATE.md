@@ -27,4 +27,4 @@
       evidence remains explicitly unreviewed or `not-reviewed`.
 - [ ] Each image records its source, required attribution, and exact license or
       use terms, which permit redistribution. Images are not relicensed under
-      AGPL-3.0.
+      CaseAttend's MIT license.

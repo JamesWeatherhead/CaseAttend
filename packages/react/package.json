@@ -2,7 +2,7 @@
   "name": "@caseattend/react",
   "version": "0.1.0",
   "description": "Accessible React components for the CaseAttend teaching engine",
-  "license": "AGPL-3.0-only",
+  "license": "MIT",
   "type": "module",
   "sideEffects": ["./styles.css"],
   "exports": {

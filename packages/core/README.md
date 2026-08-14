@@ -41,6 +41,5 @@ for a complete, deterministic setup that needs no provider account. Read the
 [SDK guide](https://github.com/JamesWeatherhead/CaseAttend/tree/main/docs/sdk)
 before integrating storage, inference, or research collection.
 
-Licensed under [AGPL-3.0-only](LICENSE). Separate commercial licensing is
-available from the copyright holder; see the SDK licensing guide for plain
-language and the complete `LICENSE` file for controlling terms.
+Licensed under the [MIT License](LICENSE). See the SDK licensing guide for
+plain language and the complete `LICENSE` file for controlling terms.

@@ -2,7 +2,7 @@
   "name": "@caseattend/core",
   "version": "0.1.0",
   "description": "Browser-free teaching engine contract for CaseAttend",
-  "license": "AGPL-3.0-only",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "exports": {

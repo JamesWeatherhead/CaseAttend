@@ -163,7 +163,7 @@ what a case says, so correctness is non-negotiable.
   creator or required attribution, exact license or use terms, and a license URL
   when available. Suitable terms can include CC BY, CC BY-SA, CC0, public
   domain, or dataset terms that permit redistribution. Images keep their own
-  license and are not relicensed under AGPL.
+  license and are not relicensed under CaseAttend's MIT license.
 - **De-identification is a separate attestation.** Record who attested and when,
   or leave the package explicitly not reviewed. A public or redistributable
   image is not automatically de-identified.
@@ -177,15 +177,9 @@ what a case says, so correctness is non-negotiable.
 
 ## License
 
-By submitting a contribution, you agree that:
-
-1. your contribution is licensed to the project and to all recipients under the
-   [GNU AGPL v3.0](LICENSE); and
-2. you grant James Weatherhead, the project maintainer, a perpetual, worldwide,
-   non-exclusive, royalty-free, irrevocable license to also distribute your
-   contribution under other terms, including commercial licenses. This keeps a
-   dual-licensing option open for the project. You keep the copyright to your
-   work.
+By submitting a contribution, you agree that your contribution is licensed to
+the project and to all recipients under the [MIT License](LICENSE). You keep the
+copyright to your work.
 
 Your DCO sign-off (`git commit -s`) certifies you have the right to make the
 contribution under these terms.

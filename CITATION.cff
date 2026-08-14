@@ -35,6 +35,6 @@ keywords:
   - vision-language models
   - education research
   - software development kit
-license: AGPL-3.0-only
+license: MIT
 version: 0.5.0
 date-released: "2026-08-09"

@@ -550,7 +550,7 @@ const StudyList: React.FC<StudyListProps> = ({
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#6b7080]">
             <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Github className="w-3.5 h-3.5" /> Source on GitHub (AGPL-3.0)
+              <Github className="w-3.5 h-3.5" /> Source on GitHub (MIT)
             </a>
             <span className="text-[#2a2d33]">•</span>
             <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">

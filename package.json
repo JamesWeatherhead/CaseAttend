@@ -2,7 +2,7 @@
   "name": "caseattend",
   "private": true,
   "version": "0.5.0",
-  "license": "AGPL-3.0-only",
+  "license": "MIT",
   "type": "module",
   "workspaces": [
     "packages/*",
