@@ -91,12 +91,6 @@ Choose the path that fits your work:
   <img src="docs/figures/stochastic-llm-forest.jpg" width="720" alt="A learner at a laptop asks 'Why does tension pneumothorax cause low preload?'. Five lit paths lead into a dark forest, each labeled with a plausible follow-up question the LLM could steer toward.">
 </p>
 
-**A concrete run.** Ask a generic LLM about tension pneumothorax. One reply
-opens paths into physiology, related shock states, bedside signs, and the
-differential. After a few branches the conversation can land somewhere
-useful, somewhere unintended, or so far from the starting point that the
-original objective is gone.
-
 **CaseAttend's answer: [Lesson Plan v1](#lesson-plan-v1).** A plan is a
 portable, versioned file that freezes the objectives, allowed hints, Socratic
 opening, escalation and stopping conditions, and rubric.
