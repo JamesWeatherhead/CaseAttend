@@ -41,6 +41,7 @@
 > [!IMPORTANT]
 > **One of 50 winners out of 4,096 entries** in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
 
+> [!CAUTION]
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
 A **vision-language model (VLM)** is an AI model that can work with images and
@@ -69,24 +70,34 @@ Choose the path that fits your work:
 
 ## The stochastic LLM forest
 
+> [!NOTE]
+> **The stochastic LLM forest.** The exponentially branching space of
+> conversation paths a generic LLM opens with every follow-up. Each reply
+> plants new plausible next questions; the learner can wander anywhere, and
+> after a few turns the trail back to the original objective can be dim.
+> Great for green-field exploration. Wrong shape for a structured lesson.
+
 <p align="center">
-  <img src="docs/figures/stochastic-llm-forest.jpg" width="640" alt="A learner at a laptop asks 'Why does tension pneumothorax cause low preload?'. Five lit paths radiate into a dark forest, each labeled with a possible follow-up question, illustrating how a generic LLM conversation branches into a growing space of possible directions.">
+  <img src="docs/figures/stochastic-llm-forest.jpg" width="720" alt="A learner at a laptop asks 'Why does tension pneumothorax cause low preload?'. Five lit paths lead into a dark forest, each labeled with a plausible follow-up question the LLM could steer toward.">
 </p>
 
-Ask a generic LLM about tension pneumothorax. Each follow-up opens more paths:
-physiology, related shock states, bedside signs, differential diagnosis. After
-a few branches the conversation can land somewhere useful, somewhere you did
-not intend to go, or so far from the starting point that you have forgotten
-what you were trying to learn.
+**A concrete run.** Ask a generic LLM about tension pneumothorax. One reply
+opens paths into physiology, related shock states, bedside signs, and the
+differential. After a few branches the conversation can land somewhere
+useful, somewhere unintended, or so far from the starting point that the
+original objective is gone.
 
-That branching is fine for green-field exploration. It is the wrong shape for
-a structured lesson where the learner has to reach a specific objective.
+**CaseAttend's answer: [Lesson Plan v1](#lesson-plan-v1).** A plan is a
+portable, versioned file that freezes the objectives, allowed hints, Socratic
+opening, escalation and stopping conditions, and rubric.
 
-CaseAttend's answer is [**Lesson Plan v1**](#lesson-plan-v1). The plan freezes
-the learning objectives, allowed hints, Socratic opening, escalation and
-stopping conditions, and rubric criteria, so the tutor stays on the intended
-path instead of wandering with the learner. The forest is still there. The
-lesson stays lit.
+- Schema: [`src/core/lessonPlan.ts`](src/core/lessonPlan.ts)
+- Built-in plans: [`src/data/lessonRegistry.ts`](src/data/lessonRegistry.ts)
+- SDK entry: [`docs/sdk/README.md`](docs/sdk/README.md)
+
+Every conversation runs against a specific plan's SHA-256 manifest, so the
+tutor stays on the intended path instead of wandering with the learner.
+*The forest is still there. The lesson stays lit.*
 
 ## Browser-stored key, direct-to-provider inference
 
