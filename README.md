@@ -67,6 +67,27 @@ Choose the path that fits your work:
   adapter, and storage around [`@caseattend/core`](docs/sdk/README.md), with an
   optional accessible React tutor.
 
+## The stochastic LLM forest
+
+<p align="center">
+  <img src="docs/figures/stochastic-llm-forest.jpg" width="640" alt="A learner at a laptop asks 'Why does tension pneumothorax cause low preload?'. Five lit paths radiate into a dark forest, each labeled with a possible follow-up question, illustrating how a generic LLM conversation branches into a growing space of possible directions.">
+</p>
+
+Ask a generic LLM about tension pneumothorax. Each follow-up opens more paths:
+physiology, related shock states, bedside signs, differential diagnosis. After
+a few branches the conversation can land somewhere useful, somewhere you did
+not intend to go, or so far from the starting point that you have forgotten
+what you were trying to learn.
+
+That branching is fine for green-field exploration. It is the wrong shape for
+a structured lesson where the learner has to reach a specific objective.
+
+CaseAttend's answer is [**Lesson Plan v1**](#lesson-plan-v1). The plan freezes
+the learning objectives, allowed hints, Socratic opening, escalation and
+stopping conditions, and rubric criteria, so the tutor stays on the intended
+path instead of wandering with the learner. The forest is still there. The
+lesson stays lit.
+
 ## Browser-stored key, direct-to-provider inference
 
 CaseAttend stores **no API keys** in this repository or on a CaseAttend server. Your browser stores the key locally and sends it only to [OpenRouter](https://openrouter.ai) for inference. CaseAttend's backend never receives the key, case image, or chat. The selected model provider does receive the image and chat you submit through OpenRouter.
