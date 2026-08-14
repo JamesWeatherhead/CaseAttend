@@ -48,6 +48,15 @@ words together. In CaseAttend, it can look at the same teaching artifact as the
 learner, ask questions, and respond to what the learner notices. Many current
 frontier models are VLMs, but the terms are not synonyms.
 
+**Why an AI tutor.** In a recent randomized controlled trial, undergraduates
+learned more, in less time, from a custom AI tutor than from an in-class
+active-learning session, and reported higher engagement and motivation
+([Kestin et al., *Scientific Reports*, 2025](https://doi.org/10.1038/s41598-025-97652-6)).
+The tutor was purpose-built with the same pedagogical scaffolding as the class
+it was compared to. CaseAttend applies that lesson to case-based visual
+reasoning in medicine: the tutor sees the same artifact the learner sees, and
+the Lesson Plan encodes the teaching intent.
+
 Choose the path that fits your work:
 
 - **Learn or teach:** use the hosted app with radiology, pathology, and
