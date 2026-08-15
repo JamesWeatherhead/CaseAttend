@@ -20,8 +20,8 @@
 </p>
 
 <p align="center">
-  <b>Open-source platform and SDK for visual learning, research, and product building.</b><br>
-  Teach with built-in or custom cases, study how frontier models support learning, or embed the headless engine in your own product.
+  <b>Open-source, case-based visual tutoring for medical education, research, and product building.</b><br>
+  The tutor sees what the learner sees while an educator-defined Lesson Plan keeps the conversation focused.
 </p>
 
 <p align="center">
@@ -31,6 +31,10 @@
   &nbsp;·&nbsp;
   <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929">Kaggle writeup</a>
   &nbsp;·&nbsp;
+  <a href="docs/research/README.md">Research guide</a>
+  &nbsp;·&nbsp;
+  <a href="docs/sdk/README.md">SDK guide</a>
+  &nbsp;·&nbsp;
   <a href="SECURITY.md">Security</a>
   &nbsp;·&nbsp;
   <a href="CONTRIBUTING.md">Contributing</a>
@@ -39,73 +43,71 @@
 ---
 
 > [!IMPORTANT]
-> **One of 50 winners out of 4,096 entries** in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon. CaseAttend grew out of that competition project, originally built as **VibeRad**, by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
+> **One of 50 winners out of 4,096 entries** in the “Vibe Code with Gemini 3 Pro” Kaggle hackathon. CaseAttend grew from the original **VibeRad** project by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
 
 > [!CAUTION]
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
 
-A **vision-language model (VLM)** is an AI model that can work with images and
-words together. In CaseAttend, it can look at the same teaching artifact as the
-learner, ask questions, and respond to what the learner notices. Many current
-frontier models are VLMs, but the terms are not synonyms.
+## What CaseAttend is
 
-**Why an AI tutor.** In a recent randomized controlled trial, undergraduates
-learned more, in less time, from a custom AI tutor than from an in-class
-active-learning session, and reported higher engagement and motivation
-([Kestin et al., *Scientific Reports*, 2025](https://doi.org/10.1038/s41598-025-97652-6)).
+A **vision-language model (VLM)** can work across images and words. In CaseAttend, the model can inspect the same teaching artifact as the learner, respond to what the learner notices, and guide the next step. Many frontier models include vision capabilities, but “frontier model” and “VLM” are not interchangeable terms.
 
-**In medical education specifically.** A quasi-experimental study of 293
-first-year medical students at the University of Toronto deployed a custom
-ChatGPT-4o AI teaching assistant, constrained to course materials and
-instructed to teach via the Socratic method. Students who adopted it closed a
-significant pre-intervention gap with their peers, and academic-difficulty
-rates fell from 24.1% to peer-level (~5%). Thematic analysis identified
-reliable and accurate support, efficient use across learning activities, and
-a psychologically safe space to ask questions as the key advantages
-([Sami et al., *Academic Medicine*, 2026](https://doi.org/10.1093/acamed/wvag208)).
+CaseAttend adds structure around that model:
 
-CaseAttend applies these lessons to case-based visual reasoning in medicine:
-the tutor sees the same artifact the learner sees, and the Lesson Plan
-encodes the teaching intent.
+- **Learn or teach:** work through built-in radiology, pathology, and dermatology cases, or create a local case and lesson in the browser.
+- **Run education research:** freeze cases, lessons, model routing, capture rules, and structured outcomes with [Research Mode](docs/research/README.md).
+- **Build a product or service:** compose your own domains, artifacts, model adapter, and storage around [`@caseattend/core`](docs/sdk/README.md), with an optional accessible React tutor.
 
-Choose the path that fits your work:
+## Why guided AI tutoring?
 
-- **Learn or teach:** use the hosted app with radiology, pathology, and
-  dermatology cases, or create a local case and lesson in the browser.
-- **Run education research:** freeze cases, lessons, model routing, capture
-  rules, and structured outcomes with the [Research Mode guide](docs/research/README.md).
-- **Build a product or service:** compose your own domains, artifacts, model
-  adapter, and storage around [`@caseattend/core`](docs/sdk/README.md), with an
-  optional accessible React tutor.
+Early evidence suggests that carefully constrained AI tutors can improve learning when the tutoring behavior is deliberate:
+
+- In a randomized controlled trial, undergraduates learned more in less time from a custom AI tutor than from an in-class active-learning session. They also reported greater engagement and motivation ([Kestin et al., *Scientific Reports*, 2025](https://doi.org/10.1038/s41598-025-97652-6)).
+- In a quasi-experimental study of 293 first-year medical students, a course-grounded, Socratic ChatGPT-4o teaching assistant helped adopters close a pre-existing performance gap. Among adopters, academic-difficulty rates fell from 24.1% to approximately 5%, with students highlighting reliable support, efficiency, and a psychologically safe place to ask questions ([Sami et al., *Academic Medicine*, 2026](https://doi.org/10.1093/acamed/wvag208)).
+
+CaseAttend applies these ideas to **case-based visual reasoning**: the tutor sees the artifact, while the Lesson Plan defines the educational objective and how the tutor should help the learner reach it.
 
 ## The stochastic LLM forest
 
-> [!NOTE]
-> **The stochastic LLM forest.** The exponentially branching space of
-> conversation paths a generic LLM opens with every follow-up. Each reply
-> plants new plausible next questions; the learner can wander anywhere, and
-> after a few turns the trail back to the original objective can be dim.
-> Great for green-field exploration. Wrong shape for a structured lesson.
+Generic LLM chat is excellent for open-ended exploration. It is less reliable as the structure of a lesson.
+
+Each answer creates several plausible next questions. Each follow-up creates several more. After only a few turns, the learner may be deep in an interesting conversation but far from the original objective. That branching space is the **stochastic LLM forest**.
 
 <p align="center">
   <img src="docs/figures/stochastic-llm-forest.jpg" width="720" alt="A learner at a laptop asks 'Why does tension pneumothorax cause low preload?'. Five lit paths lead into a dark forest, each labeled with a plausible follow-up question the LLM could steer toward.">
 </p>
 
-**CaseAttend's answer: [Lesson Plan v1](#lesson-plan-v1).** A plan is a
-portable, versioned file that freezes the objectives, allowed hints, Socratic
-opening, escalation and stopping conditions, and rubric.
+**CaseAttend keeps the lesson lit with [Lesson Plan v1](#lesson-plan-v1).** Each portable, versioned plan defines:
 
-- Schema: [`src/core/lessonPlan.ts`](src/core/lessonPlan.ts)
-- Built-in plans: [`src/data/lessonRegistry.ts`](src/data/lessonRegistry.ts)
-- SDK entry: [`docs/sdk/README.md`](docs/sdk/README.md)
+- learning objectives and prerequisites;
+- the Socratic opening and allowed hints;
+- escalation and stopping conditions;
+- teaching notes and rubric criteria; and
+- citations and clinical-review status.
 
-Every conversation runs against a specific plan's SHA-256 manifest, so the
-tutor stays on the intended path instead of wandering with the learner.
+Every conversation is bound to a specific plan and its deterministic SHA-256 manifest. The learner can still explore, but the tutor does not lose the destination.
+
 *The forest is still there. The lesson stays lit.*
 
-## Browser-stored key, direct-to-provider inference
+**Implementation:** [`src/core/lessonPlan.ts`](src/core/lessonPlan.ts) · [`src/data/lessonRegistry.ts`](src/data/lessonRegistry.ts) · [`docs/sdk/README.md`](docs/sdk/README.md)
 
-CaseAttend stores **no API keys** in this repository or on a CaseAttend server. Your browser stores the key locally and sends it only to [OpenRouter](https://openrouter.ai) for inference. CaseAttend's backend never receives the key, case image, or chat. The selected model provider does receive the image and chat you submit through OpenRouter.
+## How a session works
+
+1. The learner opens a case and inspects its visual artifact.
+2. The learner asks a question or submits an observation.
+3. On **Send**, CaseAttend transmits the current view and conversation to OpenRouter and the selected model provider.
+4. The tutor responds within the objectives, hints, escalation rules, and rubric encoded by the active Lesson Plan.
+5. Optional browser-local events record structured metadata for learning analytics or research without storing raw chat or images.
+
+## Privacy boundary
+
+CaseAttend is a static browser application with **no prompt or inference backend**.
+
+- The OpenRouter key is stored locally in the learner’s browser.
+- The key is sent only from the browser to [OpenRouter](https://openrouter.ai).
+- CaseAttend’s static hosting layer receives neither the key nor the inference request.
+- OpenRouter and the selected upstream model provider **do receive** the image and chat submitted for inference.
+- Case Packages, Lesson Plans, validation, prompt composition, and exports run locally in the browser.
 
 ```mermaid
 flowchart LR
@@ -117,233 +119,196 @@ flowchart LR
     class OR ext;
 ```
 
-Your key only ever travels the browser-to-OpenRouter edge. Case Packages,
-Lesson Plans, validation, prompt composition, and exports all run in the
-browser. CaseAttend has no prompt or inference backend.
+See [SECURITY.md](SECURITY.md) for the complete trust boundary and security model.
 
-## See it in action
+## Try CaseAttend
 
-CaseAttend runs on **[OpenRouter](https://openrouter.ai)**. Sign in with OpenRouter's single sign-on (GitHub, Google, or email) and one account unlocks **every model on OpenRouter**, from free Gemma vision models to frontier Claude, Gemini, and GPT. Two vision models, **Gemma 4 (Free)** and **Gemma 4 31B (Free)**, cost nothing and need no credit, so anyone can use CaseAttend and help improve it **for free**: no payment method, no shared developer key, no server-side secrets.
+CaseAttend uses **[OpenRouter](https://openrouter.ai)**. Sign in with GitHub, Google, or email, then choose from OpenRouter’s model catalog. The included **Gemma 4 (Free)** and **Gemma 4 31B (Free)** options require no credit or payment method; paid models use your own OpenRouter balance. There is no shared developer key and no CaseAttend-held server secret.
 
 <details>
-<summary><b>Walk through the free, bring-your-own-key setup (6 steps)</b></summary>
+<summary><b>Free bring-your-own-key setup, step by step</b></summary>
 <br>
 
 <p align="center">
   <img src="docs/screenshots/01-connect.png" width="420" alt="CaseAttend header with a Connect button">
 </p>
-<p align="center"><em>1. Open CaseAttend and click <strong>Connect</strong>: no account or credit card just to arrive here.</em></p>
+<p align="center"><em>1. Open CaseAttend and select <strong>Connect</strong>.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/02-byok-modal.png" width="360" alt="Bring your own AI modal: Continue with OpenRouter and a model list">
 </p>
-<p align="center"><em>2. <strong>Continue with OpenRouter.</strong> Your key is stored in your browser and sent only to OpenRouter. CaseAttend servers never receive it. Pick a model; the <strong>Free</strong> ones cost nothing.</em></p>
+<p align="center"><em>2. Continue with OpenRouter. Your key stays in the browser and is sent only to OpenRouter.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/03-openrouter-signin.png" width="360" alt="OpenRouter sign-in with GitHub, Google, or email">
 </p>
-<p align="center"><em>3. Sign in with OpenRouter <strong>SSO</strong>: GitHub, Google, or email. One login gives you access to <strong>every model on OpenRouter</strong>.</em></p>
+<p align="center"><em>3. Sign in with GitHub, Google, or email.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/04-authorize.png" width="360" alt="OpenRouter authorization request with an optional credit limit">
 </p>
-<p align="center"><em>4. Authorize a scoped key and, if you like, set a <strong>spend cap</strong>. You stay in control of every cent; CaseAttend can never exceed it.</em></p>
+<p align="center"><em>4. Authorize a scoped key. You may also set a spending limit.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/05-connected.png" width="420" alt="CaseAttend header showing Powered by Gemma 4 31B (Free)">
 </p>
-<p align="center"><em>5. Back in the app, now <strong>powered by Gemma 4 31B (Free)</strong>, running entirely on a free model.</em></p>
+<p align="center"><em>5. Return to CaseAttend with your selected model connected.</em></p>
 
 <p align="center">
   <img src="docs/screenshots/06-free-models.png" width="460" alt="Two free vision models: Gemma 4 (Free) and Gemma 4 31B (Free)">
 </p>
-<p align="center"><em>6. Two free vision models, <strong>Gemma 4 (Free)</strong> and <strong>Gemma 4 31B (Free)</strong>, mean the whole community can learn and contribute at <strong>zero cost</strong>. Switch to a frontier model anytime; that runs on your own OpenRouter balance.</em></p>
+<p align="center"><em>6. Use a free vision model or switch to a paid frontier model on your own OpenRouter balance.</em></p>
 
 </details>
 
-## Develop
+## Develop locally
 
 ```bash
 npm ci
-npm run dev      # Vite dev server
+npm run dev      # Vite development server
 npm run build    # production build -> dist/
 ```
 
-Node 22+. No environment variables required.
+Requires **Node 22+**. No environment variables are required.
 
-To try the SDK without an account, credential, patient data, or external model
-request:
+### Try the SDK without an account, credential, patient data, or external model request
 
 ```bash
 npm run example:basic
 npm run example:research
 npm run build:sdk
-npm run pack:sdk       # build and inspect the publishable package contents
+npm run pack:sdk       # build and inspect the publishable package
 ```
 
-Start with the [SDK guide](docs/sdk/README.md), then inspect the
-[basic teaching example](examples/basic) or
-[memory-only research adapter example](examples/self-hosted-research). The SDK
-packages are versioned independently at `0.1.0`; their raw-free event contract
-is version `1.0`.
+Start with the [SDK guide](docs/sdk/README.md), then inspect the [basic teaching example](examples/basic) or the [memory-only research adapter example](examples/self-hosted-research).
 
-## Stack
+The SDK packages are versioned independently at `0.1.0`. Their raw-free event contract is version `1.0`.
 
-React 19 · TypeScript · Vite 8 · Tailwind 4, deployed on Cloudflare Pages as a static SPA.
+**Stack:** React 19 · TypeScript · Vite 8 · Tailwind 4 · Cloudflare Pages
 
-## Case Package v1
+## Core building blocks
 
-Case Package v1 is the canonical metadata and provenance record for every
-built-in teaching case. The validated registry in `src/data/caseRegistry.ts`
-brings together learner-facing content, visual artifacts, viewer hints, source,
-license, attribution, review status, and lesson-plan linkage. Cards, viewers,
-and attribution surfaces read from this registry instead of maintaining
-separate copies.
+| Component | Purpose |
+| --- | --- |
+| [Case Package v1](#case-package-v1) | Defines the case, visual artifacts, provenance, licensing, and review state. |
+| [Lesson Plan v1](#lesson-plan-v1) | Defines what should be learned and how the tutor should guide the learner. |
+| [Case Studio](#case-studio) | Creates portable teaching cases locally in the browser. |
+| [Browser-local session events](#browser-local-session-events) | Records structured, metadata-only learning events. |
+| [Research Mode](#research-mode) | Freezes a reproducible study protocol and produces restricted exports. |
 
-Every image or frame records the SHA-256 digest of its bytes. The package
-manifest covers the educational metadata and those asset digests, so a change
-to case content, viewer behavior, provenance, or image bytes changes the package
-identity. A digest identifies bytes. It does not prove de-identification,
-licensing, or clinical review.
+### Case Package v1
 
-Review claims are explicit. If reviewer or de-identification evidence is not
-available, the package remains unreviewed using
-`clinicianReview: { reviewed: false }` or `deidentification.status:
-'not-reviewed'`. Public availability and older descriptive text are not review
-evidence.
+Case Package v1 is the canonical metadata and provenance record for each built-in teaching case. The validated registry in [`src/data/caseRegistry.ts`](src/data/caseRegistry.ts) keeps learner-facing content, visual artifacts, viewer hints, source, license, attribution, review status, and Lesson Plan linkage in one place. Cards, viewers, and attribution surfaces read from this registry rather than maintaining separate copies.
 
-## Lesson Plan v1
+Each image or frame records the SHA-256 digest of its bytes. The package manifest covers both the educational metadata and the asset digests, so any change to the case, provenance, viewer behavior, or image bytes changes the package identity.
 
-Lesson Plan v1 turns teaching intent into portable, versioned data instead of
-unstructured prompt files. Each plan records stable learning objectives,
-supported learner levels, prerequisites, a Socratic opening, allowed hints,
-escalation and stopping conditions, answer-revealing teaching notes, rubric
-criteria with observable evidence, citations, and explicit clinical review
-status.
+> [!NOTE]
+> A digest identifies bytes. It does **not** prove de-identification, licensing, or clinical review.
 
-Each citation declares whether it supports artifact provenance or clinical
-teaching claims. A license deed can document redistribution terms, but it is
-never presented as clinical evidence. The current built-in lessons record
-artifact provenance and remain explicitly unreviewed with clinical sources
-still needed. Search mode discloses that gap instead of inventing support.
+Review claims remain explicit. Without supporting evidence, a package stays unreviewed through `clinicianReview: { reviewed: false }` or `deidentification.status: 'not-reviewed'`. Public availability and older descriptive text are not treated as review evidence.
 
-Every plan has an educator-controlled semantic version and a deterministic
-SHA-256 manifest. Its Case Package stores the exact `{id, version, sha256}`
-reference, so a study or exported result can identify the teaching content that
-was used. Unknown cases, wrong domains, and mismatched hashes fail closed rather
-than falling back to another case or a generic assistant.
+### Lesson Plan v1
 
-Choose **Build a lesson** on the case catalog to use the browser-local authoring
-flow. The final review separates the policy fixed by CaseAttend from content
-controlled by the educator. Export creates a portable Case Package plus Lesson
-Plan bundle and never includes a key, chat transcript, screenshot, or unrelated
-browser data. An unreviewed plan remains clearly labeled as a draft; the tool
-does not grant clinical, institutional, or IRB approval.
+Lesson Plan v1 stores teaching intent as portable, versioned data rather than an unstructured prompt file. A plan can define:
 
-## Case Studio
+- stable learning objectives and learner levels;
+- prerequisites and a Socratic opening;
+- allowed hints, escalation rules, and stopping conditions;
+- answer-revealing teaching notes;
+- rubric criteria with observable evidence; and
+- citations and explicit clinical-review status.
 
-Choose **Create a case** on the catalog to turn your own JPEG, PNG, or WebP
-images into a versioned teaching case without writing code. Case Studio
-re-encodes each image in the browser, orders single images or one image stack,
-collects neutral accessible descriptions, provenance, redistribution terms,
-attribution, and an explicit synthetic or de-identification attestation. A
-single-frame dermatology photograph remains a native one-image artifact rather
-than being treated as a one-slice scan.
+Each citation states whether it supports **artifact provenance** or a **clinical teaching claim**. A license deed can document redistribution terms, but it is never presented as clinical evidence. The current built-in lessons record artifact provenance and remain explicitly unreviewed where clinical sources are still needed; search mode discloses that gap instead of inventing support.
 
-The privacy screen uses self-hosted browser OCR and face detection when the
-browser supports it. Recognized text is discarded; only warning counts and
-status are shown. These checks are advisory. They do not establish HIPAA
-de-identification, consent, IRB status, permission to publish, or clinical
-suitability. A person must review every image and authored field before saving.
-Raw DICOM is intentionally deferred because DICOM metadata and burned-in pixel
-identifiers need an institution-managed clinical-data workflow.
+Every plan has an educator-controlled semantic version and deterministic SHA-256 manifest. Its Case Package stores the exact `{id, version, sha256}` reference. Unknown cases, incorrect domains, and mismatched hashes fail closed instead of falling back to a generic assistant.
 
-Saved cases live in IndexedDB in that browser, with a visible memory-only
-fallback when persistent storage is unavailable. Portable `.caseattend` files
-are strict ZIP archives containing exactly one linked Case Package, one exact
-starter Lesson Plan, and the referenced re-encoded image bytes. They never
-enumerate or include an OpenRouter key, chat, session log, original filename,
-or unrelated browser data. Opening the saved case is still local; only a later
-learner action such as **Send** transmits the current view and chat to OpenRouter
-and the selected model provider.
+Choose **Build a lesson** in the case catalog to use the browser-local authoring flow. The final review distinguishes policy fixed by CaseAttend from content controlled by the educator. Export creates a portable Case Package and Lesson Plan bundle. It never includes a key, chat transcript, screenshot, or unrelated browser data. Draft plans remain visibly unreviewed; CaseAttend does not grant clinical, institutional, or IRB approval.
 
-## Browser-local session events
+### Case Studio
 
-CaseAttend can record a versioned, metadata-only learning event stream in the
-learner's browser. Events bind a session to the exact Case Package, Lesson Plan,
-application version, submitted frame hash, annotation counts, learner level,
-model request metadata, timing, and token usage when the provider returns it.
-The schema has no fields for raw chat, prompts, screenshots, image data,
-annotation coordinates, names, emails, API keys, or authorization headers.
+Choose **Create a case** in the catalog to turn JPEG, PNG, or WebP images into a versioned teaching case without writing code.
 
-IndexedDB is the default store. If it is unavailable, CaseAttend falls back to
-memory for the current tab and shows that the data will be lost when the page
-closes. The **Session data** panel lets the learner preview, export, or delete
-their own records. JSONL is the canonical event export and CSV is a fixed,
-analysis-friendly table. Recording, preview, export, and deletion make no
-network request. These ordinary learning-session records are separate from the
-durable, pseudonymous store and restricted exports used by Research Mode.
+Case Studio works locally in the browser. It re-encodes images, orders a single image or image stack, and collects accessible descriptions, provenance, redistribution terms, attribution, and an explicit synthetic or de-identification attestation. A single dermatology photograph remains a native one-image artifact rather than being treated as a one-slice scan.
 
-## Research Mode
+The privacy screen uses self-hosted browser OCR and face detection when supported. Recognized text is discarded; only warning counts and status remain.
 
-Research Setup helps a study team describe a reproducible VLM-education
-protocol, freeze exact cases, lessons, prompts, model routing, sampling,
-viewer/capture rules, assignment, and structured pre/post tasks, and then run a
-locked participant activity. Participant information is English-only in v1;
-teams must provide an institutionally reviewed workflow outside CaseAttend for
-other languages.
+> [!WARNING]
+> These checks are advisory. They do not establish HIPAA de-identification, consent, IRB status, permission to publish, or clinical suitability. A person must review every image and authored field before saving.
 
-The study team issues each 20-character high-entropy participant code outside
-CaseAttend and controls eligibility, linkage, duplicate use, and withdrawal.
-The entered code is transient: CaseAttend derives and stores only a
-manifest-scoped pseudonymous reference, then clears the raw code. Pseudonymous
-data can still be linkable and must not be described as anonymous.
+Raw DICOM is intentionally deferred because DICOM metadata and burned-in pixel identifiers require an institution-managed clinical-data workflow.
 
-Browser-local Participant Mode fails closed unless IndexedDB is persistent, an
-external institutional determination is recorded, raw-chat collection is off,
-and every case is marked synthetic or carries a de-identification attestation.
-Those gates are workflow controls, not proof of consent, approval,
-de-identification, or compliance.
+Saved cases live in IndexedDB, with a visible memory-only fallback when persistent storage is unavailable. Portable `.caseattend` files are strict ZIP archives containing exactly one linked Case Package, one exact starter Lesson Plan, and the referenced re-encoded image bytes. They exclude the OpenRouter key, chat, session logs, original filenames, and unrelated browser data.
 
-When a participant presses **Send**, the browser sends the frozen system
-prompt, learner message, and current-view JPEG to OpenRouter and the locked
-upstream model provider. Bring-your-own-key protects the credential boundary:
-the browser-held key is sent only to OpenRouter and is never written to
-research records or exports. It does **not** keep the request payload from
-OpenRouter or the upstream provider. CaseAttend's static application server
-receives neither the key nor the inference request.
+Opening a saved case remains local. Data is sent externally only after a learner action such as **Send**.
 
-Research Mode creates two deliberately different local downloads:
+### Browser-local session events
 
-- The **research support packet** contains the frozen manifest, exact prompts,
-  portable case/lesson archives, editable institutional-review templates, and
-  checksums. It contains no participant runs or research records.
-- The **restricted research-data export** contains the study reference,
-  pseudonymous runs, and closed-vocabulary event records in JSONL or CSV. It
-  excludes raw learner/model text, prompts, images and screenshots, direct
-  identifiers, authentication keys, and Case Package or Lesson Plan bodies.
+CaseAttend can record a versioned, metadata-only learning event stream in the learner’s browser. Events can bind a session to:
 
-Neither download is automatically uploaded or automatically encrypted. The
-study team remains responsible for approved storage, transfer, access,
-retention, and deletion. CaseAttend does not grant IRB or ethics approval,
-establish HIPAA de-identification or HIPAA/FERPA compliance, or replace legal,
-privacy, security, accessibility, and institutional review. Start with the
-[Research workflow guide](docs/research/README.md).
+- the exact Case Package and Lesson Plan;
+- the application version;
+- the submitted frame hash and annotation counts;
+- learner level and model request metadata; and
+- timing and token usage, when returned by the provider.
+
+The schema has no fields for raw chat, prompts, screenshots, image data, annotation coordinates, names, emails, API keys, or authorization headers.
+
+IndexedDB is the default store. If it is unavailable, CaseAttend falls back to memory for the current tab and warns that the data will be lost when the page closes. The **Session data** panel lets learners preview, export, or delete their records. JSONL is the canonical export; CSV provides a fixed analysis-friendly table. Recording, preview, export, and deletion make no network request.
+
+These ordinary session records are separate from the durable pseudonymous store and restricted exports used by Research Mode.
+
+### Research Mode
+
+Research Setup lets a study team freeze a reproducible VLM-education protocol: exact cases, lessons, prompts, model routing, sampling, viewer and capture rules, assignment, and structured pre/post tasks. Participants then run a locked activity against that manifest.
+
+<details>
+<summary><b>Research safeguards, participant identity, and exports</b></summary>
+<br>
+
+Participant information is English-only in v1. Study teams must provide an institutionally reviewed workflow outside CaseAttend for other languages.
+
+The study team issues each 20-character high-entropy participant code outside CaseAttend and remains responsible for eligibility, linkage, duplicate use, and withdrawal. The entered code is transient: CaseAttend derives and stores only a manifest-scoped pseudonymous reference, then clears the raw code.
+
+> [!IMPORTANT]
+> Pseudonymous data can still be linkable and must not be described as anonymous.
+
+Browser-local Participant Mode fails closed unless:
+
+- IndexedDB is persistent;
+- an external institutional determination is recorded;
+- raw-chat collection is off; and
+- each case is marked synthetic or carries a de-identification attestation.
+
+These gates are workflow controls, not proof of consent, approval, de-identification, or compliance.
+
+When a participant presses **Send**, the browser sends the frozen system prompt, learner message, and current-view JPEG to OpenRouter and the locked upstream model provider. Bring-your-own-key protects the credential boundary: the key is never written to research records or exports. It does **not** prevent OpenRouter or the upstream provider from receiving the request payload. CaseAttend’s static application server receives neither the key nor the inference request.
+
+Research Mode creates two separate local downloads:
+
+- The **research support packet** contains the frozen manifest, exact prompts, portable case and lesson archives, editable institutional-review templates, and checksums. It contains no participant runs or research records.
+- The **restricted research-data export** contains the study reference, pseudonymous runs, and closed-vocabulary event records in JSONL or CSV. It excludes raw learner or model text, prompts, images, screenshots, direct identifiers, authentication keys, and Case Package or Lesson Plan bodies.
+
+Neither download is automatically uploaded or encrypted. The study team remains responsible for approved storage, transfer, access, retention, and deletion.
+
+CaseAttend does not grant IRB or ethics approval, establish HIPAA de-identification or HIPAA/FERPA compliance, or replace legal, privacy, security, accessibility, and institutional review.
+
+</details>
+
+Start with the [Research workflow guide](docs/research/README.md).
 
 ## Contributing
 
-PRs welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Case content and
-asset provenance belong in Case Package v1. Clinical and de-identification
-review status must be accurate, image terms must permit redistribution, and
-commits are signed off (DCO). Browser-only key storage, OpenRouter-only key
-transmission, and the CaseAttend server boundary are non-negotiable; see
-[SECURITY.md](SECURITY.md).
+Pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+Case content and asset provenance belong in Case Package v1. Clinical and de-identification review status must be accurate, image terms must permit redistribution, and commits must be signed off under the DCO.
+
+Browser-only key storage, OpenRouter-only key transmission, and the CaseAttend server boundary are non-negotiable. See [SECURITY.md](SECURITY.md).
 
 ## Cite
 
-If CaseAttend is useful in your research or teaching, please cite it. GitHub's **Cite this repository** button reads [CITATION.cff](CITATION.cff), or use:
+GitHub’s **Cite this repository** button reads [CITATION.cff](CITATION.cff). You may also use:
 
-```
+```text
 Weatherhead, James; Weatherhead, Jake; McCaffrey, Peter; Golovko, George. (2026).
 CaseAttend: a case-based visual reasoning tutor for medical education
 (Version 0.5.0) [Computer software].
@@ -352,19 +317,10 @@ https://github.com/JamesWeatherhead/CaseAttend
 
 ## License
 
-CaseAttend's source code is licensed under the [MIT License](LICENSE) © 2026 James Weatherhead.
-Third-party runtime components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+CaseAttend source code is licensed under the [MIT License](LICENSE) © 2026 James Weatherhead. Third-party runtime components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The bundled teaching images are third-party works under their own licenses and
-are not covered by CaseAttend's MIT license. Their canonical source, license,
-attribution, review status, and byte-level SHA-256 digest are recorded in the
-Case Package v1 registry at `src/data/caseRegistry.ts`. The images remain under
-their original terms.
+Bundled teaching images are third-party works under their own licenses and are not covered by CaseAttend’s MIT license. Their canonical source, license, attribution, review status, and byte-level SHA-256 digest are recorded in the Case Package v1 registry at [`src/data/caseRegistry.ts`](src/data/caseRegistry.ts). The images remain under their original terms.
 
-**Building on CaseAttend.** The MIT License lets you use, modify, and
-redistribute the code, including in closed-source and commercial products, at no
-charge. The only condition is that you keep the copyright and license notice in
-copies or substantial portions of the software. This summary is not legal
-advice; the [license text](LICENSE) controls.
+**Building on CaseAttend.** The MIT License allows use, modification, and redistribution of the code, including in closed-source and commercial products, at no charge. You must retain the copyright and license notice in copies or substantial portions of the software. This summary is not legal advice; the [license text](LICENSE) controls.
 
 <div align="center"><sub>MIT · © 2026 James Weatherhead</sub></div>
