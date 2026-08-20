@@ -42,7 +42,7 @@
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
     "tailwindcss": "^4.1.0",
-    "tsx": "^4.23.8",
+    "tsx": "^4.23.12",
     "typescript": "~7.0.2",
     "vite": "^8.2.1",
     "vitest": "^4.1.10"
