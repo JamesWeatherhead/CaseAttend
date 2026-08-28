@@ -204,8 +204,17 @@ describe('LessonBuilder', () => {
     expect(screen.getByText(/Imported draft · educator review required/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Choose another file' }));
     const dropzone = screen.getByRole('button', { name: /Drop a PDF or .pptx here/ });
+    expect(dropzone.getAttribute('aria-labelledby')).toBe('lesson-source-dropzone-label');
+    expect(dropzone.getAttribute('aria-describedby'))
+      .toBe('lesson-source-dropzone-description lesson-source-limits');
+    expect(document.getElementById('lesson-source-dropzone-label')?.textContent)
+      .toBe('Drop a PDF or .pptx here');
+    expect(document.getElementById('lesson-source-dropzone-description')?.textContent)
+      .toBe('or choose a file');
     await waitFor(() => expect(document.activeElement).toBe(dropzone));
-    expect(screen.getByText('Document import cleared. Choose another file.')).toBeTruthy();
+    expect(screen.getByText(
+      'Import preview cleared. Any lesson content you already applied remains. Choose another file.',
+    )).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /Objectives\/evidence/ }));
     expect((screen.getAllByLabelText(/Learner-facing objective/)[0] as HTMLInputElement).value)

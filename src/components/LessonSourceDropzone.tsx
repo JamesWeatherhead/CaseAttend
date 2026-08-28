@@ -88,7 +88,7 @@ const LessonSourceDropzone: React.FC<LessonSourceDropzoneProps> = ({
     setError('');
     setOutline(null);
     setApplied(false);
-    setAnnouncement('Document import cleared. Choose another file.');
+    setAnnouncement('Import preview cleared. Any lesson content you already applied remains. Choose another file.');
     setReturnFocusToDropzone(true);
     if (inputRef.current) inputRef.current.value = '';
   };
@@ -173,7 +173,8 @@ const LessonSourceDropzone: React.FC<LessonSourceDropzoneProps> = ({
             tabIndex={disabled || busy ? -1 : 0}
             aria-disabled={disabled || busy}
             aria-busy={busy}
-            aria-describedby="lesson-source-limits"
+            aria-labelledby="lesson-source-dropzone-label"
+            aria-describedby="lesson-source-dropzone-description lesson-source-limits"
             onClick={openPicker}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
@@ -205,8 +206,12 @@ const LessonSourceDropzone: React.FC<LessonSourceDropzoneProps> = ({
             }}
           >
             {busy ? <LoaderCircle className="lesson-source-spinner" aria-hidden="true" /> : <FileUp aria-hidden="true" />}
-            <strong>{busy ? 'Reading document text in this browser…' : 'Drop a PDF or .pptx here'}</strong>
-            <span>{busy ? 'Large documents can take a moment.' : 'or choose a file'}</span>
+            <strong id="lesson-source-dropzone-label">
+              {busy ? 'Reading document text in this browser…' : 'Drop a PDF or .pptx here'}
+            </strong>
+            <span id="lesson-source-dropzone-description">
+              {busy ? 'Large documents can take a moment.' : 'or choose a file'}
+            </span>
             <small id="lesson-source-limits">
               One file · up to {LESSON_SOURCE_LIMITS.maxFileBytes / 1024 / 1024} MB · up to {LESSON_SOURCE_LIMITS.maxUnits} pages or slides
             </small>

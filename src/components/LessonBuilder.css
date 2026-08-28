@@ -394,8 +394,8 @@ button[aria-current='step'] .lesson-builder-step-number {
 
 .lesson-source-dropzone small {
   margin-top: 8px;
-  color: #667184;
-  font-size: 9px;
+  color: #96a3b5;
+  font-size: 10px;
 }
 
 .lesson-source-spinner {
@@ -510,8 +510,8 @@ button[aria-current='step'] .lesson-builder-step-number {
 
 .lesson-source-preview-heading dt,
 .lesson-source-outline-grid span {
-  color: #687589;
-  font-size: 8px;
+  color: #96a3b5;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -1414,7 +1414,7 @@ select.lesson-builder-input {
 
   .lesson-source-actions {
     align-items: stretch;
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
   .lesson-source-actions .lesson-builder-button {
