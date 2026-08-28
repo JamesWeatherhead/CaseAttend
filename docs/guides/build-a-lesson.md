@@ -139,7 +139,7 @@ Review the exact prompt preview:
 - **Educator controlled** contains your versioned lesson content.
 - **Runtime case context** shows the case information used for the preview.
 
-Then select **Export bundle**.
+Then use the export action shown for the selected case: **Export portable case** for a browser-created case or **Export JSON bundle** for a built-in case.
 
 The result depends on the case:
 

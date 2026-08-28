@@ -60,7 +60,7 @@ Complete each required field. The table below explains what each field records a
 | **Series label** | A plain-language label for this image or stack | `Frontal chest radiograph` |
 | **Learner-facing vignette** | Context the learner needs, without direct identifiers | Age range, relevant symptoms, and timing |
 | **Neutral case description** | What is present without revealing the finding or diagnosis | `Single frontal chest image` |
-| **Accessible image description** | Answer-safe description stored with the image and used in Case Studio and case-card previews | Describe layout, modality, and orientation |
+| **Accessible image description** | Answer-safe description stored with the image and announced for the current image or frame in the viewer | Describe layout, modality, and orientation |
 | **Educator-only teaching note** | The important teaching answer or interpretation | Keep it focused and evidence-based |
 | **Content warnings** | Warnings recorded in the Case Package for review and downstream use | `Includes graphic pathology image` |
 
@@ -68,7 +68,7 @@ Complete each required field. The table below explains what each field records a
 
 The vignette, neutral description, and accessible description should let a learner enter the case without giving away the diagnosis. Put answer-revealing material in **Educator-only teaching note** instead.
 
-The current main viewer announces the **Neutral case description** as its accessible description. The separate **Accessible image description** is stored with the image and is used in authoring and case-card previews. Make both fields meaningful and answer-safe. Content warnings are stored in the package but are not currently displayed automatically on the home card or in the main viewer, so use your course's normal learner-notification process as well.
+The main viewer announces the authored **Accessible image description** for a single image and the current frame's authored description for an image stack. Make both that field and the **Neutral case description** meaningful and answer-safe. Content warnings appear as a persistent content note over the case viewer; they are not shown on the home card, so use your course's normal learner-notification process as well.
 
 Bad neutral description:
 
@@ -116,6 +116,18 @@ After saving, you can:
 - select **Build the lesson** to open Lesson Builder;
 - select **Open in viewer** to rehearse the learner experience; or
 - select **Export portable case** to download a `.caseattend` backup.
+
+### Optional: prepare a reviewed no-key opening
+
+The saved case can have a separate intro cache: a reviewed opening and instant starter answers that learners can use without making a new model request.
+
+1. In **Pre-cached opening**, select **Connect OpenRouter** if no key is connected.
+2. Select **Generate intro cache**. This sends the case context, lesson objectives, teaching notes, and up to four representative case images to OpenRouter and the selected provider.
+3. Review and edit the opening and every answer at every learner level.
+4. Select **Save edits** after making changes.
+5. Enter the reviewer name and credentials, then select **Approve intro cache** only after the review is complete.
+
+Generation is optional and is the one post-save Case Studio action that contacts a model. The raw source image filenames are not sent, but the prepared representative images and the listed case and lesson content are. The cache is stored separately in this browser and is not included in a `.caseattend` backup, whether it is still a draft or already approved.
 
 Export before closing the page if Case Studio warns that storage is memory-only. Even with persistent browser storage, keep a portable backup before clearing site data or deleting the case.
 

@@ -29,7 +29,7 @@ These limits apply to the images selected for a portable browser-created case.
 
 An image must satisfy **all** limits. For example, an image can be under 8,192 pixels in both directions but still exceed the 16-million-pixel area limit.
 
-Case Studio checks the file signature rather than trusting the filename. The extension, reported type, and actual image bytes must agree. The browser must also be able to decode the complete image.
+Case Studio checks the file signature rather than trusting the filename. The extension and actual image bytes must agree. If the browser reports a specific MIME type rather than an empty or generic `application/octet-stream` value, that reported type must agree too. The browser must also be able to decode the complete image.
 
 ### What re-encoding changes
 
@@ -67,7 +67,7 @@ Documents over the file-size or page/slide limit are rejected. A very dense page
 - Old binary PowerPoint (`.ppt`) is not supported.
 - Renaming `.ppt` to `.pptx` does not convert it.
 - Slide layouts, presenter notes, comments, embedded media, and images do not become CaseAttend artifacts.
-- A non-hidden slide can contain hidden-shape or off-canvas text. Review the preview for text that was not visually obvious in the presentation.
+- Shapes explicitly marked hidden are skipped, but a non-hidden slide can contain off-canvas or visually unobvious text. Review the preview before applying it.
 - Text can arrive in an unexpected order when a slide uses multiple shapes, columns, groups, or diagrams.
 - No imported claim or citation is automatically verified.
 - Import does not perform clinical review.
@@ -88,7 +88,7 @@ A portable case is a strict CaseAttend ZIP-based archive, not a general folder o
 
 On import, CaseAttend checks the archive structure, allowed paths, case-to-lesson link, declared dimensions, image type, byte length, and SHA-256 hashes. A renamed ZIP, JSON file, or manually edited archive is not a valid portable case.
 
-The portable archive excludes the OpenRouter key, chat, session logs, original filenames, separately generated browser-local intro-cache drafts, unrelated browser data, and raw PDF or PowerPoint source documents.
+The portable archive excludes the OpenRouter key, chat, session logs, original filenames, separately generated browser-local intro-cache drafts or approvals, unrelated browser data, and raw PDF or PowerPoint source documents.
 
 ## Files these authoring screens do not accept
 

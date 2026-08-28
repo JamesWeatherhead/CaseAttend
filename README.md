@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool"><img src="https://img.shields.io/badge/Winner-DeepMind%20Kaggle%20Hackathon-gold?style=flat-square" alt="Winner: Google DeepMind Kaggle Hackathon"></a>
+  <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool"><img src="https://img.shields.io/badge/VibeRad%20winner-Google%20DeepMind%20Kaggle%20Hackathon-gold?style=flat-square" alt="VibeRad winner: Google DeepMind Kaggle Hackathon"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/JamesWeatherhead/CaseAttend?style=flat-square&color=3178C6" alt="License: MIT"></a>
   <a href="https://github.com/JamesWeatherhead/CaseAttend/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/JamesWeatherhead/CaseAttend/ci.yml?branch=main&style=flat-square&label=build" alt="CI build status"></a>
   <a href="https://caseattend.com"><img src="https://img.shields.io/badge/Live-caseattend.com-2ea44f?style=flat-square" alt="Live at caseattend.com"></a>
@@ -27,9 +27,11 @@
 <p align="center">
   <a href="https://caseattend.com"><b>Live demo</b></a>
   &nbsp;·&nbsp;
-  <a href="https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool">The story</a>
+  <a href="docs/README.md"><b>Educator guide</b></a>
   &nbsp;·&nbsp;
-  <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929">Kaggle writeup</a>
+  <a href="docs/how-it-works.md">How it works</a>
+  &nbsp;·&nbsp;
+  <a href="docs/story/google-deepmind-win.md">The story</a>
   &nbsp;·&nbsp;
   <a href="docs/research/README.md">Research guide</a>
   &nbsp;·&nbsp;
@@ -43,7 +45,7 @@
 ---
 
 > [!IMPORTANT]
-> **One of 50 winners out of 4,096 entries** in the “Vibe Code with Gemini 3 Pro” Kaggle hackathon. CaseAttend grew from the original **VibeRad** project by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko.
+> **VibeRad was one of 50 winners selected from 4,096 entries** in the “Vibe Code with Gemini 3 Pro” Kaggle hackathon. CaseAttend grew from that original project by [James Weatherhead](https://github.com/JamesWeatherhead), [Jake Weatherhead](https://github.com/JakeWeatherhead), [Peter McCaffrey](https://github.com/pmccaffrey6), and George Golovko. Read the [UTMB story](https://www.utmb.edu/news/article/utmb-news/2026/06/26/utmb-ai-innovators-win-international-hackathon-with-radiology-viewer-and-teaching-tool), [Kaggle writeup](https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929), and [plain-language project story](docs/story/google-deepmind-win.md). CaseAttend is an independent open-source project and is not endorsed by Google or Google DeepMind.
 
 > [!CAUTION]
 > **Educational use only.** CaseAttend is a teaching tool, not a diagnostic or clinical decision-making system.
@@ -55,6 +57,7 @@ A **vision-language model (VLM)** can work across images and words. In CaseAtten
 CaseAttend adds structure around that model:
 
 - **Learn or teach:** work through built-in radiology, pathology, and dermatology cases, or create a local case and lesson in the browser.
+- **Start from material you already have:** drop one PDF or PowerPoint into Lesson Builder and review the editable draft it creates from selectable PDF text or PowerPoint slide text.
 - **Run education research:** freeze cases, lessons, model routing, capture rules, and structured outcomes with [Research Mode](docs/research/README.md).
 - **Build a product or service:** compose your own domains, artifacts, model adapter, and storage around [`@caseattend/core`](docs/sdk/README.md), with an optional accessible React tutor.
 
@@ -95,7 +98,7 @@ Every conversation is bound to a specific plan and its deterministic SHA-256 man
 
 1. The learner opens a case and inspects its visual artifact.
 2. The learner asks a question or submits an observation.
-3. On **Send**, CaseAttend transmits the current view and conversation to OpenRouter and the selected model provider.
+3. On **Send**, CaseAttend transmits the current view, learner message, relevant conversation, case context, and active Lesson Plan instructions—including educator teaching notes—to OpenRouter and the selected model provider.
 4. The tutor responds within the objectives, hints, escalation rules, and rubric encoded by the active Lesson Plan.
 5. Optional browser-local events record structured metadata for learning analytics or research without storing raw chat or images.
 
@@ -106,12 +109,13 @@ CaseAttend is a static browser application with **no prompt or inference backend
 - The OpenRouter key is stored locally in the learner’s browser.
 - The key is sent only from the browser to [OpenRouter](https://openrouter.ai).
 - CaseAttend’s static hosting layer receives neither the key nor the inference request.
-- OpenRouter and the selected upstream model provider **do receive** the image and chat submitted for inference.
+- OpenRouter and the selected upstream model provider **do receive** the current-view image, learner message, relevant conversation, case context, and active Lesson Plan prompt content submitted for inference.
 - Case Packages, Lesson Plans, validation, prompt composition, and exports run locally in the browser.
+- PDF and PowerPoint text extraction runs locally too. The raw source document, original filename, speaker notes, and embedded media are not stored or exported. Text an educator applies becomes Lesson Plan content and may later be included in live inference or educator-triggered intro-cache generation.
 
 ```mermaid
 flowchart LR
-    B["Your browser<br/>(key in localStorage)"] -- "your key + request" --> OR["OpenRouter<br/>(inference)"]
+    B["Your browser<br/>(key in localStorage)"] -- "key + image/chat + case/lesson prompt" --> OR["OpenRouter<br/>(inference)"]
     OR -- "model output" --> B
     classDef ours fill:#0F172A,stroke:#4A9EF7,stroke-width:2px,color:#ffffff;
     classDef ext fill:#1E293B,stroke:#64748B,stroke-width:1px,color:#ffffff;
@@ -123,7 +127,15 @@ See [SECURITY.md](SECURITY.md) for the complete trust boundary and security mode
 
 ## Try CaseAttend
 
-CaseAttend uses **[OpenRouter](https://openrouter.ai)**. Sign in with GitHub, Google, or email, then choose from OpenRouter’s model catalog. The included **Gemma 4 (Free)** and **Gemma 4 31B (Free)** options require no credit or payment method; paid models use your own OpenRouter balance. There is no shared developer key and no CaseAttend-held server secret.
+### Fastest path: no account or key
+
+Open the [live app](https://caseattend.com), choose **Try a sample case**, select your learner level, and choose a pre-cached opening question. Where an approved intro cache is available, the first response is immediate, human-reviewed, and makes no model request. Connect OpenRouter only when you want a live conversation.
+
+For a guided first visit, follow [Complete your first case](docs/getting-started/first-case.md).
+
+### Live AI conversation
+
+CaseAttend uses **[OpenRouter](https://openrouter.ai)** for live model turns. Sign in with GitHub, Google, or email, then choose from CaseAttend’s small curated list of vision-capable model presets. The included **Gemma 4 (Free)** and **Gemma 4 31B (Free)** options require no credit or payment method, subject to OpenRouter’s limits; paid presets use your own OpenRouter balance. There is no shared developer key and no CaseAttend-held server secret.
 
 <details>
 <summary><b>Free bring-your-own-key setup, step by step</b></summary>
@@ -161,6 +173,19 @@ CaseAttend uses **[OpenRouter](https://openrouter.ai)**. Sign in with GitHub, Go
 
 </details>
 
+### Turn a PDF or PowerPoint into a lesson draft
+
+Choose **Create a lesson from PDF or PowerPoint**, then drop one `.pdf` or `.pptx` file into Lesson Builder. CaseAttend reads selectable PDF text or PowerPoint slide text locally and previews a suggested title, possible objectives, and teaching notes before changing the form.
+
+- One file at a time, up to 25 MB and 80 pages or slides.
+- PDF import needs selectable text; run OCR first for a scanned document.
+- PowerPoint import reads text from non-hidden slides in presentation order and skips shapes explicitly marked hidden. It does not import speaker notes or embedded media; off-canvas or visually unobvious slide text can still appear in the preview.
+- Detected links are shown for review but are not automatically accepted as evidence.
+- Applying a draft preserves the selected case and its provenance, clears any prior clinical-review claim, and still requires educator review.
+- The raw document and its filename are never added to the lesson export. Applied text becomes Lesson Plan content, so it can later be included in provider prompts just like text entered by hand.
+
+See the [nontechnical import guide](docs/guides/import-pdf-powerpoint.md) for the complete workflow and limits.
+
 ## Develop locally
 
 ```bash
@@ -169,7 +194,7 @@ npm run dev      # Vite development server
 npm run build    # production build -> dist/
 ```
 
-Requires **Node 22+**. No environment variables are required.
+Repository workflows require Node **`^22.22.2 || ^24.15.0 || >=26.0.0`**. No environment variables are required.
 
 ### Try the SDK without an account, credential, patient data, or external model request
 
@@ -222,11 +247,11 @@ Each citation states whether it supports **artifact provenance** or a **clinical
 
 Every plan has an educator-controlled semantic version and deterministic SHA-256 manifest. Its Case Package stores the exact `{id, version, sha256}` reference. Unknown cases, incorrect domains, and mismatched hashes fail closed instead of falling back to a generic assistant.
 
-Choose **Build a lesson** in the case catalog to use the browser-local authoring flow. The final review distinguishes policy fixed by CaseAttend from content controlled by the educator. Export creates a portable Case Package and Lesson Plan bundle. It never includes a key, chat transcript, screenshot, or unrelated browser data. Draft plans remain visibly unreviewed; CaseAttend does not grant clinical, institutional, or IRB approval.
+Choose **Create a lesson from PDF or PowerPoint** on the home screen—or **Build the lesson** after creating a case—to use the browser-local authoring flow. Start manually or import selectable PDF text or PowerPoint slide text; either route produces editable educator-controlled fields, never an automatically approved lesson. The final review distinguishes policy fixed by CaseAttend from content controlled by the educator. Export creates a portable Case Package and Lesson Plan bundle. It never includes a key, chat transcript, screenshot, source document, original filename, or unrelated browser data. Draft plans remain visibly unreviewed; CaseAttend does not grant clinical, institutional, or IRB approval.
 
 ### Case Studio
 
-Choose **Create a case** in the catalog to turn JPEG, PNG, or WebP images into a versioned teaching case without writing code.
+Choose **Create a case from images** in the catalog to turn JPEG, PNG, or WebP images into a versioned teaching case without writing code.
 
 Case Studio works locally in the browser. It re-encodes images, orders a single image or image stack, and collects accessible descriptions, provenance, redistribution terms, attribution, and an explicit synthetic or de-identification attestation. A single dermatology photograph remains a native one-image artifact rather than being treated as a one-slice scan.
 
@@ -237,9 +262,9 @@ The privacy screen uses self-hosted browser OCR and face detection when supporte
 
 Raw DICOM is intentionally deferred because DICOM metadata and burned-in pixel identifiers require an institution-managed clinical-data workflow.
 
-Saved cases live in IndexedDB, with a visible memory-only fallback when persistent storage is unavailable. Portable `.caseattend` files are strict ZIP archives containing exactly one linked Case Package, one exact starter Lesson Plan, and the referenced re-encoded image bytes. They exclude the OpenRouter key, chat, session logs, original filenames, and unrelated browser data.
+Saved cases live in IndexedDB, with a visible memory-only fallback when persistent storage is unavailable. Portable `.caseattend` files are strict ZIP archives containing exactly one linked Case Package, its exact linked Lesson Plan revision, and the referenced re-encoded image bytes. They exclude the OpenRouter key, chat, session logs, original filenames, and unrelated browser data.
 
-Opening a saved case remains local. Data is sent externally only after a learner action such as **Send**.
+Opening a saved case does not send its images, lesson content, or chat to a model. Like any web app, CaseAttend still makes ordinary requests to its static host—including a same-origin check for a published intro cache. Model-provider transmission begins only after an explicit action: a learner presses **Send**, or an educator connects OpenRouter and generates an intro cache. Cache generation sends case and lesson text plus up to four representative case images to OpenRouter and the selected provider.
 
 ### Browser-local session events
 

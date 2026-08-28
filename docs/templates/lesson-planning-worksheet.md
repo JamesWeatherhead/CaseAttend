@@ -53,14 +53,14 @@ Do not place identifiable patient information in this worksheet.
 (Describe the artifact without revealing the finding or diagnosis.)
 
 **Accessible image description:**
-(Answer-safe description stored with the image and used in authoring and case-card previews. The current main viewer announces the neutral case description, so make both fields meaningful.)
+(Answer-safe description stored with the image and announced for the current image or frame in the main viewer. Make it useful without revealing the answer.)
 
 **Educator-only teaching note:**
 (This may reveal the answer. Keep it focused.)
 
 **Content warnings, one per line:**
 
-(These are recorded in the package but are not currently displayed automatically on the home card or in the main viewer. Also use the normal learner-notification process for your course.)
+(These appear as a persistent note in the main case viewer but not on the home card. Also use the normal learner-notification process for your course.)
 
 ## 3. Image preparation
 
@@ -290,6 +290,13 @@ Test the lesson with these responses:
 **Release date:**
 
 **Backup location:**
+
+**Optional intro-cache review:**
+
+- [ ] Not used for this release.
+- [ ] Generated material was reviewed and edited at every learner level.
+- [ ] Reviewer name and credentials were recorded before approval.
+- [ ] The team understands that a browser-local intro cache is separate from—and absent from—the `.caseattend` backup.
 
 **Final check:**
 

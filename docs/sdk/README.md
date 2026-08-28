@@ -14,7 +14,8 @@ The first SDK release contains two packages:
 
 ## Try it from a fresh clone
 
-Use Node 22 or later. The examples use deterministic local model adapters, so
+For a fresh repository clone, use Node `^22.22.2`, `^24.15.0`, or `>=26.0.0`.
+The examples use deterministic local model adapters, so
 they need no account, API key, external model request, or patient data.
 
 ```bash

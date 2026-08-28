@@ -21,8 +21,8 @@ abstract: >-
   education research, and product development. Its bring-your-own-key web
   application teaches across medical subspecialties (radiology, pathology,
   dermatology) by working through real images with a question-first AI tutor.
-  It was selected as one of 50 winners out of 4,096 entries in the "Vibe Code
-  with Gemini 3 Pro" Kaggle hackathon.
+  CaseAttend grew from VibeRad, which was selected as one of 50 winners out of
+  4,096 entries in the "Vibe Code with Gemini 3 Pro" Kaggle hackathon.
 keywords:
   - medical education
   - radiology

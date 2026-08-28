@@ -122,7 +122,7 @@ Do not send sensitive material to a public conversion website. Local extraction 
 
 ## If slide text arrives in an odd order
 
-PowerPoint stores text in separate shapes, so extracted text may not read in the same order as the visual slide. Columns, diagrams, grouped objects, repeated labels, decorative text, and text hidden in a shape or placed off the visible canvas are especially likely to need cleanup. The importer skips a whole slide marked hidden, but the preview can still include text from a hidden or visually unobvious shape on a non-hidden slide.
+PowerPoint stores text in separate shapes, so extracted text may not read in the same order as the visual slide. Columns, diagrams, grouped objects, repeated labels, decorative text, and text placed off the visible canvas are especially likely to need cleanup. The importer skips a whole slide marked hidden and shapes explicitly marked hidden, but the preview can still include off-canvas or visually unobvious text from a non-hidden slide.
 
 Use the preview to decide whether the draft saves time. After applying it, reorder and rewrite the editable fields around the lesson's learning objectives rather than the deck's visual layout.
 
@@ -130,7 +130,7 @@ Use the preview to decide whether the draft saves time. After applying it, reord
 
 The browser reads the selected document for the current import. The raw document is not stored in the saved case, the lesson, browser-local Case Package storage, a JSON lesson bundle, or a `.caseattend` export.
 
-The editable text you choose to apply **does** become lesson content and can be saved or exported. Review that text for privacy, rights, and accuracy just as you would review text typed by hand.
+The editable text you choose to apply **does** become lesson content and can be saved or exported. During a later live tutor turn, active Lesson Plan content—including imported text placed in teaching notes or other fields—can be sent to OpenRouter and the selected model provider. It can also be included in educator-triggered intro-cache generation. Review that text for privacy, rights, and accuracy just as you would review text typed by hand.
 
 ---
 

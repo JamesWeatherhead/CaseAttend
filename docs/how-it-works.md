@@ -15,9 +15,9 @@ The learner can explore. The lesson keeps that exploration pointed toward a stat
 | --- | --- | --- |
 | **Case Package** | The image or image sequence, learner-facing context, attribution, usage terms, and review state | The visual material remains connected to its source and exact version. |
 | **Lesson Plan** | Objectives, prerequisites, opening question, hints, escalation and stopping rules, teaching notes, sources, and review state | The tutor has a destination instead of improvising the entire lesson. |
-| **Tutor session** | The learner's current view, question, and relevant conversation context | The model can respond to what the learner is actually examining while following the lesson. |
+| **Tutor session** | The learner's current view, question, relevant conversation, case context, and active Lesson Plan prompt | The model can respond to what the learner is examining while following the educator-authored lesson. |
 
-Case and lesson records have deterministic identifiers. If either one changes, its identity changes too. That makes it possible to say which exact teaching material a learner or study used.
+Case and lesson records have educator-controlled IDs and deterministic content hashes. When the content changes, its hash changes too. That makes it possible to say which exact teaching revision a learner or study used.
 
 ## A learner's path
 
@@ -46,7 +46,7 @@ The cache is a **guided first step**, not an offline version of the full tutor. 
 
 ### 3. Submit a live question intentionally
 
-Nothing is sent to a model merely because the learner opened, zoomed, or annotated a case. When the learner presses **Send**, the browser prepares the current view and the relevant text context, then sends the request directly to OpenRouter. OpenRouter routes it to the selected model provider, and the response returns to the browser.
+Nothing is sent to a model merely because the learner opened, zoomed, or annotated a case. When the learner presses **Send**, the browser prepares the current view, message, relevant conversation, case context, and active Lesson Plan instructions—including educator teaching notes—then sends the request directly to OpenRouter. OpenRouter routes it to the selected model provider, and the response returns to the browser.
 
 The active Lesson Plan helps shape that exchange. It tells the tutor what the learner should work toward, which hints are allowed, when to become more explicit, and when to conclude. A lesson reduces drift; it cannot guarantee that every generated answer will be accurate or pedagogically effective.
 
@@ -61,10 +61,11 @@ The learner can continue inspecting the artifact between turns. The tutor is des
 | Action | What happens |
 | --- | --- |
 | Open the website or a built-in case | The browser downloads the static app and its published teaching assets from the host, as with an ordinary website. |
-| Create or edit a case and lesson | Validation, image preparation, lesson editing, hashing, and export happen in the browser. Browser-local work is stored in IndexedDB when available, with a visible memory-only fallback. |
-| Import a PDF or PowerPoint into Lesson Builder | CaseAttend extracts visible, selectable text in the browser and creates an editable draft. It does not store or export the source document, filename, speaker notes, or embedded media. Scanned-image PDFs may have no selectable text. |
+| Create or edit a case and lesson | Validation, image preparation, lesson editing, hashing, and export happen in the browser. Cases created in Case Studio are stored in IndexedDB when available, with a visible memory-only fallback. Lesson Builder does not autosave every draft path; validate and export before leaving. |
+| Import a PDF or PowerPoint into Lesson Builder | CaseAttend extracts selectable PDF text or text from non-hidden PowerPoint slides in the browser and creates an editable draft. It does not store or export the raw source document, filename, speaker notes, or embedded media. Applied text becomes Lesson Plan content and may enter later provider prompts. Scanned-image PDFs may have no selectable text. |
 | Click a reviewed intro-cache question | The stored answer appears without a new model request and without an API key. |
-| Press **Send** for a live turn | The current-view capture, learner message, and relevant conversation context go to OpenRouter and the selected model provider. Those services receive the inference payload. |
+| Press **Send** for a live turn | The current-view capture, learner message, relevant conversation, case context, and active Lesson Plan prompt—including educator teaching notes—go to OpenRouter and the selected model provider. |
+| Select **Generate intro cache** as an educator | Case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The returned draft—and any later browser approval—remains browser-local. |
 | Store or export ordinary learning events | The metadata-only event records remain in the browser; the schema excludes raw chat, prompts, images, screenshots, names, emails, and credentials. |
 | Export a portable case | The package contains the validated case, linked lesson, and prepared image copies—not the OpenRouter key, original filenames, chat, or unrelated browser data. |
 

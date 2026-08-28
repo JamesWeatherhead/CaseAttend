@@ -40,7 +40,7 @@ Try a question that makes your reasoning visible, such as:
 
 > I notice an asymmetry near the right edge. What should I compare next before naming a diagnosis?
 
-When you press **Send**, CaseAttend includes the current view with your question. The image view, message, and relevant conversation context go directly to OpenRouter and the selected model provider. Nothing is sent to a model merely because you opened or inspected the case.
+When you press **Send**, CaseAttend includes the current view with your question. The image view, message, relevant conversation context, case context, and active Lesson Plan instructions—including educator teaching notes—go directly to OpenRouter and the selected model provider. Nothing is sent to a model merely because you opened or inspected the case.
 
 ## 5. Test the teaching path
 

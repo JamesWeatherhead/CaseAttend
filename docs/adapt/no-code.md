@@ -4,7 +4,7 @@
 
 You can adapt CaseAttend's teaching content without changing the application. The two browser tools do different jobs:
 
-- **Case Studio** changes the visual case, vignette, descriptions, provenance, privacy attestation, and image order.
+- **Case Studio** changes the visual case, vignette, descriptions, provenance, privacy or de-identification status, and image order.
 - **Lesson Builder** changes the audience, objectives, evidence, tutoring path, answer notes, sources, review state, and lesson version.
 
 This guide covers safe ways to reuse those tools while preserving a clear history.
@@ -13,8 +13,8 @@ This guide covers safe ways to reuse those tools while preserving a clear histor
 
 | You want to change… | Use… | What should remain stable? |
 | --- | --- | --- |
-| Objectives, hints, audience, or teaching notes for the same visual | Lesson Builder | Case identity and artifact provenance |
-| Image, vignette, image order, source, license, or privacy attestation | Case Studio | Nothing unless it is truly the same case |
+| Objectives, hints, audience, or teaching notes for the same visual | Lesson Builder | Case ID and artifact provenance |
+| Image, vignette, image order, source, license, or privacy/de-identification status | Case Studio | Nothing unless it is truly the same case |
 | Starting text from an existing handout or deck | **Import PDF or PowerPoint** in Lesson Builder | Selected Case Package; source document stays outside the export |
 | The public site's brand, deployment, or application behavior | A code or hosting workflow | Versioned teaching content and safety boundary |
 
@@ -99,7 +99,7 @@ CaseAttend does not certify translations. Treat localization as a content revisi
 2. Use a distinct Lesson ID or a clearly documented new version.
 3. Translate all learner-facing and tutor-path fields consistently.
 4. Check that examples, vocabulary, learner levels, and sources fit the audience.
-5. Review accessible descriptions and content warnings.
+5. Review learner-facing lesson language in Lesson Builder. If localization changes accessible image descriptions or content warnings, make that separate case revision in Case Studio.
 6. Have appropriate subject-matter and language reviewers check the final lesson.
 7. Rehearse realistic learner responses in the target language before release.
 

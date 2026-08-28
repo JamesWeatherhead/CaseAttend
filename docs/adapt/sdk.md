@@ -100,7 +100,7 @@ If the team cannot answer one of these questions, record it as an open decision 
 
 ## Technical handoff
 
-An engineer can begin from a fresh clone with Node 22 or later:
+An engineer can begin from a fresh clone with a repository-supported Node release (`^22.22.2`, `^24.15.0`, or `>=26.0.0`):
 
 ```bash
 npm ci

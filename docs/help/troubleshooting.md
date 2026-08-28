@@ -162,7 +162,7 @@ If the material is longer, make a smaller teaching-focused copy under your appro
 
 ## PowerPoint text appears out of order
 
-The importer extracts text stored in non-hidden slides, not the presentation's visual layout. Text in multiple shapes, columns, diagrams, and groups may arrive in an unexpected order. A hidden or off-canvas shape on an otherwise non-hidden slide can also appear in the preview, so remove anything unexpected before applying the draft.
+The importer extracts text stored in non-hidden slides, not the presentation's visual layout. Text in multiple shapes, columns, diagrams, and groups may arrive in an unexpected order. Shapes explicitly marked hidden are skipped, but off-canvas or visually unobvious text can still appear in the preview, so remove anything unexpected before applying the draft.
 
 Reorder and rewrite the editable draft around your objectives. The importer does not convert slide screenshots or embedded images into case artifacts.
 

@@ -35,7 +35,7 @@ Do not put an OpenRouter key in the repository or Cloudflare build settings. The
 
 ## Verify the build locally
 
-Ask the person responsible for deployment to install [Node.js 22 or later](https://nodejs.org/) and Git, then run:
+Ask the person responsible for deployment to install Git and a repository-supported Node release (`^22.22.2`, `^24.15.0`, or `>=26.0.0`), then run:
 
 ```bash
 git clone https://github.com/JamesWeatherhead/CaseAttend.git
@@ -69,7 +69,7 @@ The repository does not include a Cloudflare deployment script or project config
    | Root directory | Repository root |
    | Build command | `npm run build` |
    | Build output directory | `dist` |
-   | Node version | `22` or a pinned Node 22 release through `NODE_VERSION` |
+   | Node version | Pin `22.22.2` through `NODE_VERSION` (or another release allowed by the repository `engines` field) |
 
 5. Do not add an OpenRouter API key or other shared model credential.
 6. Save and deploy. Review the build log and open the generated `pages.dev` preview.

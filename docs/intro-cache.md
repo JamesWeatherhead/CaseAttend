@@ -1,17 +1,17 @@
 # Intro cache pipeline
 
-The intro cache is the shipped artifact that lets a learner with **no OpenRouter key** open any lesson, see a tailored intro prompt for their learner level, and click any of about three pre-cached questions that render their answers instantly. It is the delivery vehicle for issue [#68](https://github.com/JamesWeatherhead/CaseAttend/issues/68) and the full corpus backfill [#73](https://github.com/JamesWeatherhead/CaseAttend/issues/73); companion issue #70 will make this happen automatically when a new lesson is authored.
+The intro cache is the reviewed artifact that lets a learner with **no OpenRouter key** open a lesson, see a tailored intro prompt for their learner level, and click pre-cached questions that render their answers instantly. Built-in lessons load approved JSON from the static site. Cases created in Case Studio can generate, edit, approve, and store the same artifact locally in the educator's browser.
 
 **Runtime contract**
 
 - No key → free-typing is disabled; every pre-cached suggested question is free and clickable.
 - Clicking a pre-cached question renders `cachedAnswer` instantly, exact-match by `id`, no network.
 - Only a **new** free-form question requires Connect with OpenRouter (SSO).
-- The cache is a shipped, static JSON file at `/intro-cache/<caseId>.json`; the runtime loader validates the schema, refuses drafts, and refuses stale files (`lessonPlanSha256` drift).
+- A built-in cache is static JSON at `/intro-cache/<caseId>.json`; an authored cache is a validated IndexedDB record. The runtime refuses drafts and stale files (`lessonPlanSha256` drift) in both paths.
 
 ## Canonical artifact
 
-Owned by `src/core/introCache.ts` and imported byte-compatibly by issue #70.
+Owned by `src/core/introCache.ts` and shared byte-for-byte by the maintainer batch pipeline and browser authoring flow.
 
 ```jsonc
 {
@@ -44,7 +44,7 @@ Owned by `src/core/introCache.ts` and imported byte-compatibly by issue #70.
 
 Every `cachedAnswer` must end with the exact `SAFETY_FOOTER` in `lib/prompts/shared.ts`.
 
-## Two-step pipeline
+## Maintainer pipeline for built-in cases
 
 ### 1) Generate drafts
 
@@ -105,10 +105,26 @@ REVIEWER_NAME="Full Name" REVIEWER_CREDS="MD; institution" \
   npx tsx scripts/introCache/review.mts --auto-approve --case=cxr-pneumothorax
 ```
 
+## Educator flow for a browser-created case
+
+After saving a case and its starter lesson in Case Studio:
+
+1. Connect an OpenRouter account and select a curated vision-capable model.
+2. Choose **Generate intro cache**. The browser sends up to four representative case images plus the versioned teaching context directly to OpenRouter; no CaseAttend server receives the request or key.
+3. Review all five learner levels and every proposed question and answer. Edit the draft where needed.
+4. Enter the actual reviewer name and credentials, then choose **Approve intro cache**.
+5. Reopen the saved case without a key to test the instant opening. Only an approved cache can appear to a learner.
+
+The approved artifact remains in a separate browser-local IndexedDB store. It is bound to the exact lesson SHA and a digest of the current media and neutral description. Editing those inputs makes the cache visibly stale; the educator must regenerate and approve a replacement. Deleting the local case also deletes its authored intro cache.
+
+Generation is optional. Skipping it never blocks case save, export, or the ordinary lesson opening. The author-generated cache is not added to a portable `.caseattend` file in the current format, so a recipient must generate and approve a cache in their own browser if they need a no-key first round.
+
 ## What ships today (this branch)
 
 - Canonical type + validator + hashing helpers: `src/core/introCache.ts`
 - Client-side loader (`fetch` + validate + memoize): `src/services/introCacheStore.ts`
+  - Checks the static path first for built-in cases.
+  - Falls back to the isolated browser-local authored-cache store only when no static artifact exists.
 - Runtime wiring in `src/components/AiAssistantPanel.tsx`:
   - Loads `/intro-cache/<caseId>.json` when a lesson resolves outside research mode.
   - Uses `introPrompt[level]` for the opening.
@@ -117,6 +133,7 @@ REVIEWER_NAME="Full Name" REVIEWER_CREDS="MD; institution" \
   - Free-typing without a key is disabled; focusing the input opens the Connect with OpenRouter modal.
 - Batch generator: `scripts/introCache/generate.mts`
 - Human-review gate: `scripts/introCache/review.mts`
+- Case Studio generator, editor, approval panel, staleness checks, and browser-local store: `src/services/introCacheAuthoring.ts`, `src/services/authoredIntroCacheStore.ts`, and `src/components/CaseStudio/IntroCachePanel.tsx`
 - Full corpus cache (issue #73): `public/intro-cache/<caseId>.json` for all 48 built-in lessons, each with a tailored `introPrompt` and ~3 pre-cached `introQuestions` per learner level. Generated with Claude Opus 4.8 from Anthropic; three of the 48 (`cxr-pneumothorax`, `derm-melanoma`, `patho-study-breast`) remain from the human-authored seed set as pipeline validators.
 - Tests: `src/tests/introCache.test.ts`, `src/tests/introCacheStore.test.ts` (all passing).
 
