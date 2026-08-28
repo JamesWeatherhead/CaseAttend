@@ -32,6 +32,7 @@ import {
 } from './services/openrouterAuth';
 import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
 import { browserTeachingEngine } from './services/browserTeachingEngine';
+import { generateAuthoredIntroCacheWithOpenRouter } from './services/openrouterClient';
 import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
 import {
   getPreference,
@@ -115,7 +116,9 @@ export function normalizeToolForArtifact(
 const App: React.FC = () => {
   const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
   const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
-  const caseStudioController = useMemo(() => createCaseStudioController(), []);
+  const caseStudioController = useMemo(() => createCaseStudioController({
+    runIntroCacheGeneration: generateAuthoredIntroCacheWithOpenRouter,
+  }), []);
   const [researchMaterials, setResearchMaterials] = useState<readonly ResearchMaterialOption[]>([]);
   const [researchMaterialsLoading, setResearchMaterialsLoading] = useState(false);
   const [researchMaterialsError, setResearchMaterialsError] = useState('');

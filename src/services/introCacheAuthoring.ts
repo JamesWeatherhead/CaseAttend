@@ -99,7 +99,7 @@ export interface IntroCacheGenerationInput {
   lessonPlan: LessonPlanV1;
   /** Assets bound to the case, with their raw bytes as base64 for image encoding. */
   assets: readonly PortableCaseAssetV1[];
-  /** BYOK OpenRouter key, from `byokStore.getKey()`. Never persisted here. */
+  /** BYOK OpenRouter key supplied by the credential boundary. Never persisted here. */
   apiKey: string;
   /** OpenRouter model id, from `byokStore.getModel()`. */
   modelId: string;
@@ -109,6 +109,16 @@ export interface IntroCacheGenerationInput {
   /** Test seam. Production uses `new Date().toISOString()`. */
   now?: () => Date;
 }
+
+/**
+ * Credential-free authoring request passed across the Case Studio boundary.
+ * The OpenRouter client adds the browser's key and selected model inside the
+ * one service that is allowed to read credentials.
+ */
+export type IntroCacheGenerationRequest = Omit<
+  IntroCacheGenerationInput,
+  'apiKey' | 'modelId' | 'fetch'
+>;
 
 /**
  * Deterministic sampler for a case's assets. Same shape as the batch script so

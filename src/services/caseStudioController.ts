@@ -22,7 +22,6 @@ import {
   authoredIntroCacheStore,
   type AuthoredIntroCacheStore,
 } from './authoredIntroCacheStore';
-import { getKey, getModel } from './byokStore';
 import {
   prepareCaseImageAssets,
   validateCaseImageDecode,
@@ -32,10 +31,9 @@ import { casePackageStore, type CasePackageStore } from './casePackageStore';
 import { scanCaseAssetsPrivacy, type CasePrivacyScanResult } from './casePrivacyScanner';
 import {
   approveIntroCache,
-  generateAuthoredIntroCache,
   isIntroCacheCurrent,
   IntroCacheAuthoringError,
-  type IntroCacheGenerationInput,
+  type IntroCacheGenerationRequest,
 } from './introCacheAuthoring';
 import {
   exportPortableCaseArchive,
@@ -58,12 +56,11 @@ export interface CaseStudioControllerOptions {
   revokeObjectUrl?: (url: string) => void;
   download?: (blob: Blob, filename: string) => void;
   validateImportedAsset?: (blob: Blob, asset: PortableCaseAssetV1) => Promise<void>;
-  /** Test seam: override the BYOK key resolver. Production uses `getKey()`. */
-  resolveApiKey?: () => string | null;
-  /** Test seam: override the BYOK model resolver. Production uses `getModel()`. */
-  resolveModelId?: () => string;
-  /** Test seam: override the generation pipeline entrypoint. */
-  runIntroCacheGeneration?: (input: IntroCacheGenerationInput) => Promise<IntroCacheV1>;
+  /**
+   * Credential-bound capability injected by App from openrouterClient. The
+   * controller deliberately cannot import or read the browser key itself.
+   */
+  runIntroCacheGeneration?: (input: IntroCacheGenerationRequest) => Promise<IntroCacheV1>;
 }
 
 export type IntroCacheStatus =
@@ -167,9 +164,9 @@ export class CaseStudioController {
   private readonly revokeObjectUrl: (url: string) => void;
   private readonly download: (blob: Blob, filename: string) => void;
   private readonly validateImportedAsset: (blob: Blob, asset: PortableCaseAssetV1) => Promise<void>;
-  private readonly resolveApiKey: () => string | null;
-  private readonly resolveModelId: () => string;
-  private readonly runIntroCacheGeneration: (input: IntroCacheGenerationInput) => Promise<IntroCacheV1>;
+  private readonly runIntroCacheGeneration: (
+    input: IntroCacheGenerationRequest,
+  ) => Promise<IntroCacheV1>;
   private readonly sessionAssets = new Map<string, SessionAsset>();
   private nextAssetId = 1;
 
@@ -183,9 +180,13 @@ export class CaseStudioController {
     this.validateImportedAsset = options.validateImportedAsset ?? (async (blob, asset) => {
       await validateCaseImageDecode(blob, { width: asset.width, height: asset.height });
     });
-    this.resolveApiKey = options.resolveApiKey ?? (() => getKey());
-    this.resolveModelId = options.resolveModelId ?? (() => getModel());
-    this.runIntroCacheGeneration = options.runIntroCacheGeneration ?? generateAuthoredIntroCache;
+    this.runIntroCacheGeneration = options.runIntroCacheGeneration ?? (async () => {
+      throw new IntroCacheAuthoringError({
+        code: 'provider_error',
+        message: 'Intro-cache generation is unavailable in this Case Studio embed.',
+        retryable: false,
+      });
+    });
   }
 
   processFiles = async (
@@ -576,21 +577,10 @@ export class CaseStudioController {
         retryable: false,
       });
     }
-    const apiKey = this.resolveApiKey() ?? '';
-    if (!apiKey.trim()) {
-      throw new IntroCacheAuthoringError({
-        code: 'missing_key',
-        message: 'Connect an OpenRouter key to auto-generate the intro cache.',
-        retryable: false,
-      });
-    }
-    const modelId = this.resolveModelId();
     const draft = await this.runIntroCacheGeneration({
       casePackage: portable.casePackage,
       lessonPlan: portable.lessonPlan,
       assets: portable.assets,
-      apiKey,
-      modelId,
       ...(options.signal ? { signal: options.signal } : {}),
       now: this.now,
     });

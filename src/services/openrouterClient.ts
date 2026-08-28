@@ -28,9 +28,29 @@ import {
 import { requireCasePackage } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
 import type { DomainKey } from '../lib/domains';
-import { getKey } from './byokStore';
+import { getKey, getModel } from './byokStore';
+import {
+  generateAuthoredIntroCache,
+  type IntroCacheGenerationRequest,
+} from './introCacheAuthoring';
+import type { IntroCacheV1 } from '../core/introCache';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+/**
+ * Credential-bound adapter for Case Studio's intro-cache generator. Case
+ * Studio passes only lesson content and media; the raw browser key never
+ * crosses into its controller or components.
+ */
+export async function generateAuthoredIntroCacheWithOpenRouter(
+  request: IntroCacheGenerationRequest,
+): Promise<IntroCacheV1> {
+  return generateAuthoredIntroCache({
+    ...request,
+    apiKey: getKey() ?? '',
+    modelId: getModel(),
+  });
+}
 
 export interface ORChunk {
   text?: string;
