@@ -5,6 +5,7 @@ import type {
   StudioPrivacyResult,
 } from '../components/CaseStudio/CaseStudio';
 import { createCasePackageV1, type CaseArtifactHints, type CasePackageV1 } from '../core/casePackage';
+import type { IntroCacheV1 } from '../core/introCache';
 import {
   collectCaseAssetReferences,
   createPortableCasePackageV1,
@@ -18,12 +19,24 @@ import { listBuiltinCasePackages } from '../data/caseRegistry';
 import { getDomain } from '../lib/domains';
 import type { DomainKey } from '../lib/domains/types';
 import {
+  authoredIntroCacheStore,
+  type AuthoredIntroCacheStore,
+} from './authoredIntroCacheStore';
+import { getKey, getModel } from './byokStore';
+import {
   prepareCaseImageAssets,
   validateCaseImageDecode,
   type PreparedCaseImageAsset,
 } from './caseAssetPipeline';
 import { casePackageStore, type CasePackageStore } from './casePackageStore';
 import { scanCaseAssetsPrivacy, type CasePrivacyScanResult } from './casePrivacyScanner';
+import {
+  approveIntroCache,
+  generateAuthoredIntroCache,
+  isIntroCacheCurrent,
+  IntroCacheAuthoringError,
+  type IntroCacheGenerationInput,
+} from './introCacheAuthoring';
 import {
   exportPortableCaseArchive,
   importPortableCaseArchive,
@@ -39,12 +52,27 @@ interface SessionAsset {
 
 export interface CaseStudioControllerOptions {
   store?: CasePackageStore;
+  authoredIntroCacheStore?: AuthoredIntroCacheStore;
   now?: () => Date;
   createObjectUrl?: (blob: Blob) => string;
   revokeObjectUrl?: (url: string) => void;
   download?: (blob: Blob, filename: string) => void;
   validateImportedAsset?: (blob: Blob, asset: PortableCaseAssetV1) => Promise<void>;
+  /** Test seam: override the BYOK key resolver. Production uses `getKey()`. */
+  resolveApiKey?: () => string | null;
+  /** Test seam: override the BYOK model resolver. Production uses `getModel()`. */
+  resolveModelId?: () => string;
+  /** Test seam: override the generation pipeline entrypoint. */
+  runIntroCacheGeneration?: (input: IntroCacheGenerationInput) => Promise<IntroCacheV1>;
 }
+
+export type IntroCacheStatus =
+  | { kind: 'idle' }
+  | { kind: 'generating' }
+  | { kind: 'ready-for-review'; draft: IntroCacheV1 }
+  | { kind: 'approved'; cache: IntroCacheV1 }
+  | { kind: 'stale'; cache: IntroCacheV1 }
+  | { kind: 'error'; code: string; message: string; retryable: boolean };
 
 const PRESENTATION = {
   radiology: {
@@ -133,16 +161,21 @@ function flagsTotal(result: CasePrivacyScanResult): number {
 
 export class CaseStudioController {
   private readonly store: CasePackageStore;
+  private readonly introCacheStore: AuthoredIntroCacheStore;
   private readonly now: () => Date;
   private readonly createObjectUrl: (blob: Blob) => string;
   private readonly revokeObjectUrl: (url: string) => void;
   private readonly download: (blob: Blob, filename: string) => void;
   private readonly validateImportedAsset: (blob: Blob, asset: PortableCaseAssetV1) => Promise<void>;
+  private readonly resolveApiKey: () => string | null;
+  private readonly resolveModelId: () => string;
+  private readonly runIntroCacheGeneration: (input: IntroCacheGenerationInput) => Promise<IntroCacheV1>;
   private readonly sessionAssets = new Map<string, SessionAsset>();
   private nextAssetId = 1;
 
   constructor(options: CaseStudioControllerOptions = {}) {
     this.store = options.store ?? casePackageStore;
+    this.introCacheStore = options.authoredIntroCacheStore ?? authoredIntroCacheStore;
     this.now = options.now ?? (() => new Date());
     this.createObjectUrl = options.createObjectUrl ?? ((blob) => URL.createObjectURL(blob));
     this.revokeObjectUrl = options.revokeObjectUrl ?? ((url) => URL.revokeObjectURL(url));
@@ -150,6 +183,9 @@ export class CaseStudioController {
     this.validateImportedAsset = options.validateImportedAsset ?? (async (blob, asset) => {
       await validateCaseImageDecode(blob, { width: asset.width, height: asset.height });
     });
+    this.resolveApiKey = options.resolveApiKey ?? (() => getKey());
+    this.resolveModelId = options.resolveModelId ?? (() => getModel());
+    this.runIntroCacheGeneration = options.runIntroCacheGeneration ?? generateAuthoredIntroCache;
   }
 
   processFiles = async (
@@ -497,7 +533,115 @@ export class CaseStudioController {
     if (!(await this.store.delete(caseId))) {
       throw new Error(`Browser-local case '${caseId}' was not found.`);
     }
+    // Cases and their intro caches are separate stores; delete both so a later
+    // save of the same ID cannot accidentally resurrect a stranded artifact.
+    await this.introCacheStore.delete(caseId).catch(() => undefined);
   };
+
+  /**
+   * Compute the current intro-cache status for a browser-local case. Used by
+   * Case Studio to render the "Intro cache" panel after a save. Does not
+   * generate anything; call `generateIntroCacheForCase` to run the pipeline.
+   */
+  getIntroCacheStatus = async (caseId: string): Promise<IntroCacheStatus> => {
+    const portable = await this.store.get(caseId);
+    if (!portable) return { kind: 'idle' };
+    const stored = await this.introCacheStore.get(caseId);
+    if (!stored) return { kind: 'idle' };
+    const current = await isIntroCacheCurrent(stored, {
+      lessonPlan: portable.lessonPlan,
+      assets: portable.assets,
+      neutralDescription: portable.casePackage.neutralDescription,
+    });
+    if (!current) return { kind: 'stale', cache: stored };
+    if (stored.review.status === 'approved') return { kind: 'approved', cache: stored };
+    return { kind: 'ready-for-review', draft: stored };
+  };
+
+  /**
+   * Run the auto-generation pipeline for a saved browser-local case using the
+   * author's BYOK key and pinned model. Returns the freshly generated draft
+   * artifact; also persists it via the authored intro-cache store so a reload
+   * lands on the review step.
+   */
+  generateIntroCacheForCase = async (
+    caseId: string,
+    options: { signal?: AbortSignal } = {},
+  ): Promise<IntroCacheV1> => {
+    const portable = await this.store.get(caseId);
+    if (!portable) {
+      throw new IntroCacheAuthoringError({
+        code: 'missing_lesson_plan',
+        message: `Browser-local case '${caseId}' was not found. Save the case first.`,
+        retryable: false,
+      });
+    }
+    const apiKey = this.resolveApiKey() ?? '';
+    if (!apiKey.trim()) {
+      throw new IntroCacheAuthoringError({
+        code: 'missing_key',
+        message: 'Connect an OpenRouter key to auto-generate the intro cache.',
+        retryable: false,
+      });
+    }
+    const modelId = this.resolveModelId();
+    const draft = await this.runIntroCacheGeneration({
+      casePackage: portable.casePackage,
+      lessonPlan: portable.lessonPlan,
+      assets: portable.assets,
+      apiKey,
+      modelId,
+      ...(options.signal ? { signal: options.signal } : {}),
+      now: this.now,
+    });
+    await this.introCacheStore.save(draft);
+    return draft;
+  };
+
+  /**
+   * Persist an author's hand-edits to the current draft. Fails closed if the
+   * edited artifact does not validate: the store never accepts a broken draft.
+   */
+  saveIntroCacheDraftForCase = async (
+    caseId: string,
+    draft: IntroCacheV1,
+  ): Promise<void> => {
+    if (draft.caseId !== caseId) {
+      throw new Error(`Draft caseId '${draft.caseId}' does not match '${caseId}'.`);
+    }
+    if (draft.review.status !== 'draft') {
+      throw new Error('Only draft-status artifacts can be saved as drafts. Use approve for approved status.');
+    }
+    await this.introCacheStore.save(draft);
+  };
+
+  /**
+   * Approve the current draft with a reviewer identity. Byte-compatible with
+   * `scripts/introCache/review.mts`: the artifact ends up with
+   * `review = { status: 'approved', reviewer, credentials, reviewedAt }`, which
+   * is what the runtime loader requires.
+   */
+  approveIntroCacheForCase = async (
+    caseId: string,
+    reviewer: { name: string; credentials: string },
+  ): Promise<IntroCacheV1> => {
+    const stored = await this.introCacheStore.get(caseId);
+    if (!stored) {
+      throw new Error(`No intro-cache draft exists for '${caseId}'.`);
+    }
+    const approved = approveIntroCache(stored, reviewer, this.now);
+    await this.introCacheStore.save(approved);
+    return approved;
+  };
+
+  /** Drop the browser-local intro cache for a case without deleting the case. */
+  clearIntroCacheForCase = async (caseId: string): Promise<void> => {
+    await this.introCacheStore.delete(caseId);
+  };
+
+  subscribeIntroCacheChanges = (
+    listener: Parameters<AuthoredIntroCacheStore['subscribe']>[0],
+  ) => this.introCacheStore.subscribe(listener);
 
   releaseAsset = (asset: StudioAsset): void => {
     const sessionAsset = this.sessionAssets.get(asset.id);

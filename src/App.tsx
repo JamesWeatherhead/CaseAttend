@@ -25,7 +25,11 @@ import { primaryCaseModality } from './data/caseRegistry';
 import type { ResearchViewerPolicyV1 } from './core/researchManifest';
 import { Series, ToolMode, ConnectionType, DicomWebConfig, Measurement, SegmentationLayer, ViewerHandle, AiPointer, type CapturedTutorView } from './types';
 import { fetchDicomWebSeries } from './services/dicomService';
-import { pendingOAuthCode, completeOpenRouterOAuth } from './services/openrouterAuth';
+import {
+  beginOpenRouterOAuth,
+  completeOpenRouterOAuth,
+  pendingOAuthCode,
+} from './services/openrouterAuth';
 import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
 import { browserTeachingEngine } from './services/browserTeachingEngine';
 import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
@@ -1077,6 +1081,14 @@ const App: React.FC = () => {
           releaseAsset={caseStudioController.releaseAsset}
           getStorageStatus={caseStudioController.getStorageStatus}
           subscribeStorageStatus={caseStudioController.subscribeStorageStatus}
+          getIntroCacheStatus={caseStudioController.getIntroCacheStatus}
+          generateIntroCache={caseStudioController.generateIntroCacheForCase}
+          approveIntroCache={caseStudioController.approveIntroCacheForCase}
+          saveIntroCacheDraft={caseStudioController.saveIntroCacheDraftForCase}
+          clearIntroCache={caseStudioController.clearIntroCacheForCase}
+          subscribeIntroCacheChanges={caseStudioController.subscribeIntroCacheChanges}
+          hasApiKey={hasKey}
+          onConnectOpenRouter={() => { void beginOpenRouterOAuth(); }}
         />
       ) : !selectedStudy ? (
         <div className="h-full w-full bg-[#0f1011] overflow-hidden">

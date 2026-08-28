@@ -462,3 +462,117 @@ label.case-studio-button { width: fit-content; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Intro-cache panel (issue #70) --------------------------------------------- */
+
+.case-studio-intro-cache {
+  border: 1px solid var(--studio-border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--studio-panel-2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.case-studio-intro-cache--idle { border-color: rgba(96, 165, 250, 0.35); }
+.case-studio-intro-cache--busy { border-color: rgba(147, 197, 253, 0.5); }
+.case-studio-intro-cache--ready { border-color: rgba(250, 204, 21, 0.5); }
+.case-studio-intro-cache--ok { border-color: rgba(74, 222, 128, 0.55); }
+.case-studio-intro-cache--warn { border-color: rgba(251, 146, 60, 0.5); }
+.case-studio-intro-cache--error { border-color: rgba(248, 113, 113, 0.55); }
+
+.case-studio-intro-cache__header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+.case-studio-intro-cache__header h3 { margin: 0; font-size: 1.05rem; }
+.case-studio-intro-cache__header p { margin: 4px 0 0; color: var(--studio-muted); font-size: 0.9rem; }
+.case-studio-intro-cache__icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(96, 165, 250, 0.12);
+  color: var(--studio-blue);
+  display: grid; place-items: center;
+}
+.case-studio-intro-cache__actions {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+}
+
+.case-studio-intro-cache__error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.12);
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+.case-studio-intro-cache__provenance {
+  display: flex; flex-wrap: wrap; gap: 12px 24px;
+  color: var(--studio-muted); font-size: 0.82rem;
+  padding: 8px 0;
+  border-top: 1px dashed var(--studio-border);
+  border-bottom: 1px dashed var(--studio-border);
+}
+.case-studio-intro-cache__provenance strong { color: var(--studio-text); font-weight: 500; }
+
+.case-studio-intro-cache__levels {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.case-studio-intro-cache__level {
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  background: var(--studio-panel);
+}
+.case-studio-intro-cache__level > summary {
+  list-style: none;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+}
+.case-studio-intro-cache__level > summary::-webkit-details-marker { display: none; }
+.case-studio-intro-cache__level > summary small { color: var(--studio-muted); font-size: 0.82rem; }
+.case-studio-intro-cache__level-body {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 12px 14px 16px;
+  border-top: 1px solid var(--studio-border);
+}
+.case-studio-intro-cache__level-body label { display: block; }
+.case-studio-intro-cache__level-body label > span {
+  display: block; margin-bottom: 4px; font-size: 0.82rem; color: var(--studio-muted);
+}
+
+.case-studio-intro-cache__questions {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.case-studio-intro-cache__question {
+  padding: 10px 12px;
+  border: 1px dashed var(--studio-border);
+  border-radius: 8px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.case-studio-intro-cache__question p { margin: 0; font-size: 0.85rem; color: var(--studio-muted); }
+
+.case-studio-intro-cache__review {
+  border-top: 1px dashed var(--studio-border);
+  padding-top: 14px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.case-studio-intro-cache__review h4 { margin: 0; font-size: 0.95rem; }
+.case-studio-intro-cache__review p { margin: 0; color: var(--studio-muted); font-size: 0.85rem; }
+.case-studio-intro-cache__review-actions {
+  display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+}
+
+@media (max-width: 620px) {
+  .case-studio-intro-cache__header {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+  .case-studio-intro-cache__actions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+  }
+  .case-studio-intro-cache__actions .case-studio-button { flex: 1; }
+}

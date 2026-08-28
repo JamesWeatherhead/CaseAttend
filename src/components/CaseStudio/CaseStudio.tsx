@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   ArrowDown,
@@ -21,7 +21,10 @@ import {
   Upload,
 } from 'lucide-react';
 import type { CaseDifficulty, CasePackageV1 } from '../../core/casePackage';
+import type { IntroCacheV1 } from '../../core/introCache';
 import type { DomainKey } from '../../lib/domains/types';
+import type { IntroCacheStatus } from '../../services/caseStudioController';
+import IntroCachePanel from './IntroCachePanel';
 import './CaseStudio.css';
 
 export const CASE_STUDIO_STEPS = [
@@ -123,6 +126,15 @@ export interface CaseStudioProps {
   subscribeStorageStatus?: (
     listener: (status: { persistent: boolean; message: string }) => void,
   ) => () => void;
+  /** Intro-cache pipeline (issue #70). All are optional so lightweight embeds skip it. */
+  getIntroCacheStatus?: (caseId: string) => Promise<IntroCacheStatus>;
+  generateIntroCache?: (caseId: string, options?: { signal?: AbortSignal }) => Promise<IntroCacheV1>;
+  approveIntroCache?: (caseId: string, reviewer: { name: string; credentials: string }) => Promise<IntroCacheV1>;
+  saveIntroCacheDraft?: (caseId: string, draft: IntroCacheV1) => Promise<void>;
+  clearIntroCache?: (caseId: string) => Promise<void>;
+  subscribeIntroCacheChanges?: (listener: () => void) => () => void;
+  hasApiKey?: () => boolean;
+  onConnectOpenRouter?: () => void;
   now?: () => Date;
 }
 
@@ -319,6 +331,13 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   releaseAsset,
   getStorageStatus,
   subscribeStorageStatus,
+  getIntroCacheStatus,
+  generateIntroCache,
+  approveIntroCache: approveIntroCacheProp,
+  saveIntroCacheDraft,
+  subscribeIntroCacheChanges,
+  hasApiKey,
+  onConnectOpenRouter,
   now = () => new Date(),
 }) => {
   const [step, setStep] = useState(0);
@@ -340,6 +359,12 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
     manifestSha256: string;
   } | null>(null);
   const [importedPackageMetadata, setImportedPackageMetadata] = useState(false);
+  const [introCacheStatus, setIntroCacheStatus] = useState<IntroCacheStatus>({ kind: 'idle' });
+  const [introCacheBusy, setIntroCacheBusy] = useState(false);
+  const introCacheAbortRef = useRef<AbortController | null>(null);
+  const introCachePipelineAvailable = Boolean(
+    getIntroCacheStatus && generateIntroCache && approveIntroCacheProp && saveIntroCacheDraft,
+  );
   const headingRef = useRef<HTMLHeadingElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -422,6 +447,81 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
     window.addEventListener('beforeunload', warnBeforeUnload);
     return () => window.removeEventListener('beforeunload', warnBeforeUnload);
   }, [shouldWarnBeforeExit]);
+
+  const runIntroCacheGeneration = useCallback(async (caseId: string) => {
+    if (!generateIntroCache) return;
+    introCacheAbortRef.current?.abort();
+    const controller = new AbortController();
+    introCacheAbortRef.current = controller;
+    setIntroCacheBusy(true);
+    setIntroCacheStatus({ kind: 'generating' });
+    try {
+      const draft = await generateIntroCache(caseId, { signal: controller.signal });
+      if (!mountedRef.current) return;
+      setIntroCacheStatus({ kind: 'ready-for-review', draft });
+    } catch (error) {
+      if (!mountedRef.current) return;
+      if (error && typeof error === 'object' && (error as { name?: string }).name === 'AbortError') return;
+      const err = error as { code?: string; message?: string; retryable?: boolean };
+      setIntroCacheStatus({
+        kind: 'error',
+        code: err.code ?? 'unknown',
+        message: err.message ?? 'Intro cache generation failed.',
+        retryable: err.retryable ?? true,
+      });
+    } finally {
+      if (mountedRef.current) setIntroCacheBusy(false);
+    }
+  }, [generateIntroCache]);
+
+  // Watch the saved case: refresh intro-cache status, and auto-trigger a fresh
+  // generation the first time (idle) or after a stale-inducing edit. This is
+  // the "no manual step" the issue calls for; the educator only steps in for
+  // the review + approve gate.
+  useEffect(() => {
+    if (!getIntroCacheStatus || !savedCase) {
+      setIntroCacheStatus({ kind: 'idle' });
+      return () => undefined;
+    }
+    let active = true;
+    void (async () => {
+      try {
+        const status = await getIntroCacheStatus(savedCase.id);
+        if (!active) return;
+        setIntroCacheStatus(status);
+        const shouldAutoGenerate = generateIntroCache
+          && (hasApiKey ? hasApiKey() : false)
+          && (status.kind === 'idle' || status.kind === 'stale');
+        if (shouldAutoGenerate) {
+          void runIntroCacheGeneration(savedCase.id);
+        }
+      } catch (error) {
+        if (active) {
+          setIntroCacheStatus({
+            kind: 'error',
+            code: 'status_error',
+            message: error instanceof Error ? error.message : 'Intro cache status could not be read.',
+            retryable: true,
+          });
+        }
+      }
+    })();
+    return () => { active = false; };
+  }, [savedCase?.id, savedCase?.manifest.sha256, getIntroCacheStatus, generateIntroCache, hasApiKey, runIntroCacheGeneration]);
+
+  useEffect(() => {
+    if (!subscribeIntroCacheChanges || !savedCase || !getIntroCacheStatus) return () => undefined;
+    const unsubscribe = subscribeIntroCacheChanges(() => {
+      void getIntroCacheStatus(savedCase.id).then((status) => {
+        if (mountedRef.current) setIntroCacheStatus(status);
+      }).catch(() => undefined);
+    });
+    return () => unsubscribe();
+  }, [savedCase?.id, subscribeIntroCacheChanges, getIntroCacheStatus]);
+
+  useEffect(() => () => {
+    introCacheAbortRef.current?.abort();
+  }, []);
 
   const requestExit = () => {
     if (busy) return;
@@ -1136,11 +1236,34 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                     <button type="button" className="case-studio-button primary" disabled={busy} onClick={() => void save()}><Save aria-hidden="true" /> Save case</button>
                   </div>
                 ) : (
-                  <div className="case-studio-complete-actions">
-                    <button type="button" className="case-studio-button primary" onClick={() => onOpenLessonBuilder(savedCase.id)}><GraduationCap aria-hidden="true" /> Build the lesson</button>
-                    <button type="button" className="case-studio-button secondary" onClick={() => onPreview(savedCase)}><Eye aria-hidden="true" /> Open in viewer</button>
-                    <button type="button" className="case-studio-button secondary" disabled={busy} onClick={() => void doExport()}><Download aria-hidden="true" /> Export portable case</button>
-                  </div>
+                  <>
+                    {introCachePipelineAvailable && (
+                      <IntroCachePanel
+                        caseId={savedCase.id}
+                        status={introCacheStatus}
+                        busy={introCacheBusy}
+                        generate={() => runIntroCacheGeneration(savedCase.id)}
+                        regenerate={() => runIntroCacheGeneration(savedCase.id)}
+                        approve={async (reviewer) => {
+                          if (!approveIntroCacheProp) return;
+                          const approved = await approveIntroCacheProp(savedCase.id, reviewer);
+                          if (mountedRef.current) setIntroCacheStatus({ kind: 'approved', cache: approved });
+                        }}
+                        saveDraft={async (draft) => {
+                          if (!saveIntroCacheDraft) return;
+                          await saveIntroCacheDraft(savedCase.id, draft);
+                          if (mountedRef.current) setIntroCacheStatus({ kind: 'ready-for-review', draft });
+                        }}
+                        hasApiKey={hasApiKey ? hasApiKey() : false}
+                        {...(onConnectOpenRouter ? { onConnectOpenRouter } : {})}
+                      />
+                    )}
+                    <div className="case-studio-complete-actions">
+                      <button type="button" className="case-studio-button primary" onClick={() => onOpenLessonBuilder(savedCase.id)}><GraduationCap aria-hidden="true" /> Build the lesson</button>
+                      <button type="button" className="case-studio-button secondary" onClick={() => onPreview(savedCase)}><Eye aria-hidden="true" /> Open in viewer</button>
+                      <button type="button" className="case-studio-button secondary" disabled={busy} onClick={() => void doExport()}><Download aria-hidden="true" /> Export portable case</button>
+                    </div>
+                  </>
                 )}
               </div>
             )}

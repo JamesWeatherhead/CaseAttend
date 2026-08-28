@@ -1,3 +1,4 @@
+import { IDBFactory } from 'fake-indexeddb';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -6,8 +7,10 @@ import {
   INTRO_CACHE_SCHEMA_VERSION,
   type IntroCacheV1,
 } from '../core/introCache';
+import { AuthoredIntroCacheStore } from '../services/authoredIntroCacheStore';
 import {
   __resetIntroCacheStoreForTests,
+  __setAuthoredIntroCacheStoreForTests,
   loadIntroCache,
 } from '../services/introCacheStore';
 
@@ -127,5 +130,96 @@ describe('loadIntroCache', () => {
     const result = await loadIntroCache('cxr-pneumothorax', { lessonPlanSha256: 'a'.repeat(64) });
     expect(result).toBeNull();
     expect(console.warn).toHaveBeenCalled();
+  });
+
+  describe('browser-local (authored) fallback', () => {
+    const uniqueDbName = () => `test-intro-cache-store-${Math.random().toString(36).slice(2)}`;
+
+    it('returns an authored cache when the shipped file 404s', async () => {
+      const authored = new AuthoredIntroCacheStore({
+        indexedDB: new IDBFactory() as unknown as IDBFactory,
+        databaseName: uniqueDbName(),
+      });
+      await authored.save(makeCache({
+        caseId: 'author-case-x',
+      }));
+      globalThis.fetch = vi.fn(async () => new Response(null, { status: 404 }));
+      __setAuthoredIntroCacheStoreForTests(authored);
+      const result = await loadIntroCache('author-case-x', { lessonPlanSha256: 'a'.repeat(64) });
+      expect(result).not.toBeNull();
+      expect(result?.caseId).toBe('author-case-x');
+    });
+
+    it('drops an authored draft that is not approved', async () => {
+      const authored = new AuthoredIntroCacheStore({
+        indexedDB: new IDBFactory() as unknown as IDBFactory,
+        databaseName: uniqueDbName(),
+      });
+      await authored.save(makeCache({
+        caseId: 'author-case-y',
+        review: { status: 'draft' },
+      }));
+      globalThis.fetch = vi.fn(async () => new Response(null, { status: 404 }));
+      __setAuthoredIntroCacheStoreForTests(authored);
+      const result = await loadIntroCache('author-case-y', { lessonPlanSha256: 'a'.repeat(64) });
+      expect(result).toBeNull();
+    });
+
+    it('invalidates a memoized draft result when the authored cache is approved', async () => {
+      const authored = new AuthoredIntroCacheStore({
+        indexedDB: new IDBFactory() as unknown as IDBFactory,
+        databaseName: uniqueDbName(),
+      });
+      const draft = makeCache({
+        caseId: 'author-case-review',
+        review: { status: 'draft' },
+      });
+      await authored.save(draft);
+      globalThis.fetch = vi.fn(async () => new Response(null, { status: 404 }));
+      __setAuthoredIntroCacheStoreForTests(authored);
+
+      expect(await loadIntroCache('author-case-review', {
+        lessonPlanSha256: 'a'.repeat(64),
+      })).toBeNull();
+
+      await authored.save(makeCache({ caseId: 'author-case-review' }));
+      const approved = await loadIntroCache('author-case-review', {
+        lessonPlanSha256: 'a'.repeat(64),
+      });
+      expect(approved?.review.status).toBe('approved');
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('drops an authored cache whose lesson-plan sha drifted', async () => {
+      const authored = new AuthoredIntroCacheStore({
+        indexedDB: new IDBFactory() as unknown as IDBFactory,
+        databaseName: uniqueDbName(),
+      });
+      await authored.save(makeCache({
+        caseId: 'author-case-z',
+        lessonPlanSha256: 'd'.repeat(64),
+      }));
+      globalThis.fetch = vi.fn(async () => new Response(null, { status: 404 }));
+      __setAuthoredIntroCacheStoreForTests(authored);
+      const result = await loadIntroCache('author-case-z', { lessonPlanSha256: 'a'.repeat(64) });
+      expect(result).toBeNull();
+    });
+
+    it('does NOT fall through to the authored store when the shipped file is present but stale', async () => {
+      // Fail-closed contract: a curated case with a bad shipped cache should
+      // surface as "no cache", not silently pick up an unrelated browser-local
+      // artifact for the same caseId.
+      const authored = new AuthoredIntroCacheStore({
+        indexedDB: new IDBFactory() as unknown as IDBFactory,
+        databaseName: uniqueDbName(),
+      });
+      await authored.save(makeCache({ caseId: 'cxr-pneumothorax' }));
+      // Shipped file has drifted sha:
+      const shipped = makeCache({ lessonPlanSha256: 'e'.repeat(64) });
+      globalThis.fetch = vi.fn(async () => mockJsonResponse(shipped));
+      __setAuthoredIntroCacheStoreForTests(authored);
+      const result = await loadIntroCache('cxr-pneumothorax', { lessonPlanSha256: 'a'.repeat(64) });
+      expect(result).toBeNull();
+    });
   });
 });
