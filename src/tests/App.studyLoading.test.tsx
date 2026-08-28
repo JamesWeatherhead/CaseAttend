@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => {
       showSegmentation: true,
     },
     neutralDescription: `${title} neutral description`,
+    contentWarnings: [`${title} content warning`],
     teachingNotes: [`${title} teaching note`],
     lessonPlanRef: {
       id: `${id}-lesson`,
@@ -210,6 +211,8 @@ describe('App study-series loading', () => {
     expect(mocks.aiProps.mock.lastCall?.[0]).toMatchObject({
       teachingEngine: mocks.browserTeachingEngine,
     });
+    expect(screen.getByRole('note', { name: 'Case content warning' }).textContent)
+      .toContain('Case A content warning');
   });
 
   it('renders in hardened browser contexts where preference storage throws', () => {

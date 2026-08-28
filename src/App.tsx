@@ -81,6 +81,37 @@ function resolveCapturedArtifact(
   };
 }
 
+export function resolveArtifactAccessibleDescription(
+  casePackage: CasePackageV1,
+  viewerSeriesId: string | undefined,
+  frameIndex: number,
+): string {
+  if (!viewerSeriesId || !casePackage.artifact) return casePackage.neutralDescription;
+  if (casePackage.artifact.kind === 'image') {
+    return viewerSeriesId === `${casePackage.id}:${casePackage.artifact.seriesId}`
+      ? casePackage.artifact.alt
+      : casePackage.neutralDescription;
+  }
+  const series = casePackage.artifact.series.find(
+    (candidate) => viewerSeriesId === `${casePackage.id}:${candidate.id}`,
+  );
+  return series?.frames[frameIndex]?.alt ?? casePackage.neutralDescription;
+}
+
+const CaseContentWarnings: React.FC<{ warnings?: readonly string[] }> = ({ warnings }) => {
+  if (!warnings?.length) return null;
+  return (
+    <div
+      role="note"
+      aria-label="Case content warning"
+      className="relative z-20 flex w-full flex-none items-start gap-2 border-y border-amber-300/20 bg-[#17120b] px-3 py-2 text-[11px] leading-relaxed text-amber-100"
+    >
+      <Shield className="mt-0.5 h-3.5 w-3.5 flex-none text-amber-300" aria-hidden="true" />
+      <span><strong className="font-semibold">Content note:</strong> {warnings.join(' · ')}</span>
+    </div>
+  );
+};
+
 export function normalizeToolForArtifact(
   tool: ToolMode,
   artifactHints: CasePackageV1['artifactHints'],
@@ -315,6 +346,9 @@ const App: React.FC = () => {
   // Derived Measurements for Active Series
   const activeSeriesId = activeSeries?.id;
   const measurements = activeSeriesId ? (measurementsBySeries[activeSeriesId] || []) : [];
+  const currentAccessibleDescription = selectedStudy
+    ? resolveArtifactAccessibleDescription(selectedStudy, activeSeriesId, sliceIndex)
+    : '';
 
   // Default to AI tab
   const [activeRightTab, setActiveRightTab] = useState<'measure' | 'segment' | 'ai'>('ai');
@@ -879,6 +913,7 @@ const App: React.FC = () => {
                   artifactHints={effectiveArtifactHints ?? selectedStudy.artifactHints}
                   interactionPolicy={participantViewerPolicy}
                 />
+                <CaseContentWarnings warnings={selectedStudy.contentWarnings} />
                 <ViewerCanvas
                   ref={viewerRef}
                   series={activeSeries}
@@ -902,7 +937,7 @@ const App: React.FC = () => {
                   aiPointers={aiPointers}
                   getAnnotationAudit={getAnnotationAudit}
                   onAnnotationMutation={bumpAnnotationAudit}
-                  accessibleDescription={selectedStudy.neutralDescription}
+                  accessibleDescription={currentAccessibleDescription}
                   interactionPolicy={participantViewerPolicy}
                   includeAnnotationsInCapture={participantCapturePolicy?.includeVisibleAnnotations ?? true}
                 />
@@ -1126,6 +1161,7 @@ const App: React.FC = () => {
                     instanceCount={activeSeries?.instanceCount ?? 1}
                     artifactHints={selectedStudy.artifactHints}
                   />
+                  <CaseContentWarnings warnings={selectedStudy.contentWarnings} />
 
                   <ViewerCanvas
                     ref={viewerRef}
@@ -1147,7 +1183,7 @@ const App: React.FC = () => {
                     aiPointers={aiPointers}
                     getAnnotationAudit={getAnnotationAudit}
                     onAnnotationMutation={bumpAnnotationAudit}
-                    accessibleDescription={selectedStudy.neutralDescription}
+                    accessibleDescription={currentAccessibleDescription}
                   />
                   {selectedStudy.artifactHints.showSeriesSelector && (
                     <div className="flex-shrink-0 z-10">
