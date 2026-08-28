@@ -13,6 +13,7 @@ CaseAttend is a browser-based visual tutor for case-based education. You can use
 | Design the tutor's objectives, hints, and stopping rules | [Build a lesson](guides/build-a-lesson.md) |
 | Start a lesson from a PDF or PowerPoint file | [Import PDF or PowerPoint text](guides/import-pdf-powerpoint.md) |
 | Plan on paper before using the builder | [Lesson-planning worksheet](templates/lesson-planning-worksheet.md) |
+| Choose between no-code, self-hosting, and the SDK | [Adaptation decision guide](adapt/choose-your-path.md) |
 | Reuse or adapt material without code | [No-code adaptation guide](adapt/no-code.md) |
 | Give a case to a colleague or keep a backup | [Share, back up, and restore](guides/share-back-up-and-restore.md) |
 | Check which files work | [Supported files](reference/supported-files.md) |

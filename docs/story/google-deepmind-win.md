@@ -53,7 +53,7 @@ The most reusable part of the story is not “add AI to a viewer.” It is a way
 6. **Rehearse the failure paths.** Test plausible mistakes, premature diagnoses, requests for direct answers, accessibility needs, and model failures.
 7. **Evaluate before scaling.** A compelling demonstration is a reason to run a careful pilot, not a substitute for one.
 
-You can follow that pattern without writing code in [Adapt CaseAttend without code](../adapt/no-code.md). Teams that need their own hosting can use the [Cloudflare Pages guide](../adapt/self-host-cloudflare.md); product teams can start with the [SDK adaptation guide](../adapt/sdk.md).
+Start with [Choose your CaseAttend adaptation path](../adapt/choose-your-path.md). From there, you can follow the pattern without writing code in [Adapt CaseAttend without code](../adapt/no-code.md), publish a reviewed copy with the [Cloudflare Pages guide](../adapt/self-host-cloudflare.md), or begin a product integration with the [SDK adaptation guide](../adapt/sdk.md).
 
 ## Source note
 
