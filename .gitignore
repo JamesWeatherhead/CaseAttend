@@ -4,6 +4,7 @@ public/vendor/tesseract/
 public/vendor/tesseract-core/
 public/vendor/tessdata/
 public/vendor/fflate/
+public/vendor/pdfjs/
 public/vendor/NOTICE.txt
 .env
 .env.local

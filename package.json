@@ -4,6 +4,9 @@
   "version": "0.5.0",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
   "workspaces": [
     "packages/*",
     "examples/*"
@@ -26,6 +29,7 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "fflate": "^0.8.3",
     "lucide-react": "^0.556.0",
+    "pdfjs-dist": "6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tesseract.js": "^7.0.0"

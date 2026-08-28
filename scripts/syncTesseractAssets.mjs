@@ -18,6 +18,7 @@ const copies = [
   ['node_modules/tesseract.js-core/tesseract-core-relaxedsimd-lstm.wasm.js', 'tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js'],
   ['node_modules/tesseract.js-core/LICENSE', 'tesseract-core/LICENSE'],
   ['node_modules/fflate/LICENSE', 'fflate/LICENSE'],
+  ['node_modules/pdfjs-dist/LICENSE', 'pdfjs/LICENSE'],
 ];
 
 // public/vendor is generated only from the pinned allowlist above. Recreate it
@@ -35,12 +36,13 @@ for (const [source, target] of copies) {
 await writeFile(
   path.join(publicRoot, 'NOTICE.txt'),
   [
-    'Case Studio browser-local OCR assets',
+    'CaseAttend browser-local document and OCR assets',
     '',
     'Tesseract.js and tesseract.js-core are licensed under Apache-2.0.',
     'The English trained-data npm package declares MIT; its upstream tessdata repository publishes under Apache-2.0.',
     'The upstream Apache-2.0 text is included beside the trained data.',
     'fflate is licensed under the MIT license; its license text is included under vendor/fflate.',
+    'PDF.js is licensed under Apache-2.0; its license text is included under vendor/pdfjs.',
     'Source and package details are recorded in THIRD_PARTY_NOTICES.md.',
     '',
   ].join('\n'),

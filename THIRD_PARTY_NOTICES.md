@@ -13,8 +13,13 @@ licenses apply to those components, not to CaseAttend as a whole.
   English trained-data file and the upstream Apache-2.0 text are copied into
   the production build.
 - [fflate](https://github.com/101arrowz/fflate), MIT. It creates and validates
-  portable `.caseattend` ZIP archives. Its MIT license text is copied into the
+  portable `.caseattend` ZIP archives and safely reads the XML parts used by
+  browser-local PowerPoint imports. Its MIT license text is copied into the
   production asset directory.
+- [PDF.js](https://github.com/mozilla/pdf.js), Apache-2.0. The browser-local
+  lesson importer uses it to extract selectable text from PDF teaching
+  materials. Its Apache-2.0 license text is copied into the production asset
+  directory.
 
 Exact resolved package versions are recorded in `package-lock.json`. The
 production vendor asset directory also includes the available Apache-2.0 and
