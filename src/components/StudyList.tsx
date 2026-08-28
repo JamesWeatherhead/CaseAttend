@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2, FlaskConical } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2, FlaskConical, Search } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
@@ -70,19 +70,53 @@ const TESTIMONIALS = [
 const TestimonialRotator: React.FC = () => {
   const [idx, setIdx] = useState(0);
   const [fade, setFade] = useState(true);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => (
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  ));
+  const animationTimeout = useRef<number | null>(null);
+
+  const selectTestimonial = useCallback((getNextIndex: (currentIndex: number) => number) => {
+    if (animationTimeout.current !== null) {
+      window.clearTimeout(animationTimeout.current);
+      animationTimeout.current = null;
+    }
+    if (prefersReducedMotion) {
+      setIdx(getNextIndex);
+      setFade(true);
+      return;
+    }
+    setFade(false);
+    animationTimeout.current = window.setTimeout(() => {
+      setIdx(getNextIndex);
+      setFade(true);
+      animationTimeout.current = null;
+    }, 400);
+  }, [prefersReducedMotion]);
 
   const next = useCallback(() => {
-    setFade(false);
-    setTimeout(() => {
-      setIdx(prev => (prev + 1) % TESTIMONIALS.length);
-      setFade(true);
-    }, 400);
+    selectTestimonial(prev => (prev + 1) % TESTIMONIALS.length);
+  }, [selectTestimonial]);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncMotionPreference = () => setPrefersReducedMotion(motionPreference.matches);
+    syncMotionPreference();
+    motionPreference.addEventListener?.('change', syncMotionPreference);
+    return () => motionPreference.removeEventListener?.('change', syncMotionPreference);
   }, []);
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const timer = setInterval(next, 10000);
     return () => clearInterval(timer);
-  }, [next]);
+  }, [next, prefersReducedMotion]);
+
+  useEffect(() => () => {
+    if (animationTimeout.current !== null) window.clearTimeout(animationTimeout.current);
+  }, []);
 
   const t = TESTIMONIALS[idx];
 
@@ -92,14 +126,14 @@ const TestimonialRotator: React.FC = () => {
         className="transition-all duration-400 ease-in-out"
         style={{
           opacity: fade ? 1 : 0,
-          transform: fade ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 400ms ease, transform 400ms ease',
+          transform: prefersReducedMotion || fade ? 'translateY(0)' : 'translateY(8px)',
+          transition: prefersReducedMotion ? 'none' : 'opacity 400ms ease, transform 400ms ease',
         }}
       >
         <p className="text-[13px] sm:text-[14px] text-[#9ca3af] leading-relaxed italic mb-3">
           "{t.quote}"
         </p>
-        <p className="text-[11px] text-[#4a4e58] font-medium tracking-wide">
+        <p className="text-[11px] text-[#9ca3af] font-medium tracking-wide">
           {t.author}
         </p>
       </div>
@@ -111,7 +145,7 @@ const TestimonialRotator: React.FC = () => {
             type="button"
             aria-label={`Show testimonial ${i + 1} of ${TESTIMONIALS.length}`}
             aria-pressed={i === idx}
-            onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 400); }}
+            onClick={() => selectTestimonial(() => i)}
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
           >
             <span
@@ -235,6 +269,7 @@ const ConnectCallout: React.FC = () => {
 const StudyList: React.FC<StudyListProps> = ({
   onSelectStudy,
   dicomConfig,
+  onShowSafety,
   onOpenLessonBuilder,
   onOpenCaseStudio,
   onOpenResearchSetup,
@@ -245,6 +280,7 @@ const StudyList: React.FC<StudyListProps> = ({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadCases = useCallback(async () => {
     setLoading(true);
@@ -262,27 +298,25 @@ const StudyList: React.FC<StudyListProps> = ({
     void loadCases();
   }, [loadCases]);
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-full bg-[#06070a]" role="status" aria-label="Loading cases"><Loader2 className="w-5 h-5 text-[#62666d] animate-spin" /></div>;
-  }
-
-  if (loadError) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 bg-[#06070a] px-6 text-center">
-        <p className="max-w-md text-sm text-[#c9ced8]" role="alert">{loadError}</p>
-        <button
-          type="button"
-          onClick={() => void loadCases()}
-          className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-        >
-          Try loading cases again
-        </button>
-      </div>
-    );
-  }
+  const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
+  const visibleCasePackages = casePackages.filter((casePackage) => {
+    if (!matchesStudyFilter(casePackage, activeFilter)) return false;
+    if (!normalizedSearchQuery) return true;
+    return [
+      casePackage.title,
+      casePackage.vignette,
+      casePackage.domain,
+      casePackage.presentation.subtitle,
+    ].join(' ').toLocaleLowerCase().includes(normalizedSearchQuery);
+  });
+  const firstAvailableCase = casePackages[0];
+  const clearCaseFilters = () => {
+    setSearchQuery('');
+    setActiveFilter('all');
+  };
 
   return (
-    <div className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto">
+    <main className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto" aria-labelledby="landing-title">
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-12 sm:pt-20 pb-12">
@@ -290,8 +324,8 @@ const StudyList: React.FC<StudyListProps> = ({
         {/* Brand */}
         <div className="flex flex-col items-center mb-6 sm:mb-8">
           <div className="flex items-center gap-4 sm:gap-5 mb-4">
-            <img src="/logo.svg" alt="CaseAttend" className="w-12 h-12 sm:w-16 sm:h-16 rounded-[14px]" />
-            <h1 className="text-[38px] sm:text-[56px] font-bold text-white tracking-[-0.03em]">
+            <img src="/logo.svg" alt="" aria-hidden="true" className="w-12 h-12 sm:w-16 sm:h-16 rounded-[14px]" />
+            <h1 id="landing-title" className="text-[38px] sm:text-[56px] font-bold text-white tracking-[-0.03em]">
               CaseAttend
             </h1>
           </div>
@@ -302,11 +336,20 @@ const StudyList: React.FC<StudyListProps> = ({
             Read the case. Inspect the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level, from high school to resident.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => firstAvailableCase && onSelectStudy(firstAvailableCase)}
+              disabled={!firstAvailableCase}
+              className="min-h-11 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-950 disabled:text-blue-200/70 px-5 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Scan className="w-4 h-4" aria-hidden="true" />}
+              Try a sample case
+            </button>
             {onOpenLessonBuilder && (
               <button
                 type="button"
                 onClick={onOpenLessonBuilder}
-                className="min-h-11 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
+                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
               >
                 <BookOpen className="w-4 h-4" aria-hidden="true" />
                 Create a lesson
@@ -319,7 +362,7 @@ const StudyList: React.FC<StudyListProps> = ({
                 className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
               >
                 <ImagePlus className="w-4 h-4" aria-hidden="true" />
-                Create a case
+                Create from PDF, PowerPoint, or images
               </button>
             )}
             {onOpenResearchSetup && (
@@ -335,9 +378,28 @@ const StudyList: React.FC<StudyListProps> = ({
             <a href="#how-it-works" className="min-h-11 inline-flex items-center px-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
               How it works
             </a>
+            {onShowSafety && (
+              <button
+                type="button"
+                onClick={onShowSafety}
+                className="min-h-11 inline-flex items-center gap-1.5 rounded-lg px-3 text-[12px] text-[#b8c0cc] hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+              >
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                Safety &amp; privacy
+              </button>
+            )}
+            <a
+              href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/docs/README.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-h-11 inline-flex items-center gap-1.5 rounded-lg px-3 text-[12px] text-[#b8c0cc] hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+            >
+              <BookOpen className="h-4 w-4" aria-hidden="true" />
+              User guides
+            </a>
           </div>
           {(onOpenLessonBuilder || onOpenResearchSetup) && (
-            <p className="mt-2 text-[11px] text-[#5e6570] text-center">
+            <p className="mt-2 text-[11px] text-[#9ca3af] text-center">
               Build versioned teaching content or a reproducible VLM education protocol in your browser. CaseAttend does not provide institutional approval.
             </p>
           )}
@@ -359,133 +421,192 @@ const StudyList: React.FC<StudyListProps> = ({
         {/* Sign in with OpenRouter. Free, no card, credentials stay with OpenRouter. */}
         <ConnectCallout />
 
-        {/* Section label + filters */}
-        <div className="w-full max-w-[1100px] mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em]">Cases</p>
-          <div className="flex w-full max-w-full gap-1 overflow-x-auto pb-1 sm:w-auto" aria-label="Filter cases">
-            {STUDY_FILTERS.map(f => (
-              <button
-                key={f.id}
-                type="button"
-                aria-pressed={activeFilter === f.id}
-                onClick={() => setActiveFilter(f.id)}
-                className={`min-h-11 shrink-0 whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
-                  activeFilter === f.id
-                    ? 'bg-white/[0.08] text-white'
-                    : 'text-[#4a4e58] hover:text-[#8a8f98] hover:bg-white/[0.03]'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+        <section className="w-full max-w-[1100px]" aria-labelledby="cases-heading">
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="cases-heading" className="text-[22px] font-bold text-white tracking-[-0.01em]">Cases</h2>
+              <p className="mt-1 text-[12px] text-[#aab2bf]" aria-live="polite">
+                {loading
+                  ? 'Loading the case library…'
+                  : loadError
+                    ? 'The case library is temporarily unavailable.'
+                    : `Showing ${visibleCasePackages.length} of ${casePackages.length} ${casePackages.length === 1 ? 'case' : 'cases'}`}
+              </p>
+            </div>
+            <div className="w-full sm:max-w-[360px]">
+              <label htmlFor="case-search" className="mb-1.5 block text-[12px] font-semibold text-[#c9ced8]">
+                Search cases
+              </label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" aria-hidden="true" />
+                <input
+                  id="case-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Title, specialty, or vignette"
+                  className="min-h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] py-2 pl-10 pr-3 text-[13px] text-white placeholder:text-[#8f96a2] focus:border-blue-400/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                />
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Case grid: 1 col mobile, 2 col tablet, 3 col desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-[1100px]">
-          {casePackages.filter((casePackage) => matchesStudyFilter(casePackage, activeFilter)).map((casePackage) => {
-            const active = hovered === casePackage.id;
-            const { presentation } = casePackage;
+          <div className="mb-4">
+            <p className="mb-1.5 text-[11px] font-semibold text-[#aab2bf] uppercase tracking-[0.1em]">Filter by topic</p>
+            <div className="flex w-full max-w-full gap-1 overflow-x-auto pb-1" role="group" aria-label="Filter cases">
+              {STUDY_FILTERS.map(f => (
+                <button
+                  key={f.id}
+                  type="button"
+                  aria-pressed={activeFilter === f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  className={`min-h-11 shrink-0 whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
+                    activeFilter === f.id
+                      ? 'bg-white/[0.1] text-white'
+                      : 'text-[#aab2bf] hover:text-white hover:bg-white/[0.05]'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-            return (
-              <article
-                key={casePackage.id}
-                onMouseEnter={() => setHovered(casePackage.id)}
-                onMouseLeave={() => setHovered(null)}
-                className="group relative rounded-2xl overflow-hidden text-left outline-none aspect-[4/5] sm:aspect-[4/5]"
-                style={{
-                  transition: 'transform 250ms cubic-bezier(0.16,1,0.3,1), box-shadow 250ms ease',
-                  transform: active ? 'scale(1.02)' : 'scale(1)',
-                  boxShadow: active ? `0 0 40px 8px ${presentation.accentGlow}` : 'none',
-                }}
-              >
+          {/* Case grid: 1 col mobile, 2 col tablet, 3 col desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            {loading && (
+              <div className="col-span-full flex min-h-48 items-center justify-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] text-[#c9ced8]" role="status" aria-label="Loading cases">
+                <Loader2 className="h-5 w-5 animate-spin text-blue-300" aria-hidden="true" />
+                <span className="text-sm">Loading cases…</span>
+              </div>
+            )}
+
+            {!loading && loadError && (
+              <div className="col-span-full flex min-h-48 flex-col items-center justify-center gap-4 rounded-2xl border border-amber-300/20 bg-amber-300/[0.04] px-6 text-center">
+                <p className="max-w-md text-sm text-[#e1e5eb]" role="alert">{loadError}</p>
                 <button
                   type="button"
-                  className="absolute inset-0 z-20 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-inset"
-                  onClick={() => onSelectStudy(casePackage)}
-                  aria-label={`Start case: ${casePackage.title}`}
-                />
-                {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && (
+                  onClick={() => void loadCases()}
+                  className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                >
+                  Try loading cases again
+                </button>
+              </div>
+            )}
+
+            {!loading && !loadError && visibleCasePackages.length === 0 && (
+              <div className="col-span-full flex min-h-48 flex-col items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.02] px-6 text-center" role="status">
+                <h3 className="text-base font-semibold text-white">No cases found</h3>
+                <p className="mt-2 max-w-md text-sm text-[#aab2bf]">
+                  {casePackages.length === 0
+                    ? 'No cases are available in this browser yet.'
+                    : 'Try another search term or choose a different topic.'}
+                </p>
+                {(searchQuery || activeFilter !== 'all') && (
                   <button
                     type="button"
-                    className="absolute right-3 top-3 z-30 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/[0.12] bg-black/70 text-[#c9ced8] hover:bg-red-950 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                    aria-label={`Delete browser-local case: ${casePackage.title}`}
-                    onClick={() => {
-                      if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
-                      void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => {
-                        setLoadError('The browser-local case could not be deleted. Your other cases were not changed.');
-                      });
-                    }}
+                    onClick={clearCaseFilters}
+                    className="mt-4 min-h-11 rounded-xl border border-white/[0.12] bg-white/[0.05] px-4 text-sm font-semibold text-white hover:bg-white/[0.09] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                   >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    Clear search and filters
                   </button>
                 )}
-                {/* Background image: fills the card */}
-                <div className="absolute inset-0">
-                  <CasePreviewBackdrop casePackage={casePackage} active={active} />
-                  {/* Gradient overlay: dark at bottom for text legibility only */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: `linear-gradient(to top, #06070a 20%, rgba(6,7,10,0.6) 50%, transparent 70%)`,
-                    }}
-                  />
-                  {/* Modality-colored ambient glow at top */}
-                  <div
-                    className="absolute inset-0 transition-opacity duration-500"
-                    style={{
-                      background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${presentation.accentGlow}, transparent 70%)`,
-                      opacity: active ? 1 : 0.5,
-                    }}
-                  />
-                </div>
+              </div>
+            )}
 
-                {/* Border */}
-                <div className="absolute inset-0 rounded-2xl transition-all duration-200" style={{
-                  boxShadow: active
-                    ? `inset 0 0 0 1px ${presentation.accentBorder}`
-                    : 'inset 0 0 0 1px rgba(255,255,255,0.04)',
-                }} />
+            {!loading && !loadError && visibleCasePackages.map((casePackage) => {
+              const active = hovered === casePackage.id;
+              const { presentation } = casePackage;
 
-                {/* Content pinned to bottom */}
-                <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-5 pt-8">
-                  {/* Modality tag */}
-                  <div className={`text-[10px] font-bold uppercase tracking-wider ${presentation.textClass} mb-2 opacity-80`}>
-                    {presentation.subtitle}
-                  </div>
-                  {casePackage.preview.src.startsWith('case://assets/') && (
-                    <div className="mb-2 inline-flex min-h-6 items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
-                      Browser-local
-                    </div>
+              return (
+                <article
+                  key={casePackage.id}
+                  onMouseEnter={() => setHovered(casePackage.id)}
+                  onMouseLeave={() => setHovered(null)}
+                  className="group relative rounded-2xl overflow-hidden text-left outline-none aspect-[4/5] sm:aspect-[4/5]"
+                  style={{
+                    transition: 'transform 250ms cubic-bezier(0.16,1,0.3,1), box-shadow 250ms ease',
+                    transform: active ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: active ? `0 0 40px 8px ${presentation.accentGlow}` : 'none',
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="absolute inset-0 z-20 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-inset"
+                    onClick={() => onSelectStudy(casePackage)}
+                    aria-label={`Start case: ${casePackage.title}`}
+                  />
+                  {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && (
+                    <button
+                      type="button"
+                      className="absolute right-3 top-3 z-30 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/[0.12] bg-black/70 text-[#c9ced8] hover:bg-red-950 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                      aria-label={`Delete browser-local case: ${casePackage.title}`}
+                      onClick={() => {
+                        if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
+                        void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => {
+                          setLoadError('The browser-local case could not be deleted. Your other cases were not changed.');
+                        });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    </button>
                   )}
-
-                  {/* Case title */}
-                  <div className="text-[16px] sm:text-[17px] font-bold text-white leading-tight mb-2">
-                    {casePackage.title}
+                  <div className="absolute inset-0">
+                    <CasePreviewBackdrop casePackage={casePackage} active={active} />
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(to top, #06070a 20%, rgba(6,7,10,0.6) 50%, transparent 70%)' }}
+                    />
+                    <div
+                      className="absolute inset-0 transition-opacity duration-500"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${presentation.accentGlow}, transparent 70%)`,
+                        opacity: active ? 1 : 0.5,
+                      }}
+                    />
                   </div>
 
-                  {/* Clinical vignette */}
-                  <p className="text-[11px] sm:text-[12px] text-[#6b7080] leading-relaxed mb-3 group-hover:text-[#8a8f98] transition-colors duration-300 line-clamp-3">
-                    {casePackage.vignette}
-                  </p>
+                  <div className="absolute inset-0 rounded-2xl transition-all duration-200" style={{
+                    boxShadow: active
+                      ? `inset 0 0 0 1px ${presentation.accentBorder}`
+                      : 'inset 0 0 0 1px rgba(255,255,255,0.04)',
+                  }} />
 
-                  {/* CTA */}
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-bold ${presentation.textClass} uppercase tracking-[0.08em] opacity-70 group-hover:opacity-100 transition-opacity`}>
-                      Start Case
-                    </span>
-                    <ArrowRight className={`w-3.5 h-3.5 ${presentation.textClass} opacity-0 group-hover:opacity-70 transition-all duration-200 group-hover:translate-x-0.5`} />
+                  <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-5 pt-8">
+                    <div className={`text-[10px] font-bold uppercase tracking-wider ${presentation.textClass} mb-2 opacity-90`}>
+                      {presentation.subtitle}
+                    </div>
+                    {casePackage.preview.src.startsWith('case://assets/') && (
+                      <div className="mb-2 inline-flex min-h-6 items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
+                        Browser-local
+                      </div>
+                    )}
+
+                    <h3 className="text-[16px] sm:text-[17px] font-bold text-white leading-tight mb-2">
+                      {casePackage.title}
+                    </h3>
+
+                    <p className="text-[11px] sm:text-[12px] text-[#aab2bf] leading-relaxed mb-3 group-hover:text-[#d0d6e0] transition-colors duration-300 line-clamp-3">
+                      {casePackage.vignette}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[10px] font-bold ${presentation.textClass} uppercase tracking-[0.08em] opacity-90 group-hover:opacity-100 transition-opacity`}>
+                        Start Case
+                      </span>
+                      <ArrowRight className={`w-3.5 h-3.5 ${presentation.textClass} opacity-70 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0.5`} aria-hidden="true" />
+                    </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
         {/* How it works anchor target for the hero link, and depth for scroll-down readers */}
         <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
           <div className="text-center mb-10">
-            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-3">How it works</p>
+            <p className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-[0.1em] mb-3">How it works</p>
             <h2 className="text-[24px] sm:text-[32px] font-bold text-white tracking-[-0.02em] mb-3">
               An AI tutor grounded in a real artifact.
             </h2>
@@ -527,7 +648,7 @@ const StudyList: React.FC<StudyListProps> = ({
           </div>
 
           <div className="rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6">
-            <p className="text-[11px] font-semibold text-[#4a4e58] uppercase tracking-[0.1em] mb-4">Under the hood</p>
+            <p className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-[0.1em] mb-4">Under the hood</p>
             <ul className="space-y-3 text-[13px] text-[#8a8f98] leading-relaxed">
               <li className="flex gap-3">
                 <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
@@ -548,7 +669,7 @@ const StudyList: React.FC<StudyListProps> = ({
             </ul>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#6b7080]">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#9ca3af]">
             <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
               <Github className="w-3.5 h-3.5" /> Source on GitHub (MIT)
             </a>
@@ -564,7 +685,7 @@ const StudyList: React.FC<StudyListProps> = ({
         </section>
 
       </div>
-    </div>
+    </main>
   );
 };
 
