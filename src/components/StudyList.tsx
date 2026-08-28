@@ -95,10 +95,6 @@ const TestimonialRotator: React.FC = () => {
     }, 400);
   }, [prefersReducedMotion]);
 
-  const next = useCallback(() => {
-    selectTestimonial(prev => (prev + 1) % TESTIMONIALS.length);
-  }, [selectTestimonial]);
-
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return;
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -107,12 +103,6 @@ const TestimonialRotator: React.FC = () => {
     motionPreference.addEventListener?.('change', syncMotionPreference);
     return () => motionPreference.removeEventListener?.('change', syncMotionPreference);
   }, []);
-
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    const timer = setInterval(next, 10000);
-    return () => clearInterval(timer);
-  }, [next, prefersReducedMotion]);
 
   useEffect(() => () => {
     if (animationTimeout.current !== null) window.clearTimeout(animationTimeout.current);

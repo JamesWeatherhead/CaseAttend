@@ -108,6 +108,7 @@ describe('StudyList case loading', () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.clearAllMocks();
     vi.unstubAllGlobals();
   });
@@ -311,5 +312,25 @@ describe('StudyList case loading', () => {
     expect(firstQuote.parentElement?.style.transition).toBe('none');
     fireEvent.click(screen.getByRole('button', { name: 'Show testimonial 2 of 2' }));
     expect(screen.getByText(/It doesn't feel like an app/)).toBeTruthy();
+  });
+
+  it('keeps testimonials under the learner’s control instead of auto-rotating them', () => {
+    vi.useFakeTimers();
+    mocks.searchDicomWebStudies.mockResolvedValue([]);
+
+    render(
+      <StudyList
+        onSelectStudy={() => undefined}
+        connectionType="DICOMWEB"
+        setConnectionType={() => undefined}
+        dicomConfig={{ url: 'local', name: 'Built-in cases' }}
+        setDicomConfig={() => undefined}
+      />,
+    );
+
+    act(() => vi.advanceTimersByTime(30_000));
+
+    expect(screen.getByText(/I thought I had a good grasp on tension pneumothorax/)).toBeTruthy();
+    expect(screen.queryByText(/It doesn't feel like an app/)).toBeNull();
   });
 });
