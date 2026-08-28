@@ -422,6 +422,35 @@ describe('Case Studio catalog and viewer integration', () => {
     expect(await store.get(portable.casePackage.id)).toBeNull();
   });
 
+  it('lets Lesson Builder export an edited built-in lesson without treating it as a deleted local case', async () => {
+    const builtIn = (await listBuiltinCasePackages())[0];
+    const lessonPlan = await requireLessonPlanForCase(builtIn);
+    const controller = createCaseStudioController({
+      store: new CasePackageStore({ indexedDB: null }),
+    });
+
+    await expect(controller.saveUpdatedBundle(
+      builtIn,
+      lessonPlan,
+      builtIn.manifest.sha256,
+    )).resolves.toBe(false);
+  });
+
+  it('keeps a stale local collision untouched when saving an authoritative built-in lesson draft', async () => {
+    const { builtIn, collision } = await builtInCollisionPackage();
+    const store = new CasePackageStore({ indexedDB: null });
+    await store.save(collision);
+    const controller = createCaseStudioController({ store });
+    const lessonPlan = await requireLessonPlanForCase(builtIn);
+
+    await expect(controller.saveUpdatedBundle(
+      builtIn,
+      lessonPlan,
+      builtIn.manifest.sha256,
+    )).resolves.toBe(false);
+    expect(await store.get(builtIn.id)).toEqual(collision);
+  });
+
   it('rejects built-in ID imports and keeps built-ins authoritative over stale local collisions', async () => {
     const { builtIn, collision } = await builtInCollisionPackage();
     const isolatedStore = new CasePackageStore({ indexedDB: null });

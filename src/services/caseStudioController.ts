@@ -509,6 +509,14 @@ export class CaseStudioController {
     expectedCaseManifestSha256?: string,
   ): Promise<boolean> => {
     if (!expectedCaseManifestSha256) return false;
+    const builtIn = (await listBuiltinCasePackages()).find((entry) => (
+      entry.id === casePackage.id
+      && entry.manifest.sha256 === expectedCaseManifestSha256
+    ));
+    // Built-ins stay authoritative even if an older browser store contains a
+    // colliding local ID. Their lesson edits use the standalone JSON path and
+    // must never overwrite that stale local record.
+    if (builtIn) return false;
     const existing = await this.store.get(casePackage.id);
     if (!existing) {
       throw new Error(
