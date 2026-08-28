@@ -22,12 +22,12 @@ import {
 } from '../core/researchStudyBundle';
 import { listCasePackages, casePackageToSeries } from '../data/caseRegistry';
 import { requireLessonPlanForCase } from '../data/lessonRegistry';
-import type {
-  FrozenResearchSetup,
-  ResearchMaterialOption,
-  ResearchSetupDraft,
-} from '../components/ResearchSetupWizard/ResearchSetupWizard';
-import { getResearchSetupTaskDrafts } from '../components/ResearchSetupWizard/ResearchSetupWizard';
+import {
+  getResearchSetupTaskDrafts,
+  type FrozenResearchSetup,
+  type ResearchMaterialOption,
+  type ResearchSetupDraft,
+} from '../core/researchSetupDraft';
 import type {
   ParticipantArmLaunchConfig,
   ParticipantLaunchConfig,
