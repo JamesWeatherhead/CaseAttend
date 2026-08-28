@@ -8,6 +8,7 @@ import LessonBuilder from '../components/LessonBuilder';
 import type { CasePackageV1 } from '../core/casePackage';
 import { createStarterLessonPlanV1 } from '../core/starterLesson';
 import { finalizeLessonPlanV1 } from '../core/lessonPlan';
+import type { LessonSourceOutline } from '../services/lessonSourceImport';
 
 const digest = '0'.repeat(64);
 
@@ -117,6 +118,25 @@ const loadCasePackages = vi.fn(async () => [teachingCase] as readonly CasePackag
 const loadTwoCasePackages = vi.fn(async () => [teachingCase, secondTeachingCase] as readonly CasePackageV1[]);
 const loadLocalCasePackages = vi.fn(async () => [teachingCase, localTeachingCase] as readonly CasePackageV1[]);
 
+const importedOutline: LessonSourceOutline = {
+  format: 'pdf',
+  sections: [{
+    index: 1,
+    label: 'Page 1',
+    text: 'Imported visual reasoning\nIdentify the key visible finding.',
+  }],
+  unitCount: 3,
+  warnings: ['One page had no selectable text.'],
+  titleCandidate: 'Imported visual reasoning',
+  objectiveCandidates: [
+    'Identify the key visible finding using neutral descriptive language',
+    'Explain how the visible finding supports the interpretation',
+  ],
+  teachingNoteDraft: '## Page 1\nEDUCATOR IMPORTED NOTE',
+  detectedLinks: ['https://example.org/unverified-reading'],
+  extractedCharacters: 58,
+};
+
 describe('LessonBuilder', () => {
   beforeEach(() => {
     loadCasePackages.mockClear();
@@ -133,6 +153,7 @@ describe('LessonBuilder', () => {
 
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -147,6 +168,89 @@ describe('LessonBuilder', () => {
     expect(screen.getByText(/does not contact a model or read an API key/i)).toBeTruthy();
     expect(screen.getByText(/the terms are not synonyms/i)).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('turns a local PDF into an editable, unreviewed lesson draft without retaining its filename', async () => {
+    const parseLessonSource = vi.fn(async () => importedOutline);
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        loadCasePackages={loadCasePackages}
+        parseLessonSource={parseLessonSource}
+      />,
+    );
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+
+    const source = new File(['local bytes'], 'PATIENT-NAME-teaching.pdf', { type: 'application/pdf' });
+    const fileInput = screen.getByLabelText('Choose PDF or PowerPoint');
+    expect((fileInput as HTMLInputElement).tabIndex).toBe(-1);
+    expect((fileInput as HTMLInputElement).hidden).toBe(true);
+    fireEvent.change(fileInput, {
+      target: { files: [source] },
+    });
+    const previewHeading = await screen.findByRole('heading', { name: 'PDF draft ready to review' });
+    await waitFor(() => expect(document.activeElement).toBe(previewHeading));
+    expect(screen.getByRole('status').textContent).toContain('PDF draft ready to review');
+    expect(screen.getByText('Links found—not verified or added as sources')).toBeTruthy();
+    expect(document.body.textContent).not.toContain('PATIENT-NAME');
+    fireEvent.click(screen.getByRole('button', { name: 'Apply imported draft' }));
+
+    expect(parseLessonSource).toHaveBeenCalledWith(source, {
+      signal: expect.any(AbortSignal),
+    });
+    expect(confirm).not.toHaveBeenCalled();
+    expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value)
+      .toBe('Imported visual reasoning');
+    expect(screen.getByText(/Imported draft · educator review required/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Choose another file' }));
+    const dropzone = screen.getByRole('button', { name: /Drop a PDF or .pptx here/ });
+    await waitFor(() => expect(document.activeElement).toBe(dropzone));
+    expect(screen.getByText('Document import cleared. Choose another file.')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: /Objectives\/evidence/ }));
+    expect((screen.getAllByLabelText(/Learner-facing objective/)[0] as HTMLInputElement).value)
+      .toContain('Identify the key visible finding');
+    expect(screen.getAllByLabelText(/Learner-facing objective/)).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole('button', { name: /Tutor path/ }));
+    expect((screen.getByLabelText(/Socratic opening/) as HTMLTextAreaElement).value)
+      .toContain('connects to this teaching material');
+    expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value)
+      .toContain('EDUCATOR IMPORTED NOTE');
+
+    fireEvent.click(screen.getByRole('button', { name: /Sources\/review/ }));
+    expect((screen.getByLabelText(/Reviewed by a qualified clinician/) as HTMLInputElement).checked)
+      .toBe(false);
+    expect(screen.queryByDisplayValue('https://example.org/unverified-reading')).toBeNull();
+    expect((screen.getByLabelText(/HTTPS URL/) as HTMLInputElement).value)
+      .toBe(teachingCase.provenance.sourceUrl);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('asks before replacing lesson edits with an imported draft', async () => {
+    const parseLessonSource = vi.fn(async () => ({ ...importedOutline, format: 'pptx' as const }));
+    vi.mocked(confirm).mockReturnValue(false);
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        loadCasePackages={loadCasePackages}
+        parseLessonSource={parseLessonSource}
+      />,
+    );
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.change(screen.getByLabelText(/Lesson title/), { target: { value: 'Keep my edited title' } });
+    fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), {
+      target: { files: [new File(['bytes'], 'teaching.pptx')] },
+    });
+    await screen.findByRole('heading', { name: 'PowerPoint draft ready to review' });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply imported draft' }));
+
+    expect(confirm).toHaveBeenCalledWith(
+      'Applying this imported draft will replace lesson fields you have edited. Continue?',
+    );
+    expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value)
+      .toBe('Keep my edited title');
+    expect(screen.getByRole('button', { name: 'Apply imported draft' })).toBeTruthy();
   });
 
   it('uses native step buttons and exposes the current step', async () => {
@@ -211,7 +315,24 @@ describe('LessonBuilder', () => {
   });
 
   it('finalizes an exact linked case and lesson bundle entirely in the browser', async () => {
-    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages} />);
+    const exportPortableCase = vi.fn(async () => undefined);
+    const createObjectURL = vi.fn(() => 'blob:lesson-json');
+    const revokeObjectURL = vi.fn();
+    const NativeURL = URL;
+    class TestURL extends NativeURL {}
+    Object.assign(TestURL, { createObjectURL, revokeObjectURL });
+    vi.stubGlobal('URL', TestURL);
+    let downloadedName = '';
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function captureDownload(this: HTMLAnchorElement) {
+      downloadedName = this.download;
+    });
+    render(
+      <LessonBuilder
+        onExit={() => undefined}
+        loadCasePackages={loadCasePackages}
+        exportPortableCase={exportPortableCase}
+      />,
+    );
     await screen.findByRole('heading', { name: 'Set up the lesson' });
 
     fireEvent.click(screen.getByRole('button', { name: /Objectives\/evidence/ }));
@@ -235,7 +356,13 @@ describe('LessonBuilder', () => {
     expect(await screen.findByText('Validated draft ready to export')).toBeTruthy();
     expect(screen.getByText('Fixed by CaseAttend')).toBeTruthy();
     expect(screen.getByText('Educator controlled')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Export bundle' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Download JSON bundle' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export JSON bundle' }));
+    expect(await screen.findByText('The versioned case and lesson bundle was downloaded from this browser.')).toBeTruthy();
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:lesson-json');
+    expect(downloadedName).toMatch(/\.json$/);
+    expect(exportPortableCase).not.toHaveBeenCalled();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -352,7 +479,8 @@ describe('LessonBuilder', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Review\/export/ }));
     expect(await screen.findByText('Validated draft ready to export')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Export bundle' }));
+    expect(screen.getByRole('heading', { name: 'Download portable case' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export portable case' }));
 
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toContain('The export could not be completed: Browser download was blocked.');

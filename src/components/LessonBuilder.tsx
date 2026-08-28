@@ -37,6 +37,8 @@ import {
   type LessonTutorPromptSections,
 } from '../core/lessonPlan';
 import { listCasePackages } from '../data/caseRegistry';
+import LessonSourceDropzone, { type LessonSourceParser } from './LessonSourceDropzone';
+import type { LessonSourceOutline } from '../services/lessonSourceImport';
 import './LessonBuilder.css';
 
 interface LessonBuilderProps {
@@ -51,6 +53,7 @@ interface LessonBuilderProps {
   ) => Promise<boolean>;
   exportPortableCase?: (casePackage: CasePackageV1) => Promise<void>;
   resolveAssetUri?: (uri: string) => Promise<string>;
+  parseLessonSource?: LessonSourceParser;
 }
 
 interface ObjectiveRow {
@@ -478,6 +481,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   saveUpdatedBundle,
   exportPortableCase,
   resolveAssetUri,
+  parseLessonSource,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
@@ -488,6 +492,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   const [finalized, setFinalized] = useState<FinalizedBundle | null>(null);
   const [busy, setBusy] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [hasImportedDraft, setHasImportedDraft] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const caseChangeRequestRef = useRef(0);
@@ -561,6 +566,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         : null;
       if (requestId !== caseChangeRequestRef.current) return false;
       setForm(storedLesson ? formFromLesson(nextCase, storedLesson) : initialForm(nextCase));
+      setHasImportedDraft(false);
       setErrors([]);
       return true;
     } catch (error) {
@@ -658,6 +664,64 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
       doi: '',
       scope: 'clinical-teaching',
     }]);
+  };
+
+  const applyImportedOutline = (outline: LessonSourceOutline): boolean => {
+    if (!selectedCase) {
+      showErrors(['Choose a Case Package before applying an imported draft.']);
+      return false;
+    }
+    if (
+      !isPristineForCase(form, selectedCase)
+      && !window.confirm('Applying this imported draft will replace lesson fields you have edited. Continue?')
+    ) {
+      return false;
+    }
+    const candidates = outline.objectiveCandidates.length > 0
+      ? outline.objectiveCandidates
+      : [`Explain the key teaching points in ${outline.titleCandidate ?? 'the imported material'}.`];
+    const objectives: ObjectiveRow[] = candidates.map((description, index) => ({
+      key: index + 1,
+      id: `objective-${index + 1}`,
+      description,
+      criterionId: `rubric-objective-${index + 1}`,
+      criterion: 'The learner addresses this objective accurately in their own words.',
+      evidence: 'Explains the key idea using evidence from the case',
+    }));
+    setForm((current) => ({
+      ...current,
+      title: outline.titleCandidate ?? current.title,
+      objectives,
+      socraticOpening: 'What do you notice in the case that connects to this teaching material?',
+      hints: [{
+        key: 1,
+        id: 'hint-1',
+        objectiveId: objectives[0].id,
+        text: 'Return to the case and name the most relevant visible finding before answering.',
+      }],
+      escalations: [{
+        key: 1,
+        id: 'escalation-1',
+        when: 'the learner gives two incomplete attempts',
+        action: 'offer one focused hint linked to the current objective',
+      }],
+      stopping: [{
+        key: 1,
+        id: 'stopping-1',
+        when: 'the learner explains the objectives and supports their reasoning',
+        message: 'Summarize the supporting evidence and one durable takeaway, then stop.',
+      }],
+      tutorInstructions: 'Use the imported teaching material as an educator-review draft. Ask one focused question at a time. Do not treat unverified links as evidence or reveal answer notes before the learner attempts the objective.',
+      answerNotes: outline.teachingNoteDraft,
+      reviewed: false,
+      reviewer: '',
+      credentials: '',
+      reviewedAt: '',
+    }));
+    setFinalized(null);
+    setHasImportedDraft(true);
+    setErrors([]);
+    return true;
   };
 
   const finalize = async (): Promise<FinalizedBundle | null> => {
@@ -836,6 +900,12 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
             <h2 id="lesson-builder-step-title" ref={headingRef} tabIndex={-1}>{STEPS[step].title}</h2>
           </div>
 
+          {hasImportedDraft && (
+            <p className="lesson-builder-import-state" role="status">
+              <ShieldCheck aria-hidden="true" /> Imported draft · educator review required
+            </p>
+          )}
+
           {errors.length > 0 && (
             <div className="lesson-builder-error-summary" role="alert" tabIndex={-1} ref={errorRef}>
               <AlertCircle aria-hidden="true" />
@@ -849,6 +919,12 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           <form onSubmit={(event) => event.preventDefault()} noValidate>
             {step === 0 && (
               <div className="lesson-builder-section-stack">
+                <LessonSourceDropzone
+                  key={form.caseId}
+                  onApply={applyImportedOutline}
+                  parseSource={parseLessonSource}
+                  disabled={busy}
+                />
                 <div className="lesson-builder-info-card">
                   <Info aria-hidden="true" />
                   <p>
@@ -1112,8 +1188,8 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                     </section>
 
                     <div className="lesson-builder-export-card">
-                      <div><Download aria-hidden="true" /><div><h3>Download JSON bundle</h3><p>{finalized.lessonPlan.clinicalReview.reviewed ? 'Includes the clinically reviewed lesson, case, sources, versions, and hashes.' : 'Draft export. Includes the unreviewed lesson, case, sources, answer notes, versions, and hashes.'} Nothing is uploaded.</p></div></div>
-                      <button type="button" className="lesson-builder-button primary" onClick={() => void downloadBundle()}><Download aria-hidden="true" /> Export bundle</button>
+                      <div><Download aria-hidden="true" /><div><h3>{finalized.casePackage.preview.src.startsWith('case://assets/') && exportPortableCase ? 'Download portable case' : 'Download JSON bundle'}</h3><p>{finalized.lessonPlan.clinicalReview.reviewed ? 'Includes the clinically reviewed lesson, case, sources, versions, and hashes.' : 'Draft export. Includes the unreviewed lesson, case, sources, answer notes, versions, and hashes.'} Nothing is uploaded.</p></div></div>
+                      <button type="button" className="lesson-builder-button primary" onClick={() => void downloadBundle()}><Download aria-hidden="true" /> {finalized.casePackage.preview.src.startsWith('case://assets/') && exportPortableCase ? 'Export portable case' : 'Export JSON bundle'}</button>
                     </div>
                   </>
                 ) : (
