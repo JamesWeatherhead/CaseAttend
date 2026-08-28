@@ -2,13 +2,10 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from 'react';
 import StudyList from './components/StudyList';
-import LessonBuilder from './components/LessonBuilder';
-import CaseStudio from './components/CaseStudio/CaseStudio';
-import ResearchSetupWizard, {
-  type FrozenResearchSetup,
-  type ResearchMaterialOption,
+import type {
+  FrozenResearchSetup,
+  ResearchMaterialOption,
 } from './components/ResearchSetupWizard/ResearchSetupWizard';
-import ParticipantMode from './components/ParticipantMode/ParticipantMode';
 import ViewerCanvas from './components/ViewerCanvas';
 import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
@@ -46,6 +43,11 @@ import {
   researchSetupController,
   type ResearchParticipantSession,
 } from './services/researchSetupController';
+
+const LessonBuilder = React.lazy(() => import('./components/LessonBuilder'));
+const CaseStudio = React.lazy(() => import('./components/CaseStudio/CaseStudio'));
+const ResearchSetupWizard = React.lazy(() => import('./components/ResearchSetupWizard/ResearchSetupWizard'));
+const ParticipantMode = React.lazy(() => import('./components/ParticipantMode/ParticipantMode'));
 
 function resolveCapturedArtifact(
   casePackage: CasePackageV1,
@@ -111,6 +113,18 @@ const CaseContentWarnings: React.FC<{ warnings?: readonly string[] }> = ({ warni
     </div>
   );
 };
+
+const DeferredWorkspaceFallback: React.FC = () => (
+  <main
+    className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 bg-[#08090b] p-6 text-center"
+    aria-busy="true"
+    aria-live="polite"
+  >
+    <Loader2 className="h-6 w-6 animate-spin text-blue-300" aria-hidden="true" />
+    <h1 className="text-xl font-semibold text-white">Opening your workspace</h1>
+    <p className="max-w-xl text-sm text-[#9ca3af]">Loading the browser-local tools for this activity.</p>
+  </main>
+);
 
 export function normalizeToolForArtifact(
   tool: ToolMode,
@@ -887,6 +901,7 @@ const App: React.FC = () => {
         />
       )}
 
+      <React.Suspense fallback={<DeferredWorkspaceFallback />}>
       {homeView === 'participant' && participantFrozen && participantConfig ? (
         <ParticipantMode
           config={participantConfig}
@@ -1279,6 +1294,7 @@ const App: React.FC = () => {
           </div>
         </>
       )}
+      </React.Suspense>
     </div>
   );
 };

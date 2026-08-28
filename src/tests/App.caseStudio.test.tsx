@@ -191,10 +191,10 @@ describe('App Case Studio integration', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Create a case' }));
-    expect(screen.getByRole('heading', { name: 'Case Studio test surface' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Case Studio test surface' })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Build saved case lesson' }));
-    expect(screen.getByRole('heading', { name: 'Lesson Builder test surface' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Lesson Builder test surface' })).toBeTruthy();
     expect(screen.getByRole('status', { name: 'Initial case' }).textContent).toBe(mocks.localCase.id);
 
     fireEvent.click(screen.getByRole('button', { name: 'Load exact local lesson' }));
@@ -215,10 +215,10 @@ describe('App Case Studio integration', () => {
     await waitFor(() => expect(mocks.controller.deleteCase).toHaveBeenCalledWith(mocks.localCase.id));
   });
 
-  it('opens a generic lesson without retaining the previously selected local case', () => {
+  it('opens a generic lesson without retaining the previously selected local case', async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Create a lesson' }));
-    expect(screen.getByRole('status', { name: 'Initial case' }).textContent).toBe('none');
+    expect((await screen.findByRole('status', { name: 'Initial case' })).textContent).toBe('none');
   });
 });
