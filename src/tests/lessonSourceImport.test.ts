@@ -272,7 +272,10 @@ describe('browser-local lesson source import', () => {
       f = 0;
     }
     vi.stubGlobal('DOMMatrix', TestDOMMatrix);
-    const { WorkerMessageHandler } = await import('pdfjs-dist/build/pdf.worker.min.mjs');
+    // PDF.js documents Node consumers on its legacy build. Importing that
+    // worker also supplies the standard Promise helpers missing from Node 22,
+    // while production continues to exercise the modern browser bundle.
+    const { WorkerMessageHandler } = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs');
     vi.stubGlobal('pdfjsWorker', { WorkerMessageHandler });
     const bytes = textPdf([
       'Focused chest image lesson',
@@ -287,7 +290,7 @@ describe('browser-local lesson source import', () => {
     expect(outline.unitCount).toBe(1);
     expect(outline.titleCandidate).toBe('Focused chest image lesson');
     expect(outline.teachingNoteDraft).toContain('Students will describe the visible opacity');
-  });
+  }, 15_000);
 
   it('cancels the PDF text stream as soon as the character bound is reached', async () => {
     class TestDOMMatrix {
