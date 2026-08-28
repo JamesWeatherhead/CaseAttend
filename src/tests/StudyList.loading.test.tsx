@@ -150,6 +150,7 @@ describe('StudyList case loading', () => {
 
   it('starts the first sample and exposes semantic case and authoring controls', async () => {
     const onSelectStudy = vi.fn();
+    const onOpenLessonBuilder = vi.fn();
     const onOpenCaseStudio = vi.fn();
     const onOpenResearchSetup = vi.fn();
     const onDeleteLocalCase = vi.fn(async () => undefined);
@@ -164,6 +165,7 @@ describe('StudyList case loading', () => {
         setConnectionType={() => undefined}
         dicomConfig={{ url: 'local', name: 'Built-in and browser-local cases' }}
         setDicomConfig={() => undefined}
+        onOpenLessonBuilder={onOpenLessonBuilder}
         onOpenCaseStudio={onOpenCaseStudio}
         onOpenResearchSetup={onOpenResearchSetup}
         onDeleteLocalCase={onDeleteLocalCase}
@@ -172,10 +174,16 @@ describe('StudyList case loading', () => {
 
     const sampleCase = await screen.findByRole('button', { name: 'Try a sample case' });
     expect(sampleCase).toHaveProperty('disabled', false);
+    expect(screen.queryByText(/pre-reviewed starter questions/i)).toBeNull();
     fireEvent.click(sampleCase);
     expect(onSelectStudy).toHaveBeenCalledWith(localCase);
 
-    const createCase = screen.getByRole('button', { name: 'Create from PDF, PowerPoint, or images' });
+    const createLesson = screen.getByRole('button', { name: 'Create a lesson from PDF or PowerPoint' });
+    expect(createLesson.className).toContain('min-h-11');
+    fireEvent.click(createLesson);
+    expect(onOpenLessonBuilder).toHaveBeenCalledTimes(1);
+
+    const createCase = screen.getByRole('button', { name: 'Create a case from images' });
     expect(createCase.className).toContain('min-h-11');
     fireEvent.click(createCase);
     expect(onOpenCaseStudio).toHaveBeenCalledTimes(1);
@@ -231,6 +239,7 @@ describe('StudyList case loading', () => {
     );
 
     expect(await screen.findByText('Showing 2 of 2 cases')).toBeTruthy();
+    expect(screen.getByText(/Built-in samples offer pre-reviewed starter questions/i)).toBeTruthy();
     const search = screen.getByRole('searchbox', { name: 'Search cases' });
     fireEvent.change(search, { target: { value: 'cardiology' } });
 

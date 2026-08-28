@@ -310,6 +310,9 @@ const StudyList: React.FC<StudyListProps> = ({
     ].join(' ').toLocaleLowerCase().includes(normalizedSearchQuery);
   });
   const firstAvailableCase = casePackages[0];
+  const hasBuiltInSample = casePackages.some((casePackage) => (
+    !casePackage.preview.src.startsWith('case://assets/')
+  ));
   const clearCaseFilters = () => {
     setSearchQuery('');
     setActiveFilter('all');
@@ -352,7 +355,7 @@ const StudyList: React.FC<StudyListProps> = ({
                 className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
               >
                 <BookOpen className="w-4 h-4" aria-hidden="true" />
-                Create a lesson
+                Create a lesson from PDF or PowerPoint
               </button>
             )}
             {onOpenCaseStudio && (
@@ -362,7 +365,7 @@ const StudyList: React.FC<StudyListProps> = ({
                 className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
               >
                 <ImagePlus className="w-4 h-4" aria-hidden="true" />
-                Create from PDF, PowerPoint, or images
+                Create a case from images
               </button>
             )}
             {onOpenResearchSetup && (
@@ -398,6 +401,12 @@ const StudyList: React.FC<StudyListProps> = ({
               User guides
             </a>
           </div>
+          {hasBuiltInSample && (
+            <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-300/90">
+              <CircleCheck className="h-3.5 w-3.5" aria-hidden="true" />
+              Built-in samples offer pre-reviewed starter questions without an account or key.
+            </p>
+          )}
           {(onOpenLessonBuilder || onOpenResearchSetup) && (
             <p className="mt-2 text-[11px] text-[#9ca3af] text-center">
               Build versioned teaching content or a reproducible VLM education protocol in your browser. CaseAttend does not provide institutional approval.
@@ -414,7 +423,7 @@ const StudyList: React.FC<StudyListProps> = ({
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 mb-8">
           <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 text-[13px] sm:text-[14px] text-amber-400/90 font-medium hover:text-amber-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
             <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
-            <span>Google DeepMind Hackathon Winner</span>
+            <span>VibeRad · Google DeepMind Hackathon winner</span>
           </a>
         </div>
 
