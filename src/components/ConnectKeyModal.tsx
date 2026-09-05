@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, KeyRound, ShieldCheck, ExternalLink, Check, Gift } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, getModel, setModel, clearKey, MODEL_OPTIONS } from '../services/byokStore';
+import { useDialogFocus } from '../hooks/useDialogFocus';
 
 interface ConnectKeyModalProps {
   onClose: () => void;
@@ -20,6 +21,8 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
   const [connected, setConnected] = useState<boolean>(hasKey());
   const [selectedModel, setSelectedModel] = useState<string>(getModel());
   const [connecting, setConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState('');
+  const dialogRef = useDialogFocus(onClose);
 
   useEffect(() => {
     setConnected(hasKey());
@@ -32,11 +35,13 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
 
   const handleConnect = async () => {
     setConnecting(true);
+    setConnectionError('');
     setModel(selectedModel); // persist choice before we navigate away to OpenRouter
     try {
       await beginOpenRouterOAuth(); // full-page redirect to openrouter.ai/auth
     } catch {
       setConnecting(false);
+      setConnectionError('Could not open OpenRouter. Please try again.');
     }
   };
 
@@ -51,23 +56,28 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-[#0f1011] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="connect-modal-title"
+        tabIndex={-1}
+        className="w-full max-w-md max-h-[90dvh] overflow-y-auto bg-[#0f1011] border border-white/[0.08] rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <div className="sticky top-0 z-10 bg-[#0f1011] flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center">
               <KeyRound className="w-4 h-4 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-[#f7f8f8]">Bring your own AI</h2>
-              <p className="text-[11px] text-[#8a8f98]">Use your own OpenRouter balance — never a shared developer key</p>
+              <h2 id="connect-modal-title" className="text-base font-semibold text-[#f7f8f8]">Connect your AI tutor</h2>
+              <p className="text-sm text-[#aab2bf]">Choose a model with your OpenRouter account</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-[#8a8f98] hover:text-white p-1 rounded-lg hover:bg-[#1e1f21] transition-colors"
+            className="min-h-11 min-w-11 flex items-center justify-center text-[#aab2bf] hover:text-white p-1 rounded-lg hover:bg-[#1e1f21] transition-colors focus-visible:ring-2 focus-visible:ring-blue-300"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -75,6 +85,7 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
         </div>
 
         <div className="px-5 py-4 space-y-4">
+          {connectionError && <p role="alert" className="text-sm text-red-300">{connectionError}</p>}
           {/* Connection status / CTA */}
           {connected ? (
             <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-lg px-3 py-2.5">
@@ -91,23 +102,23 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
                 {connecting ? 'Redirecting to OpenRouter…' : 'Continue with OpenRouter'}
                 {!connecting && <ExternalLink className="w-3.5 h-3.5" />}
               </button>
-              <p className="text-[11px] text-[#8a8f98] leading-relaxed px-0.5">
-                Securely connect your account to use your preferred AI models. CaseAttend never
-                charges model usage to a shared developer key — costs bill through your own
-                OpenRouter account, and the Free models below cost nothing.
+              <p className="text-sm text-[#aab2bf] leading-relaxed px-0.5">
+                Connect your account to ask new questions. Choose a free model below,
+                or a paid model billed to your own OpenRouter account.
               </p>
             </div>
           )}
 
           {/* Model picker (pinned for cost safety) */}
           <div>
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#8a8f98] mb-2">Model</div>
+            <div className="text-sm font-bold uppercase tracking-wider text-[#aab2bf] mb-2">Model</div>
             <div className="flex flex-col gap-1.5">
               {MODEL_OPTIONS.map((m) => (
                 <button
                   key={m.id}
+                  aria-pressed={selectedModel === m.id}
                   onClick={() => chooseModel(m.id)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg border text-left transition-colors ${
+                  className={`min-h-11 flex items-center justify-between px-3 py-2 rounded-lg border text-left transition-colors ${
                     selectedModel === m.id
                       ? 'bg-blue-950/40 border-blue-500/40'
                       : 'bg-[#161718] border-white/[0.06] hover:border-white/[0.15]'
@@ -115,27 +126,27 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-medium text-[#f7f8f8]">{m.label}</span>
+                      <span className="text-sm font-medium text-[#f7f8f8]">{m.label}</span>
                       {isFree(m.id) && (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded px-1 py-px">
+                        <span className="inline-flex items-center gap-0.5 text-xs font-bold uppercase tracking-wide text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded px-1 py-px">
                           <Gift className="w-2.5 h-2.5" /> Free
                         </span>
                       )}
                     </div>
-                    {m.note && <div className="text-[10px] text-[#8a8f98] truncate">{m.note}</div>}
+                    {m.note && <div className="text-sm text-[#aab2bf]">{m.note}</div>}
                   </div>
                   {selectedModel === m.id && <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-[10px] text-[#8a8f98]">
-              Free models need no credit (subject to OpenRouter's daily free-tier limit). Paid
-              models cost roughly a few cents per case, billed to your OpenRouter account.
+            <p className="mt-2 text-sm text-[#aab2bf]">
+              Free models are subject to OpenRouter's daily limits. Paid models use your
+              OpenRouter balance; pricing and availability are set by the provider.
             </p>
           </div>
 
           {/* Security note */}
-          <div className="flex items-start gap-2 text-[11px] text-[#8a8f98] bg-[#161718] border border-white/[0.06] rounded-lg px-3 py-2.5">
+          <div className="flex items-start gap-2 text-sm text-[#aab2bf] bg-[#161718] border border-white/[0.06] rounded-lg px-3 py-2.5">
             <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
             <span>
               Your key is stored in this browser and sent only to OpenRouter. CaseAttend servers do
@@ -146,7 +157,7 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
           </div>
 
           {/* Manage links */}
-          <div className="flex items-center gap-3 text-[10px]">
+          <div className="flex items-center gap-3 text-sm">
             <a
               href="https://openrouter.ai/keys"
               target="_blank"
@@ -176,7 +187,7 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
           {connected && (
             <button
               onClick={handleDisconnect}
-              className="w-full text-xs font-medium text-red-300/80 hover:text-red-300 py-1.5"
+              className="min-h-11 w-full text-sm font-medium text-red-300/80 hover:text-red-300 py-1.5"
             >
               Disconnect OpenRouter
             </button>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Shield } from 'lucide-react';
 import type { CasePackageV1 } from '../core/casePackage';
 import { listCasePackages } from '../data/caseRegistry';
+import { useDialogFocus } from '../hooks/useDialogFocus';
 
 interface SafetyModalProps {
   onClose: () => void;
@@ -36,6 +37,7 @@ function deidentificationText(casePackage: CasePackageV1): string {
 }
 
 const SafetyModal: React.FC<SafetyModalProps> = ({ onClose }) => {
+  const dialogRef = useDialogFocus(onClose);
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[] | null>(null);
   const [loadError, setLoadError] = useState(false);
 
@@ -58,6 +60,8 @@ const SafetyModal: React.FC<SafetyModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="safety-modal-title"

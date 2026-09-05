@@ -3,10 +3,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
-import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, Mail, Layers, KeyRound, BookOpen, ImagePlus, Trash2, FlaskConical, Search } from 'lucide-react';
+import { ArrowRight, Scan, Loader2, Award, ShieldCheck, Check, CircleCheck, Github, BookOpen, ImagePlus, Trash2, FlaskConical, Search, Database, X } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
-import OpenRouterMark, { OpenRouterLockup } from './OpenRouterLogo';
+import OpenRouterMark from './OpenRouterLogo';
+import './StudyList.css';
+import { SAMPLE_CASE_ID } from '../data/sampleCase';
 import { casePackageStore } from '../services/casePackageStore';
 import { matchesStudyFilter, STUDY_FILTERS } from './studyFilters';
 
@@ -20,6 +22,8 @@ interface StudyListProps {
   onOpenLessonBuilder?: () => void;
   onOpenCaseStudio?: () => void;
   onOpenResearchSetup?: () => void;
+  onOpenSessionData?: () => void;
+  onOpenResearchData?: () => void;
   onDeleteLocalCase?: (caseId: string) => Promise<void>;
 }
 
@@ -120,10 +124,10 @@ const TestimonialRotator: React.FC = () => {
           transition: prefersReducedMotion ? 'none' : 'opacity 400ms ease, transform 400ms ease',
         }}
       >
-        <p className="text-[13px] sm:text-[14px] text-[#9ca3af] leading-relaxed italic mb-3">
+        <p className="text-[16px] text-[#9ca3af] leading-relaxed italic mb-3">
           "{t.quote}"
         </p>
-        <p className="text-[11px] text-[#9ca3af] font-medium tracking-wide">
+        <p className="text-[14px] text-[#9ca3af] font-medium tracking-wide">
           {t.author}
         </p>
       </div>
@@ -149,110 +153,39 @@ const TestimonialRotator: React.FC = () => {
   );
 };
 
-/** Multi-colour Google "G", for the sign-in method chip. */
-const GoogleG: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
-  <svg viewBox="0 0 48 48" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
-    <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
-    <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z" />
-    <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
-  </svg>
-);
-
-/** One sign-in-method chip; every route goes through OpenRouter's own sign-in. */
-const ProviderChip: React.FC<{ label: string; icon: React.ReactNode; onClick: () => void; disabled?: boolean }> = ({ label, icon, onClick, disabled }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={disabled}
-    aria-label={`Continue with OpenRouter using ${label}`}
-    className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-60 px-3.5 py-2 text-[13px] text-[#c9ced8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
-  >
-    {icon}
-    <span>{label}</span>
-  </button>
-);
-
-/**
- * Landing-page activation band: a two-column OpenRouter sign-in. The left states
- * the offer (free, no card, sign-in methods); the right is the single blue
- * "Continue with OpenRouter" action and its two reassurances. Once connected it
- * collapses to a quiet confirmation instead of nagging.
- */
 const ConnectCallout: React.FC = () => {
-  const [connected, setConnected] = useState<boolean>(hasKey());
+  const [connected, setConnected] = useState(hasKey());
   const [connecting, setConnecting] = useState(false);
-
+  const [error, setError] = useState('');
   useEffect(() => {
     const sync = () => setConnected(hasKey());
     window.addEventListener(BYOK_CHANGED_EVENT, sync);
     return () => window.removeEventListener(BYOK_CHANGED_EVENT, sync);
   }, []);
-
   const connect = async () => {
     setConnecting(true);
-    try {
-      await beginOpenRouterOAuth(); // full-page redirect to OpenRouter sign-in
-    } catch {
-      setConnecting(false); // only reached if the redirect failed to start
+    setError('');
+    try { await beginOpenRouterOAuth(); }
+    catch {
+      setConnecting(false);
+      setError('Could not open OpenRouter. Please try again.');
     }
   };
-
-  if (connected) {
-    return (
-      <div className="w-full max-w-[1100px] mb-12 flex justify-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-950/30 px-4 py-2 text-[13px] text-emerald-300/90">
-          <Check className="w-4 h-4 flex-shrink-0" />
-          <span>Connected to OpenRouter. Pick a case below to begin.</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full max-w-[1100px] mb-12 rounded-[20px] border border-white/[0.07] bg-white/[0.02] p-6 sm:p-9">
-      <div className="grid grid-cols-1 md:grid-cols-2">
-
-        {/* Left: the offer */}
-        <div className="md:pr-10">
-          <OpenRouterLockup className="h-[26px] w-auto" />
-          <h2 className="mt-5 text-[22px] sm:text-[24px] font-semibold text-white tracking-[-0.02em]">
-            Start free with OpenRouter
-          </h2>
-          <p className="mt-2.5 max-w-[420px] text-[14px] leading-relaxed text-[#9096a0]">
-            Use Google, GitHub, or email to sign in in seconds. No credit card required.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            <ProviderChip label="Google" onClick={connect} disabled={connecting} icon={<GoogleG className="w-[15px] h-[15px]" />} />
-            <ProviderChip label="GitHub" onClick={connect} disabled={connecting} icon={<Github className="w-[15px] h-[15px]" />} />
-            <ProviderChip label="Email" onClick={connect} disabled={connecting} icon={<Mail className="w-[15px] h-[15px]" />} />
-          </div>
-        </div>
-
-        {/* Right: the action */}
-        <div className="mt-8 pt-8 border-t border-white/[0.07] md:mt-0 md:pt-0 md:border-t-0 md:border-l md:border-white/[0.07] md:pl-10 flex flex-col justify-center">
-          <button
-            onClick={connect}
-            disabled={connecting}
-            className="w-full inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 h-[52px] px-4 sm:px-6 text-[15px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
-          >
-            <OpenRouterMark className="w-[18px] h-[18px]" />
-            <span>{connecting ? 'Redirecting to OpenRouter…' : 'Continue with OpenRouter'}</span>
-            {!connecting && <ArrowRight className="w-4 h-4" />}
-          </button>
-          <ul className="mt-5 space-y-3">
-            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
-              <CircleCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
-              <span>Two free Gemma vision models included</span>
-            </li>
-            <li className="flex items-center gap-2.5 text-[13.5px] text-[#9096a0]">
-              <ShieldCheck className="w-[18px] h-[18px] flex-shrink-0 text-[#6b7080]" />
-              <span>Your key is sent only to OpenRouter</span>
-            </li>
-          </ul>
-        </div>
+    <aside className="ca-connect" aria-label="Optional AI connection">
+      <div>
+        <h2>{connected ? 'Your AI tutor is connected' : 'Ready for a deeper conversation?'}</h2>
+        <p>{connected ? 'Open a case to ask your own questions.' : 'Connect OpenRouter to ask your own questions. Sample starter answers need no account.'}</p>
+        {error && <p role="alert" className="ca-error">{error}</p>}
       </div>
-    </div>
+      {connected ? <span className="ca-connected"><Check size={18} aria-hidden="true" /> Connected</span> : (
+        <button type="button" onClick={connect} disabled={connecting} className="ca-button ca-button-secondary min-h-11">
+          <OpenRouterMark className="h-4 w-4" />
+          {connecting ? 'Redirecting to OpenRouter…' : 'Continue with OpenRouter'}
+          <ArrowRight size={16} aria-hidden="true" />
+        </button>
+      )}
+    </aside>
   );
 };
 
@@ -264,13 +197,18 @@ const StudyList: React.FC<StudyListProps> = ({
   onOpenCaseStudio,
   onOpenResearchSetup,
   onDeleteLocalCase,
+  onOpenSessionData,
+  onOpenResearchData,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(12);
+  const nextCaseRef = useRef<HTMLButtonElement | null>(null);
+  const focusNextIndex = useRef<number | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const loadCases = useCallback(async () => {
     setLoading(true);
@@ -288,6 +226,14 @@ const StudyList: React.FC<StudyListProps> = ({
     void loadCases();
   }, [loadCases]);
 
+  useEffect(() => { setVisibleCount(12); }, [activeFilter, searchQuery]);
+  useEffect(() => {
+    if (focusNextIndex.current !== null) {
+      nextCaseRef.current?.focus();
+      focusNextIndex.current = null;
+    }
+  }, [visibleCount]);
+
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
   const visibleCasePackages = casePackages.filter((casePackage) => {
     if (!matchesStudyFilter(casePackage, activeFilter)) return false;
@@ -299,390 +245,125 @@ const StudyList: React.FC<StudyListProps> = ({
       casePackage.presentation.subtitle,
     ].join(' ').toLocaleLowerCase().includes(normalizedSearchQuery);
   });
-  const firstAvailableCase = casePackages[0];
+  const firstAvailableCase = casePackages.find(casePackage => casePackage.id === SAMPLE_CASE_ID) ?? casePackages[0];
   const hasBuiltInSample = casePackages.some((casePackage) => (
     !casePackage.preview.src.startsWith('case://assets/')
   ));
   const clearCaseFilters = () => {
     setSearchQuery('');
     setActiveFilter('all');
+    searchRef.current?.focus();
   };
 
   return (
-    <main className="relative flex flex-col h-full bg-[#06070a] overflow-y-auto" aria-labelledby="landing-title">
+    <main className="ca-home" aria-labelledby="landing-title">
+      <a className="ca-skip" href="#case-library">Skip to cases</a>
+      <header className="ca-header">
+        <a href="#" className="ca-brand" aria-label="CaseAttend home">
+          <img src="/logo.svg" alt="" aria-hidden="true" width="36" height="36" />
+          <h1 id="landing-title">CaseAttend</h1>
+        </a>
+        <nav aria-label="Main navigation" className="ca-nav">
+          <a href="#case-library">Cases</a>
+          <a href="#teaching-tools">For educators</a>
+          <a href="#how-it-works">How it works</a>
+          {onOpenSessionData && <button type="button" onClick={onOpenSessionData} aria-label="Open browser-local session data"><Database size={16} aria-hidden="true" /><span>Session data</span></button>}
+        </nav>
+      </header>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-12 sm:pt-20 pb-12">
-
-        {/* Brand */}
-        <div className="flex flex-col items-center mb-6 sm:mb-8">
-          <div className="flex items-center gap-4 sm:gap-5 mb-4">
-            <img src="/logo.svg" alt="" aria-hidden="true" className="w-12 h-12 sm:w-16 sm:h-16 rounded-[14px]" />
-            <h1 id="landing-title" className="text-[38px] sm:text-[56px] font-bold text-white tracking-[-0.03em]">
-              CaseAttend
-            </h1>
+      <div className="ca-content">
+        <section className="ca-intro" aria-labelledby="intro-heading">
+          <div>
+            <p className="ca-eyebrow">VISUAL LEARNING · MEDICAL EDUCATION</p>
+            <h2 id="intro-heading">Look closer. Think it through.</h2>
+            <p className="ca-intro-description">Real images. Clinical cases. A tutor that helps you reason, one question at a time.</p>
+            {hasBuiltInSample && <p className="ca-free-note"><CircleCheck size={16} aria-hidden="true" />Built-in samples offer pre-reviewed starter questions without an account or key.</p>}
           </div>
-          <p className="text-[18px] sm:text-[22px] text-[#d0d6e0] font-medium mb-3 text-center max-w-[720px] leading-snug tracking-[-0.01em]">
-            Case-based visual reasoning tutor for medical education.
-          </p>
-          <p className="text-[14px] sm:text-[15px] text-[#8a8f98] font-normal text-center max-w-[600px] leading-relaxed">
-            Read the case. Inspect the image. Draw on it. The tutor teaches by asking, points at what you should see, and adapts to your level, from high school to resident.
-          </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => firstAvailableCase && onSelectStudy(firstAvailableCase)}
-              disabled={!firstAvailableCase}
-              className="min-h-11 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-950 disabled:text-blue-200/70 px-5 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Scan className="w-4 h-4" aria-hidden="true" />}
-              Try a sample case
-            </button>
-            {onOpenLessonBuilder && (
-              <button
-                type="button"
-                onClick={onOpenLessonBuilder}
-                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
-              >
-                <BookOpen className="w-4 h-4" aria-hidden="true" />
-                Create a lesson from PDF or PowerPoint
-              </button>
-            )}
-            {onOpenCaseStudio && (
-              <button
-                type="button"
-                onClick={onOpenCaseStudio}
-                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.09] px-4 text-[13px] font-semibold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
-              >
-                <ImagePlus className="w-4 h-4" aria-hidden="true" />
-                Create a case from images
-              </button>
-            )}
-            {onOpenResearchSetup && (
-              <button
-                type="button"
-                onClick={onOpenResearchSetup}
-                className="min-h-11 inline-flex items-center gap-2 rounded-xl border border-violet-400/20 bg-violet-400/[0.08] hover:bg-violet-400/[0.14] px-4 text-[13px] font-semibold text-violet-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06070a]"
-              >
-                <FlaskConical className="w-4 h-4" aria-hidden="true" />
-                Set up a research study
-              </button>
-            )}
-            <a href="#how-it-works" className="min-h-11 inline-flex items-center px-3 text-[12px] text-blue-400/80 hover:text-blue-300 underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-400/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
-              How it works
-            </a>
-            {onShowSafety && (
-              <button
-                type="button"
-                onClick={onShowSafety}
-                className="min-h-11 inline-flex items-center gap-1.5 rounded-lg px-3 text-[12px] text-[#b8c0cc] hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-              >
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                Safety &amp; privacy
-              </button>
-            )}
-            <a
-              href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/docs/README.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="min-h-11 inline-flex items-center gap-1.5 rounded-lg px-3 text-[12px] text-[#b8c0cc] hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-            >
-              <BookOpen className="h-4 w-4" aria-hidden="true" />
-              User guides
-            </a>
+          <button type="button" onClick={() => firstAvailableCase && onSelectStudy(firstAvailableCase)} disabled={!firstAvailableCase} className="ca-button ca-button-primary min-h-11">
+            {loading ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Scan size={18} aria-hidden="true" />}
+            Try a sample case<ArrowRight size={18} aria-hidden="true" />
+          </button>
+        </section>
+
+        <section id="case-library" className="ca-library" aria-labelledby="cases-heading" tabIndex={-1}>
+          <div className="ca-library-heading">
+            <div>
+              <h2 id="cases-heading">Cases</h2>
+              <p aria-live="polite" aria-atomic="true">
+                {loading ? 'Loading the case library…' : loadError ? 'The case library is temporarily unavailable.' : `Showing ${Math.min(visibleCount, visibleCasePackages.length)} of ${visibleCasePackages.length} ${visibleCasePackages.length === 1 ? 'case' : 'cases'}`}
+              </p>
+            </div>
+            <div className="ca-search">
+              <label htmlFor="case-search" className="sr-only">Search cases</label>
+              <Search size={18} aria-hidden="true" />
+              <input ref={searchRef} id="case-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search title, specialty, or vignette" />
+              {searchQuery && <button type="button" aria-label="Clear search" onClick={() => { setSearchQuery(''); searchRef.current?.focus(); }}><X size={16} aria-hidden="true" /></button>}
+            </div>
           </div>
-          {hasBuiltInSample && (
-            <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-300/90">
-              <CircleCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              Built-in samples offer pre-reviewed starter questions without an account or key.
-            </p>
+          <div className="ca-filters overflow-x-auto" role="group" aria-label="Filter cases">
+            {STUDY_FILTERS.map(f => (
+              <button key={f.id} type="button" aria-pressed={activeFilter === f.id} onClick={() => setActiveFilter(f.id)} className="min-h-11">{f.label}</button>
+            ))}
+          </div>
+          {(searchQuery || activeFilter !== 'all') && (
+            <div className="ca-filter-summary"><span>{visibleCasePackages.length} matching {visibleCasePackages.length === 1 ? 'case' : 'cases'}</span><button type="button" onClick={clearCaseFilters}>Clear search and filters</button></div>
           )}
-          {(onOpenLessonBuilder || onOpenResearchSetup) && (
-            <p className="mt-2 text-[11px] text-[#9ca3af] text-center">
-              Build versioned teaching content or a reproducible VLM education protocol in your browser. CaseAttend does not provide institutional approval.
-            </p>
-          )}
-        </div>
+          <div className="ca-grid" aria-busy={loading}>
+            {loading && <div className="ca-empty" role="status" aria-label="Loading cases"><Loader2 size={22} className="animate-spin" aria-hidden="true" /><p>Loading cases…</p></div>}
+            {!loading && loadError && <div className="ca-empty"><p role="alert">{loadError}</p><button type="button" onClick={() => void loadCases()} className="ca-button ca-button-primary min-h-11">Try loading cases again</button></div>}
+            {!loading && !loadError && visibleCasePackages.length === 0 && <div className="ca-empty" role="status"><Search size={28} aria-hidden="true" /><h3>No cases found</h3><p>{casePackages.length === 0 ? 'No cases are available in this browser yet.' : 'Try another search term or choose a different topic.'}</p></div>}
+            {!loading && !loadError && visibleCasePackages.slice(0, visibleCount).map((casePackage, index) => (
+              <article key={casePackage.id} className="ca-card">
+                <button ref={index === focusNextIndex.current ? nextCaseRef : undefined} type="button" className="ca-card-action" onClick={() => onSelectStudy(casePackage)} aria-label={`Start case: ${casePackage.title}`} />
+                <div className="ca-card-image"><CasePreviewBackdrop casePackage={casePackage} active={true} /></div>
+                {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && <button type="button" className="ca-delete min-h-11" aria-label={`Delete browser-local case: ${casePackage.title}`} onClick={() => {
+                  if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
+                  void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => setLoadError('The browser-local case could not be deleted. Your other cases were not changed.'));
+                }}><Trash2 size={16} aria-hidden="true" /></button>}
+                <div className="ca-card-body">
+                  <p className="ca-card-meta">{casePackage.presentation.subtitle}</p>
+                  <h3>{casePackage.title}</h3>
+                  <p className="ca-card-vignette">{casePackage.vignette}</p>
+                  <div className="ca-card-footer"><span>{casePackage.preview.src.startsWith('case://assets/') ? 'Browser-local case' : 'Explore case'}</span><ArrowRight size={18} aria-hidden="true" /></div>
+                </div>
+              </article>
+            ))}
+          </div>
+          {!loading && !loadError && visibleCasePackages.length > visibleCount && <div className="ca-show-more"><button type="button" className="ca-button ca-button-secondary min-h-11" onClick={() => { focusNextIndex.current = visibleCount; setVisibleCount(count => count + 12); }}>Show more cases <span>({visibleCasePackages.length - visibleCount} remaining)</span></button></div>}
+        </section>
 
-        {/* Testimonial social proof up top, before the ask */}
-        <div className="w-full flex justify-center mb-6 sm:mb-8">
-          <TestimonialRotator />
-        </div>
-
-        {/* Trust signals */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 mb-8">
-          <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 text-[13px] sm:text-[14px] text-amber-400/90 font-medium hover:text-amber-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-lg">
-            <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
-            <span>VibeRad · Google DeepMind Hackathon winner</span>
-          </a>
-        </div>
-
-        {/* Sign in with OpenRouter. Free, no card, credentials stay with OpenRouter. */}
         <ConnectCallout />
 
-        <section className="w-full max-w-[1100px]" aria-labelledby="cases-heading">
-          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 id="cases-heading" className="text-[22px] font-bold text-white tracking-[-0.01em]">Cases</h2>
-              <p className="mt-1 text-[12px] text-[#aab2bf]" aria-live="polite">
-                {loading
-                  ? 'Loading the case library…'
-                  : loadError
-                    ? 'The case library is temporarily unavailable.'
-                    : `Showing ${visibleCasePackages.length} of ${casePackages.length} ${casePackages.length === 1 ? 'case' : 'cases'}`}
-              </p>
-            </div>
-            <div className="w-full sm:max-w-[360px]">
-              <label htmlFor="case-search" className="mb-1.5 block text-[12px] font-semibold text-[#c9ced8]">
-                Search cases
-              </label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" aria-hidden="true" />
-                <input
-                  id="case-search"
-                  type="search"
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Title, specialty, or vignette"
-                  className="min-h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] py-2 pl-10 pr-3 text-[13px] text-white placeholder:text-[#8f96a2] focus:border-blue-400/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                />
-              </div>
-            </div>
+        <section id="teaching-tools" className="ca-teaching" aria-labelledby="teaching-heading">
+          <div className="ca-section-heading"><p className="ca-eyebrow">FOR EDUCATORS & RESEARCHERS</p><h2 id="teaching-heading">Teach with your own material.</h2><p>Turn teaching images and slides into guided lessons, or prepare a research study.</p></div>
+          <div className="ca-tools">
+            {onOpenLessonBuilder && <button type="button" onClick={onOpenLessonBuilder} className="ca-tool min-h-11" aria-label="Create a lesson from PDF or PowerPoint"><BookOpen size={22} aria-hidden="true" /><span><strong>Create a lesson</strong><small>Start from a PDF or PowerPoint</small></span><ArrowRight size={18} aria-hidden="true" /></button>}
+            {onOpenCaseStudio && <button type="button" onClick={onOpenCaseStudio} className="ca-tool min-h-11" aria-label="Create a case from images"><ImagePlus size={22} aria-hidden="true" /><span><strong>Create a case</strong><small>Use your own teaching images</small></span><ArrowRight size={18} aria-hidden="true" /></button>}
+            {onOpenResearchSetup && <button type="button" onClick={onOpenResearchSetup} className="ca-tool min-h-11" aria-label="Set up a research study"><FlaskConical size={22} aria-hidden="true" /><span><strong>Set up a research study</strong><small>Prepare a reproducible protocol</small></span><ArrowRight size={18} aria-hidden="true" /></button>}
           </div>
-
-          <div className="mb-4">
-            <p className="mb-1.5 text-[11px] font-semibold text-[#aab2bf] uppercase tracking-[0.1em]">Filter by topic</p>
-            <div className="flex w-full max-w-full gap-1 overflow-x-auto pb-1" role="group" aria-label="Filter cases">
-              {STUDY_FILTERS.map(f => (
-                <button
-                  key={f.id}
-                  type="button"
-                  aria-pressed={activeFilter === f.id}
-                  onClick={() => setActiveFilter(f.id)}
-                  className={`min-h-11 shrink-0 whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
-                    activeFilter === f.id
-                      ? 'bg-white/[0.1] text-white'
-                      : 'text-[#aab2bf] hover:text-white hover:bg-white/[0.05]'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Case grid: 1 col mobile, 2 col tablet, 3 col desktop */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-            {loading && (
-              <div className="col-span-full flex min-h-48 items-center justify-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] text-[#c9ced8]" role="status" aria-label="Loading cases">
-                <Loader2 className="h-5 w-5 animate-spin text-blue-300" aria-hidden="true" />
-                <span className="text-sm">Loading cases…</span>
-              </div>
-            )}
-
-            {!loading && loadError && (
-              <div className="col-span-full flex min-h-48 flex-col items-center justify-center gap-4 rounded-2xl border border-amber-300/20 bg-amber-300/[0.04] px-6 text-center">
-                <p className="max-w-md text-sm text-[#e1e5eb]" role="alert">{loadError}</p>
-                <button
-                  type="button"
-                  onClick={() => void loadCases()}
-                  className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                >
-                  Try loading cases again
-                </button>
-              </div>
-            )}
-
-            {!loading && !loadError && visibleCasePackages.length === 0 && (
-              <div className="col-span-full flex min-h-48 flex-col items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.02] px-6 text-center" role="status">
-                <h3 className="text-base font-semibold text-white">No cases found</h3>
-                <p className="mt-2 max-w-md text-sm text-[#aab2bf]">
-                  {casePackages.length === 0
-                    ? 'No cases are available in this browser yet.'
-                    : 'Try another search term or choose a different topic.'}
-                </p>
-                {(searchQuery || activeFilter !== 'all') && (
-                  <button
-                    type="button"
-                    onClick={clearCaseFilters}
-                    className="mt-4 min-h-11 rounded-xl border border-white/[0.12] bg-white/[0.05] px-4 text-sm font-semibold text-white hover:bg-white/[0.09] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                  >
-                    Clear search and filters
-                  </button>
-                )}
-              </div>
-            )}
-
-            {!loading && !loadError && visibleCasePackages.map((casePackage) => {
-              const active = hovered === casePackage.id;
-              const { presentation } = casePackage;
-
-              return (
-                <article
-                  key={casePackage.id}
-                  onMouseEnter={() => setHovered(casePackage.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  className="group relative rounded-2xl overflow-hidden text-left outline-none aspect-[4/5] sm:aspect-[4/5]"
-                  style={{
-                    transition: 'transform 250ms cubic-bezier(0.16,1,0.3,1), box-shadow 250ms ease',
-                    transform: active ? 'scale(1.02)' : 'scale(1)',
-                    boxShadow: active ? `0 0 40px 8px ${presentation.accentGlow}` : 'none',
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="absolute inset-0 z-20 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-inset"
-                    onClick={() => onSelectStudy(casePackage)}
-                    aria-label={`Start case: ${casePackage.title}`}
-                  />
-                  {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && (
-                    <button
-                      type="button"
-                      className="absolute right-3 top-3 z-30 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/[0.12] bg-black/70 text-[#c9ced8] hover:bg-red-950 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                      aria-label={`Delete browser-local case: ${casePackage.title}`}
-                      onClick={() => {
-                        if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
-                        void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => {
-                          setLoadError('The browser-local case could not be deleted. Your other cases were not changed.');
-                        });
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  )}
-                  <div className="absolute inset-0">
-                    <CasePreviewBackdrop casePackage={casePackage} active={active} />
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: 'linear-gradient(to top, #06070a 20%, rgba(6,7,10,0.6) 50%, transparent 70%)' }}
-                    />
-                    <div
-                      className="absolute inset-0 transition-opacity duration-500"
-                      style={{
-                        background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${presentation.accentGlow}, transparent 70%)`,
-                        opacity: active ? 1 : 0.5,
-                      }}
-                    />
-                  </div>
-
-                  <div className="absolute inset-0 rounded-2xl transition-all duration-200" style={{
-                    boxShadow: active
-                      ? `inset 0 0 0 1px ${presentation.accentBorder}`
-                      : 'inset 0 0 0 1px rgba(255,255,255,0.04)',
-                  }} />
-
-                  <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-5 pt-8">
-                    <div className={`text-[10px] font-bold uppercase tracking-wider ${presentation.textClass} mb-2 opacity-90`}>
-                      {presentation.subtitle}
-                    </div>
-                    {casePackage.preview.src.startsWith('case://assets/') && (
-                      <div className="mb-2 inline-flex min-h-6 items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
-                        Browser-local
-                      </div>
-                    )}
-
-                    <h3 className="text-[16px] sm:text-[17px] font-bold text-white leading-tight mb-2">
-                      {casePackage.title}
-                    </h3>
-
-                    <p className="text-[11px] sm:text-[12px] text-[#aab2bf] leading-relaxed mb-3 group-hover:text-[#d0d6e0] transition-colors duration-300 line-clamp-3">
-                      {casePackage.vignette}
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      <span className={`text-[10px] font-bold ${presentation.textClass} uppercase tracking-[0.08em] opacity-90 group-hover:opacity-100 transition-opacity`}>
-                        Start Case
-                      </span>
-                      <ArrowRight className={`w-3.5 h-3.5 ${presentation.textClass} opacity-70 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0.5`} aria-hidden="true" />
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          {onOpenResearchData && <button type="button" className="ca-text-button" onClick={onOpenResearchData} aria-label="Open restricted research data"><Database size={16} aria-hidden="true" /> Research data</button>}
+          <p className="ca-secondary-note">Use de-identified teaching material. Research requires your institution’s approval where applicable.</p>
         </section>
 
-        {/* How it works anchor target for the hero link, and depth for scroll-down readers */}
-        <section id="how-it-works" className="mt-20 w-full max-w-[1000px] scroll-mt-16">
-          <div className="text-center mb-10">
-            <p className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-[0.1em] mb-3">How it works</p>
-            <h2 className="text-[24px] sm:text-[32px] font-bold text-white tracking-[-0.02em] mb-3">
-              An AI tutor grounded in a real artifact.
-            </h2>
-            <p className="text-[14px] sm:text-[15px] text-[#8a8f98] max-w-[640px] mx-auto leading-relaxed">
-              Not another chat bot. CaseAttend teaches case-based visual reasoning: the tutor asks before it tells, points at what you should see, and adapts to your level. The engine is domain-agnostic; the content is per-specialty.
-            </p>
+        <section id="how-it-works" className="ca-how" aria-labelledby="how-heading">
+          <div className="ca-section-heading"><p className="ca-eyebrow">HOW IT WORKS</p><h2 id="how-heading">Build the reasoning behind the answer.</h2></div>
+          <div className="ca-steps">
+            <div><span>01</span><h3>Choose a case</h3><p>Read the vignette and choose your learner level, from high school to resident.</p></div>
+            <div><span>02</span><h3>Explore the image</h3><p>Zoom, scroll through slices, and draw on the findings you want to discuss.</p></div>
+            <div><span>03</span><h3>Think with your tutor</h3><p>Start with reviewed questions. Connect OpenRouter for a live conversation about your current view.</p></div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
-                <Scan className="w-5 h-5 text-blue-400" />
-              </div>
-              <h3 className="text-[15px] font-bold text-white mb-2">Case-based, not chat-based</h3>
-              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Every session is a real image with a clinical vignette. You scroll slices, adjust contrast, draw on findings. The tutor teaches from a question-first scaffold, not a monologue.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center mb-4">
-                <Layers className="w-5 h-5 text-fuchsia-400" />
-              </div>
-              <h3 className="text-[15px] font-bold text-white mb-2">Domain plugin architecture</h3>
-              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Same viewer, same tutor scaffold, different content. Radiology, pathology, dermatology, ECG, ultrasound, and ophthalmology use registered domain plugins. See <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 decoration-blue-500/30">CONTRIBUTING</a>.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/[0.06] bg-[#0f1011] p-6 hover:border-white/[0.12] transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
-                <KeyRound className="w-5 h-5 text-emerald-400" />
-              </div>
-              <h3 className="text-[15px] font-bold text-white mb-2">BYOK, no keys on our servers</h3>
-              <p className="text-[13px] text-[#8a8f98] leading-relaxed">
-                Your OpenRouter key is stored in your browser and sent only to OpenRouter for model requests. CaseAttend servers never receive it. Two free vision models included.
-              </p>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-[#0a0b0c] p-6">
-            <p className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-[0.1em] mb-4">Under the hood</p>
-            <ul className="space-y-3 text-[13px] text-[#8a8f98] leading-relaxed">
-              <li className="flex gap-3">
-                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Structured <code className="text-[12px] font-mono text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded">&lt;POINTERS&gt;</code> and <code className="text-[12px] font-mono text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded">&lt;SUGGESTIONS&gt;</code> emitted by the model, rendered on-image and per-learner-level.</span>
-              </li>
-              <li className="flex gap-3">
-                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Learner-level system prompts (High school, Undergrad, Pre-Step 1, Post-Step 1, Resident) so depth adapts to your background.</span>
-              </li>
-              <li className="flex gap-3">
-                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Submitting a question captures an image from the viewer at that moment, including learner annotations.</span>
-              </li>
-              <li className="flex gap-3">
-                <Check className="w-4 h-4 flex-shrink-0 mt-[3px] text-emerald-500/70" />
-                <span>Auto-capture on send: the AI sees whatever you're looking at (and any drawings you just made) the moment you press Enter. No manual capture step.</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[12px] text-[#9ca3af]">
-            <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Github className="w-3.5 h-3.5" /> Source on GitHub (MIT)
-            </a>
-            <span className="text-[#2a2d33]">•</span>
-            <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Award className="w-3.5 h-3.5" /> Google DeepMind hackathon writeup
-            </a>
-            <span className="text-[#2a2d33]">•</span>
-            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-              Cite
-            </a>
-          </div>
+          <div className="ca-testimonial"><TestimonialRotator /></div>
         </section>
-
+        <footer className="ca-footer">
+          <div><strong>CaseAttend</strong><p>For education. Not for diagnosis or treatment.</p></div>
+          <nav aria-label="Help and resources">
+            {onShowSafety && <button type="button" onClick={onShowSafety}><ShieldCheck size={16} aria-hidden="true" />Safety &amp; privacy</button>}
+            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/docs/README.md" target="_blank" rel="noopener noreferrer">User guides</a>
+            <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer"><Github size={16} aria-hidden="true" />Source</a>
+            <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer">Cite</a>
+            <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer"><Award size={16} aria-hidden="true" />Hackathon story</a>
+          </nav>
+        </footer>
       </div>
     </main>
   );

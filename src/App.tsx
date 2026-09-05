@@ -380,10 +380,6 @@ const App: React.FC = () => {
   
   // Tour State
   const [activeTour, setActiveTour] = useState<TourId | null>(null);
-  // Track tour completion to block scrolling until done (only blocks if Quick Tour is running or initial)
-  const [isTourCompleted, setIsTourCompleted] = useState(() => (
-    getPreference(PREFERENCE_KEYS.guidedTourCompleted) === 'true'
-  ));
 
   // FloatingToolbar State
   const [showLegacyToolbar, setShowLegacyToolbar] = useState(false);
@@ -498,27 +494,11 @@ const App: React.FC = () => {
       };
   }, [toolbarPos.x, toolbarPos.y]);
 
-  // Guided Tour Logic
-  useEffect(() => {
-    // Only check if we are actually viewing a study (not on study list)
-    if (selectedStudy) {
-      const tourCompleted = getPreference(PREFERENCE_KEYS.guidedTourCompleted);
-      if (!tourCompleted) {
-        setIsTourCompleted(false); // Lock scrolling
-        // Small delay to ensure DOM is ready
-        const timer = setTimeout(() => setActiveTour('onboarding'), 1500);
-        return () => clearTimeout(timer);
-      } else {
-        setIsTourCompleted(true);
-      }
-    }
-  }, [selectedStudy]);
-
+  // Tours remain available from Help without interrupting the first case.
   const handleCloseTour = () => {
     // Only mark completed if we finished the quick start
     if (activeTour === 'onboarding') {
         setPreference(PREFERENCE_KEYS.guidedTourCompleted, 'true');
-        setIsTourCompleted(true);
     }
     setActiveTour(null);
   };
@@ -526,7 +506,6 @@ const App: React.FC = () => {
   const handleStartTour = (id: TourId) => {
     if (id === 'onboarding') {
          removePreference(PREFERENCE_KEYS.guidedTourCompleted);
-         setIsTourCompleted(false);
          setActiveRightTab('ai'); // Start on the Tutor panel
     }
     setActiveTour(id);
@@ -866,7 +845,7 @@ const App: React.FC = () => {
       {showSessionData && <SessionDataPanel onClose={closeSessionData} />}
       {showResearchData && <ResearchDataPanel onClose={() => setShowResearchData(false)} />}
 
-      {!selectedStudy && (homeView === 'cases' || homeView === 'research-setup') && (
+      {!selectedStudy && homeView === 'research-setup' && (
         <button
           type="button"
           onClick={openSessionData}
@@ -877,7 +856,7 @@ const App: React.FC = () => {
           <span className="hidden sm:inline">Session data</span>
         </button>
       )}
-      {!selectedStudy && (homeView === 'cases' || homeView === 'research-setup') && (
+      {!selectedStudy && homeView === 'research-setup' && (
         <button
           type="button"
           onClick={() => setShowResearchData(true)}
@@ -1151,6 +1130,8 @@ const App: React.FC = () => {
             setConnectionType={setConnectionType}
             dicomConfig={dicomConfig}
             setDicomConfig={setDicomConfig}
+            onOpenSessionData={openSessionData}
+            onOpenResearchData={() => setShowResearchData(true)}
             onShowSafety={() => setShowSafetyModal(true)}
             onOpenLessonBuilder={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('lesson-builder'); }}
             onOpenCaseStudio={() => setHomeView('case-studio')}

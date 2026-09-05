@@ -244,12 +244,12 @@ describe('StudyList case loading', () => {
     const search = screen.getByRole('searchbox', { name: 'Search cases' });
     fireEvent.change(search, { target: { value: 'cardiology' } });
 
-    expect(screen.getByText('Showing 1 of 2 cases')).toBeTruthy();
+    expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: cardiologyCase.title })).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 3, name: localCase.title })).toBeNull();
 
     fireEvent.change(search, { target: { value: 'not-a-real-case' } });
-    expect(screen.getByText('Showing 0 of 2 cases')).toBeTruthy();
+    expect(screen.getByText('Showing 0 of 0 cases')).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: 'No cases found' })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
@@ -283,6 +283,29 @@ describe('StudyList case loading', () => {
     const logo = document.querySelector<HTMLImageElement>('img[src="/logo.svg"]');
     expect(logo?.getAttribute('alt')).toBe('');
     expect(await screen.findByRole('heading', { level: 3, name: 'No cases found' })).toBeTruthy();
+  });
+
+  it('reveals more cases, focuses the first new case, and searches the entire library', async () => {
+    const cases = Array.from({ length: 25 }, (_, index) => ({
+      ...cardiologyCase,
+      id: `case-${index}`,
+      title: `Teaching case ${index}`,
+    }));
+    mocks.searchDicomWebStudies.mockResolvedValue(cases);
+    render(<StudyList onSelectStudy={() => undefined} connectionType="DICOMWEB"
+      setConnectionType={() => undefined} dicomConfig={{ url: 'local', name: 'Cases' }}
+      setDicomConfig={() => undefined} />);
+
+    expect(await screen.findByText('Showing 12 of 25 cases')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Start case: Teaching case 24' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Show more cases (13 remaining)' }));
+    expect(screen.getByText('Showing 24 of 25 cases')).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Start case: Teaching case 12' }));
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Teaching case 24' } });
+    expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Start case: Teaching case 24' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
+    expect(screen.getByText('Showing 12 of 25 cases')).toBeTruthy();
   });
 
   it('disables testimonial animation when reduced motion is preferred', () => {

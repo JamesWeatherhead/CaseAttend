@@ -66,8 +66,9 @@ vi.mock('../services/openrouterAuth', () => ({
 }));
 
 vi.mock('../components/StudyList', () => ({
-  default: ({ onSelectStudy }: { onSelectStudy: (casePackage: CasePackageV1) => void }) => (
+  default: ({ onSelectStudy, onOpenSessionData }: { onSelectStudy: (casePackage: CasePackageV1) => void; onOpenSessionData: () => void }) => (
     <main>
+      <button type="button" onClick={onOpenSessionData}>Open browser-local session data</button>
       <button type="button" onClick={() => onSelectStudy(mocks.caseA)}>Open Case A</button>
       <button type="button" onClick={() => onSelectStudy(mocks.caseB)}>Open Case B</button>
     </main>

@@ -78,6 +78,17 @@ const testInferenceResult = {
   promptSha256: 'b'.repeat(64),
 };
 
+it('does not interrupt keyboard focus with an account dialog or send a request', () => {
+  mocks.hasKey.mockReturnValue(false);
+  render(<AiAssistantPanel captureCurrentView={() => null} />);
+  const input = screen.getByLabelText('Question for the AI tutor');
+  fireEvent.focus(input);
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(mocks.streamChatResponse).not.toHaveBeenCalled();
+  cleanup();
+  mocks.hasKey.mockReturnValue(true);
+});
+
 function deferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;
   let reject!: (reason?: unknown) => void;

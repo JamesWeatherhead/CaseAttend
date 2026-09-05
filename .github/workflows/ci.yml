@@ -5,6 +5,13 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,6 +25,36 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Keep the validated production build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: caseattend-site
+          path: dist
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, security-invariant]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://caseattend.com
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: caseattend-site
+          path: dist
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Publish the checked build to Cloudflare Pages
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=caseattend --branch=main --commit-hash=${{ github.sha }}
 
   security-invariant:
     runs-on: ubuntu-latest

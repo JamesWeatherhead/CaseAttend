@@ -277,7 +277,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
-  const [showMedPicker, setShowMedPicker] = useState(false);
   const [mode, setMode] = useState<AiMode>(() => lockedTutor?.mode ?? 'chat');
   const [provider, setProvider] = useState<AIProvider>('openrouter');
   const [dynamicSuggestionsMap, setDynamicSuggestionsMap] = useState<Record<LearnerLevel, string[]> | null>(null);
@@ -301,7 +300,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     setLearnerLevel(lockedTutor.learnerLevel);
     setMode(lockedTutor.mode);
     setProvider('openrouter');
-    setShowMedPicker(false);
   }, [lockedTutorKey]);
 
   useEffect(() => {
@@ -1432,28 +1430,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       }
   };
 
-  const getLearnerLevelShortLabel = (id: string) => {
-      switch(id) {
-          case 'highschool': return "HS";
-          case 'undergrad': return "Undergrad";
-          case 'ms_preclinical': return "Pre-Step 1";
-          case 'ms_clinical': return "Post-Step 1";
-          case 'resident': return "Resident";
-          default: return "Gen";
-      }
-  };
-
-  const getLearnerLevelTooltip = (id: string) => {
-      switch(id) {
-          case 'highschool': return "High school level explanation";
-          case 'undergrad': return "Undergraduate biology/pre-med";
-          case 'ms_preclinical': return "Pre-clinical medical student (MS1-MS2, Step 1 focus)";
-          case 'ms_clinical': return "Clinical medical student (MS3-MS4, Step 2 focus)";
-          case 'resident': return "Resident level explanation";
-          default: return "";
-      }
-  };
-
   return (
     <div data-tour-id="ai-panel" className="flex flex-col h-full bg-[#0f1011]">
       {/* Main Header */}
@@ -1709,42 +1685,15 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </div>
 
         <div className="p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0">
-            {/* Compact Learner Level Row */}
-            {!lockedTutor && <div data-tour-id="teaching-levels" className="flex items-center justify-end mb-2 gap-2 text-[11px] text-[#8a8f98]">
-                <div className="inline-flex items-center rounded-lg bg-[#0f1011]/50 border border-white/[0.08] p-0.5 gap-0.5">
-                    <button type="button" onClick={() => { setLearnerLevel('highschool'); setShowMedPicker(false); }}
-                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'highschool' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
-                      HS
-                    </button>
-                    <button type="button" onClick={() => { setLearnerLevel('undergrad'); setShowMedPicker(false); }}
-                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'undergrad' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
-                      Undergrad
-                    </button>
-                    {/* Med button with popover */}
-                    <div className="relative">
-                      <button type="button" onClick={() => setShowMedPicker(prev => !prev)}
-                        className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${(learnerLevel === 'ms_preclinical' || learnerLevel === 'ms_clinical') ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
-                        Med{(learnerLevel === 'ms_preclinical' || learnerLevel === 'ms_clinical') ? (learnerLevel === 'ms_preclinical' ? ' (Pre)' : ' (Post)') : ''}
-                      </button>
-                      {showMedPicker && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex gap-1 bg-[#1e1f21] border border-white/[0.12] rounded-lg p-1 shadow-xl z-30 whitespace-nowrap">
-                          <button type="button" onClick={() => { setLearnerLevel('ms_preclinical'); setShowMedPicker(false); }}
-                            className={`min-h-11 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_preclinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
-                            Pre-Step 1
-                          </button>
-                          <button type="button" onClick={() => { setLearnerLevel('ms_clinical'); setShowMedPicker(false); }}
-                            className={`min-h-11 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'ms_clinical' ? 'bg-blue-600 text-white' : 'text-[#8a8f98] hover:bg-[#2a2d35] hover:text-white'}`}>
-                            Post-Step 1
-                          </button>
-                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#1e1f21]" />
-                        </div>
-                      )}
-                    </div>
-                    <button type="button" onClick={() => { setLearnerLevel('resident'); setShowMedPicker(false); }}
-                      className={`min-h-11 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${learnerLevel === 'resident' ? 'bg-blue-600 text-white shadow-sm' : 'text-[#8a8f98] hover:bg-[#1e1f21] hover:text-[#d0d6e0]'}`}>
-                      Resident
-                    </button>
-                </div>
+            {!lockedTutor && <div data-tour-id="teaching-levels" className="flex items-center justify-between mb-3 gap-3">
+                <label htmlFor="tutor-learner-level" className="text-sm text-[#aab2bf]">Your level</label>
+                <select id="tutor-learner-level" value={learnerLevel} onChange={event => setLearnerLevel(event.target.value as LearnerLevel)} className="min-h-11 max-w-[70%] rounded-lg border border-white/[0.12] bg-[#0f1011] px-3 text-sm text-[#d0d6e0] focus-visible:ring-2 focus-visible:ring-blue-300">
+                    <option value="highschool">High school</option>
+                    <option value="undergrad">Undergraduate</option>
+                    <option value="ms_preclinical">Medical student · Pre-Step 1</option>
+                    <option value="ms_clinical">Medical student · Post-Step 1</option>
+                    <option value="resident">Resident</option>
+                </select>
             </div>}
 
             {/* Input Area */}
@@ -1771,9 +1720,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                 }
                                 void handleSendMessage();
                               }
-                            }}
-                            onFocus={() => {
-                                if (freeTypingLocked) setShowConnectModal(true);
                             }}
                             disabled={isThinking}
                             aria-label="Question for the AI tutor"
