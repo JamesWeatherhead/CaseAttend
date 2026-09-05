@@ -3,7 +3,7 @@
 import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import StudyList from '../components/StudyList';
+import StudyList, { type CaseLibraryState } from '../components/StudyList';
 import type { CasePackageV1 } from '../core/casePackage';
 
 const mocks = vi.hoisted(() => ({
@@ -306,6 +306,45 @@ describe('StudyList case loading', () => {
     expect(screen.getByRole('button', { name: 'Start case: Teaching case 24' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
     expect(screen.getByText('Showing 12 of 25 cases')).toBeTruthy();
+  });
+
+  it.each(['Try a sample case', `Start case: ${cardiologyCase.title}`])('restores the exact sample trigger after %s, including a failed first reload', async (triggerName) => {
+    mocks.searchDicomWebStudies.mockResolvedValue([cardiologyCase]);
+    const stateRef = { current: undefined as CaseLibraryState | undefined };
+    const props = { stateRef, onSelectStudy: vi.fn(), connectionType: 'DICOMWEB' as const,
+      setConnectionType: () => undefined, dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
+    const firstMount = render(<StudyList {...props} />);
+    await screen.findByText('Showing 1 of 1 case');
+    screen.getByRole('main').scrollTop = 360;
+    fireEvent.click(screen.getByRole('button', { name: triggerName }));
+    firstMount.unmount();
+    mocks.searchDicomWebStudies.mockRejectedValueOnce(new Error('Offline'));
+    render(<StudyList {...props} />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Try loading cases again' }));
+    await screen.findByText('Showing 1 of 1 case');
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: triggerName }));
+    expect(screen.getByRole('main').scrollTop).toBe(360);
+  });
+
+  it('restores the search, loaded batch, scroll position, and originating card after a case', async () => {
+    const cases = Array.from({ length: 25 }, (_, index) => ({ ...cardiologyCase, id: `case-${index}`, title: `Teaching case ${index}` }));
+    mocks.searchDicomWebStudies.mockResolvedValue(cases);
+    const stateRef = { current: undefined as CaseLibraryState | undefined };
+    const props = { stateRef, onSelectStudy: vi.fn(), connectionType: 'DICOMWEB' as const,
+      setConnectionType: () => undefined, dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
+    const firstMount = render(<StudyList {...props} />);
+    await screen.findByText('Showing 12 of 25 cases');
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Teaching' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show more cases (13 remaining)' }));
+    screen.getByRole('main').scrollTop = 920;
+    fireEvent.click(screen.getByRole('button', { name: 'Start case: Teaching case 15' }));
+    expect(stateRef.current).toMatchObject({ searchQuery: 'Teaching', visibleCount: 24, scrollTop: 920, focusTriggerId: 'case:case-15' });
+    firstMount.unmount();
+    render(<StudyList {...props} />);
+    await screen.findByText('Showing 24 of 25 cases');
+    expect(screen.getByRole('searchbox')).toHaveProperty('value', 'Teaching');
+    expect(screen.getByRole('main').scrollTop).toBe(920);
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Start case: Teaching case 15' }));
   });
 
   it('disables testimonial animation when reduced motion is preferred', () => {

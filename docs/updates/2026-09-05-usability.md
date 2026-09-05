@@ -23,3 +23,13 @@ The workflow embeds the GitHub commit SHA in the build. Existing content-securit
 Local type checks and production build were completed. Browser checks covered desktop and phone layouts, search and clearing, case pagination and focus, learner levels, account-free starter answers, explicit connection and Escape dismissal, and opening the lesson workspace. The full CI test suite and security checks gate publication.
 
 Live OpenRouter inference was not exercised; the browser sample check used shipped reviewed answers and made no model request.
+
+## Learner workspace follow-up
+
+The viewer now attaches its resize observer when a case arrives asynchronously. Previously the observer could miss the canvas entirely, leaving an 800 × 600 canvas cropped inside a phone-sized pane. The canvas measures its actual container, preserves relative zoom and centering as the layout changes, and offers a labelled **Fit image** action.
+
+Image tools have readable labels in a fixed toolbar. The workspace shows the case title and expandable vignette, with bounded scrolling for short screens. Phone navigation can move directly between the image and tutor. The tutor is wider on desktop, uses 16px conversation text in ordinary learning sessions, and groups connection status and secondary lesson details more compactly.
+
+Returning to the library preserves its search, filter, loaded batch, scroll position, and exact originating button for the current app session. Restoration survives a failed reload followed by a successful retry. Refreshing or leaving the application still resets this state; durable case URLs and OAuth return context remain follow-up work.
+
+Validation includes 505 passing tests across 69 files, type checks, and the production build. New regression cases cover a late-arriving canvas, responsive refitting, library restoration, distinct sample entry buttons, and retrying a failed library load. Browser checks at 390 × 844, 844 × 390, and 1440 × 1000 confirmed canvas/container agreement, 16px tutor text, no page overflow, and focus moving with pane navigation. Short landscape screens use the stacked layout so the conversation remains usable; expanding secondary privacy details keeps a scrollable composer. A reviewed answer and returning from a searched sample card and a second-batch case were also exercised.

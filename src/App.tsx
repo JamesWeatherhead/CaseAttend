@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from 'react';
-import StudyList from './components/StudyList';
+import StudyList, { type CaseLibraryState } from './components/StudyList';
 import type {
   FrozenResearchSetup,
   ResearchMaterialOption,
@@ -37,7 +37,7 @@ import {
   removePreference,
   setPreference,
 } from './services/preferenceStore';
-import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, GraduationCap, Database } from 'lucide-react';
+import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, Database, ImageIcon } from 'lucide-react';
 import { createCaseStudioController } from './services/caseStudioController';
 import {
   researchSetupController,
@@ -159,6 +159,7 @@ export function normalizeToolForArtifact(
 }
 
 const App: React.FC = () => {
+  const libraryStateRef = useRef<CaseLibraryState | undefined>(undefined);
   const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
   const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
   const caseStudioController = useMemo(() => createCaseStudioController({
@@ -342,6 +343,13 @@ const App: React.FC = () => {
   const [isAutoBooting, setIsAutoBooting] = useState(false);
   
   const viewerRef = useRef<ViewerHandle>(null);
+  const tutorContainerRef = useRef<HTMLDivElement>(null);
+  const jumpToLearningPane = (pane: 'image' | 'tutor') => {
+    const target = pane === 'image' ? viewerContainerRef.current : tutorContainerRef.current;
+    if (pane === 'tutor') setActiveRightTab('ai');
+    target?.scrollIntoView({ block: 'start', behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    target?.focus({ preventScroll: true });
+  };
   
   const [sliceIndex, setSliceIndex] = useState(0);
   
@@ -375,7 +383,7 @@ const App: React.FC = () => {
     segmentedSlices: [] // Initialize new list
   });
 
-  const [sidebarWidth, setSidebarWidth] = useState(320);
+  const [sidebarWidth, setSidebarWidth] = useState(420);
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   
   // Tour State
@@ -773,16 +781,6 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Center: Educational Banner */}
-          <div
-            data-tour-id="safety-banner"
-            className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center text-[10px] font-medium text-blue-200/80 gap-2 bg-blue-950/40 px-3 py-1.5 rounded-full border border-blue-500/20 shadow-sm"
-          >
-            <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
-            <span>Educational Demo Only</span>
-            <span className="text-blue-700/50">•</span>
-            <span>Not for Clinical Use</span>
-          </div>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
@@ -839,6 +837,18 @@ const App: React.FC = () => {
             </button>
           </div>
         </div>
+        <div className="max-h-[35dvh] overflow-y-auto border-t border-white/[0.06] px-5 py-3 bg-[#101722]">
+          <h1 className="text-base sm:text-lg font-semibold leading-snug text-slate-100">{selectedStudy.title}</h1>
+          <details className="mt-1 text-sm text-slate-300">
+            <summary className="min-h-9 w-fit cursor-pointer py-1 text-blue-300 focus-visible:outline-2 focus-visible:outline-blue-300">Case details</summary>
+            <p className="max-w-4xl py-2 leading-relaxed">{selectedStudy.vignette}</p>
+          </details>
+          <p data-tour-id="safety-banner" className="text-xs text-slate-400">For education. Not for clinical use.</p>
+        </div>
+        <nav aria-label="Learning workspace" className="ca-pane-nav md:hidden flex border-t border-white/[0.08] bg-[#101722]">
+          <button type="button" onClick={() => jumpToLearningPane('image')} className="min-h-11 flex-1 flex items-center justify-center gap-2 text-sm text-slate-200 hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-300"><ImageIcon size={16} aria-hidden="true" />View image</button>
+          <button type="button" onClick={() => jumpToLearningPane('tutor')} className="min-h-11 flex-1 flex items-center justify-center gap-2 border-l border-white/[0.08] text-sm text-blue-200 hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-300"><Sparkles size={16} aria-hidden="true" />Open tutor</button>
+        </nav>
       </header>}
 
       {showSafetyModal && <SafetyModal onClose={() => setShowSafetyModal(false)} />}
@@ -1125,6 +1135,7 @@ const App: React.FC = () => {
       ) : !selectedStudy ? (
         <div className="h-full w-full bg-[#0f1011] overflow-hidden">
            <StudyList 
+            stateRef={libraryStateRef}
             onSelectStudy={(casePackage) => { setHomeView('cases'); setSelectedStudy(casePackage); }}
             connectionType={connectionType}
             setConnectionType={setConnectionType}
@@ -1141,13 +1152,17 @@ const App: React.FC = () => {
         </div>
       ) : (
         <>
-          <div data-testid="case-workspace" className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+          <div data-testid="case-workspace" className="ca-learner-workspace min-h-0 flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
               <div 
                 ref={viewerContainerRef}
                 data-testid="case-viewer-pane"
-                className="h-[50dvh] min-h-[20rem] flex-none md:h-auto md:min-h-0 md:flex-1 flex flex-col relative min-w-0"
+                role="region"
+                aria-label="Teaching image"
+                tabIndex={-1}
+                className="ca-image-pane h-[50dvh] min-h-[20rem] flex-none md:h-auto md:min-h-0 md:flex-1 flex flex-col relative min-w-0"
               >
                   <FloatingToolbar
+                    docked
                     activeTool={activeTool}
                     onSelectTool={setActiveTool}
                     position={toolbarPos}
@@ -1195,7 +1210,7 @@ const App: React.FC = () => {
 
               <div
                 data-testid="case-resize-divider"
-                className={`hidden md:flex w-1 bg-white/[0.06] hover:bg-blue-500 cursor-col-resize z-30 transition-colors flex-col items-center justify-center opacity-0 hover:opacity-100 ${isResizingSidebar ? 'opacity-100 bg-blue-500' : ''}`}
+                className={`ca-pane-resizer hidden md:flex w-1 bg-white/[0.06] hover:bg-blue-500 cursor-col-resize z-30 transition-colors flex-col items-center justify-center opacity-0 hover:opacity-100 ${isResizingSidebar ? 'opacity-100 bg-blue-500' : ''}`}
                 onMouseDown={() => setIsResizingSidebar(true)}
               >
                  <GripVertical className="w-3 h-3 text-white" />
@@ -1203,7 +1218,11 @@ const App: React.FC = () => {
 
               <div
                  data-testid="case-tutor-pane"
-                 className="flex flex-col h-[75dvh] min-h-[36rem] md:h-full md:min-h-0 w-full md:w-[var(--caseattend-sidebar-width)] bg-[#0f1011] border-t md:border-t-0 md:border-l border-white/[0.06] flex-none md:flex-shrink-0 relative"
+                 ref={tutorContainerRef}
+                 role="region"
+                 aria-label="Tutor workspace"
+                 tabIndex={-1}
+                 className="ca-tutor-pane flex flex-col h-[75dvh] min-h-[36rem] md:h-full md:min-h-0 w-full md:w-[var(--caseattend-sidebar-width)] bg-[#0f1011] border-t md:border-t-0 md:border-l border-white/[0.06] flex-none md:flex-shrink-0 relative"
                  style={{ '--caseattend-sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
               >
                   <div className="flex border-b border-white/[0.06]">
