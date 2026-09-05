@@ -6,3 +6,22 @@
 :root {
   --ca-build: "0.5.0+cachebust-20260809";
 }
+
+/* A wide but short viewport still needs the scrollable learning layout. */
+@media (min-width: 48rem) and (max-height: 40rem) {
+  .ca-pane-nav { display: flex; }
+  .ca-learner-workspace { flex-direction: column; overflow-y: auto; }
+  .ca-learner-workspace > .ca-image-pane {
+    height: 50dvh;
+    min-height: 20rem;
+    flex: none;
+  }
+  .ca-learner-workspace > .ca-tutor-pane {
+    width: 100%;
+    height: 75dvh;
+    min-height: 36rem;
+    border-top-width: 1px;
+    border-left-width: 0;
+  }
+  .ca-pane-resizer { display: none; }
+}

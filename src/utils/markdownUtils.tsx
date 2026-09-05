@@ -17,7 +17,7 @@ const parseInline = (text: string): React.ReactNode[] => {
     });
 };
 
-export const MarkdownText: React.FC<{ content: string }> = ({ content }) => {
+export const MarkdownText: React.FC<{ content: string; readable?: boolean }> = ({ content, readable = false }) => {
   if (!content) return null;
 
   const lines = content.split('\n');
@@ -120,7 +120,7 @@ export const MarkdownText: React.FC<{ content: string }> = ({ content }) => {
   });
 
   flushList('ul-end');
-  return <div className="text-[13px]">{elements}</div>;
+  return <div className={readable ? 'text-base leading-relaxed' : 'text-[13px]'}>{elements}</div>;
 };
 
 export const renderMarkdown = (text: string) => <MarkdownText content={text} />;

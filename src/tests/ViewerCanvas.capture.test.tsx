@@ -242,6 +242,47 @@ describe('ViewerCanvas captureCurrentView', () => {
     vi.unstubAllGlobals();
   });
 
+  it('measures a canvas that appears after the series loads and refits on resize', async () => {
+    let observerCallback: ResizeObserverCallback | undefined;
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    vi.stubGlobal('ResizeObserver', class {
+      constructor(callback: ResizeObserverCallback) { observerCallback = callback; }
+      observe = observe;
+      disconnect = disconnect;
+    });
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => { frames.push(callback); return frames.length; });
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      width: 390, height: 300, x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 300, toJSON() {},
+    });
+    const { rerender, getByRole } = render(<ViewerCanvas {...viewerProps({ series: null })} />);
+    expect(observe).not.toHaveBeenCalled();
+    rerender(<ViewerCanvas {...viewerProps()} />);
+    const canvas = getByRole('img') as HTMLCanvasElement;
+    expect(observe).toHaveBeenCalledWith(canvas.parentElement);
+    expect(canvas.width).toBe(390);
+    expect(canvas.height).toBe(300);
+    await waitForImage(0);
+    await resolveImage(0);
+    const initialScale = stateFor(canvas).operations.filter(operation => operation.name === 'scale').at(-1)?.args[0] as number;
+
+    act(() => {
+      observerCallback?.([{ contentRect: { width: 780, height: 600 } }] as ResizeObserverEntry[], {} as ResizeObserver);
+      frames.splice(0).forEach(callback => callback(0));
+    });
+    expect(canvas.width).toBe(780);
+    expect(canvas.height).toBe(600);
+    const resizedScale = stateFor(canvas).operations.filter(operation => operation.name === 'scale').at(-1)?.args[0] as number;
+    expect(resizedScale).toBeCloseTo(initialScale * 2);
+    fireEvent.keyDown(canvas, { key: '+' });
+    fireEvent.click(getByRole('button', { name: 'Fit image' }));
+    expect(canvas.width).toBe(390);
+    expect(canvas.height).toBe(300);
+    const fittedScale = stateFor(canvas).operations.filter(operation => operation.name === 'scale').at(-1)?.args[0] as number;
+    expect(fittedScale).toBeCloseTo(initialScale);
+  });
+
   it('fails closed while a requested frame is loading and ignores a stale frame completion', async () => {
     const ref = createRef<ViewerHandle>();
     const { rerender } = render(<ViewerCanvas ref={ref} {...viewerProps()} />);
@@ -292,14 +333,14 @@ describe('ViewerCanvas captureCurrentView', () => {
       <ViewerCanvas {...viewerProps({ series: singleFrameSeries })} />,
     );
 
-    expect(getByRole('button', { name: 'Center view' })).toBeTruthy();
+    expect(getByRole('button', { name: 'Fit image' })).toBeTruthy();
     expect(queryByTestId('slice-scrollbar')).toBeNull();
     expect(queryByTestId('frame-counter')).toBeNull();
 
     rerender(<ViewerCanvas {...viewerProps({ series })} />);
     expect(queryByTestId('slice-scrollbar')).toBeTruthy();
     expect(queryByTestId('frame-counter')?.textContent).toContain('Image: 1 / 2');
-    expect(getByRole('button', { name: 'Center view' })).toBeTruthy();
+    expect(getByRole('button', { name: 'Fit image' })).toBeTruthy();
   });
 
   it('bakes the visible window and level filter into the exported pixels', async () => {

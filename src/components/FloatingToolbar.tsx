@@ -16,6 +16,7 @@ interface FloatingToolbarProps {
   instanceCount?: number;
   artifactHints?: ArtifactHints;
   interactionPolicy?: ResearchViewerPolicyV1;
+  docked?: boolean;
 }
 
 const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
@@ -28,6 +29,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   instanceCount = 1,
   artifactHints,
   interactionPolicy,
+  docked = false,
 }) => {
   const visibleTools = TOOLS.filter(t => {
     if (
@@ -58,20 +60,22 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   return (
     <div
       data-tour-id="viewer-toolbar"
-      className={`absolute z-40 flex items-center bg-[#161718]/95 border border-white/[0.08] rounded-2xl shadow-2xl backdrop-blur-md select-none ${
+      role="toolbar"
+      aria-label="Image tools"
+      className={docked ? 'flex min-h-14 shrink-0 items-center overflow-x-auto border-b border-white/[0.08] bg-[#101722] px-3 py-1.5' : `absolute z-40 flex items-center bg-[#161718]/95 border border-white/[0.08] rounded-2xl shadow-2xl backdrop-blur-md select-none ${
         // Only apply transition when NOT dragging to avoid lag/rubber-banding
         !isDragging ? 'transition-all duration-200' : ''
       } ${
         isVertical ? 'flex-col w-16 py-1' : 'flex-row h-16 px-1'
       }`}
-      style={{
+      style={docked ? undefined : {
         left: position.x,
         top: position.y,
         touchAction: 'none'
       }}
     >
       {/* Drag Handle */}
-      <button
+      {!docked && <button
         type="button"
         className={`flex items-center justify-center cursor-grab active:cursor-grabbing text-[#8a8f98] hover:text-[#d0d6e0] transition-colors hover:bg-white/[0.04] ${
           isVertical
@@ -83,26 +87,29 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         aria-label="Drag viewer toolbar"
       >
         {isVertical ? <GripHorizontal className="w-4 h-4" /> : <GripVertical className="w-4 h-4" />}
-      </button>
+      </button>}
 
       {/* Tools Container */}
-      <div className={`flex items-center gap-1.5 p-1 ${isVertical ? 'flex-col' : 'flex-row'}`}>
+      <div className={`flex items-center gap-1.5 ${!docked && isVertical ? 'flex-col p-1' : 'flex-row'}`}>
         {visibleTools.map((tool) => {
           const Icon = tool.icon;
           const isActive = activeTool === tool.id;
           return (
             <button
+              type="button"
               key={tool.id}
               onClick={() => onSelectTool(tool.id)}
-              className={`min-h-11 min-w-11 rounded-xl transition-all active:scale-95 border flex items-center justify-center ${
+              className={docked ? `min-h-11 shrink-0 rounded-lg px-3 flex items-center justify-center gap-2 text-sm font-medium transition-colors ${isActive ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}` : `min-h-11 min-w-11 rounded-xl transition-all active:scale-95 border flex items-center justify-center ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 border-blue-500'
                   : 'bg-[#1e1f21] text-[#d0d6e0] hover:bg-[#28282c] hover:text-white border-transparent hover:border-white/[0.08]'
               } ${isVertical ? 'w-10 h-10' : 'p-2.5'}`}
               title={tool.label}
               aria-label={tool.label}
+              aria-pressed={isActive}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-5 h-5" aria-hidden="true" />
+              {docked && <span>{tool.label}</span>}
             </button>
           );
         })}

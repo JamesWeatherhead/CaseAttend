@@ -176,6 +176,8 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
   // Responsive Canvas State - Init to non-zero to ensure visibility
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 800, height: 600 });
   const lastSizeRef = useRef<{ width: number; height: number } | null>(null);
+  const imageSizeRef = useRef<{ width: number; height: number } | null>(null);
+  imageSizeRef.current = currentImageBitmap;
 
   // Interaction State (Refs for synchronous updates during high-frequency events)
   const interactionRef = useRef({
@@ -631,54 +633,45 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
   // 0. Resize Observer
   useLayoutEffect(() => {
-    if (!containerRef.current) return;
-    
-    let animationFrameId: number;
-    const resizeObserver = new ResizeObserver((entries) => {
-      animationFrameId = requestAnimationFrame(() => {
-        if (!entries.length) return;
-        const entry = entries[0];
-        const { width, height } = entry.contentRect;
-
+    const container = containerRef.current;
+    if (!container) return;
+    let animationFrameId = 0;
+    const updateSize = (width: number, height: number) => {
         if (width <= 0 || height <= 0) return;
-
         const newW = Math.round(width);
         const newH = Math.round(height);
-
-        setCanvasSize((prev) => {
-            if (!lastSizeRef.current) {
-                lastSizeRef.current = { width: newW, height: newH };
-                return { width: newW, height: newH };
-            }
-
-            const prevW = lastSizeRef.current.width;
-            const prevH = lastSizeRef.current.height;
-
-            if (prevW === newW && prevH === newH) return prev;
-
-            const deltaX = (newW - prevW) / 2;
-            const deltaY = (newH - prevH) / 2;
-
+        const previous = lastSizeRef.current;
+        if (previous?.width === newW && previous.height === newH) return;
+        const image = imageSizeRef.current;
+        if (previous && image && hasFittedRef.current) {
+            // Preserve the learner's zoom relative to a fitted image, and
+            // keep the same image point at the viewport center on rotation.
+            const ratio = Math.min(newW / image.width, newH / image.height)
+              / Math.min(previous.width / image.width, previous.height / image.height);
             setViewport((vp) => ({
                 ...vp,
-                pan: {
-                    x: vp.pan.x + deltaX,
-                    y: vp.pan.y + deltaY,
-                },
+                scale: Math.max(0.05, vp.scale * ratio),
+                pan: { x: vp.pan.x * ratio, y: vp.pan.y * ratio },
             }));
-
-            lastSizeRef.current = { width: newW, height: newH };
-            return { width: newW, height: newH };
-        });
-      });
+        }
+        lastSizeRef.current = { width: newW, height: newH };
+        setCanvasSize({ width: newW, height: newH });
+    };
+    const bounds = container.getBoundingClientRect();
+    updateSize(bounds.width, bounds.height);
+    const resizeObserver = new ResizeObserver((entries) => {
+      cancelAnimationFrame(animationFrameId);
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      animationFrameId = requestAnimationFrame(() => updateSize(width, height));
     });
-
-    resizeObserver.observe(containerRef.current);
+    resizeObserver.observe(container);
     return () => {
         resizeObserver.disconnect();
         cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [series?.id]);
 
   // Update current series ID ref
   useEffect(() => {
@@ -1151,13 +1144,17 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         const newW = Math.round(rect.width);
         const newH = Math.round(rect.height);
         if (newW <= 0 || newH <= 0) return;
+        lastSizeRef.current = { width: newW, height: newH };
         setCanvasSize(prev => {
             if (prev.width === newW && prev.height === newH) return prev;
-            lastSizeRef.current = { width: newW, height: newH };
             return { width: newW, height: newH };
         });
     }
-    setViewport((vp) => ({ ...vp, pan: { x: 0, y: 0 } }));
+    const size = lastSizeRef.current ?? canvasSize;
+    const scale = currentImageBitmap
+      ? Math.max(0.05, Math.min(size.width / currentImageBitmap.width, size.height / currentImageBitmap.height) * 0.95)
+      : viewport.scale;
+    setViewport((vp) => ({ ...vp, scale: interactionPolicy?.allowPanZoom === false ? vp.scale : scale, pan: { x: 0, y: 0 } }));
   };
 
   const getFilterStyle = () => {
@@ -1238,7 +1235,7 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
 
   return (
     <div 
-        className="flex-1 bg-black relative overflow-hidden select-none flex items-center justify-center" 
+        className="flex-1 min-h-0 min-w-0 bg-black relative overflow-hidden select-none flex items-center justify-center"
         ref={containerRef} 
         onWheel={handleWheel}
         onContextMenu={(e) => e.preventDefault()} 
@@ -1303,22 +1300,22 @@ const ViewerCanvas = forwardRef<ViewerHandle, ViewerCanvasProps>(({
         </div>
       )}
 
-      <div className="absolute top-4 left-4 text-xs font-mono text-lime-400 pointer-events-none drop-shadow-md">
-        <div className="text-sm font-bold text-white mb-1">
+      <div className="absolute top-3 left-3 rounded-lg bg-black/65 px-2.5 py-1.5 text-xs text-slate-300 pointer-events-none">
+        <div className="text-sm font-medium text-white">
           {series.description && series.description !== 'No Description' ? series.description : series.modality}
         </div>
-        <div>Modality: {series.modality}</div>
-        <div>Scale: {viewport.scale.toFixed(2)}x</div>
-        {segmentationLayer.isVisible && <div className="text-emerald-400 mt-1">Annotations: On</div>}
+        <div className="sr-only">Modality: {series.modality}. Scale: {viewport.scale.toFixed(2)}x. {segmentationLayer.isVisible ? 'Annotations: On' : 'Annotations: Off'}</div>
       </div>
       <div className="absolute bottom-4 right-8 flex items-center gap-3 text-xs font-mono pointer-events-auto">
         <button
             type="button"
             onClick={centerView}
+            aria-label="Fit image"
+            title="Fit the whole image in view"
             className="min-h-11 px-3 py-1 rounded-md bg-slate-800/80 text-slate-100 border border-slate-600 hover:bg-slate-700/90 flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
         >
             <Move className="w-3 h-3" />
-            Center view
+            Fit image
         </button>
 
         {hasMultipleFrames && (

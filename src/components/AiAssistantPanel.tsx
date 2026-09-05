@@ -1458,6 +1458,15 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </button>}
       </div>
       
+      {!lockedTutor ? (
+        <div className="border-b border-white/[0.08] bg-[#111923] px-4 py-2.5 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p data-tour-id="ai-provider" className="text-sm font-medium text-blue-200">{byokConnected ? byokModelLabel : introCache ? 'Free starter answers' : 'Explore this case'}</p>
+            <p className="mt-1 text-xs text-slate-400">{byokConnected ? 'Ready for your questions' : 'Connect only for a live conversation'}</p>
+          </div>
+          <button type="button" onClick={() => setShowConnectModal(true)} className="min-h-11 shrink-0 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 focus-visible:ring-2 focus-visible:ring-blue-300">{byokConnected ? 'Change' : 'Connect'}</button>
+        </div>
+      ) : <>
       {/* Status Bar */}
       <div className="bg-[#161718]/50 border-b border-white/[0.06] p-2 flex flex-col items-start gap-2 text-[10px] flex-shrink-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -1499,6 +1508,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                </span>
           </div>
       </div>
+
+      </>}
 
       {lessonLoadError && (
         <div role="alert" className="border-b border-red-500/20 bg-red-950/30 px-3 py-2 text-[11px] text-red-200">
@@ -1628,7 +1639,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                 </div>
                             )}
                             
-                            <MarkdownText content={m.text} />
+                            <MarkdownText content={m.text} readable={!lockedTutor} />
                             {m.sources && m.sources.length > 0 && (
                                 <div className="mt-3 pt-2 border-t border-white/10">
                                     <div className="text-[10px] font-bold text-slate-500 mb-1 flex items-center gap-1"><Globe className="w-3 h-3"/> Sources</div>
@@ -1657,7 +1668,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                 <button
                                     key={sugg.key}
                                     onClick={() => sendSuggestion(sugg)}
-                                    className="min-h-11 text-left text-xs bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                                    className="min-h-11 text-left text-sm bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                                     aria-label={
                                         sugg.cachedAnswer !== undefined
                                             ? `Show pre-cached answer for: ${sugg.label}`
@@ -1684,7 +1695,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             )}
         </div>
 
-        <div className="p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0">
+        <div className={`p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0 ${!lockedTutor ? 'max-h-[50%] overflow-y-auto' : ''}`}>
             {!lockedTutor && <div data-tour-id="teaching-levels" className="flex items-center justify-between mb-3 gap-3">
                 <label htmlFor="tutor-learner-level" className="text-sm text-[#aab2bf]">Your level</label>
                 <select id="tutor-learner-level" value={learnerLevel} onChange={event => setLearnerLevel(event.target.value as LearnerLevel)} className="min-h-11 max-w-[70%] rounded-lg border border-white/[0.12] bg-[#0f1011] px-3 text-sm text-[#d0d6e0] focus-visible:ring-2 focus-visible:ring-blue-300">
@@ -1760,9 +1771,19 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                             <X className="w-3 h-3" />
                         </button>
                     </div>
-                ) : (
+                ) : lockedTutor ? (
                     <div className="w-full">
                         <span>Submitting a question includes the current view. The image and chat go directly to OpenRouter and the selected model provider. Your key is stored in this browser and sent only to OpenRouter. CaseAttend servers never receive it. Do not use identifiable patient data.</span>
+                    </div>
+                ) : (
+                    <div className="w-full text-xs leading-relaxed text-slate-400">
+                        <p>Sending shares your current image and question with OpenRouter and the model provider. Do not use identifiable patient data.</p>
+                        <details className="mt-1">
+                          <summary className="min-h-8 cursor-pointer py-1 text-blue-300 focus-visible:ring-2 focus-visible:ring-blue-300">Privacy &amp; lesson details</summary>
+                          <p className="pt-1">Nothing is sent to a model until you submit a question</p>
+                          <p className="mt-1">Your key is stored in this browser and sent only to OpenRouter. CaseAttend servers never receive it.</p>
+                          {lessonPlan && <p className="mt-2 break-all">Lesson v{lessonPlan.version} · {lessonPlan.id}. SHA-256: {lessonPlan.manifest.sha256}</p>}
+                        </details>
                     </div>
                 )}
             </div>
