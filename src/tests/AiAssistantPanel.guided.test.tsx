@@ -14,13 +14,25 @@ import { makeEditableLessonCase } from './lessonBuilderTestFixture';
 import * as caseRegistry from '../data/caseRegistry';
 import * as lessonRegistry from '../data/lessonRegistry';
 
-const mocks = vi.hoisted(() => ({ requireCase: vi.fn(), requireLesson: vi.fn(), runTurn: vi.fn(), loadIntroCache: vi.fn() }));
+const mocks = vi.hoisted(() => ({ requireCase: vi.fn(), requireLesson: vi.fn(), runTurn: vi.fn(), loadIntroCache: vi.fn(), clickEvidenceOnMount: false }));
 vi.mock('../services/introCacheStore', () => ({ loadIntroCache: mocks.loadIntroCache }));
 vi.mock('../services/byokStore', () => ({
   BYOK_CHANGED_EVENT: 'caseattend:byok-changed', hasKey: () => true,
   getModel: () => 'test/tutor', modelLabel: () => 'Test tutor',
 }));
 vi.mock('../components/ConnectKeyModal', () => ({ default: () => null }));
+vi.mock('../components/ObjectiveEvidencePanel', async importOriginal => {
+  const actual = await importOriginal<typeof import('../components/ObjectiveEvidencePanel')>();
+  return { default: function EvidencePanel(props: React.ComponentProps<typeof actual.default>) {
+    React.useLayoutEffect(() => {
+      if (!mocks.clickEvidenceOnMount) return;
+      // Exercise a real click as soon as these controls mount, before the
+      // parent's passive effects run. Keep the production panel and handler.
+      document.querySelector<HTMLInputElement>('aside[aria-label="Objective evidence"] input[type="checkbox"]')?.click();
+    }, []);
+    return <actual.default {...props} />;
+  } };
+});
 
 beforeEach(() => {
   vi.stubGlobal('crypto', webcrypto);
@@ -28,6 +40,7 @@ beforeEach(() => {
   localStorage.clear();
   localStorage.setItem(PREFERENCE_KEYS.learnerLevel, 'undergrad');
   mocks.requireCase.mockReset(); mocks.requireLesson.mockReset();
+  mocks.clickEvidenceOnMount = false;
   mocks.loadIntroCache.mockReset().mockResolvedValue({ levels: { undergrad: {
     introPrompt: 'PRIVATE CACHED INTRO', introQuestions: [{ id: 'secret', label: 'PRIVATE CACHED QUESTION', prompt: 'Cached prompt', cachedAnswer: 'PRIVATE CACHED ANSWER' }],
   } } });
@@ -126,6 +139,31 @@ it('opens with a neutral question and no hidden answers or automatic model calls
   expect(mocks.runTurn).not.toHaveBeenCalled();
   expect(props.captureCurrentView).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();
+});
+
+it('preserves explicit opt-in on newly mounted guided controls before passive effects flush', async () => {
+  const material = await makeCase(); bind(material);
+  const { props } = propsFor(material);
+  mocks.clickEvidenceOnMount = true;
+  render(<AiAssistantPanel {...props} />); await ready();
+  expect((screen.getByRole('checkbox', { name: 'Check objective evidence' }) as HTMLInputElement).checked).toBe(true);
+  expect(props.objectiveEvidenceEvaluator).not.toHaveBeenCalled();
+  expect(mocks.runTurn).not.toHaveBeenCalled();
+  send();
+  await waitFor(() => expect(props.objectiveEvidenceEvaluator).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(evidence().getByText('Evidence observed')).toBeTruthy());
+});
+
+it('requires fresh paid-check consent after changing levels and returning to a previously enabled level', async () => {
+  const material = await makeCase(); bind(material);
+  const { props } = propsFor(material);
+  render(<AiAssistantPanel {...props} />); await optIntoEvidence();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Your level' }), { target: { value: 'ms_step2' } });
+  expect((screen.getByRole('checkbox', { name: 'Check objective evidence' }) as HTMLInputElement).checked).toBe(false);
+  fireEvent.change(screen.getByRole('combobox', { name: 'Your level' }), { target: { value: 'undergrad' } });
+  expect((screen.getByRole('checkbox', { name: 'Check objective evidence' }) as HTMLInputElement).checked).toBe(false);
+  expect(props.objectiveEvidenceEvaluator).not.toHaveBeenCalled();
+  expect(mocks.runTurn).not.toHaveBeenCalled();
 });
 
 it('keeps an early Send capture and learner message while requiring opt-in after the guided lesson resolves', async () => {
