@@ -65,7 +65,7 @@ The learner can continue inspecting the artifact between turns. The tutor is des
 | Import a PDF or PowerPoint into Lesson Builder | CaseAttend extracts selectable PDF text or text from non-hidden PowerPoint slides in the browser and creates an editable draft. It does not store or export the raw source document, filename, speaker notes, or embedded media. Applied text becomes Lesson Plan content and may enter later provider prompts. Scanned-image PDFs may have no selectable text. |
 | Click a reviewed intro-cache question | The stored answer appears without a new model request and without an API key. |
 | Press **Send** for a live turn | The current-view capture, learner message, relevant conversation, case context, and active Lesson Plan prompt—including educator teaching notes—go to OpenRouter and the selected model provider. |
-| Select **Generate intro cache** as an educator | Case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The returned draft—and any later browser approval—remains browser-local. |
+| Select **Generate draft answers** as an educator | Case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The returned draft—and any later browser approval—remains browser-local. |
 | Store or export ordinary learning events | The metadata-only event records remain in the browser; the schema excludes raw chat, prompts, images, screenshots, names, emails, and credentials. |
 | Export a portable case | The package contains the validated case, linked lesson, and prepared image copies—not the OpenRouter key, original filenames, chat, or unrelated browser data. |
 

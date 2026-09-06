@@ -110,12 +110,14 @@ REVIEWER_NAME="Full Name" REVIEWER_CREDS="MD; institution" \
 After saving a case and its starter lesson in Case Studio:
 
 1. Connect an OpenRouter account and select a curated vision-capable model.
-2. Choose **Generate intro cache**. The browser sends up to four representative case images plus the versioned teaching context directly to OpenRouter; no CaseAttend server receives the request or key.
+2. Choose **Generate draft answers**. The browser sends up to four representative case images plus the versioned teaching context directly to OpenRouter; no CaseAttend server receives the request or key.
 3. Review all five learner levels and every proposed question and answer. Edit the draft where needed.
-4. Enter the actual reviewer name and credentials, then choose **Approve intro cache**.
+4. Enter the actual reviewer name and credentials, then choose **Approve starter answers**.
 5. Reopen the saved case without a key to test the instant opening. Only an approved cache can appear to a learner.
 
 The approved artifact remains in a separate browser-local IndexedDB store. It is bound to the exact lesson SHA and a digest of the current media and neutral description. Editing those inputs makes the cache visibly stale; the educator must regenerate and approve a replacement. Deleting the local case also deletes its authored intro cache.
+
+Generation starts only from the explicit generate or regenerate action. Saving, importing, reconnecting, and status refreshes do not start a model request. The panel discloses the transmitted content and potential model charges beside that action.
 
 Generation is optional. Skipping it never blocks case save, export, or the ordinary lesson opening. The author-generated cache is not added to a portable `.caseattend` file in the current format, so a recipient must generate and approve a cache in their own browser if they need a no-key first round.
 

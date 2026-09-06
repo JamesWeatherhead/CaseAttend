@@ -94,7 +94,7 @@ The three paths do not share an identical privacy model.
 - The raw PDF or PowerPoint source file is not uploaded for extraction or included in an export. Text applied to Lesson Builder becomes Lesson Plan content and may later enter a model request.
 - Opening the web application creates ordinary requests to its static host, including a same-origin check for a published intro cache. Opening or inspecting a case does not by itself send its images, lesson content, or chat to a model.
 - When a learner presses **Send**, the current view, learner message, relevant conversation, case context, and active Lesson Plan prompt—including educator teaching notes—go to OpenRouter and the selected model provider.
-- When an educator selects **Generate intro cache**, case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The draft and any later approval remain browser-local and are not included in a `.caseattend` export.
+- When an educator selects **Generate draft answers**, case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The draft and any later approval remain browser-local and are not included in a `.caseattend` export.
 
 ### In a standard self-hosted copy
 

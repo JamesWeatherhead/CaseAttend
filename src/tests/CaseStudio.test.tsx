@@ -12,6 +12,8 @@ import CaseStudio, {
 } from '../components/CaseStudio/CaseStudio';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { DomainKey } from '../lib/domains/types';
+import { authoredIntroDraft } from './fixtures/authoredIntroCache';
+import type { IntroCacheV1 } from '../core/introCache';
 
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
@@ -183,11 +185,11 @@ describe('CaseStudio', () => {
     vi.unstubAllGlobals();
   });
 
-  it('explains VLM in plain language and focuses actionable validation errors', () => {
+  it('leads with image selection and focuses actionable validation errors', () => {
     render(<CaseStudio {...props()} />);
 
-    expect(screen.getByText(/A vision-language model, or VLM/)).toBeTruthy();
-    expect(screen.getByText(/the terms are not synonyms/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Create a teaching case' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Select images' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /Next: describe/i }));
 
     const alert = screen.getByRole('alert');
@@ -453,7 +455,7 @@ describe('CaseStudio', () => {
     await screen.findByText(/Automated screening finished/);
 
     fireEvent.click(screen.getByRole('button', { name: /^Back$/i }));
-    fireEvent.change(screen.getByLabelText('Domain *'), { target: { value: 'dermatology' } });
+    fireEvent.change(screen.getByLabelText('Specialty *'), { target: { value: 'dermatology' } });
     fireEvent.click(screen.getByRole('button', { name: /Next: rights and privacy/i }));
     expect(screen.getByText(/Domain changed. Run browser-local privacy screening again/)).toBeTruthy();
     fireEvent.click(screen.getByLabelText(/I reviewed every image and all authored text/));
@@ -494,7 +496,7 @@ describe('CaseStudio', () => {
     expect((describeStep as HTMLButtonElement).disabled).toBe(false);
 
     fireEvent.click(describeStep);
-    fireEvent.change(screen.getByLabelText('Domain *'), { target: { value: 'dermatology' } });
+    fireEvent.change(screen.getByLabelText('Specialty *'), { target: { value: 'dermatology' } });
     fireEvent.click(screen.getByRole('button', { name: /Next: rights and privacy/i }));
     expect(screen.getByText(/Domain changed. Run browser-local privacy screening again/)).toBeTruthy();
     expect(screen.queryByText(/Text screening:/)).toBeNull();
@@ -525,7 +527,7 @@ describe('CaseStudio', () => {
       }),
     })} />);
 
-    await screen.findByText('Cases and drafts are stored only in this browser.');
+    await screen.findByText(/Export a copy to keep or share your case/);
     act(() => {
       onStorageStatus?.({
         persistent: false,
@@ -566,7 +568,7 @@ describe('CaseStudio', () => {
         message: 'Cases and drafts are stored only in this browser.',
       })),
     })} />);
-    await screen.findByText('Cases and drafts are stored only in this browser.');
+    await screen.findByText(/Export a copy to keep or share your case/);
     await fillRightsAndAdvance();
     fireEvent.click(screen.getByRole('button', { name: 'Save case' }));
     await screen.findByText('Saved case ready to use');
@@ -603,13 +605,148 @@ describe('CaseStudio', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save case' }));
     await screen.findByText('Saved case ready to use');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open in viewer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open case' }));
     fireEvent.click(screen.getByRole('button', { name: 'Build the lesson' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Export portable case' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Export a copy' }));
 
     await waitFor(() => expect(configured.exportCase).toHaveBeenCalledTimes(1));
     expect(configured.onPreview).toHaveBeenCalledWith(expect.objectContaining({ id: 'local-teaching-case' }));
     expect(configured.onOpenLessonBuilder).toHaveBeenCalledWith('local-teaching-case');
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('creates the case identifier from a new title and preserves a custom identifier', async () => {
+    render(<CaseStudio {...props()} />);
+    await advanceToDescription();
+    const title = screen.getByLabelText('Case title *');
+    const identifier = screen.getByLabelText('Case ID *') as HTMLInputElement;
+    expect(identifier.closest('details')?.open).toBe(false);
+    fireEvent.change(title, { target: { value: 'Comparing Two Patterns' } });
+    expect(identifier.value).toBe('comparing-two-patterns');
+    fireEvent.change(title, { target: { value: 'Comparing Three Patterns' } });
+    expect(identifier.value).toBe('comparing-three-patterns');
+    fireEvent.click(screen.getByText('Case identifier and image settings'));
+    fireEvent.change(identifier, { target: { value: 'my-stable-case' } });
+    fireEvent.change(title, { target: { value: 'A revised title' } });
+    expect(identifier.value).toBe('my-stable-case');
+    fireEvent.change(identifier, { target: { value: 'Invalid Identifier' } });
+    (identifier.closest('details') as HTMLDetailsElement).open = false;
+    fireEvent.click(screen.getByRole('button', { name: /Next: rights and privacy/i }));
+    expect(identifier.closest('details')?.open).toBe(true);
+    expect(screen.getByRole('alert').textContent).toContain('Case ID must use lowercase');
+  });
+
+  it('saves locally with a connected account and generates only after the explicit action', async () => {
+    const generate = vi.fn(async () => authoredIntroDraft());
+    const getStatus = vi.fn(async () => ({ kind: 'idle' as const }));
+    const configured = props({ getIntroCacheStatus: getStatus, generateIntroCache: generate,
+      approveIntroCache: vi.fn(), saveIntroCacheDraft: vi.fn(), hasApiKey: () => true });
+    render(<CaseStudio {...configured} />);
+    await fillRightsAndAdvance();
+    fireEvent.click(screen.getByRole('button', { name: 'Save case' }));
+    await screen.findByText('Saved case ready to use');
+    await waitFor(() => expect(getStatus).toHaveBeenCalled());
+    expect(generate).not.toHaveBeenCalled();
+    expect(screen.getByText(/Generating sends this case’s text and selected images/).textContent).toContain('Model charges may apply');
+    fireEvent.click(screen.getByRole('button', { name: 'Generate draft answers' }));
+    await screen.findByRole('button', { name: 'Approve starter answers' });
+    expect(generate).toHaveBeenCalledTimes(1);
+    expect(generate).toHaveBeenCalledWith('local-teaching-case', { signal: expect.any(AbortSignal) });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not generate on import, a stale status notification, or connecting an account', async () => {
+    let refresh = () => {};
+    let connected = false;
+    const generate = vi.fn(async () => authoredIntroDraft());
+    const configured = props({ getIntroCacheStatus: vi.fn(async () => ({ kind: 'stale' as const, cache: authoredIntroDraft() })),
+      subscribeIntroCacheChanges: listener => { refresh = listener; return () => {}; },
+      generateIntroCache: generate, approveIntroCache: vi.fn(), saveIntroCacheDraft: vi.fn(), hasApiKey: () => connected });
+    const view = render(<CaseStudio {...configured} />);
+    fireEvent.change(screen.getByLabelText('Import case'), { target: { files: [new File(['archive'], 'example.caseattend')] } });
+    await screen.findByText(/The case or lesson has changed/);
+    await act(async () => refresh());
+    connected = true;
+    view.rerender(<CaseStudio {...configured} />);
+    expect(generate).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Open case' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Regenerate draft answers' }));
+    await waitFor(() => expect(generate).toHaveBeenCalledTimes(1));
+  });
+
+  it('keeps save and export available when explicitly requested generation fails', async () => {
+    const configured = props({ getIntroCacheStatus: vi.fn(async () => ({ kind: 'idle' as const })),
+      generateIntroCache: vi.fn(async () => { throw new Error('The model is unavailable.'); }),
+      approveIntroCache: vi.fn(), saveIntroCacheDraft: vi.fn(), hasApiKey: () => true });
+    render(<CaseStudio {...configured} />);
+    fireEvent.change(screen.getByLabelText('Import case'), { target: { files: [new File(['archive'], 'example.caseattend')] } });
+    fireEvent.click(await screen.findByRole('button', { name: 'Generate draft answers' }));
+    await screen.findByText('The model is unavailable.');
+    fireEvent.click(screen.getByRole('button', { name: 'Export a copy' }));
+    await waitFor(() => expect(configured.exportCase).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole('button', { name: 'Open case' })).toBeTruthy();
+  });
+
+  it('keeps navigation locked across saving edits and approving the draft', async () => {
+    const save = deferred<void>();
+    const approval = deferred<IntroCacheV1>();
+    const configured = props({ getIntroCacheStatus: vi.fn(async () => ({ kind: 'ready-for-review' as const, draft: authoredIntroDraft() })),
+      generateIntroCache: vi.fn(), approveIntroCache: vi.fn(() => approval.promise), saveIntroCacheDraft: vi.fn(() => save.promise), hasApiKey: () => true });
+    render(<CaseStudio {...configured} />);
+    fireEvent.change(screen.getByLabelText('Import case'), { target: { files: [new File(['archive'], 'example.caseattend')] } });
+    await screen.findByRole('button', { name: 'Approve starter answers' });
+    fireEvent.change(screen.getAllByLabelText('Opening question')[0], { target: { value: 'Reviewed question' } });
+    fireEvent.change(screen.getByLabelText('Reviewer name'), { target: { value: 'Alex Educator' } });
+    fireEvent.change(screen.getByLabelText('Credentials'), { target: { value: 'MD' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Approve starter answers' }));
+    const expectNavigationLocked = () => {
+      for (const name of ['Back', 'Back to cases', 'Open case', 'Build the lesson', 'Done', /^Images/]) {
+        const button = screen.getByRole('button', { name });
+        expect(button.matches(':disabled')).toBe(true);
+        fireEvent.click(button);
+      }
+      expect(screen.getByRole('button', { name: 'Regenerate draft answers' }).matches(':disabled')).toBe(true);
+      expect(configured.onExit).not.toHaveBeenCalled();
+      expect(configured.onPreview).not.toHaveBeenCalled();
+    };
+    expectNavigationLocked();
+    await act(async () => save.resolve());
+    expect(configured.approveIntroCache).toHaveBeenCalledTimes(1);
+    expectNavigationLocked();
+    const approved = authoredIntroDraft();
+    approved.review = { status: 'approved', reviewer: 'Alex Educator', credentials: 'MD', reviewedAt: '2026-09-05T12:00:00.000Z' };
+    await act(async () => approval.resolve(approved));
+    expect(screen.getByRole('button', { name: 'Back' }).matches(':disabled')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByRole('heading', { name: 'Review rights and privacy' })).toBeTruthy();
+  });
+
+  it.each(['success', 'failure'] as const)('ignores an old generation %s after another case is imported and started', async outcome => {
+    const first = deferred<IntroCacheV1>();
+    const second = deferred<IntroCacheV1>();
+    const generate = vi.fn<NonNullable<CaseStudioProps['generateIntroCache']>>()
+      .mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    const configured = props({ getIntroCacheStatus: vi.fn(async () => ({ kind: 'idle' as const })),
+      generateIntroCache: generate, approveIntroCache: vi.fn(), saveIntroCacheDraft: vi.fn(), hasApiKey: () => true,
+      importCase: vi.fn<CaseStudioProps['importCase']>().mockResolvedValueOnce({ casePackage: savedCase(), assets: [asset('first', HASH_A)] })
+        .mockResolvedValueOnce({ casePackage: savedCase({ id: 'second-case', manifest: { algorithm: 'SHA-256', sha256: HASH_B } }), assets: [asset('second', HASH_B)] }),
+    });
+    render(<CaseStudio {...configured} />);
+    const importFile = () => fireEvent.change(screen.getByLabelText('Import case'), { target: { files: [new File(['archive'], 'example.caseattend')] } });
+    importFile();
+    fireEvent.click(await screen.findByRole('button', { name: 'Generate draft answers' }));
+    const firstSignal = generate.mock.calls[0][1]!.signal!;
+    fireEvent.click(screen.getByRole('button', { name: /^Images/ }));
+    importFile();
+    fireEvent.click(await screen.findByRole('button', { name: 'Generate draft answers' }));
+    expect(firstSignal.aborted).toBe(true);
+    await act(async () => {
+      if (outcome === 'success') first.resolve(authoredIntroDraft('local-teaching-case', 'Old draft'));
+      else first.reject(new Error('Old request failed'));
+    });
+    expect(screen.getByText(/Creating draft questions and answers/)).toBeTruthy();
+    expect(screen.queryByText('Old request failed')).toBeNull();
+    await act(async () => second.resolve(authoredIntroDraft('second-case', 'New draft')));
+    expect((screen.getAllByLabelText('Opening question')[0] as HTMLTextAreaElement).value).toBe('New draft');
   });
 });

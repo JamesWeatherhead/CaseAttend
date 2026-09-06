@@ -117,7 +117,7 @@ Common reasons include:
 - an included image cannot be decoded; or
 - the same browser-local Case ID already exists.
 
-Return to the source browser and create a fresh **Export portable case** download if possible. Do not manually add, remove, rename, or recompress files inside the archive.
+Return to the source browser and create a fresh portable case download (**Export a copy** in Case Studio or **Export portable case** in Lesson Builder) if possible. Do not manually add, remove, rename, or recompress files inside the archive.
 
 ## My exported JSON will not restore in Case Studio
 
