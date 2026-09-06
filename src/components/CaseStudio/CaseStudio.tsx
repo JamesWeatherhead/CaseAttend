@@ -361,7 +361,11 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   const [importedPackageMetadata, setImportedPackageMetadata] = useState(false);
   const [introCacheStatus, setIntroCacheStatus] = useState<IntroCacheStatus>({ kind: 'idle' });
   const [introCacheBusy, setIntroCacheBusy] = useState(false);
+  const introReviewBusyRef = useRef(false);
   const introCacheAbortRef = useRef<AbortController | null>(null);
+  const savedCaseRef = useRef(savedCase);
+  savedCaseRef.current = savedCase;
+  const introStatusRequestRef = useRef(0);
   const introCachePipelineAvailable = Boolean(
     getIntroCacheStatus && generateIntroCache && approveIntroCacheProp && saveIntroCacheDraft,
   );
@@ -369,6 +373,7 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   const errorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const advancedSettingsRef = useRef<HTMLDetailsElement>(null);
   const assetsRef = useRef<readonly StudioAsset[]>(assets);
   const releaseAssetRef = useRef(releaseAsset);
   const mountedRef = useRef(true);
@@ -418,10 +423,19 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   }, [step]);
 
   useEffect(() => {
-    if (errors.length > 0) errorRef.current?.focus();
+    if (errors.length > 0) {
+      if (errors.some(error => /case ID|modality|series label/i.test(error)) && advancedSettingsRef.current) {
+        advancedSettingsRef.current.open = true;
+      }
+      errorRef.current?.focus();
+    }
   }, [errors]);
 
   const busy = Boolean(busyLabel);
+  const onReviewBusyChange = useCallback((reviewing: boolean) => {
+    introReviewBusyRef.current = reviewing;
+    if (mountedRef.current) setBusyLabel(reviewing ? 'Saving reviewed starter answers' : '');
+  }, []);
   const selectedPreview = assets.find((asset) => asset.id === previewAssetId) ?? assets[0];
   const visiblePreview = assets[previewIndex] ?? selectedPreview;
   const scanByDigest = useMemo(
@@ -449,19 +463,25 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   }, [shouldWarnBeforeExit]);
 
   const runIntroCacheGeneration = useCallback(async (caseId: string) => {
-    if (!generateIntroCache) return;
+    const selected = savedCaseRef.current;
+    if (!generateIntroCache || !selected || selected.id !== caseId || introReviewBusyRef.current) return;
     introCacheAbortRef.current?.abort();
+    introStatusRequestRef.current += 1;
     const controller = new AbortController();
     introCacheAbortRef.current = controller;
+    const isCurrent = () => mountedRef.current
+      && !controller.signal.aborted
+      && introCacheAbortRef.current === controller
+      && savedCaseRef.current?.id === selected.id
+      && savedCaseRef.current?.manifest.sha256 === selected.manifest.sha256;
     setIntroCacheBusy(true);
     setIntroCacheStatus({ kind: 'generating' });
     try {
       const draft = await generateIntroCache(caseId, { signal: controller.signal });
-      if (!mountedRef.current) return;
+      if (!isCurrent()) return;
       setIntroCacheStatus({ kind: 'ready-for-review', draft });
     } catch (error) {
-      if (!mountedRef.current) return;
-      if (error && typeof error === 'object' && (error as { name?: string }).name === 'AbortError') return;
+      if (!isCurrent()) return;
       const err = error as { code?: string; message?: string; retryable?: boolean };
       setIntroCacheStatus({
         kind: 'error',
@@ -470,15 +490,20 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
         retryable: err.retryable ?? true,
       });
     } finally {
-      if (mountedRef.current) setIntroCacheBusy(false);
+      if (isCurrent()) {
+        introCacheAbortRef.current = null;
+        setIntroCacheBusy(false);
+      }
     }
   }, [generateIntroCache]);
 
-  // Watch the saved case: refresh intro-cache status, and auto-trigger a fresh
-  // generation the first time (idle) or after a stale-inducing edit. This is
-  // the "no manual step" the issue calls for; the educator only steps in for
-  // the review + approve gate.
+  // Saving and importing remain local. Only an explicit panel action starts AI.
   useEffect(() => {
+    introCacheAbortRef.current?.abort();
+    introCacheAbortRef.current = null;
+    setIntroCacheBusy(false);
+    const request = ++introStatusRequestRef.current;
+    setIntroCacheStatus({ kind: 'idle' });
     if (!getIntroCacheStatus || !savedCase) {
       setIntroCacheStatus({ kind: 'idle' });
       return () => undefined;
@@ -487,16 +512,10 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
     void (async () => {
       try {
         const status = await getIntroCacheStatus(savedCase.id);
-        if (!active) return;
+        if (!active || request !== introStatusRequestRef.current) return;
         setIntroCacheStatus(status);
-        const shouldAutoGenerate = generateIntroCache
-          && (hasApiKey ? hasApiKey() : false)
-          && (status.kind === 'idle' || status.kind === 'stale');
-        if (shouldAutoGenerate) {
-          void runIntroCacheGeneration(savedCase.id);
-        }
       } catch (error) {
-        if (active) {
+        if (active && request === introStatusRequestRef.current) {
           setIntroCacheStatus({
             kind: 'error',
             code: 'status_error',
@@ -507,24 +526,29 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
       }
     })();
     return () => { active = false; };
-  }, [savedCase?.id, savedCase?.manifest.sha256, getIntroCacheStatus, generateIntroCache, hasApiKey, runIntroCacheGeneration]);
+  }, [savedCase?.id, savedCase?.manifest.sha256, getIntroCacheStatus]);
 
   useEffect(() => {
     if (!subscribeIntroCacheChanges || !savedCase || !getIntroCacheStatus) return () => undefined;
+    let active = true;
     const unsubscribe = subscribeIntroCacheChanges(() => {
+      if (introCacheAbortRef.current) return;
+      const request = ++introStatusRequestRef.current;
       void getIntroCacheStatus(savedCase.id).then((status) => {
-        if (mountedRef.current) setIntroCacheStatus(status);
+        if (active && mountedRef.current && request === introStatusRequestRef.current
+          && savedCaseRef.current?.id === savedCase.id
+          && savedCaseRef.current?.manifest.sha256 === savedCase.manifest.sha256) setIntroCacheStatus(status);
       }).catch(() => undefined);
     });
-    return () => unsubscribe();
-  }, [savedCase?.id, subscribeIntroCacheChanges, getIntroCacheStatus]);
+    return () => { active = false; unsubscribe(); };
+  }, [savedCase?.id, savedCase?.manifest.sha256, subscribeIntroCacheChanges, getIntroCacheStatus]);
 
   useEffect(() => () => {
     introCacheAbortRef.current?.abort();
   }, []);
 
   const requestExit = () => {
-    if (busy) return;
+    if (busy || introReviewBusyRef.current) return;
     if (shouldWarnBeforeExit) {
       const message = savedOnlyInMemory
         ? 'Leave Case Studio? This case is in memory-only storage and will be lost when this page closes. Export a portable copy first.'
@@ -535,7 +559,13 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   };
 
   const updateForm = <K extends keyof StudioFormData>(key: K, value: StudioFormData[K]) => {
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+      ...(key === 'title' && !revisionBase && (!current.id || current.id === normalizeId(current.title))
+        ? { id: normalizeId(value) }
+        : {}),
+    }));
     if (key === 'domain') setPrivacyResults([]);
     if (RIGHTS_REVIEW_FIELDS.has(key)) setRightsUseConfirmed(false);
     setHumanReviewConfirmed(false);
@@ -710,7 +740,7 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   };
 
   const goToStep = (nextStep: number) => {
-    if (busy) return;
+    if (busy || introReviewBusyRef.current) return;
     if (nextStep <= step) {
       setErrors([]);
       setStep(nextStep);
@@ -824,7 +854,7 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
   return (
     <main className="case-studio-shell" aria-busy={busy}>
       <header className="case-studio-topbar">
-        <button type="button" className="case-studio-back" disabled={busy} onClick={requestExit}>
+        <button type="button" className="case-studio-back" aria-label="Back to cases" disabled={busy} onClick={requestExit}>
           <ArrowLeft aria-hidden="true" />
           <span>Back to cases</span>
         </button>
@@ -839,12 +869,9 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
       <div className="case-studio-layout">
         <aside className="case-studio-sidebar" aria-label="Case Studio progress">
           <div className="case-studio-intro">
-            <p className="case-studio-eyebrow">Local case authoring</p>
-            <h1>Create a reusable visual teaching case</h1>
-            <p>
-              A vision-language model, or VLM, is an AI model that can interpret images and words together.
-              Many current frontier models are VLMs, but the terms are not synonyms. Case Studio prepares the case locally before any learner chooses to contact a model provider.
-            </p>
+            <p className="case-studio-eyebrow">For educators</p>
+            <h1>Create a teaching case</h1>
+            <p>Add images, describe the case, then review and save.</p>
           </div>
           <ol className="case-studio-steps">
             {CASE_STUDIO_STEPS.map((entry, index) => (
@@ -867,8 +894,8 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
           <div className="case-studio-local-note" role="status" aria-live="polite">
             <ShieldCheck aria-hidden="true" />
             <p>
-              <strong>Source images stay in this browser.</strong>{' '}
-              {storageStatus?.message ?? 'CaseAttend re-encodes supported raster images and stores saved work in browser storage.'}
+              <strong>Create and save locally.</strong>{' '}
+              {storageStatus?.persistent === false ? storageStatus.message : 'Export a copy to keep or share your case.'}
               {storageStatus && !storageStatus.persistent && !/export/i.test(storageStatus.message)
                 ? ' Export a portable copy before closing this page.'
                 : ''}
@@ -896,51 +923,49 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
             <fieldset className="case-studio-authoring-fields" disabled={busy}>
             {step === 0 && (
               <div className="case-studio-section-stack">
-                <div className="case-studio-info-card">
-                  <FileImage aria-hidden="true" />
-                  <p>
-                    Add JPEG, PNG, or WebP images. For a stack, select every frame and then confirm the order below.
-                    Raw DICOM is intentionally deferred because metadata and burned-in pixels need a dedicated clinical-data workflow.
-                  </p>
-                </div>
-
                 <div className="case-studio-upload-grid">
                   <div className="case-studio-upload-card">
                     <ImagePlus aria-hidden="true" />
-                    <h3>Add teaching images</h3>
-                    <p>Files are validated and re-encoded locally. Ordinary EXIF metadata is not carried into the prepared copy.</p>
+                    <h3>Choose teaching images</h3>
+                    <p>JPEG, PNG, or WebP. Add one image or several frames.</p>
                     <input
                       ref={fileInputRef}
                       id="case-studio-images"
-                      className="sr-only"
+                      hidden
+                      aria-label="Select images"
                       type="file"
                       accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                       multiple
                       disabled={busy}
                       onChange={(event) => void handleImages(Array.from(event.target.files ?? []))}
                     />
-                    <label className="case-studio-button primary" htmlFor="case-studio-images">
+                    <button type="button" className="case-studio-button primary" onClick={() => fileInputRef.current?.click()}>
                       <Upload aria-hidden="true" /> Select images
-                    </label>
+                    </button>
                   </div>
-                  <div className="case-studio-upload-card secondary">
+                  <div className="case-studio-import-row">
                     <FolderOpen aria-hidden="true" />
-                    <h3>Import a portable case</h3>
-                    <p>A failed import will not replace the images or text already entered here.</p>
+                    <div><h3>Already have a case?</h3><p>Import a .caseattend file.</p></div>
                     <input
                       ref={importInputRef}
                       id="case-studio-import"
-                      className="sr-only"
+                      hidden
+                      aria-label="Import case"
                       type="file"
                       accept=".caseattend,application/zip,application/vnd.caseattend.case+zip"
                       disabled={busy}
                       onChange={(event) => void handleImport(event.target.files?.[0])}
                     />
-                    <label className="case-studio-button secondary" htmlFor="case-studio-import">
+                    <button type="button" className="case-studio-button secondary" onClick={() => importInputRef.current?.click()}>
                       <FolderOpen aria-hidden="true" /> Import case
-                    </label>
+                    </button>
                   </div>
                 </div>
+
+                <details className="case-studio-details">
+                  <summary>Image formats and privacy</summary>
+                  <p>Images are prepared in this browser, with ordinary EXIF metadata removed. Review the complete image and all text for identifiers before saving. Raw DICOM is not supported; use de-identified JPEG, PNG, or WebP teaching images.</p>
+                </details>
 
                 {assets.length > 0 && (
                   <section aria-labelledby="case-studio-order-heading">
@@ -998,16 +1023,10 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                   <p>Keep learner-facing descriptions neutral. Put answer-revealing material only in the educator teaching note.</p>
                 </div>
                 <div className="case-studio-field-grid">
-                  <Field label="Case ID" htmlFor="case-id" hint="Stable lowercase kebab-case, for example chest-pattern-01." required>
-                    <div className="case-studio-input-action">
-                      <input id="case-id" className={INPUT_CLASS} value={form.id} onChange={(event) => updateForm('id', event.target.value)} aria-describedby="case-id-hint" required />
-                      <button type="button" onClick={() => updateForm('id', normalizeId(form.title))}>Use title</button>
-                    </div>
-                  </Field>
                   <Field label="Case title" htmlFor="case-title" required>
                     <input id="case-title" className={INPUT_CLASS} value={form.title} onChange={(event) => updateForm('title', event.target.value)} required />
                   </Field>
-                  <Field label="Domain" htmlFor="case-domain" required>
+                  <Field label="Specialty" htmlFor="case-domain" required>
                     <select id="case-domain" className={INPUT_CLASS} value={form.domain} onChange={(event) => updateForm('domain', event.target.value as DomainKey)}>
                       <option value="radiology">Radiology</option>
                       <option value="pathology">Pathology</option>
@@ -1023,12 +1042,6 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
                     </select>
-                  </Field>
-                  <Field label="Modality" htmlFor="case-modality" hint="Examples: CR, CT, MR, PATH, XC, or OT." required>
-                    <input id="case-modality" className={INPUT_CLASS} value={form.modality} onChange={(event) => updateForm('modality', event.target.value)} aria-describedby="case-modality-hint" required />
-                  </Field>
-                  <Field label="Series label" htmlFor="case-series-label" required>
-                    <input id="case-series-label" className={INPUT_CLASS} value={form.seriesLabel} onChange={(event) => updateForm('seriesLabel', event.target.value)} required />
                   </Field>
                 </div>
                 <Field label="Learner-facing vignette" htmlFor="case-vignette" hint="Do not include names, dates of birth, record numbers, contact details, or other direct identifiers." required>
@@ -1046,6 +1059,23 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                 <Field label="Content warnings" htmlFor="case-content-warnings" hint="One warning per line. These help learners choose whether to open the case.">
                   <textarea id="case-content-warnings" className={INPUT_CLASS} rows={2} value={form.contentWarnings} onChange={(event) => updateForm('contentWarnings', event.target.value)} aria-describedby="case-content-warnings-hint" />
                 </Field>
+                <details ref={advancedSettingsRef} className="case-studio-details">
+                  <summary>Case identifier and image settings</summary>
+                  <div className="case-studio-field-grid">
+                    <Field label="Case ID" htmlFor="case-id" hint="Created from the title. Use lowercase letters, numbers, and hyphens; keep an existing identifier when updating a case." required>
+                      <div className="case-studio-input-action">
+                        <input id="case-id" className={INPUT_CLASS} value={form.id} onChange={(event) => updateForm('id', event.target.value)} aria-describedby="case-id-hint" required />
+                        <button type="button" onClick={() => updateForm('id', normalizeId(form.title))}>Use title</button>
+                      </div>
+                    </Field>
+                    <Field label="Modality" htmlFor="case-modality" hint="Examples: CR, CT, MR, PATH, XC, or OT." required>
+                      <input id="case-modality" className={INPUT_CLASS} value={form.modality} onChange={(event) => updateForm('modality', event.target.value)} aria-describedby="case-modality-hint" required />
+                    </Field>
+                    <Field label="Series label" htmlFor="case-series-label" required>
+                      <input id="case-series-label" className={INPUT_CLASS} value={form.seriesLabel} onChange={(event) => updateForm('seriesLabel', event.target.value)} required />
+                    </Field>
+                  </div>
+                </details>
               </div>
             )}
 
@@ -1189,7 +1219,7 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
 
                 <dl className="case-studio-summary-grid">
                   <div><dt>Case ID</dt><dd>{form.id}</dd></div>
-                  <div><dt>Domain</dt><dd>{form.domain}</dd></div>
+                  <div><dt>Specialty</dt><dd>{form.domain}</dd></div>
                   <div><dt>Frames</dt><dd>{assets.length}</dd></div>
                   <div>
                     <dt>Privacy state</dt>
@@ -1229,7 +1259,7 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                         <p>
                           {revisionBase?.id === form.id.trim()
                             ? 'This replaces only the exact case revision you opened. A custom or reviewed linked lesson is never reset here; use Lesson Builder or choose a new case ID.'
-                            : 'This creates an exact Case Package and unreviewed starter Lesson Plan. You can refine the lesson next.'}
+                            : 'Saves your images and a starter lesson locally. Refine the lesson or export a copy next. Saving does not contact an AI model.'}
                         </p>
                       </div>
                     </div>
@@ -1237,32 +1267,38 @@ const CaseStudio: React.FC<CaseStudioProps> = ({
                   </div>
                 ) : (
                   <>
+                    <div className="case-studio-complete-actions">
+                      <button type="button" className="case-studio-button primary" disabled={busy} onClick={() => onPreview(savedCase)}><Eye aria-hidden="true" /> Open case</button>
+                      <button type="button" className="case-studio-button secondary" disabled={busy} onClick={() => onOpenLessonBuilder(savedCase.id)}><GraduationCap aria-hidden="true" /> Build the lesson</button>
+                      <button type="button" className="case-studio-button secondary" disabled={busy} onClick={() => void doExport()}><Download aria-hidden="true" /> Export a copy</button>
+                    </div>
                     {introCachePipelineAvailable && (
                       <IntroCachePanel
+                        key={`${savedCase.id}:${savedCase.manifest.sha256}`}
                         caseId={savedCase.id}
                         status={introCacheStatus}
                         busy={introCacheBusy}
+                        onReviewBusyChange={onReviewBusyChange}
                         generate={() => runIntroCacheGeneration(savedCase.id)}
                         regenerate={() => runIntroCacheGeneration(savedCase.id)}
                         approve={async (reviewer) => {
                           if (!approveIntroCacheProp) return;
+                          if (!mountedRef.current || savedCaseRef.current !== savedCase) throw new Error('The selected case changed. Reopen its answers before approving.');
+                          introStatusRequestRef.current += 1;
                           const approved = await approveIntroCacheProp(savedCase.id, reviewer);
-                          if (mountedRef.current) setIntroCacheStatus({ kind: 'approved', cache: approved });
+                          if (mountedRef.current && savedCaseRef.current === savedCase) setIntroCacheStatus({ kind: 'approved', cache: approved });
                         }}
                         saveDraft={async (draft) => {
                           if (!saveIntroCacheDraft) return;
+                          if (!mountedRef.current || savedCaseRef.current !== savedCase) throw new Error('The selected case changed. Reopen its answers before saving.');
+                          introStatusRequestRef.current += 1;
                           await saveIntroCacheDraft(savedCase.id, draft);
-                          if (mountedRef.current) setIntroCacheStatus({ kind: 'ready-for-review', draft });
+                          if (mountedRef.current && savedCaseRef.current === savedCase) setIntroCacheStatus({ kind: 'ready-for-review', draft });
                         }}
                         hasApiKey={hasApiKey ? hasApiKey() : false}
                         {...(onConnectOpenRouter ? { onConnectOpenRouter } : {})}
                       />
                     )}
-                    <div className="case-studio-complete-actions">
-                      <button type="button" className="case-studio-button primary" onClick={() => onOpenLessonBuilder(savedCase.id)}><GraduationCap aria-hidden="true" /> Build the lesson</button>
-                      <button type="button" className="case-studio-button secondary" onClick={() => onPreview(savedCase)}><Eye aria-hidden="true" /> Open in viewer</button>
-                      <button type="button" className="case-studio-button secondary" disabled={busy} onClick={() => void doExport()}><Download aria-hidden="true" /> Export portable case</button>
-                    </div>
                   </>
                 )}
               </div>

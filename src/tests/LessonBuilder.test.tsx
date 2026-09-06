@@ -166,7 +166,7 @@ describe('LessonBuilder', () => {
       expect(within(navigation).getByRole('button', { name: new RegExp(label.replace('/', '\\/')) })).toBeTruthy();
     }
     expect(screen.getByText(/does not contact a model or read an API key/i)).toBeTruthy();
-    expect(screen.getByText(/the terms are not synonyms/i)).toBeTruthy();
+    expect(screen.getByText(/Choose the case this lesson teaches/i)).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
   });
 

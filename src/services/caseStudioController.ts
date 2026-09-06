@@ -168,6 +168,7 @@ export class CaseStudioController {
     input: IntroCacheGenerationRequest,
   ) => Promise<IntroCacheV1>;
   private readonly sessionAssets = new Map<string, SessionAsset>();
+  private readonly introGenerations = new Map<string, symbol>();
   private nextAssetId = 1;
 
   constructor(options: CaseStudioControllerOptions = {}) {
@@ -539,6 +540,7 @@ export class CaseStudioController {
   ) => this.store.subscribeStatus(listener);
 
   deleteCase = async (caseId: string): Promise<void> => {
+    this.introGenerations.delete(caseId);
     if (!(await this.store.delete(caseId))) {
       throw new Error(`Browser-local case '${caseId}' was not found.`);
     }
@@ -568,7 +570,7 @@ export class CaseStudioController {
   };
 
   /**
-   * Run the auto-generation pipeline for a saved browser-local case using the
+   * Generate an explicitly requested draft for a saved browser-local case using the
    * author's BYOK key and pinned model. Returns the freshly generated draft
    * artifact; also persists it via the authored intro-cache store so a reload
    * lands on the review step.
@@ -577,23 +579,47 @@ export class CaseStudioController {
     caseId: string,
     options: { signal?: AbortSignal } = {},
   ): Promise<IntroCacheV1> => {
-    const portable = await this.store.get(caseId);
-    if (!portable) {
-      throw new IntroCacheAuthoringError({
-        code: 'missing_lesson_plan',
-        message: `Browser-local case '${caseId}' was not found. Save the case first.`,
-        retryable: false,
-      });
+    if (options.signal?.aborted) {
+      throw new IntroCacheAuthoringError({ code: 'aborted', message: 'Generation cancelled.', retryable: true });
     }
-    const draft = await this.runIntroCacheGeneration({
-      casePackage: portable.casePackage,
-      lessonPlan: portable.lessonPlan,
-      assets: portable.assets,
-      ...(options.signal ? { signal: options.signal } : {}),
-      now: this.now,
-    });
-    await this.introCacheStore.save(draft);
-    return draft;
+    const generation = Symbol(caseId);
+    this.introGenerations.set(caseId, generation);
+    const assertCurrent = () => {
+      if (options.signal?.aborted || this.introGenerations.get(caseId) !== generation) {
+        throw new IntroCacheAuthoringError({ code: 'aborted', message: 'Generation cancelled.', retryable: true });
+      }
+    };
+    try {
+      assertCurrent();
+      const portable = await this.store.get(caseId);
+      assertCurrent();
+      if (!portable) {
+        throw new IntroCacheAuthoringError({
+          code: 'missing_lesson_plan',
+          message: `Browser-local case '${caseId}' was not found. Save the case first.`,
+          retryable: false,
+        });
+      }
+      const draft = await this.runIntroCacheGeneration({
+        casePackage: portable.casePackage,
+        lessonPlan: portable.lessonPlan,
+        assets: portable.assets,
+        ...(options.signal ? { signal: options.signal } : {}),
+        now: this.now,
+      });
+      assertCurrent();
+      const current = await this.store.get(caseId);
+      assertCurrent();
+      if (current?.casePackage.manifest.sha256 !== portable.casePackage.manifest.sha256) {
+        throw new IntroCacheAuthoringError({ code: 'aborted', message: 'The saved case changed. Generate answers from the current case.', retryable: true });
+      }
+      // Recheck immediately before persistence. The case and cache stores are
+      // separate; this is not a cross-tab transaction or a post-save rollback.
+      await this.introCacheStore.save(draft);
+      return draft;
+    } finally {
+      if (this.introGenerations.get(caseId) === generation) this.introGenerations.delete(caseId);
+    }
   };
 
   /**
@@ -604,6 +630,7 @@ export class CaseStudioController {
     caseId: string,
     draft: IntroCacheV1,
   ): Promise<void> => {
+    this.introGenerations.delete(caseId);
     if (draft.caseId !== caseId) {
       throw new Error(`Draft caseId '${draft.caseId}' does not match '${caseId}'.`);
     }
@@ -623,6 +650,7 @@ export class CaseStudioController {
     caseId: string,
     reviewer: { name: string; credentials: string },
   ): Promise<IntroCacheV1> => {
+    this.introGenerations.delete(caseId);
     const stored = await this.introCacheStore.get(caseId);
     if (!stored) {
       throw new Error(`No intro-cache draft exists for '${caseId}'.`);
@@ -634,6 +662,7 @@ export class CaseStudioController {
 
   /** Drop the browser-local intro cache for a case without deleting the case. */
   clearIntroCacheForCase = async (caseId: string): Promise<void> => {
+    this.introGenerations.delete(caseId);
     await this.introCacheStore.delete(caseId);
   };
 

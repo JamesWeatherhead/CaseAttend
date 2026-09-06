@@ -48,13 +48,15 @@ Raw DICOM is not accepted. DICOM can contain identifying metadata and burned-in 
 
 ## Step 2: Describe the teaching case
 
-Complete each required field. The table below explains what each field records and where it is used.
+Start with the title, specialty, difficulty, and teaching text. Case Studio creates a case ID from your title. Open **Case identifier and image settings** only if you need to change that ID, the modality, or the series label. A custom ID is kept when you revise the title.
+
+The table below explains what each field records and where it is used.
 
 | Field | What to write | Example shape |
 | --- | --- | --- |
-| **Case ID** | A stable lowercase ID with words separated by hyphens | `chest-pattern-01` |
+| **Case ID** | Created from the title; a stable lowercase ID with words separated by hyphens | `chest-pattern-01` |
 | **Case title** | A short, recognizable teaching title | `Unilateral pleural finding` |
-| **Domain** | The closest available subject area | `Radiology` |
+| **Specialty** | The closest available subject area | `Radiology` |
 | **Difficulty** | The intended challenge level | Choose the best available option |
 | **Modality** | A familiar modality code or label | `CR`, `CT`, `MR`, `PATH`, `XC`, or `OT` |
 | **Series label** | A plain-language label for this image or stack | `Frontal chest radiograph` |
@@ -114,20 +116,22 @@ Select **Save case**. CaseAttend saves the case in this browser and links it to 
 After saving, you can:
 
 - select **Build the lesson** to open Lesson Builder;
-- select **Open in viewer** to rehearse the learner experience; or
-- select **Export portable case** to download a `.caseattend` backup.
+- select **Open case** to rehearse the learner experience; or
+- select **Export a copy** to download a `.caseattend` backup.
 
 ### Optional: prepare a reviewed no-key opening
 
 The saved case can have a separate intro cache: a reviewed opening and instant starter answers that learners can use without making a new model request.
 
-1. In **Pre-cached opening**, select **Connect OpenRouter** if no key is connected.
-2. Select **Generate intro cache**. This sends the case context, lesson objectives, teaching notes, and up to four representative case images to OpenRouter and the selected provider.
+1. In **Create starter questions**, select **Connect OpenRouter** if no key is connected.
+2. Select **Generate draft answers**. This sends the case context, lesson objectives, teaching notes, and up to four representative case images to OpenRouter and the selected provider.
 3. Review and edit the opening and every answer at every learner level.
 4. Select **Save edits** after making changes.
-5. Enter the reviewer name and credentials, then select **Approve intro cache** only after the review is complete.
+5. Enter the reviewer name and credentials, then select **Approve starter answers** only after the review is complete.
 
-Generation is optional and is the one post-save Case Studio action that contacts a model. The raw source image filenames are not sent, but the prepared representative images and the listed case and lesson content are. The cache is stored separately in this browser and is not included in a `.caseattend` backup, whether it is still a draft or already approved.
+Saving, importing, reconnecting an account, and status refreshes do not start generation. Only **Generate draft answers** or **Regenerate draft answers** starts the optional model request; provider charges may apply. The raw source image filenames are not sent, but the prepared representative images and the listed case and lesson content are. The cache is stored separately in this browser and is not included in a `.caseattend` backup, whether it is still a draft or already approved.
+
+Save your edits before regenerating. During a save or approval, navigation is temporarily unavailable so the operation can finish. If stored answers change while you have unsaved edits, those edits remain visible; copy anything you need before selecting **Load latest answers**.
 
 Export before closing the page if Case Studio warns that storage is memory-only. Even with persistent browser storage, keep a portable backup before clearing site data or deleting the case.
 

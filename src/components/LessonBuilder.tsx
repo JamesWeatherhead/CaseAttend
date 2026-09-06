@@ -860,13 +860,9 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
       <div className="lesson-builder-layout">
         <aside className="lesson-builder-sidebar">
           <div>
-            <p className="lesson-builder-eyebrow">Versioned lesson authoring</p>
-            <h1>Teach with images and words</h1>
-            <p>
-              A vision-language model, or VLM, is an AI model that can interpret images and words together.
-              Many current frontier models are VLMs, but the terms are not synonyms.
-              This builder turns teaching intent into a structured lesson without requiring prompt syntax.
-            </p>
+            <p className="lesson-builder-eyebrow">For educators</p>
+            <h1>Build a guided lesson</h1>
+            <p>Choose a case, set your learning goals, then shape the questions and hints.</p>
           </div>
           <nav aria-label="Lesson builder steps">
             <ol>
@@ -928,7 +924,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <div className="lesson-builder-info-card">
                   <Info aria-hidden="true" />
                   <p>
-                    Choose a versioned Case Package. A content version and SHA-256 hash make it possible for a study team to record exactly what learners saw. This does not replace IRB review.
+                    Choose the case this lesson teaches. Importing a PDF or PowerPoint adds teaching text; the case provides the images.
                   </p>
                 </div>
                 <div className="lesson-builder-two-column">

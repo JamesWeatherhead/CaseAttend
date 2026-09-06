@@ -3,7 +3,7 @@
  *
  * Shown on the "Preview and save" step once a case has been saved locally.
  * Walks the educator through:
- *   1. Auto-generation (BYOK OpenRouter, same prompt as the backfill).
+ *   1. Optional generation requested by the educator (BYOK OpenRouter, same prompt as the backfill).
  *   2. Review + optional hand-edit of the draft.
  *   3. Approval with reviewer name + credentials (byte-compatible with the
  *      offline `scripts/introCache/review.mts` contract).
@@ -13,7 +13,7 @@
  * approved cache is present, so nothing regresses for authors who skip it.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, RefreshCw, Sparkles, Wand2 } from 'lucide-react';
 
 import type { LearnerLevel } from '../../constants';
@@ -28,6 +28,7 @@ interface IntroCachePanelProps {
   regenerate: () => Promise<void>;
   approve: (reviewer: { name: string; credentials: string }) => Promise<void>;
   saveDraft: (draft: IntroCacheV1) => Promise<void>;
+  onReviewBusyChange?: (busy: boolean) => void;
   onConnectOpenRouter?: () => void;
   hasApiKey: boolean;
 }
@@ -44,16 +45,16 @@ function statusHeadline(status: IntroCacheStatus, hasApiKey: boolean): string {
   switch (status.kind) {
     case 'idle':
       return hasApiKey
-        ? 'Generate the pre-cached first round so a no-key learner can open this case with a tailored intro and one instant answer per level.'
-        : 'Connect an OpenRouter key to generate the pre-cached first round for this case.';
+        ? 'Create opening questions and answers for five learner levels. After your review, learners can try them without an AI account.'
+        : 'Your case is ready to use. Connect OpenRouter only if you want AI-drafted starter questions and answers.';
     case 'generating':
-      return 'Generating tailored intros and pre-cached answers for all five learner levels...';
+      return 'Creating draft questions and answers for five learner levels…';
     case 'ready-for-review':
-      return 'Draft ready. Review each level, hand-edit if needed, then approve to make it available to no-key learners.';
+      return 'Draft ready. Review every level, edit as needed, then approve the answers for learners.';
     case 'approved':
-      return 'Intro cache approved. A no-key learner will now see per-level intros and instant answers on click.';
+      return 'Starter answers approved. Learners can now use them without an AI account.';
     case 'stale':
-      return 'The case or its media changed since the intro cache was generated. Regenerate to re-align the cache with the current lesson.';
+      return 'The case or lesson has changed. Generate and review fresh answers before learners use them.';
     case 'error':
       return status.message;
   }
@@ -78,6 +79,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
   regenerate,
   approve,
   saveDraft,
+  onReviewBusyChange,
   onConnectOpenRouter,
   hasApiKey,
 }) => {
@@ -98,20 +100,43 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
   const [approving, setApproving] = useState(false);
   const [savingEdits, setSavingEdits] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const incomingKey = JSON.stringify(activeCache);
+  const [acceptedKey, setAcceptedKey] = useState(incomingKey);
+  const [refreshConflict, setRefreshConflict] = useState(false);
+  const mountedRef = useRef(true);
+  const reviewOperationRef = useRef<symbol | null>(null);
 
   useEffect(() => {
-    setEditingCache(activeCache);
-    setDirty(false);
-    setLocalError(null);
-  }, [activeCache]);
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (reviewOperationRef.current) onReviewBusyChange?.(false);
+      reviewOperationRef.current = null;
+    };
+  }, [onReviewBusyChange]);
 
-  const canEdit = status.kind === 'ready-for-review';
+  useEffect(() => {
+    if (incomingKey === acceptedKey) return;
+    if (dirty && JSON.stringify(editingCache) !== incomingKey) {
+      setRefreshConflict(true);
+      return;
+    }
+    setEditingCache(activeCache);
+    setAcceptedKey(incomingKey);
+    setDirty(false);
+    setRefreshConflict(false);
+    setLocalError(null);
+  }, [activeCache, incomingKey, acceptedKey, dirty, editingCache]);
+
+  const canEdit = status.kind === 'ready-for-review' && !busy && !approving && !savingEdits;
   const canApprove = status.kind === 'ready-for-review'
     && !!editingCache
     && reviewerName.trim().length > 0
     && reviewerCredentials.trim().length > 0
     && !approving
-    && !savingEdits;
+    && !savingEdits
+    && !busy
+    && !refreshConflict;
 
   const updateLevelField = useCallback(<K extends keyof IntroCacheV1['levels'][LearnerLevel]>(
     level: LearnerLevel,
@@ -154,95 +179,98 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
   }, []);
 
   const handleSaveEdits = useCallback(async () => {
-    if (!editingCache) return;
+    if (!editingCache || busy || refreshConflict || reviewOperationRef.current) return;
+    const operation = Symbol('save-edits');
+    reviewOperationRef.current = operation;
+    onReviewBusyChange?.(true);
     setLocalError(null);
     setSavingEdits(true);
     try {
       await saveDraft(editingCache);
+      if (!mountedRef.current || reviewOperationRef.current !== operation) return;
       setDirty(false);
     } catch (error) {
-      setLocalError(error instanceof Error ? error.message : 'Could not save your edits.');
+      if (mountedRef.current) setLocalError(error instanceof Error ? error.message : 'Could not save your edits.');
     } finally {
-      setSavingEdits(false);
+      if (reviewOperationRef.current === operation) {
+        reviewOperationRef.current = null;
+        onReviewBusyChange?.(false);
+        if (mountedRef.current) setSavingEdits(false);
+      }
     }
-  }, [editingCache, saveDraft]);
+  }, [busy, editingCache, onReviewBusyChange, refreshConflict, saveDraft]);
 
   const handleApprove = useCallback(async () => {
-    if (!editingCache) return;
+    if (!canApprove || !editingCache || reviewOperationRef.current) return;
+    const operation = Symbol('approve');
+    reviewOperationRef.current = operation;
+    onReviewBusyChange?.(true);
     setLocalError(null);
     setApproving(true);
     try {
       if (dirty) await saveDraft(editingCache);
+      if (!mountedRef.current || reviewOperationRef.current !== operation) return;
       await approve({ name: reviewerName, credentials: reviewerCredentials });
+      if (!mountedRef.current || reviewOperationRef.current !== operation) return;
       setDirty(false);
     } catch (error) {
-      setLocalError(error instanceof Error ? error.message : 'Approval failed.');
+      if (mountedRef.current) setLocalError(error instanceof Error ? error.message : 'Approval failed.');
     } finally {
-      setApproving(false);
+      if (reviewOperationRef.current === operation) {
+        reviewOperationRef.current = null;
+        onReviewBusyChange?.(false);
+        if (mountedRef.current) setApproving(false);
+      }
     }
-  }, [approve, dirty, editingCache, reviewerCredentials, reviewerName, saveDraft]);
+  }, [approve, canApprove, dirty, editingCache, onReviewBusyChange, reviewerCredentials, reviewerName, saveDraft]);
 
   const tone = statusTone(status);
   const headline = statusHeadline(status, hasApiKey);
+  const reviewingBusy = approving || savingEdits;
   const generatingBusy = status.kind === 'generating' || busy;
 
   return (
-    <section className={`case-studio-intro-cache case-studio-intro-cache--${tone}`} aria-labelledby="intro-cache-heading">
+    <section className={`case-studio-intro-cache case-studio-intro-cache--${tone}`} aria-labelledby="intro-cache-heading" data-case-id={caseId}>
       <header className="case-studio-intro-cache__header">
         <div className="case-studio-intro-cache__icon" aria-hidden="true"><Sparkles /></div>
         <div>
-          <p className="case-studio-eyebrow">Intro cache · no-key first round</p>
-          <h3 id="intro-cache-heading">Pre-cached opening for {caseId}</h3>
-          <p>{headline}</p>
+          <p className="case-studio-eyebrow">Optional AI assistance</p>
+          <h3 id="intro-cache-heading">Create starter questions</h3>
+          <p role="status">{headline}</p>
         </div>
         <div className="case-studio-intro-cache__actions">
-          {status.kind === 'idle' && (
-            hasApiKey
-              ? (
-                <button
-                  type="button"
-                  className="case-studio-button primary"
-                  disabled={generatingBusy}
-                  onClick={() => { void generate(); }}
-                >
-                  <Wand2 aria-hidden="true" /> Generate intro cache
-                </button>
-              )
-              : onConnectOpenRouter && (
-                <button
-                  type="button"
-                  className="case-studio-button primary"
-                  onClick={onConnectOpenRouter}
-                >
-                  Connect OpenRouter
-                </button>
-              )
-          )}
-          {(status.kind === 'stale' || status.kind === 'error') && (
-            <button
-              type="button"
-              className="case-studio-button primary"
-              disabled={generatingBusy || (status.kind === 'error' && !status.retryable)}
-              onClick={() => { void regenerate(); }}
-            >
-              <RefreshCw aria-hidden="true" /> Regenerate
+          <p id="intro-generation-disclosure">Generating sends this case’s text and selected images to OpenRouter and your chosen model provider. Model charges may apply. Review and approve the answers before learners use them.</p>
+          {dirty && !refreshConflict && <p>Save your edits before generating another draft.</p>}
+          {status.kind !== 'generating' && (hasApiKey ? (
+            <button type="button" className="case-studio-button secondary"
+              aria-describedby="intro-generation-disclosure"
+              disabled={generatingBusy || reviewingBusy || dirty || refreshConflict || (status.kind === 'error' && !status.retryable)}
+              onClick={() => { void (status.kind === 'idle' ? generate() : regenerate()); }}>
+              {status.kind === 'idle' ? <Wand2 aria-hidden="true" /> : <RefreshCw aria-hidden="true" />}
+              {status.kind === 'idle' ? 'Generate draft answers' : 'Regenerate draft answers'}
             </button>
-          )}
-          {(status.kind === 'approved' || status.kind === 'ready-for-review') && (
-            <button
-              type="button"
-              className="case-studio-button secondary"
-              disabled={generatingBusy}
-              onClick={() => { void regenerate(); }}
-            >
-              <RefreshCw aria-hidden="true" /> Regenerate
-            </button>
-          )}
+          ) : onConnectOpenRouter && (
+            <button type="button" className="case-studio-button secondary" disabled={reviewingBusy || generatingBusy} onClick={onConnectOpenRouter}>Connect OpenRouter</button>
+          ))}
         </div>
       </header>
 
       {localError && (
         <div className="case-studio-intro-cache__error" role="alert">{localError}</div>
+      )}
+
+      {refreshConflict && (
+        <div className="case-studio-intro-cache__error" role="alert">
+          <p>Stored answers changed while you were editing. Your edits are still shown. Copy anything you want to keep, then load the latest answers before saving or approving.</p>
+          <button type="button" className="case-studio-button secondary" disabled={reviewingBusy || generatingBusy}
+            onClick={() => {
+              setEditingCache(activeCache);
+              setAcceptedKey(incomingKey);
+              setDirty(false);
+              setRefreshConflict(false);
+              setLocalError(null);
+            }}>Load latest answers</button>
+        </div>
       )}
 
       {editingCache && (
@@ -270,11 +298,11 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                 >
                   <summary>
                     <span>{LEVEL_LABELS[level]}</span>
-                    <small>{entry.introQuestions.length} pre-cached question{entry.introQuestions.length === 1 ? '' : 's'}</small>
+                    <small>{entry.introQuestions.length} starter question{entry.introQuestions.length === 1 ? '' : 's'}</small>
                   </summary>
                   <div className="case-studio-intro-cache__level-body">
                     <label>
-                      <span>Intro prompt (Markdown)</span>
+                      <span>Opening question</span>
                       <textarea
                         className="case-studio-input"
                         rows={4}
@@ -289,7 +317,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                           <div className="case-studio-intro-cache__question">
                             <p><strong>{question.id}</strong></p>
                             <label>
-                              <span>Chip label</span>
+                              <span>Question button label</span>
                               <input
                                 className="case-studio-input"
                                 value={question.label}
@@ -298,7 +326,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                               />
                             </label>
                             <label>
-                              <span>Prompt (what would be sent live)</span>
+                              <span>Learner question</span>
                               <textarea
                                 className="case-studio-input"
                                 rows={2}
@@ -308,7 +336,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                               />
                             </label>
                             <label>
-                              <span>Cached answer (must end with the safety footer)</span>
+                              <span>Starter answer (keep the educational-use footer)</span>
                               <textarea
                                 className="case-studio-input"
                                 rows={6}
@@ -331,9 +359,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
             <div className="case-studio-intro-cache__review">
               <h4>Approve this draft</h4>
               <p>
-                Your name and credentials will be stamped as the reviewer, exactly as the
-                shipped-corpus review script records them. The artifact schema requires an
-                approved review before it ships to a learner.
+                Review all five levels for accuracy and teaching quality. Your name and credentials will be recorded with your approval. Learners cannot use these answers until you approve them.
               </p>
               <div className="case-studio-field-grid">
                 <label className="case-studio-field">
@@ -341,6 +367,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                   <input
                     className="case-studio-input"
                     value={reviewerName}
+                    disabled={reviewingBusy || generatingBusy}
                     onChange={(event) => setReviewerName(event.target.value)}
                   />
                 </label>
@@ -349,6 +376,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                   <input
                     className="case-studio-input"
                     value={reviewerCredentials}
+                    disabled={reviewingBusy || generatingBusy}
                     onChange={(event) => setReviewerCredentials(event.target.value)}
                     placeholder="e.g. MD, PhD candidate"
                   />
@@ -358,7 +386,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                 <button
                   type="button"
                   className="case-studio-button secondary"
-                  disabled={!dirty || savingEdits || !editingCache}
+                  disabled={!dirty || savingEdits || approving || busy || refreshConflict || !editingCache}
                   onClick={() => { void handleSaveEdits(); }}
                 >
                   Save edits
@@ -369,7 +397,7 @@ const IntroCachePanel: React.FC<IntroCachePanelProps> = ({
                   disabled={!canApprove}
                   onClick={() => { void handleApprove(); }}
                 >
-                  <Check aria-hidden="true" /> Approve intro cache
+                  <Check aria-hidden="true" /> Approve starter answers
                 </button>
               </div>
             </div>

@@ -32,8 +32,8 @@ The editable text you applied from a teaching document is lesson content, so tha
 
 For a saved browser-local case:
 
-1. Immediately after saving in Case Studio, select **Export portable case**. If you already left Case Studio, open **Create a lesson from PDF or PowerPoint**, choose the browser-local case, and continue to **Review/export**. You do not need to import a document.
-2. Select **Export portable case** in Case Studio or Lesson Builder.
+1. Immediately after saving in Case Studio, select **Export a copy**. If you already left Case Studio, open **Create a lesson from PDF or PowerPoint**, choose the browser-local case, and continue to **Review/export**. You do not need to import a document.
+2. Select **Export a copy** in Case Studio or **Export portable case** in Lesson Builder.
 3. Confirm that your browser downloaded a file ending in `.caseattend`.
 4. Store the file in a location managed by your team, with access appropriate to the material.
 5. Record the case ID, lesson ID, content version, review state, and release date beside the file.

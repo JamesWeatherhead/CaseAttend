@@ -1,6 +1,10 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { waitFor } from '@testing-library/react';
+import type { IntroCacheV1 } from '../core/introCache';
+import { authoredIntroDraft } from './fixtures/authoredIntroCache';
+import { AuthoredIntroCacheStore } from '../services/authoredIntroCacheStore';
 import type {
   CaseStudioSubmission,
   StudioAsset,
@@ -33,6 +37,12 @@ import { exportPortableCaseArchive } from '../services/portableCaseArchive';
 
 const PNG_A = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 const PNG_B = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WlN4p8AAAAASUVORK5CYII=';
+
+function pendingDraft() {
+  let resolve!: (cache: IntroCacheV1) => void;
+  const promise = new Promise<IntroCacheV1>(done => { resolve = done; });
+  return { promise, resolve };
+}
 
 function bytes(base64: string): Uint8Array {
   return Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
@@ -564,5 +574,107 @@ describe('Case Studio catalog and viewer integration', () => {
     expect(image.type).toBe(second.mimeType);
     expect(new Uint8Array(await image.arrayBuffer())).toEqual(bytes(PNG_B));
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('explicit starter-answer generation', () => {
+  async function setup() {
+    const portable = await customPortableCase({ id: 'generation-test' });
+    const store = new CasePackageStore({ indexedDB: null });
+    const caches = new AuthoredIntroCacheStore({ indexedDB: null });
+    await store.save(portable);
+    const approved: IntroCacheV1 = { ...authoredIntroDraft('generation-test', 'Previously reviewed opening'), review: {
+      status: 'approved', reviewer: 'Example Educator', credentials: 'Test fixture', reviewedAt: '2026-09-05T12:00:00.000Z',
+    } };
+    await caches.save(approved);
+    const save = vi.spyOn(caches, 'save');
+    const provider = vi.fn<() => Promise<IntroCacheV1>>();
+    const controller = createCaseStudioController({ store, authoredIntroCacheStore: caches, runIntroCacheGeneration: provider });
+    return { portable, store, caches, save, provider, controller, approved };
+  }
+
+  it('does not call the provider when already cancelled', async () => {
+    const { controller, provider, save } = await setup();
+    const signal = AbortSignal.abort();
+    await expect(controller.generateIntroCacheForCase('generation-test', { signal })).rejects.toMatchObject({ code: 'aborted' });
+    expect(provider).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('preserves approved answers when a cancelled provider still returns a draft', async () => {
+    const { controller, provider, save, caches, approved } = await setup();
+    const pending = pendingDraft();
+    provider.mockReturnValue(pending.promise);
+    const abort = new AbortController();
+    const result = controller.generateIntroCacheForCase('generation-test', { signal: abort.signal });
+    const rejected = expect(result).rejects.toMatchObject({ code: 'aborted' });
+    await waitFor(() => expect(provider).toHaveBeenCalled());
+    abort.abort();
+    pending.resolve(authoredIntroDraft('generation-test', 'Cancelled draft'));
+    await rejected;
+    expect(save).not.toHaveBeenCalled();
+    expect(await caches.get('generation-test')).toEqual(approved);
+  });
+
+  it.each(['changed', 'deleted'])('does not persist answers after the saved case is %s', async change => {
+    const { controller, provider, store, portable, save, caches, approved } = await setup();
+    const pending = pendingDraft();
+    provider.mockReturnValue(pending.promise);
+    const result = controller.generateIntroCacheForCase('generation-test');
+    const rejected = expect(result).rejects.toMatchObject({ code: 'aborted' });
+    await waitFor(() => expect(provider).toHaveBeenCalled());
+    if (change === 'deleted') await store.delete('generation-test');
+    else {
+      const { schemaVersion: _schema, manifest: _manifest, ...input } = portable.casePackage;
+      const revised = await createCasePackageV1({ ...input, title: 'Revised teaching case' });
+      await store.save(await createPortableCasePackageV1(revised, portable.lessonPlan, portable.assets), { expectedCaseManifestSha256: portable.casePackage.manifest.sha256 });
+    }
+    pending.resolve(authoredIntroDraft('generation-test', 'Old revision'));
+    await rejected;
+    expect(save).not.toHaveBeenCalled();
+    expect(await caches.get('generation-test')).toEqual(approved);
+  });
+
+  it.each(['older-first', 'newer-first'])('persists only the latest requested generation: %s', async order => {
+    const { controller, provider, caches, approved, save } = await setup();
+    const first = pendingDraft();
+    const second = pendingDraft();
+    provider.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    const resultA = controller.generateIntroCacheForCase('generation-test');
+    const rejected = expect(resultA).rejects.toMatchObject({ code: 'aborted' });
+    await waitFor(() => expect(provider).toHaveBeenCalledTimes(1));
+    const resultB = controller.generateIntroCacheForCase('generation-test');
+    await waitFor(() => expect(provider).toHaveBeenCalledTimes(2));
+    const latest = authoredIntroDraft('generation-test', 'Latest requested opening');
+    if (order === 'older-first') {
+      first.resolve(authoredIntroDraft('generation-test', 'Superseded opening'));
+      await rejected;
+      expect(await caches.get('generation-test')).toEqual(approved);
+      second.resolve(latest);
+      await resultB;
+    } else {
+      second.resolve(latest);
+      await resultB;
+      first.resolve(authoredIntroDraft('generation-test', 'Superseded opening'));
+      await rejected;
+    }
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(await caches.get('generation-test')).toEqual(latest);
+  });
+
+  it('checks cancellation again after the final saved-case read', async () => {
+    const { controller, provider, store, save, portable } = await setup();
+    provider.mockResolvedValue(authoredIntroDraft('generation-test'));
+    let finishRead!: (value: PortableCasePackageV1) => void;
+    const finalRead = new Promise<PortableCasePackageV1>(resolve => { finishRead = resolve; });
+    const get = vi.spyOn(store, 'get').mockResolvedValueOnce(portable).mockReturnValueOnce(finalRead);
+    const abort = new AbortController();
+    const result = controller.generateIntroCacheForCase('generation-test', { signal: abort.signal });
+    const rejected = expect(result).rejects.toMatchObject({ code: 'aborted' });
+    await waitFor(() => expect(get).toHaveBeenCalledTimes(2));
+    abort.abort();
+    finishRead(portable);
+    await rejected;
+    expect(save).not.toHaveBeenCalled();
   });
 });

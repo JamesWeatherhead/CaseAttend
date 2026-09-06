@@ -41,7 +41,7 @@ Use **Create a lesson from PDF or PowerPoint** on the home screen, or choose **B
 
 ### A `.caseattend` file is a portable copy
 
-For a case you create in the browser, **Export portable case** downloads one `.caseattend` file. It contains the exact case, its linked lesson, and the referenced re-encoded images. A colleague can restore it through Case Studio's **Import case** action.
+For a case you create in the browser, **Export a copy** in Case Studio (or **Export portable case** in Lesson Builder) downloads one `.caseattend` file. It contains the exact case, its linked lesson, and the referenced re-encoded images. A colleague can restore it through Case Studio's **Import case** action.
 
 The portable file does **not** contain your OpenRouter key, chat, session records, original filenames, an imported PDF or PowerPoint source file, or a separately generated browser-local intro-cache draft or approval. See [Share, back up, and restore](guides/share-back-up-and-restore.md) before relying on browser storage.
 
@@ -62,7 +62,7 @@ Case creation, lesson editing, validation, PDF/PowerPoint text extraction, and e
 
 Live tutoring has a separate boundary: nothing is sent merely because a learner opens or inspects a case. When the learner presses **Send**, the current view, message, relevant conversation, case context, and active Lesson Plan instructions—including educator teaching notes—go to OpenRouter and the selected model provider. Applied document text can therefore enter a later live prompt.
 
-Educator-triggered intro-cache generation is another outbound path. Selecting **Generate intro cache** sends case context, objectives, teaching notes, and up to four representative case images to OpenRouter and the selected provider. Do not use identifiable patient data in either path.
+Educator-triggered intro-cache generation is another outbound path. Selecting **Generate draft answers** sends case context, objectives, teaching notes, and up to four representative case images to OpenRouter and the selected provider. Do not use identifiable patient data in either path.
 
 For the full security boundary, see [the repository security policy](../SECURITY.md).
 
