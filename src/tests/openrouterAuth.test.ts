@@ -2,6 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  beginOpenRouterOAuth,
   completeOpenRouterOAuth,
   pendingOAuthCode,
 } from '../services/openrouterAuth';
@@ -28,6 +29,20 @@ describe('OpenRouter OAuth credential boundary', () => {
     vi.unstubAllGlobals();
     localStorage.clear();
     sessionStorage.clear();
+  });
+
+  it('keeps the case return route in this browser and sends a clean callback to OpenRouter', async () => {
+    const location = { origin: 'https://caseattend.example', pathname: '/learn', hash: '#case/fundus-normal', href: 'https://caseattend.example/learn?unrelated=1#case/fundus-normal' };
+    vi.stubGlobal('window', { location });
+    await beginOpenRouterOAuth();
+    const authorization = new URL(location.href);
+    expect(authorization.origin).toBe('https://openrouter.ai');
+    expect(authorization.searchParams.get('callback_url')).toBe('https://caseattend.example/learn');
+    expect(authorization.href).not.toContain('fundus-normal');
+    expect(sessionStorage.getItem('caseattend_openrouter_return_case')).toBe('#case/fundus-normal');
+    location.hash = '';
+    await beginOpenRouterOAuth();
+    expect(sessionStorage.getItem('caseattend_openrouter_return_case')).toBeNull();
   });
 
   it('scrubs the authorization code before the exchange can settle', async () => {
@@ -86,5 +101,49 @@ describe('OpenRouter OAuth credential boundary', () => {
     });
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(window.location.search).toBe('?keep=1');
+  });
+
+  it('restores the ordinary case before a slow exchange and never replays it after navigation', async () => {
+    const exchange = deferred<Response>();
+    vi.stubGlobal('fetch', vi.fn(() => exchange.promise));
+    sessionStorage.setItem('caseattend_openrouter_return_case', '#case/fundus-normal');
+    window.history.replaceState({ unrelated: 'preserved' }, '', '/learn?code=sentinel');
+    const changed = vi.fn();
+    window.addEventListener('caseattend:case-route-changed', changed);
+
+    const completion = completeOpenRouterOAuth();
+    expect(window.location.hash).toBe('#case/fundus-normal');
+    expect(window.location.search).toBe('');
+    expect(window.history.state).toMatchObject({ unrelated: 'preserved', caseattendNavigation: { fromLibrary: false } });
+    expect(sessionStorage.getItem('caseattend_openrouter_return_case')).toBeNull();
+    expect(changed).toHaveBeenCalledTimes(1);
+
+    window.history.pushState({}, '', '/learn#case/another-case');
+    exchange.resolve(new Response('', { status: 400 }));
+    expect((await completion).ok).toBe(false);
+    expect(window.location.hash).toBe('#case/another-case');
+    expect(changed).toHaveBeenCalledTimes(1);
+    window.removeEventListener('caseattend:case-route-changed', changed);
+  });
+
+  it.each(['https://example.test/', '#case/%', '#research/session', '#case/a?code=sentinel'])('discards an invalid saved return route: %s', async route => {
+    sessionStorage.setItem('caseattend_openrouter_return_case', route);
+    window.history.replaceState({ preserved: true }, '', '/learn?code=sentinel');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 400 })));
+    await completeOpenRouterOAuth();
+    expect(window.location.hash).toBe('');
+    expect(window.history.state).toEqual({ preserved: true });
+    expect(sessionStorage.getItem('caseattend_openrouter_return_case')).toBeNull();
+  });
+
+  it('preserves an existing case route and history marker while scrubbing the code', async () => {
+    sessionStorage.setItem('caseattend_openrouter_return_case', '#case/old-case');
+    const state = { caseattendNavigation: { fromLibrary: true, path: '/learn' }, extra: 1 };
+    window.history.replaceState(state, '', '/learn?code=sentinel#case/current-case');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 400 })));
+    await completeOpenRouterOAuth();
+    expect(window.location.hash).toBe('#case/current-case');
+    expect(window.history.state).toEqual(state);
+    expect(sessionStorage.getItem('caseattend_openrouter_return_case')).toBeNull();
   });
 });

@@ -43,6 +43,7 @@ const mocks = vi.hoisted(() => {
       },
     },
     fetchDicomWebSeries: vi.fn(),
+    getCasePackage: vi.fn(),
     aiProps: vi.fn(),
     browserTeachingEngine: { runTurn: vi.fn() },
   };
@@ -58,6 +59,7 @@ vi.mock('../services/browserTeachingEngine', () => ({
 
 vi.mock('../data/caseRegistry', () => ({
   primaryCaseModality: () => 'CT',
+  getCasePackage: mocks.getCasePackage,
 }));
 
 vi.mock('../services/openrouterAuth', () => ({
@@ -187,9 +189,11 @@ async function returnToCatalog(): Promise<void> {
 
 describe('App study-series loading', () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     localStorage.clear();
     localStorage.setItem('caseattend.guidedTour.completed', 'true');
     mocks.fetchDicomWebSeries.mockReset();
+    mocks.getCasePackage.mockReset().mockImplementation(async id => id === mocks.caseA.id ? mocks.caseA : id === mocks.caseB.id ? mocks.caseB : null);
   });
 
   afterEach(() => {
@@ -202,6 +206,37 @@ describe('App study-series loading', () => {
     expect(screen.getByRole('button', {
       name: 'Open browser-local session data',
     })).toBeTruthy();
+  });
+
+  it('opens a bookmarked case on mount and focuses its heading', async () => {
+    window.history.replaceState({}, '', '/#case/case-b');
+    mocks.fetchDicomWebSeries.mockResolvedValue([series('series-b', mocks.caseB.id)]);
+    render(<App />);
+    const heading = await screen.findByRole('heading', { name: 'Case B' });
+    expect(document.activeElement).toBe(heading);
+    await waitFor(() => expect(screen.getByTestId('active-series').textContent).toBe('series-b'));
+    expect(mocks.fetchDicomWebSeries).toHaveBeenCalledWith(expect.anything(), mocks.caseB.id, mocks.caseB);
+    await returnToCatalog();
+    expect(window.location.hash).toBe('');
+  });
+
+  it('shows a missing case without falling through to a different lesson', async () => {
+    window.history.replaceState({}, '', '/#case/missing-case');
+    render(<App />);
+    expect(await screen.findByRole('heading', { name: 'This case isn’t available here' })).toBeTruthy();
+    expect(mocks.fetchDicomWebSeries).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to cases' }));
+    expect(await screen.findByRole('button', { name: 'Open Case A' })).toBeTruthy();
+  });
+
+  it('lets the learner retry a failed image-series load', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.fetchDicomWebSeries.mockRejectedValueOnce(new Error('unavailable')).mockResolvedValueOnce([series('series-a', mocks.caseA.id)]);
+    render(<App />);
+    await openCase('Open Case A');
+    fireEvent.click(await screen.findByRole('button', { name: 'Try loading the image again' }));
+    await waitFor(() => expect(screen.getByTestId('active-series').textContent).toBe('series-a'));
+    expect(screen.queryByRole('button', { name: 'Try loading the image again' })).toBeNull();
   });
 
   it('supplies the public-core browser engine to the ordinary tutor panel', async () => {

@@ -15,8 +15,10 @@
  */
 
 import { setKey } from './byokStore';
+import { CASE_ROUTE_CHANGED_EVENT, parseCaseRoute, routeHistoryState } from './caseNavigation';
 
 const VERIFIER_STORAGE = 'caseattend_openrouter_verifier';
+const RETURN_CASE_STORAGE = 'caseattend_openrouter_return_case';
 const AUTH_URL = 'https://openrouter.ai/auth';
 const KEYS_URL = 'https://openrouter.ai/api/v1/auth/keys';
 
@@ -44,10 +46,13 @@ function callbackUrl(): string {
 
 /** Kick off the OAuth redirect. Resolves as the browser navigates away. */
 export async function beginOpenRouterOAuth(): Promise<void> {
+  const returnHash = window.location.hash;
   const verifier = randomVerifier();
   const challenge = await challengeFromVerifier(verifier);
   try {
     sessionStorage.setItem(VERIFIER_STORAGE, verifier);
+    if (parseCaseRoute(returnHash).kind === 'case') sessionStorage.setItem(RETURN_CASE_STORAGE, returnHash);
+    else sessionStorage.removeItem(RETURN_CASE_STORAGE);
   } catch {
     /* sessionStorage disabled — exchange may still succeed without verifier */
   }
@@ -74,7 +79,7 @@ function scrubUrl(): void {
   try {
     const url = new URL(window.location.href);
     url.searchParams.delete('code');
-    window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+    window.history.replaceState(window.history.state, document.title, url.pathname + url.search + url.hash);
   } catch {
     /* ignore */
   }
@@ -92,6 +97,20 @@ export async function completeOpenRouterOAuth(): Promise<{ ok: boolean; error?: 
   // first await so a slow or failed exchange cannot leave it in the address
   // bar, browser history, screenshots, or a later navigation's referrer.
   scrubUrl();
+
+  // Restore locally, before the exchange awaits. A slow response must never
+  // reopen the old case after the learner has moved elsewhere. The case route
+  // is not sent to the provider and cannot redirect to another origin.
+  try {
+    const returnHash = sessionStorage.getItem(RETURN_CASE_STORAGE);
+    sessionStorage.removeItem(RETURN_CASE_STORAGE);
+    if (!window.location.hash && returnHash && parseCaseRoute(returnHash).kind === 'case') {
+      window.history.replaceState(routeHistoryState(), '', window.location.pathname + window.location.search + returnHash);
+      window.dispatchEvent(new Event(CASE_ROUTE_CHANGED_EVENT));
+    }
+  } catch {
+    /* Browser storage can be unavailable; connecting must remain usable. */
+  }
 
   let verifier: string | null = null;
   try {

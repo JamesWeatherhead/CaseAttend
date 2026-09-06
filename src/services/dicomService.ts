@@ -34,8 +34,11 @@ export const searchDicomWebStudies = async (
 export const fetchDicomWebSeries = async (
   _config: DicomWebConfig,
   studyUid: string,
+  resolvedPackage?: CasePackageV1,
 ): Promise<Series[]> => {
-  const casePackage = await requireCasePackage(studyUid);
+  // Keep the displayed lesson and artifact on the same resolved local revision.
+  if (resolvedPackage && resolvedPackage.id !== studyUid) throw new Error('Case identifier mismatch.');
+  const casePackage = resolvedPackage ?? await requireCasePackage(studyUid);
   return casePackageToSeries(casePackage);
 };
 

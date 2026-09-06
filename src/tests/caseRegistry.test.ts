@@ -102,6 +102,15 @@ describe('built-in Case Package registry', () => {
     ]);
   });
 
+  it('uses the selected package revision when its image is opened', async () => {
+    const selected = await requireCasePackage('derm-melanoma');
+    expect(selected.artifact.kind).toBe('image');
+    const resolved = { ...selected, artifact: { ...selected.artifact, src: 'case://assets/resolved-revision.webp' } } as typeof selected;
+    const result = await fetchDicomWebSeries({ url: 'local', name: 'test' }, resolved.id, resolved);
+    expect(result[0].instances).toEqual(['case://assets/resolved-revision.webp']);
+    await expect(fetchDicomWebSeries({ url: 'local', name: 'test' }, 'different-case', resolved)).rejects.toThrow('Case identifier mismatch.');
+  });
+
   it('preserves stack shape, frame order, and corrected CT modalities', async () => {
     const mri = await requireCasePackage('local-study-sub1');
     const pathology = await requireCasePackage('patho-study-breast');
