@@ -6,6 +6,7 @@ import {
   ArrowUp,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -360,7 +361,7 @@ function required(value: string, message: string, errors: string[]): void {
 function validateStep(step: number, form: BuilderForm): string[] {
   const errors: string[] = [];
   if (step === 0) {
-    required(form.caseId, 'Choose a Case Package.', errors);
+    required(form.caseId, 'Choose a teaching case.', errors);
     required(form.id, 'Enter a stable lesson ID.', errors);
     if (form.id.trim() && !KEBAB_ID.test(form.id.trim())) {
       errors.push('Lesson ID must use lowercase kebab-case.');
@@ -493,14 +494,18 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   const [busy, setBusy] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [hasImportedDraft, setHasImportedDraft] = useState(false);
+  const [importExpanded, setImportExpanded] = useState(false);
+  const [stepListOpen, setStepListOpen] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const settingsRef = useRef<HTMLDetailsElement>(null);
   const caseChangeRequestRef = useRef(0);
 
   const selectedCase = useMemo(
     () => casePackages.find((casePackage) => casePackage.id === form.caseId),
     [casePackages, form.caseId],
   );
+  const hasSettingsError = errors.some(error => /^(?:Enter a stable lesson ID|Lesson ID|Content version|id |version )/i.test(error.replace(/^- /, '')));
 
   useEffect(() => {
     let active = true;
@@ -536,8 +541,15 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   }, [step]);
 
   useEffect(() => {
-    if (errors.length > 0) errorRef.current?.focus();
-  }, [errors]);
+    if (errors.length > 0) {
+      if (hasSettingsError && settingsRef.current) settingsRef.current.open = true;
+      errorRef.current?.focus();
+    }
+  }, [errors, hasSettingsError, step]);
+
+  useEffect(() => {
+    if (step !== 0) setImportExpanded(false);
+  }, [step]);
 
   const showErrors = (nextErrors: string[]) => {
     setErrors(nextErrors);
@@ -554,7 +566,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     if (
       selectedCase
       && !isPristineForCase(form, selectedCase)
-      && !window.confirm('Changing the Case Package will clear the lesson content entered for this case. Continue?')
+      && !window.confirm('Changing the teaching case will clear the lesson content entered for this case. Continue?')
     ) {
       return false;
     }
@@ -726,7 +738,12 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
 
   const finalize = async (): Promise<FinalizedBundle | null> => {
     if (!selectedCase) {
-      showErrors(['Choose a Case Package before finalizing the lesson.']);
+      showErrors(['Choose a teaching case before finalizing the lesson.']);
+      return null;
+    }
+    const fieldErrors = STEPS.flatMap((_item, index) => validateStep(index, form));
+    if (fieldErrors.length) {
+      showErrors(fieldErrors);
       return null;
     }
     const draft = buildDraft(form);
@@ -795,6 +812,8 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   };
 
   const chooseStep = async (index: number) => {
+    setStepListOpen(false);
+    if (index === step) headingRef.current?.focus();
     setErrors([]);
     setStep(index);
     if (index === STEPS.length - 1) await finalize();
@@ -845,7 +864,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   return (
     <main className="lesson-builder-shell">
       <header className="lesson-builder-topbar">
-        <button type="button" className="lesson-builder-back" onClick={onExit}>
+        <button type="button" className="lesson-builder-back" aria-label="Back to cases" onClick={onExit}>
           <ArrowLeft aria-hidden="true" />
           Back to cases
         </button>
@@ -864,8 +883,13 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
             <h1>Build a guided lesson</h1>
             <p>Choose a case, set your learning goals, then shape the questions and hints.</p>
           </div>
-          <nav aria-label="Lesson builder steps">
-            <ol>
+          <nav aria-label="Lesson builder steps" className={stepListOpen ? 'is-open' : ''}>
+            <button type="button" className="lesson-builder-step-toggle" aria-label="All lesson steps" aria-describedby="lesson-builder-current-step" aria-expanded={stepListOpen} aria-controls="lesson-builder-step-list"
+              onClick={() => setStepListOpen(open => !open)}>
+              <span id="lesson-builder-current-step">Step {step + 1} of {STEPS.length} · {STEPS[step].short}</span>
+              <span>All steps <ChevronDown aria-hidden="true" /></span>
+            </button>
+            <ol id="lesson-builder-step-list">
               {STEPS.map((item, index) => (
                 <li key={item.short}>
                   <button
@@ -908,6 +932,17 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
               <div>
                 <h3>Review these items</h3>
                 <ul>{errors.map((error, index) => <li key={`${error}-${index}`}>{error.replace(/^- /, '')}</li>)}</ul>
+                {hasSettingsError && step !== 0 && (
+                  <button type="button" className="lesson-builder-button secondary compact" onClick={() => { setStep(0); setErrors(validateStep(0, form)); }}>Edit lesson settings</button>
+                )}
+                <div className="lesson-builder-error-actions">
+                  {['Edit setup', 'Edit learning goals', 'Edit tutor path', 'Edit sources'].map((label, index) => (
+                    index !== step && !(index === 0 && hasSettingsError)
+                    && validateStep(index, form).some(error => errors.includes(error))
+                    && <button key={label} type="button" className="lesson-builder-button secondary compact"
+                      onClick={() => { setStep(index); setErrors(validateStep(index, form)); }}>{label}</button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -915,80 +950,83 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           <form onSubmit={(event) => event.preventDefault()} noValidate>
             {step === 0 && (
               <div className="lesson-builder-section-stack">
-                <LessonSourceDropzone
-                  key={form.caseId}
-                  onApply={applyImportedOutline}
-                  parseSource={parseLessonSource}
-                  disabled={busy}
-                />
-                <div className="lesson-builder-info-card">
-                  <Info aria-hidden="true" />
-                  <p>
-                    Choose the case this lesson teaches. Importing a PDF or PowerPoint adds teaching text; the case provides the images.
-                  </p>
-                </div>
-                <div className="lesson-builder-two-column">
-                  <div className="lesson-builder-fields">
-                    <Field label="Case Package" htmlFor="lesson-case" required>
-                      <select
-                        id="lesson-case"
-                        className={INPUT_CLASS}
-                        value={form.caseId}
-                        onChange={(event) => { void changeCase(event.target.value); }}
-                        disabled={busy}
-                        required
-                      >
-                        {casePackages.map((casePackage) => (
-                          <option key={casePackage.id} value={casePackage.id}>{casePackage.title}</option>
-                        ))}
-                      </select>
-                    </Field>
-                    <Field label="Lesson title" htmlFor="lesson-title" required>
-                      <input id="lesson-title" className={INPUT_CLASS} value={form.title} onChange={(event) => updateForm('title', event.target.value)} required />
-                    </Field>
-                    <div className="lesson-builder-field-grid">
-                      <Field label="Stable lesson ID" htmlFor="lesson-id" hint="Lowercase kebab-case. Keep this ID across revisions." required>
-                        <input id="lesson-id" className={INPUT_CLASS} value={form.id} onBlur={() => updateForm('id', normalizeId(form.id))} onChange={(event) => updateForm('id', event.target.value)} aria-describedby="lesson-id-hint" required />
-                      </Field>
-                      <Field label="Content version" htmlFor="lesson-version" hint="Use semantic versioning, such as 1.0.0." required>
-                        <input id="lesson-version" className={INPUT_CLASS} value={form.version} onChange={(event) => updateForm('version', event.target.value)} aria-describedby="lesson-version-hint" required />
-                      </Field>
-                    </div>
-                    <fieldset className="lesson-builder-field">
-                      <legend>Learner levels <span aria-hidden="true">*</span></legend>
-                      <p className="lesson-builder-hint">Select every level this lesson is designed to support.</p>
-                      <div className="lesson-builder-checkboxes">
-                        {LEARNER_LEVELS.map((level) => (
-                          <label key={level.id}>
-                            <input type="checkbox" checked={form.levels.includes(level.id)} onChange={() => toggleLevel(level.id)} />
-                            <span>{level.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </fieldset>
-                    <Field label="Prerequisites" htmlFor="lesson-prerequisites" hint="One learner prerequisite per line. This can be empty.">
-                      <textarea id="lesson-prerequisites" className={INPUT_CLASS} rows={3} value={form.prerequisites} onChange={(event) => updateForm('prerequisites', event.target.value)} aria-describedby="lesson-prerequisites-hint" />
-                    </Field>
-                    <Field label="Neutral case description" htmlFor="lesson-description" hint="Describe what is visible without revealing the answer." required>
-                      <textarea id="lesson-description" className={INPUT_CLASS} rows={4} value={form.neutralDescription} onChange={(event) => updateForm('neutralDescription', event.target.value)} aria-describedby="lesson-description-hint" required />
-                    </Field>
-                  </div>
+                <div className="lesson-builder-case-choice">
+                  <Field label="Teaching case" htmlFor="lesson-case" hint="The case provides the images. Importing a document adds teaching text." required>
+                    <select
+                      id="lesson-case"
+                      className={INPUT_CLASS}
+                      value={form.caseId}
+                      onChange={(event) => { void changeCase(event.target.value); }}
+                      disabled={busy}
+                      aria-describedby="lesson-case-hint"
+                      required
+                    >
+                      {casePackages.map((casePackage) => (
+                        <option key={casePackage.id} value={casePackage.id}>{casePackage.title}</option>
+                      ))}
+                    </select>
+                  </Field>
                   {selectedCase && (
-                    <aside className="lesson-builder-case-preview" aria-label="Selected Case Package preview">
+                    <aside className="lesson-builder-case-preview compact" aria-label="Selected teaching case">
                       <LessonCasePreview casePackage={selectedCase} resolveAssetUri={resolveAssetUri} />
                       <div>
                         <span>{selectedCase.presentation.subtitle}</span>
                         <h3>{selectedCase.title}</h3>
+                        <p>{selectedCase.provenance.clinicianReview.reviewed ? 'Clinician reviewed' : 'Not clinician reviewed'}</p>
+                      </div>
+                      <details className="lesson-builder-case-details">
+                        <summary>Case details</summary>
                         <p>{selectedCase.vignette}</p>
                         <dl>
-                          <div><dt>Domain</dt><dd>{selectedCase.domain}</dd></div>
+                          <div><dt>Specialty</dt><dd>{selectedCase.domain}</dd></div>
                           <div><dt>Case version</dt><dd>{selectedCase.schemaVersion}</dd></div>
-                          <div><dt>Review</dt><dd>{selectedCase.provenance.clinicianReview.reviewed ? 'Clinician reviewed' : 'Not clinician reviewed'}</dd></div>
                         </dl>
-                      </div>
+                      </details>
                     </aside>
                   )}
                 </div>
+                <Field label="Lesson title" htmlFor="lesson-title" required>
+                  <input id="lesson-title" className={INPUT_CLASS} value={form.title} onChange={(event) => updateForm('title', event.target.value)} required />
+                </Field>
+                <fieldset className="lesson-builder-field">
+                  <legend>Learner levels <span aria-hidden="true">*</span></legend>
+                  <p className="lesson-builder-hint">Select every level this lesson is designed to support.</p>
+                  <div className="lesson-builder-checkboxes">
+                    {LEARNER_LEVELS.map((level) => (
+                      <label key={level.id}>
+                        <input type="checkbox" checked={form.levels.includes(level.id)} onChange={() => toggleLevel(level.id)} />
+                        <span>{level.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <details className="lesson-builder-disclosure" onToggle={event => setImportExpanded(event.currentTarget.open)}>
+                  <summary>Import teaching text <span>PDF or PowerPoint · optional</span></summary>
+                  <LessonSourceDropzone
+                    key={form.caseId}
+                    onApply={applyImportedOutline}
+                    parseSource={parseLessonSource}
+                    disabled={busy}
+                    expanded={importExpanded}
+                  />
+                </details>
+                <Field label="Neutral case description" htmlFor="lesson-description" hint="Describe what is visible without revealing the answer." required>
+                  <textarea id="lesson-description" className={INPUT_CLASS} rows={3} value={form.neutralDescription} onChange={(event) => updateForm('neutralDescription', event.target.value)} aria-describedby="lesson-description-hint" required />
+                </Field>
+                <Field label="Prerequisites" htmlFor="lesson-prerequisites" hint="Optional. One learner prerequisite per line.">
+                  <textarea id="lesson-prerequisites" className={INPUT_CLASS} rows={2} value={form.prerequisites} onChange={(event) => updateForm('prerequisites', event.target.value)} aria-describedby="lesson-prerequisites-hint" />
+                </Field>
+                <details className="lesson-builder-disclosure" ref={settingsRef}>
+                  <summary>Lesson settings <span>Identifier and content version</span></summary>
+                  <div className="lesson-builder-field-grid">
+                    <Field label="Stable lesson ID" htmlFor="lesson-id" hint="Lowercase kebab-case. Keep this ID across revisions." required>
+                      <input id="lesson-id" className={INPUT_CLASS} value={form.id} onBlur={() => updateForm('id', normalizeId(form.id))} onChange={(event) => updateForm('id', event.target.value)} aria-describedby="lesson-id-hint" required />
+                    </Field>
+                    <Field label="Content version" htmlFor="lesson-version" hint="Use semantic versioning, such as 1.0.0." required>
+                      <input id="lesson-version" className={INPUT_CLASS} value={form.version} onChange={(event) => updateForm('version', event.target.value)} aria-describedby="lesson-version-hint" required />
+                    </Field>
+                  </div>
+                </details>
               </div>
             )}
 

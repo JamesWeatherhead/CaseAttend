@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { webcrypto } from 'node:crypto';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import LessonBuilder from '../components/LessonBuilder';
 import type { CasePackageV1 } from '../core/casePackage';
@@ -166,7 +166,7 @@ describe('LessonBuilder', () => {
       expect(within(navigation).getByRole('button', { name: new RegExp(label.replace('/', '\\/')) })).toBeTruthy();
     }
     expect(screen.getByText(/does not contact a model or read an API key/i)).toBeTruthy();
-    expect(screen.getByText(/Choose the case this lesson teaches/i)).toBeTruthy();
+    expect(screen.getByText(/The case provides the images/i)).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -181,6 +181,7 @@ describe('LessonBuilder', () => {
     );
     await screen.findByRole('heading', { name: 'Set up the lesson' });
 
+    fireEvent.click(screen.getByText('Import teaching text'));
     const source = new File(['local bytes'], 'PATIENT-NAME-teaching.pdf', { type: 'application/pdf' });
     const fileInput = screen.getByLabelText('Choose PDF or PowerPoint');
     expect((fileInput as HTMLInputElement).tabIndex).toBe(-1);
@@ -248,6 +249,7 @@ describe('LessonBuilder', () => {
     );
     await screen.findByRole('heading', { name: 'Set up the lesson' });
     fireEvent.change(screen.getByLabelText(/Lesson title/), { target: { value: 'Keep my edited title' } });
+    fireEvent.click(screen.getByText('Import teaching text'));
     fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), {
       target: { files: [new File(['bytes'], 'teaching.pptx')] },
     });
@@ -274,6 +276,146 @@ describe('LessonBuilder', () => {
     expect(await screen.findByRole('heading', { name: 'Define objectives and evidence' })).toBeTruthy();
     expect(objectivesButton.getAttribute('aria-current')).toBe('step');
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('closes the compact step list with visible focus for current and different steps', async () => {
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages} />);
+    const setupHeading = await screen.findByRole('heading', { name: 'Set up the lesson' });
+    const toggle = screen.getByRole('button', { name: 'All lesson steps' });
+    const navigation = screen.getByRole('navigation', { name: 'Lesson builder steps' });
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    fireEvent.click(within(navigation).getByRole('button', { name: 'Setup' }));
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(setupHeading);
+    fireEvent.click(toggle);
+    const objectives = within(navigation).getByRole('button', { name: 'Objectives/evidence' });
+    fireEvent.click(objectives);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(objectives.getAttribute('aria-current')).toBe('step');
+    expect(document.activeElement).toBe(screen.getByRole('heading', { name: 'Define objectives and evidence' }));
+  });
+
+  it('uses familiar field messages and recovery links when review skips incomplete steps', async () => {
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.click(screen.getByRole('button', { name: 'Review/export' }));
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('Objective 1 needs a learner-facing description.');
+    expect(alert.textContent).not.toContain('objectives[0]');
+    fireEvent.click(screen.getByRole('button', { name: 'Edit learning goals' }));
+    expect(screen.getByRole('heading', { name: 'Define objectives and evidence' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('alert'));
+    expect(screen.getByRole('alert').textContent).not.toContain('Socratic');
+  });
+
+  it('keeps core validation after the friendly field checks', async () => {
+    const storedLesson = await createStarterLessonPlanV1({
+      caseId: teachingCase.id, title: 'Stored lesson', neutralDescription: teachingCase.neutralDescription,
+      teachingNotes: teachingCase.teachingNotes, sourceName: teachingCase.provenance.sourceName,
+      sourceUrl: teachingCase.provenance.sourceUrl!, learnerLevels: ['undergrad'],
+    });
+    const saveUpdatedBundle = vi.fn();
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages}
+      loadStoredLesson={async () => storedLesson} saveUpdatedBundle={saveUpdatedBundle} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.click(screen.getByRole('button', { name: 'Tutor path' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add hint' }));
+    fireEvent.change(screen.getByLabelText(new RegExp(`Hint ${storedLesson.allowedHints.length + 1} ID`)), { target: { value: storedLesson.allowedHints[0].id } });
+    fireEvent.change(screen.getAllByLabelText(/Hint text/).at(-1)!, { target: { value: 'Another meaningful hint.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Review/export' }));
+    expect((await screen.findByRole('alert')).textContent).toContain('duplicates');
+    expect(saveUpdatedBundle).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Export JSON bundle' })).toBeNull();
+  });
+
+  it('preserves an import completed while collapsed without moving focus or applying it', async () => {
+    let finish!: (outline: LessonSourceOutline) => void;
+    const parseLessonSource = vi.fn(() => new Promise<LessonSourceOutline>(resolve => { finish = resolve; }));
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages} parseLessonSource={parseLessonSource} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    const summary = screen.getByText('Import teaching text');
+    const disclosure = summary.closest('details')!;
+    expect(disclosure.open).toBe(false);
+    expect(parseLessonSource).not.toHaveBeenCalled();
+    fireEvent.click(summary);
+    fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), { target: { files: [new File(['bytes'], 'synthetic.pdf')] } });
+    fireEvent.click(summary);
+    const title = screen.getByLabelText(/Lesson title/) as HTMLInputElement;
+    title.focus();
+    await act(async () => finish(importedOutline));
+    expect(disclosure.open).toBe(false);
+    expect(document.activeElement).toBe(title);
+    expect(title.value).not.toBe(importedOutline.titleCandidate);
+    fireEvent.click(summary);
+    expect(await screen.findByRole('heading', { name: 'PDF draft ready to review' })).toBeTruthy();
+    expect(parseLessonSource).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Apply imported draft' }));
+    expect(title.value).toBe(importedOutline.titleCandidate);
+    fireEvent.click(summary);
+    fireEvent.click(summary);
+    expect(screen.getByText(/Imported draft · educator review required/)).toBeTruthy();
+    expect(parseLessonSource).toHaveBeenCalledTimes(1);
+  });
+
+  it('aborts an import when the teaching case changes and ignores its late result', async () => {
+    let finish!: (outline: LessonSourceOutline) => void;
+    let signal!: AbortSignal;
+    const parseLessonSource = vi.fn((_file: File, options?: { signal?: AbortSignal }) => {
+      signal = options!.signal!;
+      return new Promise<LessonSourceOutline>(resolve => { finish = resolve; });
+    });
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadTwoCasePackages} parseLessonSource={parseLessonSource} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.click(screen.getByText('Import teaching text'));
+    fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), { target: { files: [new File(['bytes'], 'synthetic.pdf')] } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Teaching case' }), { target: { value: secondTeachingCase.id } });
+    await waitFor(() => expect(signal.aborted).toBe(true));
+    await act(async () => finish(importedOutline));
+    expect(screen.queryByRole('heading', { name: 'PDF draft ready to review' })).toBeNull();
+    expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toContain(secondTeachingCase.title);
+    expect(screen.getByRole('button', { name: /Drop a PDF or .pptx here/ })).toBeTruthy();
+  });
+
+  it('keeps the imported preview when a case change is declined', async () => {
+    vi.mocked(confirm).mockReturnValue(false);
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadTwoCasePackages} parseLessonSource={async () => importedOutline} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.click(screen.getByText('Import teaching text'));
+    fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), { target: { files: [new File(['bytes'], 'synthetic.pdf')] } });
+    await screen.findByRole('heading', { name: 'PDF draft ready to review' });
+    fireEvent.change(screen.getByLabelText(/Lesson title/), { target: { value: 'Keep this title' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Teaching case' }), { target: { value: secondTeachingCase.id } });
+    expect(confirm).toHaveBeenCalled();
+    expect((screen.getByRole('combobox', { name: 'Teaching case' }) as HTMLSelectElement).value).toBe(teachingCase.id);
+    expect(screen.getByRole('heading', { name: 'PDF draft ready to review' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Apply imported draft' })).toBeTruthy();
+  });
+
+  it.each([
+    ['Stable lesson ID', '', 'Next: objectives/evidence'],
+    ['Content version', 'invalid-version', 'Next: objectives/evidence'],
+    ['Stable lesson ID', '', 'Review/export'],
+    ['Content version', 'invalid-version', 'Review/export'],
+  ])('reveals invalid hidden %s settings when using %s then %s', async (label, value, action) => {
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    const summary = screen.getByText('Lesson settings');
+    const disclosure = summary.closest('details')!;
+    expect(disclosure.open).toBe(false);
+    fireEvent.click(summary);
+    fireEvent.change(screen.getByLabelText(new RegExp(label)), { target: { value } });
+    fireEvent.click(summary);
+    expect(disclosure.open).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    if (action === 'Review/export') fireEvent.click(await screen.findByRole('button', { name: 'Edit lesson settings' }));
+    const visibleSetting = screen.getByLabelText(new RegExp(label));
+    expect(visibleSetting.closest('details')!.open).toBe(true);
+    expect(document.activeElement).toBe(screen.getByRole('alert'));
+    fireEvent.change(visibleSetting, { target: { value: label === 'Content version' ? '1.0.0' : 'valid-lesson-id' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Next: objectives/evidence' }));
+    expect(screen.getByRole('heading', { name: 'Define objectives and evidence' })).toBeTruthy();
   });
 
   it('offers keyboard-accessible controls for reordering objectives', async () => {
@@ -387,10 +529,10 @@ describe('LessonBuilder', () => {
     fireEvent.change(screen.getByLabelText(/Answer-revealing teaching notes/), { target: { value: 'CASE A PRIVATE ANSWER' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Setup/ }));
-    fireEvent.change(screen.getByRole('combobox', { name: /Case Package/ }), { target: { value: secondTeachingCase.id } });
+    fireEvent.change(screen.getByRole('combobox', { name: /Teaching case/ }), { target: { value: secondTeachingCase.id } });
 
     expect(confirm).toHaveBeenCalledWith(
-      'Changing the Case Package will clear the lesson content entered for this case. Continue?',
+      'Changing the teaching case will clear the lesson content entered for this case. Continue?',
     );
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toContain('Second teaching case');
     expect((screen.getByLabelText(/Stable lesson ID/) as HTMLInputElement).value).toBe('second-teaching-case-lesson');
@@ -429,7 +571,7 @@ describe('LessonBuilder', () => {
     );
     await screen.findByRole('heading', { name: 'Set up the lesson' });
 
-    fireEvent.change(screen.getByRole('combobox', { name: /Case Package/ }), {
+    fireEvent.change(screen.getByRole('combobox', { name: /Teaching case/ }), {
       target: { value: localTeachingCase.id },
     });
 
@@ -439,6 +581,11 @@ describe('LessonBuilder', () => {
     });
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value)
       .toBe('Exact saved custom lesson');
+    fireEvent.click(screen.getByText('Lesson settings'));
+    fireEvent.click(screen.getByText('Lesson settings'));
+    fireEvent.change(screen.getByLabelText(/Lesson title/), { target: { value: 'Revised title' } });
+    expect((screen.getByLabelText(/Stable lesson ID/) as HTMLInputElement).value).toBe(storedLesson.id);
+    expect((screen.getByLabelText(/Content version/) as HTMLInputElement).value).toBe(storedLesson.version);
     expect((screen.getByLabelText(/Neutral case description/) as HTMLTextAreaElement).value)
       .toBe(storedLesson.neutralDescription);
     expect(loadStoredLesson).toHaveBeenCalledWith(localTeachingCase);
@@ -533,7 +680,7 @@ describe('LessonBuilder', () => {
     await screen.findByRole('heading', { name: 'Set up the lesson' });
     const originalTitle = (screen.getByLabelText(/Lesson title/) as HTMLInputElement).value;
 
-    fireEvent.change(screen.getByRole('combobox', { name: /Case Package/ }), {
+    fireEvent.change(screen.getByRole('combobox', { name: /Teaching case/ }), {
       target: { value: localTeachingCase.id },
     });
 
@@ -541,7 +688,7 @@ describe('LessonBuilder', () => {
     expect(alert.textContent).toContain('audience-specific learner openings');
     expect(alert.textContent).toContain('No lesson content was changed.');
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toBe(originalTitle);
-    expect((screen.getByRole('combobox', { name: /Case Package/ }) as HTMLSelectElement).value)
+    expect((screen.getByRole('combobox', { name: /Teaching case/ }) as HTMLSelectElement).value)
       .toBe(teachingCase.id);
     expect(fetch).not.toHaveBeenCalled();
   });

@@ -25,6 +25,7 @@ interface LessonSourceDropzoneProps {
   onApply: (outline: LessonSourceOutline) => boolean | void;
   parseSource?: LessonSourceParser;
   disabled?: boolean;
+  expanded?: boolean;
 }
 
 const ACCEPTED_SOURCE_TYPES = [
@@ -43,6 +44,7 @@ const LessonSourceDropzone: React.FC<LessonSourceDropzoneProps> = ({
   onApply,
   parseSource = importLessonSource,
   disabled = false,
+  expanded = true,
 }) => {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -65,20 +67,20 @@ const LessonSourceDropzone: React.FC<LessonSourceDropzoneProps> = ({
   useEffect(() => {
     if (outline) {
       setAnnouncement(`${outline.format === 'pdf' ? 'PDF' : 'PowerPoint'} draft ready to review.`);
-      previewHeadingRef.current?.focus();
+      if (expanded) previewHeadingRef.current?.focus();
     }
-  }, [outline]);
+  }, [outline, expanded]);
 
   useEffect(() => {
-    if (error) errorRef.current?.focus();
-  }, [error]);
+    if (error && expanded) errorRef.current?.focus();
+  }, [error, expanded]);
 
   useEffect(() => {
-    if (returnFocusToDropzone && !outline) {
+    if (returnFocusToDropzone && !outline && expanded) {
       dropzoneRef.current?.focus();
       setReturnFocusToDropzone(false);
     }
-  }, [outline, returnFocusToDropzone]);
+  }, [outline, returnFocusToDropzone, expanded]);
 
   const reset = () => {
     abortRef.current?.abort();

@@ -133,6 +133,8 @@
   list-style: none;
 }
 
+.lesson-builder-sidebar nav .lesson-builder-step-toggle { display: none; }
+
 .lesson-builder-sidebar nav button {
   width: 100%;
   min-height: 48px;
@@ -269,6 +271,15 @@ button[aria-current='step'] .lesson-builder-step-number {
   align-items: start;
   gap: 28px;
 }
+
+.lesson-builder-case-choice { display: grid; gap: 14px; min-width: 0; }
+.lesson-builder-disclosure { min-width: 0; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 14px; background: rgba(18, 21, 28, 0.55); }
+.lesson-builder-disclosure > summary { min-height: 58px; padding: 16px; color: #d2def0; font-size: 14px; font-weight: 650; cursor: pointer; }
+.lesson-builder-disclosure > summary > span { display: block; margin: 5px 0 0 16px; color: #929dac; font-size: 12px; font-weight: 400; }
+.lesson-builder-disclosure > .lesson-source-import { margin: 0 12px 12px; }
+.lesson-builder-disclosure > .lesson-builder-field-grid { padding: 4px 16px 18px; }
+.lesson-builder-error-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.lesson-builder-error-actions:not(:empty) { margin-top: 12px; }
 
 .lesson-source-import {
   overflow: hidden;
@@ -803,6 +814,17 @@ select.lesson-builder-input {
   color: #aeb6c2;
   text-align: right;
 }
+
+.lesson-builder-case-preview.compact { position: static; display: grid; grid-template-columns: 140px minmax(0, 1fr); align-items: center; border-radius: 14px; }
+.lesson-builder-case-preview.compact > img,
+.lesson-builder-case-preview.compact > [role='img'] { width: 100%; height: 118px; aspect-ratio: auto; padding: 10px; object-fit: contain; }
+.lesson-builder-case-preview.compact > div:not([role='img']) { min-width: 0; padding: 14px; }
+.lesson-builder-case-preview.compact h3 { margin: 5px 0 8px; font-size: 15px; }
+.lesson-builder-case-preview.compact > div > p { color: #a6b3c4; font-size: 12px; }
+.lesson-builder-case-details { grid-column: 1 / -1; padding: 0 14px; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.lesson-builder-case-details > summary { min-height: 44px; padding: 12px 0; color: #a5b9d6; font-size: 12px; cursor: pointer; }
+.lesson-builder-case-details[open] { padding-bottom: 14px; }
+.lesson-builder-case-details dl { margin-top: 12px; padding-top: 12px; }
 
 .lesson-builder-info-card,
 .lesson-builder-error-summary {
@@ -1370,36 +1392,62 @@ select.lesson-builder-input {
   .lesson-builder-sidebar {
     position: static;
     min-height: auto;
-    gap: 20px;
-    padding: 25px 16px 16px;
+    gap: 16px;
+    padding: 22px 16px 16px;
     border-right: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   .lesson-builder-sidebar nav {
-    overflow-x: auto;
-    margin: 0 -16px;
-    padding: 0 16px 5px;
+    margin: 0;
+    padding: 0;
   }
 
   .lesson-builder-sidebar nav ol {
-    width: max-content;
-    display: flex;
+    display: none;
+    margin-top: 8px;
   }
 
+  .lesson-builder-sidebar nav.is-open ol { display: grid; }
+
+  .lesson-builder-sidebar nav .lesson-builder-step-toggle {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    color: #c8d8f0;
+    background: rgba(37, 99, 235, 0.09);
+    border-color: rgba(96, 165, 250, 0.2);
+    font-size: 12px;
+  }
+
+  .lesson-builder-step-toggle > span:last-child { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; color: #95baff; }
+  .lesson-builder-step-toggle svg { width: 16px; height: 16px; }
+  .lesson-builder-step-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+
+  .lesson-builder-sidebar > div:first-child > p:last-child { margin-top: 12px; }
+
+  .lesson-builder-case-preview.compact { grid-template-columns: 96px minmax(0, 1fr); }
+  .lesson-builder-case-preview.compact > img,
+  .lesson-builder-case-preview.compact > [role='img'] { height: 100px; padding: 8px; }
+  .lesson-builder-case-preview.compact > div:not([role='img']) { padding: 12px; }
+  .lesson-builder-case-preview.compact h3 { font-size: 14px; }
+
   .lesson-builder-sidebar nav button {
-    width: auto;
-    min-width: max-content;
-    padding-right: 14px;
+    width: 100%;
+    min-width: 0;
   }
 
   .lesson-builder-privacy-note {
     margin-top: 0;
+    padding: 10px 12px;
   }
 
   .lesson-builder-workspace {
-    padding: 32px 16px 55px;
+    padding: 24px 16px 55px;
   }
+
+  .lesson-builder-workspace-header { margin-bottom: 20px; }
 
   .lesson-source-header,
   .lesson-source-preview-heading {
