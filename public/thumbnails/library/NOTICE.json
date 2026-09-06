@@ -1,0 +1,1119 @@
+{
+  "description": "Library card display derivatives of the listed canonical teaching assets. Original attribution and licenses apply. Open a case to inspect the original image.",
+  "transformation": "Aspect-preserving downsize inside 960 × 400 without enlargement or cropping, orientation normalization, sRGB conversion, metadata removal, WebP quality 82.",
+  "encoder": {
+    "sharp": "0.35.4",
+    "vips": "8.18.6",
+    "webp": "1.6.0"
+  },
+  "records": [
+    {
+      "caseId": "local-study-sub1",
+      "title": "72F, progressive memory decline",
+      "source": {
+        "src": "/images/sub-1/FLAIR/14.png",
+        "sha256": "f2e26280e49ef4941f50bd116dad3937b9343dbc12f4c7e21a30531abaeaf82c",
+        "bytes": 24726
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/local-study-sub1-083aaaef579a50ec.webp",
+        "sha256": "083aaaef579a50ec1b6796eb8e7b39a52b13bcd8cf2ac51c5c0a27e356c50f7d",
+        "bytes": 6406,
+        "width": 256,
+        "height": 256
+      },
+      "attribution": "Rorden, Absher, and Newman-Norlund, 2024. OpenNeuro dataset ds004889 version 1.1.2.",
+      "sourceName": "OpenNeuro ds004889, SOOP",
+      "sourceUrl": "https://openneuro.org/datasets/ds004889/versions/1.1.2",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "patho-study-breast",
+      "title": "62F, suspicious breast mass",
+      "source": {
+        "src": "/images/patho-1/HE_10x/1.webp",
+        "sha256": "1231f129c548e0e3482b160354fc9cbfea4ddbdd3bf4c76c74adfbfa777dc32a",
+        "bytes": 1477568
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/patho-study-breast-0e3dc67739921976.webp",
+        "sha256": "0e3dc677399219760c364fabd06b8509d9b9de6c1eac50416d24b0f117cf764d",
+        "bytes": 50412,
+        "width": 400,
+        "height": 400
+      },
+      "attribution": "The Cancer Genome Atlas Breast Invasive Carcinoma project, public source record TCGA-AC-A62V.",
+      "sourceName": "TCGA-BRCA, public source record TCGA-AC-A62V",
+      "sourceUrl": "https://portal.gdc.cancer.gov/projects/TCGA-BRCA",
+      "license": {
+        "name": "GDC Open Access data terms"
+      }
+    },
+    {
+      "caseId": "cxr-pneumothorax",
+      "title": "21M, sudden chest pain",
+      "source": {
+        "src": "/images/cxr-pneumothorax/1.jpg",
+        "sha256": "fe79c23752a7f32c5e8748726ca596ab94d9f4a5a878f768cd4d1d9eaa2bc7cd",
+        "bytes": 440101
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-pneumothorax-3ff3b17a8d4d3bae.webp",
+        "sha256": "3ff3b17a8d4d3bae53fb98b775e9fa0c9a7ef7c42b7d7fc11a8149fc091783df",
+        "bytes": 7556,
+        "width": 311,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "cxr-pneumonia",
+      "title": "67M, cough and fever",
+      "source": {
+        "src": "/images/cxr-pneumonia/1.jpg",
+        "sha256": "cae983ca0ed90b161ff55a49915f563939cdee792efcc98788e5749ae75e6f76",
+        "bytes": 3155438
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-pneumonia-43639f3220b05561.webp",
+        "sha256": "43639f3220b05561d662c706f73f358bcfccdf9851df1a28a31d0f936ed44e25",
+        "bytes": 11646,
+        "width": 503,
+        "height": 400
+      },
+      "attribution": "Mikael Haggstrom, MD",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "cxr-chf",
+      "title": "68M, shortness of breath",
+      "source": {
+        "src": "/images/cxr-chf/1.jpg",
+        "sha256": "24987bed716d82b6750cfd736c47604a29bf8acedc11ff6120768e5673a3b0b8",
+        "bytes": 297347
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-chf-bd53044bf58c65b8.webp",
+        "sha256": "bd53044bf58c65b84bf270885813c8cc5ed579cabf0af08db5f4f75d53010119",
+        "bytes": 6350,
+        "width": 404,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+        "spdxId": "CC-BY-SA-3.0",
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+      }
+    },
+    {
+      "caseId": "cxr-effusion",
+      "title": "58M, progressive dyspnea",
+      "source": {
+        "src": "/images/cxr-effusion/1.jpg",
+        "sha256": "9b5505fb0a022a2503b8e07ddee9f1db4655010a9343a7ccab87f7b979e8f30b",
+        "bytes": 342919
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-effusion-75781b623d136815.webp",
+        "sha256": "75781b623d1368152e504a06df4ebeeb26a46554b835bb75ae24a8d5cc0ef15f",
+        "bytes": 6620,
+        "width": 474,
+        "height": 400
+      },
+      "attribution": "James Heilman, MD",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+        "spdxId": "CC-BY-SA-3.0",
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+      }
+    },
+    {
+      "caseId": "axr-sbo",
+      "title": "45F, abdominal pain and vomiting",
+      "source": {
+        "src": "/images/axr-sbo/1.jpg",
+        "sha256": "3ca32774782fec475335482d7284932b0c0a412d19f0d7070dc1dfaad1339e42",
+        "bytes": 2272579
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/axr-sbo-a097a9e2a51b7a73.webp",
+        "sha256": "a097a9e2a51b7a73292da9e72de0108e002557a8bd966d703cf29227ff02e281",
+        "bytes": 6002,
+        "width": 339,
+        "height": 400
+      },
+      "attribution": "James Heilman, MD",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+        "spdxId": "CC-BY-SA-3.0",
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+      }
+    },
+    {
+      "caseId": "ct-epidural",
+      "title": "87F, fall with head injury",
+      "source": {
+        "src": "/images/ct-epidural/1.jpg",
+        "sha256": "ec2c603b32b60465f216fbc8b99a9eeaa95097befc674acd8ca7509c688332d7",
+        "bytes": 147960
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/ct-epidural-468f51c38b0fad90.webp",
+        "sha256": "468f51c38b0fad903f9524c0678c220e506d188d630f2d427959c178744e7d05",
+        "bytes": 20034,
+        "width": 449,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "ct-subdural",
+      "title": "80F, progressive headache",
+      "source": {
+        "src": "/images/ct-subdural/1.jpg",
+        "sha256": "eacc993a674c130a48343bff4068da94ad8253555e5f6023fe5184de0bff061f",
+        "bytes": 204521
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/ct-subdural-f9fd0d6a9b52ecde.webp",
+        "sha256": "f9fd0d6a9b52ecde0d653baf2f53b706685af84b0a3fbb5cd8a072d8b4d2b035",
+        "bytes": 22436,
+        "width": 688,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "cxr-pneumoperitoneum",
+      "title": "71F, acute abdominal pain",
+      "source": {
+        "src": "/images/cxr-pneumoperitoneum/1.jpg",
+        "sha256": "513d73d4915b8a14055e89a5af0115f43c53de24e3f0fb8d43f506cc63bf42ed",
+        "bytes": 125564
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-pneumoperitoneum-997b2f152644aaa3.webp",
+        "sha256": "997b2f152644aaa32ff6d9399eab45858df84b328d3123b9e913a0e7191d0a00",
+        "bytes": 10002,
+        "width": 430,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "axr-nec",
+      "title": "Neonate, feeding intolerance",
+      "source": {
+        "src": "/images/axr-nec/1.jpg",
+        "sha256": "cb038906e0c5dfe5e15929127216d1cfb2430aaa54a7d7e862d6021be52ef41f",
+        "bytes": 108569
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/axr-nec-20a910a15cec1aed.webp",
+        "sha256": "20a910a15cec1aed6bc227b143fb92797bb5ddee4454d2a2afb6b37a0d5e8eb4",
+        "bytes": 14412,
+        "width": 499,
+        "height": 400
+      },
+      "attribution": "Hellerhoff",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "xr-colles",
+      "title": "Adult, wrist injury after fall",
+      "source": {
+        "src": "/images/xr-colles/1.jpg",
+        "sha256": "b1216679cdcf446e9c023ea6493831162e8f8a9f82e4e4ef47d8234e81d9ba94",
+        "bytes": 320892
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/xr-colles-01de6304414b3c2e.webp",
+        "sha256": "01de6304414b3c2e9e6787cf482f29ad2b9cc47d21379f4c5daecc87da3026eb",
+        "bytes": 9486,
+        "width": 362,
+        "height": 400
+      },
+      "attribution": "Lucien Monfils",
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Collesfracture.jpg",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+        "spdxId": "CC-BY-SA-3.0",
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+      }
+    },
+    {
+      "caseId": "derm-melanoma",
+      "title": "55M, evolving pigmented lesion",
+      "source": {
+        "src": "/images/derm-melanoma/1.jpg",
+        "sha256": "426662261a6ff73f4122cad0604df95019b14395b74600eafc8d80019e45f14d",
+        "bytes": 1024192
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/derm-melanoma-79b13c1d8d2907d8.webp",
+        "sha256": "79b13c1d8d2907d876901be3441e10bc4e9a69e839b421bef67cbd31a6615615",
+        "bytes": 59334,
+        "width": 575,
+        "height": 400
+      },
+      "attribution": "National Cancer Institute",
+      "sourceName": "Wikimedia Commons and National Cancer Institute",
+      "license": {
+        "name": "Public domain",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "derm-bcc",
+      "title": "72M, slow-growing nasal lesion",
+      "source": {
+        "src": "/images/derm-bcc/1.jpg",
+        "sha256": "a790c080ea607f3a512bfb607030f5e173d44050f3ffa100f332ce2ad244ee2b",
+        "bytes": 304024
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/derm-bcc-1e9bee7a37a04121.webp",
+        "sha256": "1e9bee7a37a04121fe79187739e095c4a43d9516aec76b9d63079e07aafdc306",
+        "bytes": 14130,
+        "width": 397,
+        "height": 400
+      },
+      "attribution": "James Heilman, MD",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution 3.0 Unported",
+        "spdxId": "CC-BY-3.0",
+        "url": "https://creativecommons.org/licenses/by/3.0/"
+      }
+    },
+    {
+      "caseId": "derm-sebk",
+      "title": "65F, long-standing brown lesions",
+      "source": {
+        "src": "/images/derm-sebk/1.jpg",
+        "sha256": "e1b31d6a8336da4a0032dec03e6bba192ea9f01a0948c1b2426b01bc5af8e5df",
+        "bytes": 208830
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/derm-sebk-df95eb9520e7a8b2.webp",
+        "sha256": "df95eb9520e7a8b24ea32f1b94b7ebba5b409e2cf48a437b860c0dc61b75d03f",
+        "bytes": 4366,
+        "width": 458,
+        "height": 400
+      },
+      "attribution": "Assafn",
+      "sourceName": "Wikimedia Commons",
+      "license": {
+        "name": "Creative Commons Attribution-ShareAlike 4.0 International",
+        "spdxId": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      }
+    },
+    {
+      "caseId": "us-appendix-normal",
+      "title": "Right lower quadrant pain in a child",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-appendix-normal.jpg",
+        "sha256": "a753ee04904c37c994f88da6a7ae38641bbcaa753b66501aa4913fbb7e824d88",
+        "bytes": 23563
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-appendix-normal-7f91bf3fad7252e2.webp",
+        "sha256": "7f91bf3fad7252e2647fab42f928c2bdf8ec7734eb91b8d44da735270b2ef8f6",
+        "bytes": 7072,
+        "width": 343,
+        "height": 232
+      },
+      "attribution": "Mikael Haggstrom, M.D., Wikimedia Commons (CC0).",
+      "sourceName": "Wikimedia Commons, File:Ultrasonography of a normal appendix without and with compression.jpg (Mikael Haggstrom, M.D.)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ultrasonography_of_a_normal_appendix_without_and_with_compression.jpg",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "us-cholecystitis",
+      "title": "Right upper quadrant pain after a fatty meal",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-cholecystitis.jpg",
+        "sha256": "3f41f1fb8ac2841b183778c4988770b2e588212962b32a08b62cd57e581daad9",
+        "bytes": 67078
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-cholecystitis-67c1cc4420e5b19e.webp",
+        "sha256": "67c1cc4420e5b19e1e7f38efbb84c6853815d488f5f64f91c50b2a622580ca01",
+        "bytes": 10970,
+        "width": 471,
+        "height": 400
+      },
+      "attribution": "Mikael Haggstrom, M.D., Wikimedia Commons (CC0).",
+      "sourceName": "Wikimedia Commons, File:Ultrasonography of cholecystitis.jpg (Mikael Haggstrom, M.D.)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ultrasonography_of_cholecystitis.jpg",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "us-renal-diabetic",
+      "title": "Worsening kidney function in longstanding diabetes",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-renal-diabetic.jpg",
+        "sha256": "0b983378960f1cfb0cfcc79419d99d36d7a6ac18bdd22f91aa43c91a73b1f29f",
+        "bytes": 93920
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-renal-diabetic-433cfbf5af762c7f.webp",
+        "sha256": "433cfbf5af762c7f34fc3471f2a498e42206aa4641ed9d73a9accdf00df75f93",
+        "bytes": 16346,
+        "width": 395,
+        "height": 400
+      },
+      "attribution": "Mikael Haggstrom, M.D., Wikimedia Commons (CC0).",
+      "sourceName": "Wikimedia Commons, File:Ultrasonography of kidney with diabetic nephropathy.jpg (Mikael Haggstrom, M.D.)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ultrasonography_of_kidney_with_diabetic_nephropathy.jpg",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "us-lung-blines",
+      "title": "Focal chest tenderness after blunt trauma",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-lung-blines.png",
+        "sha256": "ab76ad0af4c188d5bc2961e62a577812e24f388d069ed57c3ac04b70ebb71976",
+        "bytes": 43303
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-lung-blines-ce38258bb851ca80.webp",
+        "sha256": "ce38258bb851ca80fc6ca0b1ea9edc10f417f74823a29051a6963071117f17cf",
+        "bytes": 2894,
+        "width": 435,
+        "height": 362
+      },
+      "attribution": "Bizorsilva, Wikimedia Commons (public domain, PD-self).",
+      "sourceName": "Wikimedia Commons, File:Lung Contusion.png (Bizorsilva)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lung_Contusion.png",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "us-plax-mmode",
+      "title": "Exertional dyspnea: a parasternal long-axis view",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-plax-mmode.jpg",
+        "sha256": "1aeaf07e59ffeeb203f16c509a9c5a6c407687f717317707b26bd8672278c384",
+        "bytes": 125896
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-plax-mmode-140463352b7f45b0.webp",
+        "sha256": "140463352b7f45b05bd46c1eb5265ddf028972e45bb464771691c44ea3d644f3",
+        "bytes": 47426,
+        "width": 586,
+        "height": 400
+      },
+      "attribution": "Kjetil Lenes (Commons user Ekko), Wikimedia Commons (public domain).",
+      "sourceName": "Wikimedia Commons, File:PLAX Mmode.jpg (Kjetil Lenes)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:PLAX_Mmode.jpg",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "us-echo-4chamber",
+      "title": "Orienting an apical four-chamber view",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-echo-4chamber.jpg",
+        "sha256": "676abf601b5ed54a9a76cabeb4b2828a7b4fd46fb672b388366d783433ca1d4d",
+        "bytes": 63492
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-echo-4chamber-241abd4d7d7a2261.webp",
+        "sha256": "241abd4d7d7a2261f7c5619d48240baeec57ef046739d7c6d9fffaea21aacc88",
+        "bytes": 17068,
+        "width": 586,
+        "height": 400
+      },
+      "attribution": "Kjetil Lenes, Wikimedia Commons (public domain).",
+      "sourceName": "Wikimedia Commons, File:Echocardiogram 4chambers.jpg (Kjetil Lenes)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Echocardiogram_4chambers.jpg",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "us-echo-asd",
+      "title": "A fixed split S2 in a young adult",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-echo-asd.jpg",
+        "sha256": "99816c9f6b6410cbc047105e229ac0d8515ebd16c520a062e1362a1489367f64",
+        "bytes": 51432
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-echo-asd-97dbc53880ed1c7a.webp",
+        "sha256": "97dbc53880ed1c7aeff7644f7ae7f2d09fee5a25d4cc737a3fb0be9b05477acc",
+        "bytes": 13774,
+        "width": 586,
+        "height": 400
+      },
+      "attribution": "Kjetil Lenes (Commons user Ekko), Wikimedia Commons (public domain).",
+      "sourceName": "Wikimedia Commons, File:Echokardiogram von Atriumseptumdefekt (Ostium secundum).jpg (Kjetil Lenes)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Echokardiogram_von_Atriumseptumdefekt_%28Ostium_secundum%29.jpg",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "us-echo-vsd",
+      "title": "A harsh holosystolic murmur in an infant",
+      "source": {
+        "src": "/images/ultrasound-pocus/us-echo-vsd.jpg",
+        "sha256": "6587b70a52c29da4d7dbeb48dd2c84a99460c95e0ffc641a848ef11104e8e26e",
+        "bytes": 71975
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/us-echo-vsd-801634a4d22eb79b.webp",
+        "sha256": "801634a4d22eb79b5ca76c11fc413e5de19c621aeef252bb67e636d4bb66b294",
+        "bytes": 23324,
+        "width": 586,
+        "height": 400
+      },
+      "attribution": "Kjetil Lenes, Wikimedia Commons (public domain).",
+      "sourceName": "Wikimedia Commons, File:Ventricular Septal Defect.jpg (Kjetil Lenes)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ventricular_Septal_Defect.jpg",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "ecg-afib",
+      "title": "Palpitations and nausea on a cardiac glycoside",
+      "source": {
+        "src": "/images/ecg-signals/ecg-afib.jpg",
+        "sha256": "fbe2549e9a581601d9f40e9160bac275df298933f544b6653c896901b5a6bd02",
+        "bytes": 1133398
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/ecg-afib-319d6ae06f866a51.webp",
+        "sha256": "319d6ae06f866a518a393a32288a02eb4844c1640632b46f534865f212918dd8",
+        "bytes": 56944,
+        "width": 567,
+        "height": 400
+      },
+      "attribution": "Patho, Wikimedia Commons (public domain, PD-self); the file description notes atrial fibrillation and a digitoxin concentration.",
+      "sourceName": "Wikimedia Commons, File:ECG 005 b.jpg (Patho)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ECG_005_b.jpg",
+      "license": {
+        "name": "Public domain (author dedication, PD-self)",
+        "url": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+    },
+    {
+      "caseId": "ecg-cvp",
+      "title": "Reading an ECG and venous pressure together",
+      "source": {
+        "src": "/images/ecg-signals/ecg-cvp.jpg",
+        "sha256": "b2773acabb33e10882646f1619cd1ab951fb8e560154a363ee8fb4f6f94488ce",
+        "bytes": 3941075
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/ecg-cvp-6d67a39e4ebe68c0.webp",
+        "sha256": "6d67a39e4ebe68c0e1d61ba2ae2a264e156ab92ccd2fab71511d0ebe77a2a118",
+        "bytes": 67524,
+        "width": 867,
+        "height": 400
+      },
+      "attribution": "Stefan Bellini, Wikimedia Commons (CC0).",
+      "sourceName": "Wikimedia Commons, File:ECG and CVP Curves.jpg (Stefan Bellini)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ECG_and_CVP_Curves.jpg",
+      "license": {
+        "name": "CC0 1.0 Universal",
+        "spdxId": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    },
+    {
+      "caseId": "cxr-tb-cavitary",
+      "title": "Chronic cough, weight loss, and night sweats",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-tb-cavitary.jpg",
+        "sha256": "9c6fb83021e235d3e3e404019e4fb90692f6b847486d9d094daf32c96d6c5ff4",
+        "bytes": 60912
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-tb-cavitary-3fa792243c74a09f.webp",
+        "sha256": "3fa792243c74a09f2347ed8cba9e8a9a30d88f5583559014da9afdfc56ff6adb",
+        "bytes": 11704,
+        "width": 517,
+        "height": 400
+      },
+      "attribution": "U.S. Centers for Disease Control and Prevention / Public Health Image Library.",
+      "sourceName": "U.S. CDC Public Health Image Library, via Wikimedia Commons (File:Tuberculosis-x-ray.jpg)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tuberculosis-x-ray.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "cxr-sars",
+      "title": "Fever and hypoxemia in a returning traveler",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-sars.jpg",
+        "sha256": "f2f8096a25aac0b33cd66be6b7a3189466f61f7c7c60ce054c7acda2b4f57610",
+        "bytes": 53861
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-sars-aab70db9f192ae99.webp",
+        "sha256": "aab70db9f192ae99b48ee787e9a8e97fc2d1506c645cb7effef7b800d1922e8b",
+        "bytes": 8788,
+        "width": 442,
+        "height": 400
+      },
+      "attribution": "U.S. Centers for Disease Control and Prevention.",
+      "sourceName": "U.S. CDC, via Wikimedia Commons (File:SARS xray.jpg)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:SARS_xray.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "cxr-hantavirus",
+      "title": "Rapidly progressive dyspnea after rodent exposure",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-hantavirus.jpg",
+        "sha256": "c4ab9c531a16781ddfcf1f3114c0ed842e7c61021cb6b07c826a156090fd0e65",
+        "bytes": 68020
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-hantavirus-9c1908dda4fc6a8e.webp",
+        "sha256": "9c1908dda4fc6a8e2fbb87d3565a37ae52ff7346b7e74aa036c91f9c867c02d9",
+        "bytes": 17086,
+        "width": 602,
+        "height": 400
+      },
+      "attribution": "U.S. Centers for Disease Control and Prevention / PHIL image 6077.",
+      "sourceName": "U.S. CDC PHIL image 6077, via Wikimedia Commons (File:6077 lores.jpg)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:6077_lores.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "cxr-histoplasmosis",
+      "title": "Fever and cough after disturbing a dusty structure",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-histoplasmosis.jpg",
+        "sha256": "b6d86140c440c02104d008c7c323ab511c02edd55646b924c6d233dabc32b7be",
+        "bytes": 985860
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-histoplasmosis-449de03247a31cba.webp",
+        "sha256": "449de03247a31cbaf32e7d6c4ec4aa92d230ad6dff21dda2c4c7a74045ab9096",
+        "bytes": 10166,
+        "width": 419,
+        "height": 400
+      },
+      "attribution": "U.S. Centers for Disease Control and Prevention / PHIL image 3954.",
+      "sourceName": "U.S. CDC PHIL image 3954, via Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chest_X-ray_acute_pulmonary_histoplasmosis_PHIL_3954.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "cxr-fibrothorax",
+      "title": "Chronic breathlessness after a past chest infection",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-fibrothorax.jpg",
+        "sha256": "9a889f6c4ad233038780a3d34f1fe706e2f87848fafbe69d174c530ad85cc5a5",
+        "bytes": 338358
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-fibrothorax-1a6d4c5a169a8903.webp",
+        "sha256": "1a6d4c5a169a8903c8b59be4b432ec885a640c59db22549bb21dbbd99189e830",
+        "bytes": 8772,
+        "width": 406,
+        "height": 400
+      },
+      "attribution": "U.S. Centers for Disease Control and Prevention / PHIL image 6243.",
+      "sourceName": "U.S. CDC PHIL image 6243, via Wikimedia Commons (File:Fibrothorax chest x-ray.jpg)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fibrothorax_chest_x-ray.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "cxr-lung-mass",
+      "title": "Weight loss and a persistent cough in a smoker",
+      "source": {
+        "src": "/images/chest-radiograph-open/cxr-lung-mass.jpg",
+        "sha256": "330953bc2237aeb72a9862d5cc6d78a05f5664ad2a82da3114790d140ed1f3fd",
+        "bytes": 766136
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/cxr-lung-mass-01318800f047b440.webp",
+        "sha256": "01318800f047b4401f48f1c181d2a4dda98326e5d406c86308893b0dfb408c55",
+        "bytes": 14518,
+        "width": 400,
+        "height": 400
+      },
+      "attribution": "National Cancer Institute, U.S. National Institutes of Health.",
+      "sourceName": "U.S. National Cancer Institute, via Wikimedia Commons (File:LungCancer-Xray-01.jpg)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:LungCancer-Xray-01.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-normal",
+      "title": "Orienting to a fundus photograph before seeing pathology",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-normal.jpg",
+        "sha256": "6da1df2020cc1fdde88955822c82d69141e30d37cace80760c8c82328ee91285",
+        "bytes": 25785
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-normal-5b1e504c2a9d8511.webp",
+        "sha256": "5b1e504c2a9d8511d6a4f50f9339d89e4a0bfbcbc02f26a1c4b93f642ff6737c",
+        "bytes": 9756,
+        "width": 571,
+        "height": 400
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA06.",
+      "sourceName": "Wikimedia Commons, File:Fundus photograph-normal retina EDA06.JPG (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fundus_photograph-normal_retina_EDA06.JPG",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-background-dr",
+      "title": "Routine diabetes screening photograph with subtle vascular findings",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-background-dr.jpg",
+        "sha256": "b14c70ceffad9fa592ec6e340b4a08b47184f70ddc6e5708ba3495f2916196f6",
+        "bytes": 23079
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-background-dr-7edfc42bcfa1e291.webp",
+        "sha256": "7edfc42bcfa1e2914cf7d1deb43261171afddc0131baf69286bdf985e8b0b6dc",
+        "bytes": 8476,
+        "width": 600,
+        "height": 400
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA03.",
+      "sourceName": "Wikimedia Commons, File:Fundus retinopathy EDA03.JPG (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fundus_retinopathy_EDA03.JPG",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-proliferative-dr",
+      "title": "New floaters in a patient with longstanding diabetes",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-proliferative-dr.jpg",
+        "sha256": "389469b439973952b4532d4ef662ee1215434ea96bb8c912ded55621a5efabae",
+        "bytes": 25808
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-proliferative-dr-1b90e83c1dce8858.webp",
+        "sha256": "1b90e83c1dce8858f2da17d67681abfba86fae99d3500cf14e188ff79d2e2365",
+        "bytes": 8950,
+        "width": 611,
+        "height": 400
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA01.",
+      "sourceName": "Wikimedia Commons, File:Fundus Proliferative retinopathy EDA01.JPG (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fundus_Proliferative_retinopathy_EDA01.JPG",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-macular-edema",
+      "title": "Central visual blur in a patient with diabetes",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-macular-edema.jpg",
+        "sha256": "93fbe9306cd072e0b5ff80ab3d735ce56365c48e64fcd0a639c1907330f22f9e",
+        "bytes": 24260
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-macular-edema-7a2723ac83ac7d69.webp",
+        "sha256": "7a2723ac83ac7d69d772f7eebe0e21dfa16ba9b645c0c5df5fad2f3c34db9312",
+        "bytes": 10628,
+        "width": 600,
+        "height": 400
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA04.",
+      "sourceName": "Wikimedia Commons, File:Fundus Diabetic macular edema EDA04.JPG (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fundus_Diabetic_macular_edema_EDA04.JPG",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-amd",
+      "title": "Reading difficulty in dim light in an older adult",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-amd.jpg",
+        "sha256": "6a7843639363ac00db2ee0f5ba5dce66ac2b4f75948cc6b9a0e9b8f7121080e6",
+        "bytes": 38421
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-amd-81c9708bd74d1ba5.webp",
+        "sha256": "81c9708bd74d1ba572edb63bd06123ec1eb1aadfc1ce230a77fc7451eec70c58",
+        "bytes": 14634,
+        "width": 400,
+        "height": 343
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA2.",
+      "sourceName": "Wikimedia Commons, File:Intermediate age related macular degeneration.jpg (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Intermediate_age_related_macular_degeneration.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-cmv-retinitis",
+      "title": "Floaters and visual field loss in a severely immunocompromised patient",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-cmv-retinitis.jpg",
+        "sha256": "d92d37e452b620e1f23e27fa3c4cf225f0158fb9dee49d5d2ded58a19f78bd7d",
+        "bytes": 292312
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-cmv-retinitis-82ca147b3dbcd283.webp",
+        "sha256": "82ca147b3dbcd283b07ff80073e5a18cd343361533da264ab38b6c5145e177a6",
+        "bytes": 13516,
+        "width": 600,
+        "height": 400
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA07.",
+      "sourceName": "Wikimedia Commons, File:Fundus photograph-CMV retinitis EDA07.JPG (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fundus_photograph-CMV_retinitis_EDA07.JPG",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "fundus-retinal-detachment",
+      "title": "Flashes and a curtain-like visual deficit in a young adult with a notable family history",
+      "source": {
+        "src": "/images/ophthalmology-fundus/fundus-retinal-detachment.jpg",
+        "sha256": "e5de317dd24a5d9b1b373964a42696e907eedb5186652b2d7f6c0461d6526f2f",
+        "bytes": 21979
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/fundus-retinal-detachment-434e543412a26884.webp",
+        "sha256": "434e543412a26884f38da59d8b553ba3aa4c81b6a949806537d225ac5e615de1",
+        "bytes": 14100,
+        "width": 504,
+        "height": 386
+      },
+      "attribution": "National Eye Institute, National Institutes of Health (public domain, U.S. federal government work), ref. EDA08.",
+      "sourceName": "Wikimedia Commons, File:Retinal detachment in Von Hippel-Lindau disease.jpg (National Eye Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Retinal_detachment_in_Von_Hippel-Lindau_disease.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "mri-posterior-fossa",
+      "title": "A child with morning headaches, vomiting, and an unsteady gait",
+      "source": {
+        "src": "/images/mri-neuro-open/mri-posterior-fossa.jpg",
+        "sha256": "40dbca7cf38173760da8c21e9923ba427d944b5257ed264834fc52daa88fd76b",
+        "bytes": 132075
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/mri-posterior-fossa-806cf21bbca8e492.webp",
+        "sha256": "806cf21bbca8e492575654de9261e0b60b3360eb1f0fefceaa60a173b955c210",
+        "bytes": 12504,
+        "width": 401,
+        "height": 400
+      },
+      "attribution": "National Cancer Institute, National Institutes of Health (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:MRI of PNET.jpg (National Cancer Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:MRI_of_PNET.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "mri-white-matter",
+      "title": "Memory concerns in an older adult with long-standing hypertension",
+      "source": {
+        "src": "/images/mri-neuro-open/mri-white-matter.jpg",
+        "sha256": "fb11282328ad7d61012e60f973c20a8e824883079a2712244cb9d76762d2932f",
+        "bytes": 1148492
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/mri-white-matter-adf511e582befe14.webp",
+        "sha256": "adf511e582befe14017877e4866f2c024347a3d88c854329f297e725a2052710",
+        "bytes": 18900,
+        "width": 327,
+        "height": 400
+      },
+      "attribution": "National Institutes of Health image gallery (public domain, U.S. federal government work); image associated with a blood-pressure study.",
+      "sourceName": "Wikimedia Commons, File:White Matter Lesions (48601156232).jpg (National Institutes of Health)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:White_Matter_Lesions_%2848601156232%29.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-breast-duct",
+      "title": "A suspicious breast lesion on core biopsy",
+      "source": {
+        "src": "/images/pathology-micro-open/path-breast-duct.jpg",
+        "sha256": "bcfa06dd36b1e24b866ac628f4f05e06175e24a889d14eefc306ab2edda9877c",
+        "bytes": 3276574
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-breast-duct-2846dfb4a53f15fc.webp",
+        "sha256": "2846dfb4a53f15fcb606b07014f123ea5298eb80fbdfc278cf28963fea796b76",
+        "bytes": 88558,
+        "width": 600,
+        "height": 400
+      },
+      "attribution": "Dr. Cecil Fox (photographer), National Cancer Institute (public domain, U.S. federal government work); H&E, 100x.",
+      "sourceName": "Wikimedia Commons, File:Breast cancer cells.jpg (National Cancer Institute)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Breast_cancer_cells.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-prostate",
+      "title": "Interpreting a prostate needle biopsy",
+      "source": {
+        "src": "/images/pathology-micro-open/path-prostate.jpg",
+        "sha256": "6dbaaf2aa48939649ebd0a76b106bce6c8784aa8c95c56ff06c9aa4d64bf2c63",
+        "bytes": 298783
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-prostate-00b09d5761865c58.webp",
+        "sha256": "00b09d5761865c58c386cc36239d488ebb226bab5d0644f4404d598c1fcc4147",
+        "bytes": 61692,
+        "width": 549,
+        "height": 400
+      },
+      "attribution": "Composite of NIH/NCI CGAP photomicrographs, Wikimedia Commons (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Prostatehistopath.jpg (NIH/NCI CGAP)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Prostatehistopath.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-afb-sputum",
+      "title": "A sputum smear in a patient with chronic cough",
+      "source": {
+        "src": "/images/pathology-micro-open/path-afb-sputum.png",
+        "sha256": "3d817e35cfae818231202bf2020818534aa5575a0507bcf80454fa64b80a9025",
+        "bytes": 4440538
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-afb-sputum-22b20dbd18e2ef3b.webp",
+        "sha256": "22b20dbd18e2ef3b2fb15d0d93bad4aef8deec82da8886423c4dbeb55eee9e53",
+        "bytes": 18318,
+        "width": 400,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:TB in sputum.png (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:TB_in_sputum.png",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-malaria-falciparum",
+      "title": "Fever in a returned traveler from an endemic region",
+      "source": {
+        "src": "/images/pathology-micro-open/path-malaria-falciparum.png",
+        "sha256": "fdcd68a07c31eb5d1aed5bf41d46b5348391bc58d912d11c0f5978473cd0089e",
+        "bytes": 434013
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-malaria-falciparum-8345509adbed8473.webp",
+        "sha256": "8345509adbed84731f59d0883cc4a16f721faf52b086c99550f96175e426caa9",
+        "bytes": 16430,
+        "width": 597,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Plasmodium falciparum 01.png (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Plasmodium_falciparum_01.png",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-malaria-vivax",
+      "title": "Recurring fevers after travel",
+      "source": {
+        "src": "/images/pathology-micro-open/path-malaria-vivax.png",
+        "sha256": "ff5c07f8176bf7f01f073bf1ce2facc3cbca9049efbf693e41c42efbd96bb270",
+        "bytes": 400623
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-malaria-vivax-f6c567fdad914b73.webp",
+        "sha256": "f6c567fdad914b73a036202757f4324fc348fd689d4edca76bc316d516191378",
+        "bytes": 19354,
+        "width": 594,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Plasmodium vivax 01.png (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Plasmodium_vivax_01.png",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-giardia",
+      "title": "Persistent diarrhea after wilderness travel",
+      "source": {
+        "src": "/images/pathology-micro-open/path-giardia.jpg",
+        "sha256": "ee4bafa5b278a09a2d6bb16723d7487b62339887154fc76328696f3fa39f6cfe",
+        "bytes": 27282
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-giardia-d3873409b399fe9a.webp",
+        "sha256": "d3873409b399fe9a3a0ab6d6a54d3f3d20e157d34e00c8348b83ee32c9514b19",
+        "bytes": 5592,
+        "width": 340,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention, Public Health Image Library image 8698 (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Giardia lamblia SEM 8698 lores.jpg (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giardia_lamblia_SEM_8698_lores.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-reye-liver",
+      "title": "Encephalopathy in a child after a viral illness",
+      "source": {
+        "src": "/images/pathology-micro-open/path-reye-liver.jpg",
+        "sha256": "105fb192f06af1e453078082db4587377f4bfbbf3979488b12d05d1707432072",
+        "bytes": 384681
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-reye-liver-ea0c9ca5c5659a16.webp",
+        "sha256": "ea0c9ca5c5659a16fdb8ab4bd8c3ede2521e02a814daf688fd9d62a86efafb76",
+        "bytes": 73930,
+        "width": 605,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Reye's syndrome liver-histology.jpg (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reye%27s_syndrome_liver-histology.jpg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    },
+    {
+      "caseId": "path-schistosoma",
+      "title": "Terminal hematuria in a patient from an endemic region",
+      "source": {
+        "src": "/images/pathology-micro-open/path-schistosoma.jpg",
+        "sha256": "fe6c850ad833d083139c3ad76bc46d4095956cba03a921915c7743310a92a82a",
+        "bytes": 2147734
+      },
+      "thumbnail": {
+        "src": "/thumbnails/library/path-schistosoma-9939f5b75b8fa456.webp",
+        "sha256": "9939f5b75b8fa4562a442296c9fd250ffb7be7979c71defd4cd251a8415a879d",
+        "bytes": 131172,
+        "width": 599,
+        "height": 400
+      },
+      "attribution": "Centers for Disease Control and Prevention (public domain, U.S. federal government work).",
+      "sourceName": "Wikimedia Commons, File:Schistosoma bladder histopathology.jpeg (CDC)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schistosoma_bladder_histopathology.jpeg",
+      "license": {
+        "name": "Public domain (U.S. federal government work)",
+        "url": "https://www.usa.gov/government-works"
+      }
+    }
+  ]
+}

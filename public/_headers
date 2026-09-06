@@ -19,6 +19,10 @@
 /images/*
   Cache-Control: public, max-age=604800
 
+# Small library-only previews; teaching workspace assets stay under /images.
+/thumbnails/library/*
+  Cache-Control: public, max-age=604800
+
 # Self-hosted OCR worker, WebAssembly, and language data. Paths are stable, so
 # cache for one week and revalidate after deployments that update dependencies.
 /vendor/*

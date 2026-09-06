@@ -9,7 +9,7 @@ import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark from './OpenRouterLogo';
 import './StudyList.css';
 import { SAMPLE_CASE_ID } from '../data/sampleCase';
-import { casePackageStore } from '../services/casePackageStore';
+import CaseLibraryPreview from './CaseLibraryPreview';
 import { matchesStudyFilter, STUDY_FILTERS } from './studyFilters';
 
 export interface CaseLibraryState {
@@ -35,45 +35,6 @@ interface StudyListProps {
   onOpenResearchData?: () => void;
   onDeleteLocalCase?: (caseId: string) => Promise<void>;
 }
-
-const CasePreviewBackdrop: React.FC<{
-  casePackage: CasePackageV1;
-  active: boolean;
-}> = ({ casePackage, active }) => {
-  const [src, setSrc] = useState(
-    casePackage.preview.src.startsWith('case://assets/') ? '' : casePackage.preview.src,
-  );
-
-  useEffect(() => {
-    let mounted = true;
-    if (!casePackage.preview.src.startsWith('case://assets/')) {
-      setSrc(casePackage.preview.src);
-      return () => { mounted = false; };
-    }
-    void casePackageStore.resolveAssetUri(casePackage.preview.src).then((resolved) => {
-      if (mounted) setSrc(resolved);
-    }).catch(() => {
-      if (mounted) setSrc('');
-    });
-    return () => { mounted = false; };
-  }, [casePackage.preview.src]);
-
-  return (
-    <img
-      role="img"
-      src={src || undefined}
-      alt={casePackage.preview.alt}
-      loading="lazy"
-      decoding="async"
-      className="absolute inset-0 h-full w-full object-contain transition-all duration-700 ease-out"
-      style={{
-        opacity: active ? 0.8 : 0.6,
-        imageRendering: 'auto',
-        transition: 'opacity 500ms ease',
-      }}
-    />
-  );
-};
 
 const TESTIMONIALS = [
   { quote: "I thought I had a good grasp on tension pneumothorax. Then it asked me to explain exactly how it causes hypotension and low preload. Turns out I didn't.", author: "PGY-1, General Surgery" },
@@ -354,7 +315,7 @@ const StudyList: React.FC<StudyListProps> = ({
             {!loading && !loadError && visibleCasePackages.slice(0, visibleCount).map((casePackage, index) => (
               <article key={casePackage.id} className="ca-card">
                 <button ref={index === focusNextIndex.current ? nextCaseRef : undefined} data-case-trigger={`case:${casePackage.id}`} type="button" className="ca-card-action" onClick={() => selectCase(casePackage)} aria-label={`Start case: ${casePackage.title}`} />
-                <div className="ca-card-image"><CasePreviewBackdrop casePackage={casePackage} active={true} /></div>
+                <div className="ca-card-image"><CaseLibraryPreview preview={casePackage.preview} /></div>
                 {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && <button type="button" className="ca-delete min-h-11" aria-label={`Delete browser-local case: ${casePackage.title}`} onClick={() => {
                   if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
                   void onDeleteLocalCase(casePackage.id).then(() => loadCases()).catch(() => setLoadError('The browser-local case could not be deleted. Your other cases were not changed.'));
@@ -398,6 +359,7 @@ const StudyList: React.FC<StudyListProps> = ({
           <nav aria-label="Help and resources">
             {onShowSafety && <button type="button" onClick={onShowSafety}><ShieldCheck size={16} aria-hidden="true" />Safety &amp; privacy</button>}
             <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/docs/README.md" target="_blank" rel="noopener noreferrer">User guides</a>
+            <a href="/image-credits.html">Image credits</a>
             <a href="https://github.com/JamesWeatherhead/CaseAttend" target="_blank" rel="noopener noreferrer"><Github size={16} aria-hidden="true" />Source</a>
             <a href="https://github.com/JamesWeatherhead/CaseAttend/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer">Cite</a>
             <a href="https://www.kaggle.com/competitions/gemini-3/writeups/new-writeup-1765065566929" target="_blank" rel="noopener noreferrer"><Award size={16} aria-hidden="true" />Hackathon story</a>
