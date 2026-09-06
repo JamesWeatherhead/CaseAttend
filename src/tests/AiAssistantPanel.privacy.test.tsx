@@ -81,8 +81,9 @@ const testInferenceResult = {
 it('does not interrupt keyboard focus with an account dialog or send a request', () => {
   mocks.hasKey.mockReturnValue(false);
   render(<AiAssistantPanel captureCurrentView={() => null} />);
-  const input = screen.getByLabelText('Question for the AI tutor');
-  fireEvent.focus(input);
+  const connect = screen.getByRole('button', { name: 'Connect to ask your own question' });
+  fireEvent.focus(connect);
+  expect(screen.queryByLabelText('Question for the AI tutor')).toBeNull();
   expect(screen.queryByRole('dialog')).toBeNull();
   expect(mocks.streamChatResponse).not.toHaveBeenCalled();
   cleanup();
@@ -218,6 +219,9 @@ describe('AiAssistantPanel image transmission privacy', () => {
     );
 
     expect(await screen.findByText('Frozen condition')).toBeTruthy();
+    expect(screen.queryByText('Case introduction')).toBeNull();
+    expect(screen.queryByLabelText('Your level')).toBeNull();
+    expect(screen.queryByRole('heading', { name: /first question|free question/ })).toBeNull();
     expect(screen.queryByText('Change')).toBeNull();
     expect(screen.queryByText('Undergrad')).toBeNull();
     fireEvent.change(screen.getByLabelText('Question for the AI tutor'), {

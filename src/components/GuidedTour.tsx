@@ -58,7 +58,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
-      body: 'Not sure what to ask? These suggestions adapt to your level. Use them as starting points, or type your own. When you press Send, CaseAttend captures the current view and includes it with your question.',
+      body: 'Choose your level, then try a free starter question where available. Reviewed starter answers need no connection. Connect your own OpenRouter account to ask a new question; pressing Send shares the current view and your question.',
       switchTab: 'ai'
     }
   ],
@@ -81,7 +81,7 @@ const TOURS: Record<TourId, Step[]> = {
     {
       selector: '[data-tour-id="ai-suggestions"]',
       title: 'Suggested Questions',
-      body: 'These adapt to your level and what you are looking at. First navigate or draw, then ask. When you press Send, CaseAttend captures the exact current view, including visible learner annotations, and sends it with your question.'
+      body: 'Free starter questions show reviewed answers for your level without a connection. For a live question, connect your OpenRouter account, then navigate or draw before asking. Pressing Send shares the current view, including visible annotations, and your question.'
     },
     {
       selector: '[data-tour-id="ai-trash"]',

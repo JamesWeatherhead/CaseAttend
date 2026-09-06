@@ -1,6 +1,6 @@
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, HelpCircle, KeyRound, LockKeyhole } from 'lucide-react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { Send, Sparkles, Globe, BrainCircuit, X, ImageIcon, Trash2, AlertTriangle, RotateCcw, ArrowDown, ArrowRight, HelpCircle, KeyRound, LockKeyhole, Loader2 } from 'lucide-react';
 import type { AiMode, AIProvider, LockedTutorRuntime } from '../services/aiClient';
 import { hasKey, getModel, modelLabel, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import ConnectKeyModal from './ConnectKeyModal';
@@ -260,6 +260,10 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   const [lessonPlan, setLessonPlan] = useState<LessonPlanV1 | null>(null);
   const [lessonLoadError, setLessonLoadError] = useState<string | null>(null);
   const [introCache, setIntroCache] = useState<IntroCacheV1 | null>(null);
+  const [introCacheLoading, setIntroCacheLoading] = useState(Boolean(studyMetadata?.studyId) && !lockedTutor);
+  const [introductionExpanded, setIntroductionExpanded] = useState(false);
+  const resetChatViewRef = useRef(true);
+  const pendingAnswerRevealRef = useRef<{ id: string; sessionKey: string } | null>(null);
   const introPromptForLevel = introCache?.levels[learnerLevel]?.introPrompt;
   const welcomeText = introPromptForLevel
     ?? (lessonPlan
@@ -342,18 +346,23 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   useEffect(() => {
     let active = true;
     setIntroCache(null);
-    if (lockedTutor) return () => { active = false; };
     const caseId = studyMetadata?.studyId;
+    setIntroCacheLoading(!lockedTutor && Boolean(caseId) && !lessonLoadError);
+    if (lockedTutor) return () => { active = false; };
     if (!caseId || !lessonPlan) return () => { active = false; };
     void loadIntroCache(caseId, { lessonPlanSha256: lessonPlan.manifest.sha256 })
       .then((cache) => { if (active) setIntroCache(cache); })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => { if (active) setIntroCacheLoading(false); });
     return () => { active = false; };
-  }, [lockedTutorKey, lessonPlan, studyMetadata?.studyId]);
+  }, [lockedTutorKey, lessonPlan, lessonLoadError, studyMetadata?.studyId]);
 
   // A case switch starts a new versioned teaching session. Never retain another
   // case's welcome, dynamic suggestions, or transcript in the next case.
   useEffect(() => {
+    if (!lockedTutor) resetChatViewRef.current = true;
+    pendingAnswerRevealRef.current = null;
+    setIntroductionExpanded(false);
     setMessages([{ id: 'welcome', role: 'model', text: welcomeText }]);
     setInput('');
     setDynamicSuggestionsMap(null);
@@ -383,6 +392,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   // BYOK connection state, kept in sync via BYOK_CHANGED_EVENT so the status bar
   // and model label update the instant the user connects or switches model.
   const [showConnectModal, setShowConnectModal] = useState(false);
+  const connectActionRef = useRef<HTMLButtonElement>(null);
   const [byokConnected, setByokConnected] = useState<boolean>(() => hasKey());
   const [byokModelLabel, setByokModelLabel] = useState<string>(() => (
     modelLabel(lockedTutor?.runtime.openRouterPolicy.model ?? getModel())
@@ -714,17 +724,40 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     if (!lockedTutor) setPreference(PREFERENCE_KEYS.provider, provider);
   }, [provider, lockedTutorKey]);
 
-  // Scroll welcome message to top on first render
-  const hasScrolledWelcome = useRef(false);
-  useEffect(() => {
-    if (!hasScrolledWelcome.current && chatContainerRef.current && messages.length === 1 && messages[0].id === 'welcome') {
-      chatContainerRef.current.scrollTop = 0;
-      hasScrolledWelcome.current = true;
-    }
-  }, [messages]);
-
   // Track whether user has interacted during streaming
   const userInteractedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const chat = chatContainerRef.current;
+    if (!chat) return;
+    if (resetChatViewRef.current && messages.length === 1 && messages[0].id === 'welcome') {
+      resetChatViewRef.current = false;
+      userInteractedRef.current = false;
+      chat.scrollTop = 0;
+      setIsPinnedToBottom(true);
+      setIsUserNearBottom(true);
+    }
+    const pending = pendingAnswerRevealRef.current;
+    if (!pending) return;
+    pendingAnswerRevealRef.current = null;
+    if (pending.sessionKey !== studySessionKey) return;
+    const answer = Array.from(chat.querySelectorAll<HTMLElement>('[data-tutor-message]'))
+      .find(element => element.dataset.tutorMessage === pending.id);
+    if (!answer) return;
+    // Reveal the beginning of a reviewed answer, not the end of a long reply.
+    // Change this pane's scroll position without scrolling focus into view.
+    chat.scrollTop = Math.max(0, chat.scrollTop + answer.getBoundingClientRect().top - chat.getBoundingClientRect().top - 12);
+    answer.focus({ preventScroll: true });
+    setIsUserNearBottom(chat.scrollHeight - chat.scrollTop - chat.clientHeight < 80);
+  }, [messages, studySessionKey]);
+
+  // A paused response can grow without firing a scroll event.
+  useLayoutEffect(() => {
+    const chat = chatContainerRef.current;
+    if (chat && !isPinnedToBottom) {
+      setIsUserNearBottom(chat.scrollHeight - chat.scrollTop - chat.clientHeight < 80);
+    }
+  }, [messages, isThinking, isPinnedToBottom, introductionExpanded]);
 
   // Any user interaction inside the chat kills auto-scroll
   useEffect(() => {
@@ -744,16 +777,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     };
   }, []);
 
-  // Re-enable auto-scroll when a NEW message starts streaming (user sends a message)
-  const prevMessageCount = useRef(messages.length);
-  useEffect(() => {
-    if (messages.length > prevMessageCount.current && isThinking) {
-      userInteractedRef.current = false;
-      setIsPinnedToBottom(true);
-    }
-    prevMessageCount.current = messages.length;
-  }, [messages.length, isThinking]);
-
   // Smart Auto-Scroll Effect
   useEffect(() => {
     if (chatContainerRef.current && isPinnedToBottom && !userInteractedRef.current && messages.length > 1) {
@@ -769,10 +792,12 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   };
 
   const scrollToBottom = () => {
+    userInteractedRef.current = false;
     if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
     setIsPinnedToBottom(true);
+    setIsUserNearBottom(true);
   };
 
   // Derived suggestions.
@@ -818,12 +843,21 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         : (domain.getInitialSuggestions(learnerLevel, !!studyMetadata, studyMetadata?.studyId) ?? []).map((s, i) => ({
             key: `domain:${i}`, label: s, prompt: s, source: 'domain' as const,
           }));
+  const hasCachedSuggestions = currentSuggestions.length > 0
+    && currentSuggestions.every(suggestion => suggestion.cachedAnswer !== undefined);
+  const showStarter = !lockedTutor && !isThinking && messages.length === 1 && messages[0].id === 'welcome';
+  const showSuggestions = currentSuggestions.length > 0
+    && (lockedTutor || byokConnected || hasCachedSuggestions)
+    && (!introCacheLoading || lockedTutor || hasLiveDynamicSuggestions);
 
   const renderCachedIntroAnswer = (suggestion: IntroSuggestion): void => {
     if (suggestion.cachedAnswer === undefined) return;
     const requestId = ++requestSequenceRef.current;
     const userMessageId = `intro-cache-${requestId}-user`;
     const botMessageId = `intro-cache-${requestId}-model`;
+    pendingAnswerRevealRef.current = { id: botMessageId, sessionKey: studySessionKey };
+    userInteractedRef.current = true;
+    setIsPinnedToBottom(false);
     const knownLessonRef = lessonPlan ? getLessonPlanRef(lessonPlan) : undefined;
     setMessages((previous) => [
       ...previous,
@@ -840,7 +874,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         lessonPlanRef: knownLessonRef,
       },
     ]);
-    setIsPinnedToBottom(true);
   };
 
   const sendSuggestion = (suggestion: IntroSuggestion) => {
@@ -862,6 +895,9 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
   };
 
   const handleClearChat = () => {
+    resetChatViewRef.current = true;
+    pendingAnswerRevealRef.current = null;
+    setIntroductionExpanded(false);
     // Abort active request if clearing
     const request = activeRequestRef.current;
     if (request) {
@@ -1012,6 +1048,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       inputToRestore: promptOverride ? undefined : input,
     };
     activeRequestRef.current = request;
+    // Following starts at the learner's Send action. A later placeholder or
+    // stream chunk must not override scrolling they do while a request loads.
+    pendingAnswerRevealRef.current = null;
+    userInteractedRef.current = false;
+    setIsPinnedToBottom(true);
     // Close the sibling Finish-button race in the same event turn as Send.
     onInferenceBusyChange?.(true);
     setIsThinking(true);
@@ -1105,7 +1146,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       attachedFrameCount: capturedSliceInfo.total,
       attachedSequenceLabel: capturedViewLabel,
     }]);
-    setIsPinnedToBottom(true);
 
     let activeLesson = lockedTutor?.runtime.lessonPlan ?? lessonPlan;
     if (!activeLesson && studyMetadata?.studyId && !lockedTutor) {
@@ -1407,7 +1447,6 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
             lessonPlanRef: activeLessonRef,
         };
         setMessages(prev => [...prev, errorMessage]);
-        setIsPinnedToBottom(true);
     } finally {
         if (isCurrentRequest(request)) {
             if (request.research && !request.terminalRecorded) {
@@ -1429,6 +1468,35 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
           default: return provider;
       }
   };
+
+  const levelSelector = <div data-tour-id="teaching-levels" className={showStarter ? 'space-y-1.5' : 'mb-3 flex items-center justify-between gap-3'}>
+    <label htmlFor="tutor-learner-level" className="block text-sm text-[#aab2bf]">Your level</label>
+    <select id="tutor-learner-level" value={learnerLevel} disabled={isThinking}
+      onChange={event => setLearnerLevel(event.target.value as LearnerLevel)}
+      className={`min-h-11 min-w-0 rounded-lg border border-white/[0.12] bg-[#0f1011] px-3 text-sm text-[#d0d6e0] focus-visible:ring-2 focus-visible:ring-blue-300 disabled:opacity-60 ${showStarter ? 'w-full' : 'max-w-[70%]'}`}>
+      <option value="highschool">High school</option>
+      <option value="undergrad">Undergraduate</option>
+      <option value="ms_preclinical">Medical student · Pre-Step 1</option>
+      <option value="ms_clinical">Medical student · Post-Step 1</option>
+      <option value="resident">Resident</option>
+    </select>
+  </div>;
+
+  const suggestionButtons = (starter: boolean) => <div className={starter ? 'grid gap-2' : 'mb-4 flex flex-wrap gap-2'}>
+    {currentSuggestions.map(suggestion => <button
+      key={suggestion.key}
+      type="button"
+      onClick={() => sendSuggestion(suggestion)}
+      className={starter
+        ? 'flex min-h-11 min-w-0 w-full items-center justify-between gap-3 rounded-xl border border-blue-400/25 bg-blue-500/10 px-3 py-2.5 text-left text-sm font-medium leading-snug text-blue-100 hover:border-blue-300/50 hover:bg-blue-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300'
+        : 'min-h-11 min-w-0 max-w-full text-left text-sm bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400'}
+      aria-label={suggestion.cachedAnswer !== undefined
+        ? `Show pre-cached answer for: ${suggestion.label}`
+        : `Send suggested question with current view: ${suggestion.label}`}>
+      <span className="min-w-0 [overflow-wrap:anywhere]">{suggestion.label}</span>
+      {starter && <ArrowRight className="h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />}
+    </button>)}
+  </div>;
 
   return (
     <div data-tour-id="ai-panel" className="flex flex-col h-full bg-[#0f1011]">
@@ -1458,15 +1526,15 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </button>}
       </div>
       
-      {!lockedTutor ? (
+      {!lockedTutor ? (byokConnected ? (
         <div className="border-b border-white/[0.08] bg-[#111923] px-4 py-2.5 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p data-tour-id="ai-provider" className="text-sm font-medium text-blue-200">{byokConnected ? byokModelLabel : introCache ? 'Free starter answers' : 'Explore this case'}</p>
-            <p className="mt-1 text-xs text-slate-400">{byokConnected ? 'Ready for your questions' : 'Connect only for a live conversation'}</p>
+            <p data-tour-id="ai-provider" className="text-sm font-medium text-blue-200">{byokModelLabel}</p>
+            <p className="mt-1 text-xs text-slate-400">Ready for your questions</p>
           </div>
-          <button type="button" onClick={() => setShowConnectModal(true)} className="min-h-11 shrink-0 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 focus-visible:ring-2 focus-visible:ring-blue-300">{byokConnected ? 'Change' : 'Connect'}</button>
+          <button ref={connectActionRef} type="button" onClick={() => setShowConnectModal(true)} className="min-h-11 shrink-0 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 focus-visible:ring-2 focus-visible:ring-blue-300">Change</button>
         </div>
-      ) : <>
+      ) : null) : <>
       {/* Status Bar */}
       <div className="bg-[#161718]/50 border-b border-white/[0.06] p-2 flex flex-col items-start gap-2 text-[10px] flex-shrink-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -1521,7 +1589,8 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
       <div className="flex-1 overflow-hidden relative flex flex-col">
         <div className="flex-1 relative min-h-0">
             <div 
-                className="absolute inset-0 overflow-y-auto p-4 space-y-5 no-scrollbar" 
+                className="absolute inset-0 overflow-y-auto p-4 space-y-5"
+                style={{ scrollbarWidth: 'thin', scrollbarColor: '#3b4659 transparent' }}
                 ref={chatContainerRef}
                 onScroll={handleScroll}
                 role="log"
@@ -1530,7 +1599,32 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                 aria-label="AI tutor conversation"
                 aria-busy={isThinking}
             >
+                {showStarter && <section className="space-y-4" aria-labelledby="tutor-starter-heading">
+                  <div>
+                    <h2 id="tutor-starter-heading" className="text-lg font-semibold tracking-tight text-white">
+                      {hasCachedSuggestions && !byokConnected ? 'Start with a free question' : introCacheLoading ? 'Getting your questions ready' : showSuggestions ? 'Choose a first question' : 'Explore this case'}
+                    </h2>
+                    {hasCachedSuggestions && !byokConnected && <p className="mt-1 text-xs leading-relaxed text-emerald-200">Free · instant · no key</p>}
+                  </div>
+                  {levelSelector}
+                  <div data-tour-id="ai-suggestions">
+                    {introCacheLoading ? <p role="status" className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />Loading starter questions…</p>
+                      : showSuggestions ? <>
+                        {hasCachedSuggestions && <p className="mb-2 text-xs leading-relaxed text-slate-400">Choose a question to read a reviewed answer.</p>}
+                        {suggestionButtons(true)}
+                      </>
+                      : <p className="text-sm leading-relaxed text-slate-300">Free starter answers aren’t available for this case. Read the introduction below, then {byokConnected ? 'ask your own question below.' : 'connect to ask your own questions.'}</p>}
+                  </div>
+                </section>}
                 {messages.map((m) => {
+                    if (!lockedTutor && m.id === 'welcome') {
+                        return <details key={m.id} open={introductionExpanded}
+                          onToggle={event => setIntroductionExpanded(event.currentTarget.open)}
+                          className="rounded-xl border border-white/[0.08] bg-[#161718] px-3">
+                          <summary className="min-h-11 cursor-pointer py-3 text-sm font-medium text-blue-200 focus-visible:outline-2 focus-visible:outline-blue-300">Case introduction</summary>
+                          <div className="pb-3"><MarkdownText content={m.text} readable /></div>
+                        </details>;
+                    }
                     if (m.role === 'error') {
                         return (
                             <div key={m.id} className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2">
@@ -1611,7 +1705,11 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     }
 
                     return (
-                    <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div key={m.id} data-tutor-message={m.id}
+                      tabIndex={m.id.startsWith('intro-cache-') && m.role === 'model' ? -1 : undefined}
+                      role={m.id.startsWith('intro-cache-') && m.role === 'model' ? 'article' : undefined}
+                      aria-label={m.id.startsWith('intro-cache-') && m.role === 'model' ? 'Reviewed starter answer' : undefined}
+                      className={`flex flex-col outline-none ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                         <div className={`max-w-[95%] rounded-xl p-3 shadow-sm ${m.role === 'user' ? 'bg-[#1e1f21] text-[#d0d6e0] border-l-2 border-blue-500/30' : 'bg-[#161718] text-[#d0d6e0] border border-white/[0.06]'}`}>
                             
                             {m.role === 'user' && m.attachedSliceThumbnailDataUrl && (
@@ -1650,7 +1748,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                     </div>
                 )})}
 
-                {!isThinking && currentSuggestions.length > 0 && (
+                {!showStarter && !isThinking && showSuggestions && (
                     <div data-tour-id="ai-suggestions" className="mt-3 animate-in fade-in duration-300">
                         <div className="mb-2 text-[10px] text-slate-500 uppercase font-bold ml-1 flex items-center gap-2">
                             <span>Suggested Follow-ups</span>
@@ -1663,28 +1761,13 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                                 </span>
                             )}
                         </div>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            {currentSuggestions.map((sugg) => (
-                                <button
-                                    key={sugg.key}
-                                    onClick={() => sendSuggestion(sugg)}
-                                    className="min-h-11 text-left text-sm bg-[#1e1f21] hover:bg-[#28282c] text-blue-200 px-3 py-1.5 rounded-full border border-white/[0.08] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-                                    aria-label={
-                                        sugg.cachedAnswer !== undefined
-                                            ? `Show pre-cached answer for: ${sugg.label}`
-                                            : `Send suggested question with current view: ${sugg.label}`
-                                    }
-                                >
-                                    {sugg.label}
-                                </button>
-                            ))}
-                        </div>
+                        {suggestionButtons(false)}
                     </div>
                 )}
             </div>
 
             {/* Jump To Latest Pill */}
-            {!isPinnedToBottom && (
+            {!showStarter && !isPinnedToBottom && !isUserNearBottom && (
                 <button
                     onClick={scrollToBottom}
                     className="absolute bottom-4 left-1/2 -translate-x-1/2 min-h-11 bg-[#1e1f21]/90 hover:bg-[#28282c] text-blue-300 border border-blue-500/30 shadow-lg rounded-full px-4 py-1.5 text-xs font-bold flex items-center gap-2 transition-all animate-in fade-in slide-in-from-bottom-2 z-10 backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
@@ -1696,47 +1779,29 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </div>
 
         <div className={`p-4 bg-[#161718] border-t border-white/[0.06] flex-shrink-0 ${!lockedTutor ? 'max-h-[50%] overflow-y-auto' : ''}`}>
-            {!lockedTutor && <div data-tour-id="teaching-levels" className="flex items-center justify-between mb-3 gap-3">
-                <label htmlFor="tutor-learner-level" className="text-sm text-[#aab2bf]">Your level</label>
-                <select id="tutor-learner-level" value={learnerLevel} onChange={event => setLearnerLevel(event.target.value as LearnerLevel)} className="min-h-11 max-w-[70%] rounded-lg border border-white/[0.12] bg-[#0f1011] px-3 text-sm text-[#d0d6e0] focus-visible:ring-2 focus-visible:ring-blue-300">
-                    <option value="highschool">High school</option>
-                    <option value="undergrad">Undergraduate</option>
-                    <option value="ms_preclinical">Medical student · Pre-Step 1</option>
-                    <option value="ms_clinical">Medical student · Post-Step 1</option>
-                    <option value="resident">Resident</option>
-                </select>
-            </div>}
+            {!lockedTutor && !showStarter && levelSelector}
 
             {/* Input Area */}
-            <div className="relative flex-1">
-                {(() => {
-                    const freeTypingLocked = !lockedTutor && !byokConnected;
-                    const placeholder = freeTypingLocked
-                        ? 'Connect OpenRouter to type a new question'
-                        : mode === 'deep_think'
-                            ? 'Ask complex question...'
-                            : 'Ask a question...';
-                    return (
-                        <input
-                            className="w-full min-h-11 bg-[#0f1011] border border-white/[0.08] rounded-lg pr-12 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner disabled:opacity-60 disabled:cursor-not-allowed"
-                            placeholder={placeholder}
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (freeTypingLocked) {
-                                  setShowConnectModal(true);
-                                  return;
-                                }
-                                void handleSendMessage();
-                              }
-                            }}
-                            disabled={isThinking}
-                            aria-label="Question for the AI tutor"
-                        />
-                    );
-                })()}
+            {!lockedTutor && !byokConnected ? (
+              <button ref={connectActionRef} type="button" data-tour-id="ai-provider" onClick={() => setShowConnectModal(true)}
+                className="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-white/[0.12] bg-[#0f1011] px-3 py-2 text-left text-sm text-blue-200 hover:bg-blue-500/10 focus-visible:outline-2 focus-visible:outline-blue-300">
+                Connect to ask your own question<ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+              </button>
+            ) : <div className="relative flex-1">
+                <input
+                    className="w-full min-h-11 bg-[#0f1011] border border-white/[0.08] rounded-lg pr-12 pl-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none text-[#d0d6e0] placeholder:text-[#62666d] shadow-inner disabled:opacity-60 disabled:cursor-not-allowed"
+                    placeholder={mode === 'deep_think' ? 'Ask complex question...' : 'Ask a question...'}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        void handleSendMessage();
+                      }
+                    }}
+                    disabled={isThinking}
+                    aria-label="Question for the AI tutor"
+                />
                 <button
                     onClick={() => handleSendMessage()}
                     disabled={!input.trim() || isThinking}
@@ -1745,7 +1810,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
                 >
                     <Send className="w-4 h-4" />
                 </button>
-            </div>
+            </div>}
 
             {/* Dynamic Status / Hint Footer */}
             <div data-tour-id="image-status" className="mt-2 text-[11px] text-[#8a8f98] leading-tight min-h-[20px] flex items-center justify-between">
@@ -1790,7 +1855,7 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
         </div>
       </div>
 
-      {showConnectModal && !lockedTutor && <ConnectKeyModal onClose={() => setShowConnectModal(false)} />}
+      {showConnectModal && !lockedTutor && <ConnectKeyModal onClose={() => setShowConnectModal(false)} returnFocusRef={connectActionRef} />}
     </div>
   );
 };

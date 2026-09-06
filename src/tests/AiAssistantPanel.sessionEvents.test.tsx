@@ -747,9 +747,9 @@ describe('AiAssistantPanel Session Event v1 integration', () => {
     );
     await waitForLesson();
 
-    const suggestionButton = screen.getAllByRole('button', {
+    const suggestionButton = (await screen.findAllByRole('button', {
       name: /Send suggested question with current view:/,
-    })[0];
+    }))[0];
     const suggestionText = suggestionButton.textContent?.trim() ?? '';
     fireEvent.click(suggestionButton);
 
