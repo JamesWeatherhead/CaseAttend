@@ -16,8 +16,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, RefreshCw, Sparkles, Wand2 } from 'lucide-react';
 
-import type { LearnerLevel } from '../../constants';
-import { INTRO_CACHE_LEARNER_LEVELS, type IntroCacheV1 } from '../../core/introCache';
+import { INTRO_CACHE_LEARNER_LEVELS, type IntroCacheV1, type IntroCacheLearnerLevel as LearnerLevel } from '../../core/introCache';
 import type { IntroCacheStatus } from '../../services/caseStudioController';
 
 interface IntroCachePanelProps {

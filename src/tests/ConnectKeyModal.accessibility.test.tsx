@@ -42,3 +42,35 @@ it('shows a recoverable connection error without exposing provider details', asy
   expect(screen.getByRole('button', { name: 'Continue with OpenRouter' })).toHaveProperty('disabled', false);
   expect(screen.queryByText('private provider diagnostic')).toBeNull();
 });
+
+it.each(['Close button', 'Escape', 'backdrop'] as const)(
+  'escapes the tutor stacking context and closes with %s after a model choice', action => {
+    function Example() {
+      const [open, setOpen] = useState(false);
+      return <>
+        <header style={{ position: 'relative', zIndex: 30 }}>Case heading</header>
+        <div data-testid="tutor-stacking-context" style={{ position: 'absolute', zIndex: 10, contain: 'layout style' }}>
+          <button type="button" onClick={() => setOpen(true)}>Change tutor model</button>
+          {open && <ConnectKeyModal onClose={() => setOpen(false)} />}
+        </div>
+      </>;
+    }
+    render(<Example />);
+    const trigger = screen.getByRole('button', { name: 'Change tutor model' });
+    trigger.focus();
+    fireEvent.click(trigger);
+    const dialog = screen.getByRole('dialog', { name: 'Connect your AI tutor' });
+    // A descendant z-index cannot outrank App's sibling header. Mount the
+    // overlay directly under body, outside both z-index and containment scopes.
+    expect(dialog.parentElement?.parentElement).toBe(document.body);
+    expect(screen.getByTestId('tutor-stacking-context').contains(dialog)).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: /Test model/ }));
+    expect(screen.getByRole('dialog')).toBe(dialog);
+    if (action === 'Close button') fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    if (action === 'Escape') fireEvent.keyDown(dialog, { key: 'Escape' });
+    if (action === 'backdrop') fireEvent.click(dialog.parentElement!);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    expect(connect).not.toHaveBeenCalled();
+  },
+);

@@ -39,12 +39,14 @@ import {
 } from './services/preferenceStore';
 import { Activity, Sparkles, GripVertical, Shield, Loader2, X, Camera, Map, Database, ImageIcon } from 'lucide-react';
 import { createCaseStudioController } from './services/caseStudioController';
+import { casePackageStore } from './services/casePackageStore';
 import {
   researchSetupController,
   type ResearchParticipantSession,
 } from './services/researchSetupController';
 
 const LessonBuilder = React.lazy(() => import('./components/LessonBuilder'));
+const TeachingDeckImport = React.lazy(() => import('./components/TeachingDeckImport'));
 const CaseStudio = React.lazy(() => import('./components/CaseStudio/CaseStudio'));
 const ResearchSetupWizard = React.lazy(() => import('./components/ResearchSetupWizard/ResearchSetupWizard'));
 const ParticipantMode = React.lazy(() => import('./components/ParticipantMode/ParticipantMode'));
@@ -160,7 +162,7 @@ export function normalizeToolForArtifact(
 
 const App: React.FC = () => {
   const libraryStateRef = useRef<CaseLibraryState | undefined>(undefined);
-  const [homeView, setHomeViewRaw] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
+  const [homeView, setHomeViewRaw] = useState<'cases' | 'lesson-builder' | 'teaching-deck' | 'case-studio' | 'research-setup' | 'participant'>('cases');
   const navigationRef = useRef<ReturnType<typeof useCaseNavigation> | null>(null);
   const setHomeView = useCallback((view: typeof homeView) => {
     // Protect the workspace before any asynchronous setup or React render.
@@ -400,6 +402,7 @@ const App: React.FC = () => {
   });
 
   const [sidebarWidth, setSidebarWidth] = useState(420);
+  const [sidebarWidthCustomized, setSidebarWidthCustomized] = useState(false);
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   
   // Tour State
@@ -544,6 +547,7 @@ const App: React.FC = () => {
         const newWidth = window.innerWidth - e.clientX;
         if (newWidth > 250 && newWidth < Math.min(800, window.innerWidth * 0.6)) {
             setSidebarWidth(newWidth);
+            setSidebarWidthCustomized(true);
         }
     };
     const handleMouseUp = () => setIsResizingSidebar(false);
@@ -1124,10 +1128,21 @@ const App: React.FC = () => {
             }}
           />
         )
+      ) : !selectedStudy && homeView === 'teaching-deck' ? (
+        <TeachingDeckImport
+          onCancel={() => setHomeView('cases')}
+          onEditExistingCase={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('lesson-builder'); }}
+          saveLesson={async (portable) => {
+            await casePackageStore.save(portable, { expectedCaseManifestSha256: null });
+            return casePackageStore.initialize();
+          }}
+          onCreated={(casePackage) => { setHomeView('cases'); navigation.open(casePackage); }}
+        />
       ) : !selectedStudy && homeView === 'lesson-builder' ? (
         <LessonBuilder
           onExit={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('cases'); }}
           initialCaseId={lessonBuilderInitialCaseId}
+          onImportTeachingDeck={() => setHomeView('teaching-deck')}
           loadStoredLesson={caseStudioController.loadStoredLesson}
           getStorageStatus={caseStudioController.getStorageStatus}
           saveUpdatedBundle={caseStudioController.saveUpdatedBundle}
@@ -1173,7 +1188,7 @@ const App: React.FC = () => {
             onOpenSessionData={openSessionData}
             onOpenResearchData={() => setShowResearchData(true)}
             onShowSafety={() => setShowSafetyModal(true)}
-            onOpenLessonBuilder={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('lesson-builder'); }}
+            onOpenLessonBuilder={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('teaching-deck'); }}
             onOpenCaseStudio={() => setHomeView('case-studio')}
             onOpenResearchSetup={openResearchSetup}
             onDeleteLocalCase={caseStudioController.deleteCase}
@@ -1257,7 +1272,10 @@ const App: React.FC = () => {
                  aria-label="Tutor workspace"
                  tabIndex={-1}
                  className="ca-tutor-pane flex flex-col h-[75dvh] min-h-[36rem] md:h-full md:min-h-0 w-full md:w-[var(--caseattend-sidebar-width)] bg-[#0f1011] border-t md:border-t-0 md:border-l border-white/[0.06] flex-none md:flex-shrink-0 relative"
-                 style={{ '--caseattend-sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
+                 style={{
+                   '--caseattend-sidebar-width': `${sidebarWidth}px`,
+                   '--caseattend-guided-sidebar-width': sidebarWidthCustomized ? `${sidebarWidth}px` : 'min(40rem, 60vw)',
+                 } as React.CSSProperties}
               >
                   <div className="flex border-b border-white/[0.06]">
                       {selectedStudy.artifactHints.showSegmentation && (

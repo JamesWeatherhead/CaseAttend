@@ -109,6 +109,13 @@ void typeRejectedImageFrameId;
 void typeRejectedUnidentifiedHint;
 
 describe('Session Event v1', () => {
+  it('retains Step 2 learner turns in ordinary session metadata', () => {
+    const event = makeEvent({ type: 'learner_message_submitted', turnId: TURN_ID,
+      inputSource: 'typed', learnerLevel: 'ms_step2', mode: 'chat' });
+    expect(validateSessionEventV1(event)).toEqual({ valid: true, errors: [] });
+    expect(() => assertSessionEventV1(event)).not.toThrow();
+  });
+
   it('accepts every closed metadata-only event variant', () => {
     const variants: SessionEventPayloadV1[] = [
       { type: 'session_started', startReason: 'case_opened' },

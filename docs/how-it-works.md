@@ -38,7 +38,7 @@ The learner opens a built-in or browser-local case, selects the appropriate teac
 
 ### 2. Start with reviewed material or connect a model
 
-Many lessons include a small **intro cache**: an opening prompt and a few prepared questions for each learner level. The answers may have been drafted with a model, but they do not become learner-facing until a named reviewer approves them. Clicking one shows the stored answer immediately and does not trigger a new model inference request.
+Many standard lessons include a small **intro cache**: an opening prompt and a few prepared questions for each learner level. The answers may have been drafted with a model, but they do not become learner-facing until a named reviewer approves them. Clicking one shows the stored answer immediately and does not trigger a new model inference request. Guided lessons created from slides and objectives suppress those answer-reveal buttons and begin with a learner attempt.
 
 A cache is accepted only when it is approved and still matches the exact lesson. If the lesson changes, the old cache is treated as stale. An educator who creates a browser-local case can generate a cache draft after connecting OpenRouter, edit every level and answer, and then record review before approval.
 
@@ -62,9 +62,11 @@ The learner can continue inspecting the artifact between turns. The tutor is des
 | --- | --- |
 | Open the website or a built-in case | The browser downloads the static app and its published teaching assets from the host, as with an ordinary website. |
 | Create or edit a case and lesson | Validation, image preparation, lesson editing, hashing, and export happen in the browser. Cases created in Case Studio are stored in IndexedDB when available, with a visible memory-only fallback. Lesson Builder does not autosave every draft path; validate and export before leaving. |
+| Create a lesson from PowerPoint and an objective spreadsheet | The browser extracts supported slide images and instructor reference text, imports the Excel/CSV curriculum, and assembles selected media with educator-supplied answers after review. Creating the lesson makes no model request. Images are re-encoded before storage; the raw source files and speaker notes are not automatically included in the portable lesson. |
 | Import a PDF or PowerPoint into Lesson Builder | CaseAttend extracts selectable PDF text or text from non-hidden PowerPoint slides in the browser and creates an editable draft. It does not store or export the raw source document, filename, speaker notes, or embedded media. Applied text becomes Lesson Plan content and may enter later provider prompts. Scanned-image PDFs may have no selectable text. |
 | Click a reviewed intro-cache question | The stored answer appears without a new model request and without an API key. |
 | Press **Send** for a live turn | The current-view capture, learner message, relevant conversation, case context, and active Lesson Plan prompt—including educator teaching notes—go to OpenRouter and the selected model provider. |
+| Enable **Check objective evidence**, then submit an attempt | A separate paid model receives the submitted learner text, relevant prior tutor text, educator facts and level-specific rubric through OpenRouter. This check receives no image. Checks start off and require opt-in; they can be disabled while coaching continues. |
 | Select **Generate draft answers** as an educator | Case context, objectives, teaching notes, and up to four representative case images go to OpenRouter and the selected provider. The returned draft—and any later browser approval—remains browser-local. |
 | Store or export ordinary learning events | The metadata-only event records remain in the browser; the schema excludes raw chat, prompts, images, screenshots, names, emails, and credentials. |
 | Export a portable case | The package contains the validated case, linked lesson, and prepared image copies—not the OpenRouter key, original filenames, chat, or unrelated browser data. |
@@ -75,8 +77,9 @@ Read the complete [security model](../SECURITY.md) before using live AI with ins
 
 ## Building teaching material
 
-CaseAttend offers two browser-local authoring paths:
+CaseAttend offers three browser-local authoring paths:
 
+- **Slides and objectives**, reached from **Create a lesson**, combines PowerPoint teaching images with an Excel or CSV curriculum in three steps: add files, select material, then review and create. The MRI and illustration example buttons load real teaching files with their distinct source credits.
 - **Case Studio** prepares JPEG, PNG, or WebP images, gathers provenance and usage information, runs advisory local privacy checks, and creates an unreviewed starter lesson.
 - **Lesson Builder** turns teaching intent into objectives, evidence, hints, escalation rules, stopping conditions, citations, and an explicit review state. A PDF or PowerPoint can supply an editable text draft, but never a finished lesson.
 
@@ -93,6 +96,12 @@ CaseAttend records claims; it does not certify them.
 
 Licensing, privacy review, clinical review, accessibility review, and IRB or ethics determination are distinct responsibilities. Completing one does not complete the others.
 
+## Guided lessons from existing teaching material
+
+The [slides-and-objectives workflow](guides/slides-and-objectives.md) assembles selected PowerPoint images with an educator's Excel or CSV curriculum. It preserves separate objectives for six audiences, including distinct Post-Step 1 and Step 2 levels. The educator supplies the known findings, reasoning and locations. A model coaches from those facts instead of constructing the diagnosis from scratch.
+
+Guided mode starts with a learner attempt, makes hints explicit, and suppresses cached answer-reveal buttons. A separate optional small-model check looks for exact learner evidence against the selected level's rubric. Its result is formative, includes the help used, and is not a mastery or deskilling-prevention claim. Provider failures and invalid evidence do not create credit. **Checks start off** and require the learner to enable **Check objective evidence**. They use a separate paid model and the learner's OpenRouter balance, even with a free tutor model. Coaching continues with checks off.
+
 ## Research Mode is deliberately separate
 
 Research Mode can freeze the exact case, lesson, model route, capture rules, and structured outcomes used in a protocol. It uses a separate locked path and does not use the ordinary intro cache as a substitute for the study's pinned live model.
@@ -102,7 +111,7 @@ CaseAttend does not decide whether an activity is research, obtain consent, issu
 ## Choose your next path
 
 - **Learner:** [Complete your first case](getting-started/first-case.md)
-- **Educator:** [Create a visual teaching case](guides/create-a-case.md), then [build its lesson](guides/build-a-lesson.md)
+- **Educator:** [Create a lesson from slides and objectives](guides/slides-and-objectives.md), or [create a visual teaching case](guides/create-a-case.md) and [build its lesson](guides/build-a-lesson.md)
 - **Program lead:** [Adapt CaseAttend without code](adapt/no-code.md) or [self-host on Cloudflare Pages](adapt/self-host-cloudflare.md)
 - **Product team:** [Adapt the SDK](adapt/sdk.md)
 - **Curious collaborator:** [Read the VibeRad-to-CaseAttend story](story/google-deepmind-win.md)

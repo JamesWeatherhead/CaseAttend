@@ -2,6 +2,7 @@ import {
   PORTABLE_CASE_ASSET_LIMITS,
   createPortableCaseAssetV1,
   detectPortableImageMimeType,
+  findPortableImageMetadata,
   readPortableImageDimensions,
   type PortableCaseAssetV1,
   type PortableImageDimensions,
@@ -329,11 +330,12 @@ export async function validateCaseImageDecode(
   }
 }
 
-/** Re-encodes pixels through canvas. This strips ordinary EXIF and other source metadata. */
+/** Re-encodes visible pixels, then verifies that the browser added no metadata. */
 export async function reencodeCaseImageWithCanvas(
   blob: Blob,
   options: ReencodeCaseImageOptions = {},
 ): Promise<Blob> {
+  const limits = resolveLimits(options.limits);
   const outputMimeType = options.outputMimeType
     ?? (detectCaseImageMimeType(new Uint8Array(await blob.slice(0, 16).arrayBuffer())) ?? 'image/png');
   const quality = options.quality ?? 0.92;
@@ -350,7 +352,7 @@ export async function reencodeCaseImageWithCanvas(
         'The decoded image has invalid dimensions.',
       );
     }
-    validateDimensions(decoded, resolveLimits(options.limits));
+    validateDimensions(decoded, limits);
     const canvas = (options.createCanvas ?? createBrowserCanvas)(decoded.width, decoded.height);
     canvas.width = decoded.width;
     canvas.height = decoded.height;
@@ -362,26 +364,52 @@ export async function reencodeCaseImageWithCanvas(
       );
     }
     context.drawImage(decoded.source, 0, 0, decoded.width, decoded.height);
-    const output = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (encoded) => {
-          if (encoded) resolve(encoded);
-          else reject(new CaseAssetPipelineError(
-            'reencode-failed',
-            'The browser could not re-encode this image after metadata removal.',
-          ));
-        },
-        outputMimeType,
-        quality,
-      );
-    });
-    if (output.type !== outputMimeType) {
+    const encode = async (mimeType: PortableImageMimeType) => {
+      const output = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (encoded) => {
+            if (encoded) resolve(encoded);
+            else reject(new CaseAssetPipelineError(
+              'reencode-failed',
+              'The browser could not re-encode this image after metadata removal.',
+            ));
+          },
+          mimeType,
+          quality,
+        );
+      });
+      if (output.type !== mimeType) {
+        throw new CaseAssetPipelineError(
+          'reencode-failed',
+          `The browser encoded ${output.type || 'an unknown format'} instead of ${mimeType}.`,
+        );
+      }
+      // Bound allocations before inspecting either the first result or fallback.
+      validateInputByteLength(output.size, limits);
+      const bytes = new Uint8Array(await output.arrayBuffer());
+      const inspection = inspectCaseImageBytes(bytes, { declaredMimeType: mimeType, limits });
+      if (inspection.width !== decoded.width || inspection.height !== decoded.height) {
+        throw new CaseAssetPipelineError(
+          'dimensions-mismatch',
+          'The browser changed the image dimensions while encoding. Export a fresh teaching image and try again.',
+        );
+      }
+      return { output, metadata: findPortableImageMetadata(bytes, inspection.mimeType) };
+    };
+    let encoded = await encode(outputMimeType);
+    if (encoded.metadata.length && outputMimeType !== 'image/png') {
+      // Some browser JPEG/WebP encoders add an ICC profile even to fresh canvas
+      // pixels. Retry those same pixels once as PNG, without decoding or drawing
+      // the lossy encoded result, and keep the portable metadata guard intact.
+      encoded = await encode('image/png');
+    }
+    if (encoded.metadata.length) {
       throw new CaseAssetPipelineError(
         'reencode-failed',
-        `The browser encoded ${output.type || 'an unknown format'} instead of ${outputMimeType}.`,
+        'The browser could not produce an image without embedded metadata. Export a fresh PNG teaching image and try again.',
       );
     }
-    return output;
+    return encoded.output;
   } finally {
     decoded.close?.();
   }

@@ -186,7 +186,7 @@ describe('StudyList case loading', () => {
     fireEvent.click(sampleCase);
     expect(onSelectStudy).toHaveBeenCalledWith(localCase);
 
-    const createLesson = screen.getByRole('button', { name: 'Create a lesson from PDF or PowerPoint' });
+    const createLesson = screen.getByRole('button', { name: 'Create a lesson from slides and objectives' });
     expect(createLesson.className).toContain('min-h-11');
     fireEvent.click(createLesson);
     expect(onOpenLessonBuilder).toHaveBeenCalledTimes(1);

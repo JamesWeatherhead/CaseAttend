@@ -62,13 +62,14 @@ export const SUGGESTED_FOLLOWUPS = [
   "Quiz me on this region and then explain the answers.",
 ];
 
-export type LearnerLevel = "highschool" | "undergrad" | "ms_preclinical" | "ms_clinical" | "resident";
+export type LearnerLevel = "highschool" | "undergrad" | "ms_preclinical" | "ms_clinical" | "ms_step2" | "resident";
 
 export const LEARNER_LEVELS: { id: LearnerLevel; label: string }[] = [
   { id: 'highschool', label: 'HS' },
   { id: 'undergrad', label: 'Undergrad' },
   { id: 'ms_preclinical', label: 'Pre-Step 1' },
   { id: 'ms_clinical', label: 'Post-Step 1' },
+  { id: 'ms_step2', label: 'Step 2' },
   { id: 'resident', label: 'Resident' },
 ];
 
@@ -113,6 +114,16 @@ export const FOLLOWUPS_BY_LEVEL: Record<LearnerLevel, { label: string; prompt: s
     },
   ],
   ms_clinical: [
+    {
+      label: "Clinical Reasoning",
+      prompt: "Given the clinical history and imaging, walk me through the differential diagnosis and what findings narrow it."
+    },
+    {
+      label: "Management",
+      prompt: "What is the next step in management for this patient? Walk me through the relevant guidelines."
+    },
+  ],
+  ms_step2: [
     {
       label: "Clinical Reasoning",
       prompt: "Given the clinical history and imaging, walk me through the differential diagnosis and what findings narrow it."

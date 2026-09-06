@@ -46,6 +46,7 @@ import { useDialogFocus } from '../hooks/useDialogFocus';
 
 interface LessonBuilderProps {
   onExit: () => void;
+  onImportTeachingDeck?: () => void;
   loadCasePackages?: () => Promise<readonly CasePackageV1[]>;
   initialCaseId?: string;
   loadStoredLesson?: (casePackage: CasePackageV1) => Promise<LessonPlanV1 | null>;
@@ -67,6 +68,8 @@ interface ObjectiveRow {
   criterionId: string;
   criterion: string;
   evidence: string;
+  learnerLevels?: readonly LearnerLevel[];
+  sourceSlides?: readonly number[];
 }
 
 interface HintRow {
@@ -119,6 +122,9 @@ interface BuilderForm {
   reviewer: string;
   credentials: string;
   reviewedAt: string;
+  learnerOpenings?: LessonPlanV1['learnerOpenings'];
+  practiceMode?: LessonPlanV1['practiceMode'];
+  turnBudget?: number;
 }
 
 interface FinalizedBundle {
@@ -211,9 +217,6 @@ function initialForm(casePackage?: CasePackageV1): BuilderForm {
 
 function assertVisualBuilderCanRepresent(lessonPlan: LessonPlanV1): void {
   const unsupported: string[] = [];
-  if (lessonPlan.learnerOpenings !== undefined) {
-    unsupported.push('audience-specific learner openings');
-  }
   if (lessonPlan.allowedHints.some((hint) => hint.objectiveIds.length !== 1)) {
     unsupported.push('hints linked to more than one objective');
   }
@@ -263,12 +266,17 @@ function formFromLesson(casePackage: CasePackageV1, lessonPlan: LessonPlanV1): B
         key: index + 1,
         id: objective.id,
         description: objective.description,
+        ...(objective.learnerLevels ? { learnerLevels: objective.learnerLevels } : {}),
+        ...(objective.sourceSlides ? { sourceSlides: objective.sourceSlides } : {}),
         criterionId: criterion?.id ?? `rubric-${objective.id}`,
         criterion: criterion?.criterion ?? '',
         evidence: criterion?.observableEvidence.join('\n') ?? '',
       };
     }),
     socraticOpening: lessonPlan.socraticOpening,
+    ...(lessonPlan.learnerOpenings ? { learnerOpenings: lessonPlan.learnerOpenings } : {}),
+    ...(lessonPlan.practiceMode ? { practiceMode: lessonPlan.practiceMode } : {}),
+    ...(lessonPlan.turnBudget !== undefined ? { turnBudget: lessonPlan.turnBudget } : {}),
     hints: lessonPlan.allowedHints.map((hint, index) => ({
       key: index + 1,
       id: hint.id,
@@ -331,8 +339,13 @@ function buildDraft(form: BuilderForm): LessonPlanV1Draft {
     objectives: form.objectives.map((objective) => ({
       id: objective.id.trim(),
       description: objective.description.trim(),
+      ...(objective.learnerLevels ? { learnerLevels: objective.learnerLevels } : {}),
+      ...(objective.sourceSlides ? { sourceSlides: objective.sourceSlides } : {}),
     })),
     socraticOpening: form.socraticOpening.trim(),
+    ...(form.learnerOpenings ? { learnerOpenings: form.learnerOpenings } : {}),
+    ...(form.practiceMode ? { practiceMode: form.practiceMode } : {}),
+    ...(form.turnBudget !== undefined ? { turnBudget: form.turnBudget } : {}),
     allowedHints: form.hints.map((hint) => ({
       id: hint.id.trim(),
       objectiveIds: [hint.objectiveId],
@@ -497,6 +510,7 @@ const LessonCasePreview: React.FC<{
 
 const LessonBuilder: React.FC<LessonBuilderProps> = ({
   onExit,
+  onImportTeachingDeck,
   loadCasePackages = listCasePackages,
   initialCaseId,
   loadStoredLesson,
@@ -682,7 +696,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     );
   };
 
-  const updateObjective = (key: number, field: keyof Omit<ObjectiveRow, 'key'>, value: string) => {
+  const updateObjective = (key: number, field: keyof Omit<ObjectiveRow, 'key' | 'learnerLevels' | 'sourceSlides'>, value: string) => {
     setForm((current) => {
       const previous = current.objectives.find((row) => row.key === key);
       return {
@@ -804,7 +818,9 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         message: 'Summarize the supporting evidence and one durable takeaway, then stop.',
       }],
       tutorInstructions: 'Use the imported teaching material as an educator-review draft. Ask one focused question at a time. Do not treat unverified links as evidence or reveal answer notes before the learner attempts the objective.',
-      answerNotes: outline.teachingNoteDraft,
+      answerNotes: current.answerNotes.trim()
+        ? `${current.answerNotes}\n\nIMPORTED SOURCE — educator review required:\n${outline.teachingNoteDraft}`
+        : outline.teachingNoteDraft,
       reviewed: false,
       reviewer: '',
       credentials: '',
@@ -1056,6 +1072,18 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
             <fieldset disabled={busy} className="lesson-builder-editable">
             {step === 0 && (
               <div className="lesson-builder-section-stack">
+                {onImportTeachingDeck && !initialCaseId && (
+                  <div className="lesson-builder-info-card">
+                    <BookOpen aria-hidden="true" />
+                    <div><h3>Already have teaching slides?</h3><p>Bring your PowerPoint and an objective spreadsheet. Pick the images and confirm your answer key to create a complete coached lesson.</p>
+                      <button type="button" className="lesson-builder-button primary" onClick={() => {
+                        if (hasUnsavedChanges && !window.confirm('Start a new lesson from slides? Unsaved edits in this builder will be lost.')) return;
+                        if (needsMemoryExport && !window.confirm('This lesson is saved only for this visit. Export a portable copy before closing the page. Start another lesson?')) return;
+                        onImportTeachingDeck();
+                      }}>Build from slides + objectives</button>
+                    </div>
+                  </div>
+                )}
                 <div className="lesson-builder-case-choice">
                   <Field label="Teaching case" htmlFor="lesson-case" hint="The case provides the images. Importing a document adds teaching text." required>
                     <select
@@ -1119,6 +1147,9 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <Field label="Neutral case description" htmlFor="lesson-description" hint="Describe what is visible without revealing the answer." required>
                   <textarea id="lesson-description" className={INPUT_CLASS} rows={3} value={form.neutralDescription} onChange={(event) => updateForm('neutralDescription', event.target.value)} aria-describedby="lesson-description-hint" required />
                 </Field>
+                <Field label="Educator answer key" htmlFor="lesson-answer-notes" hint="Supply the known diagnosis, findings, and their image or slide locations. The coach uses these facts to guide reasoning. Include the source and distinguish anything still uncertain." required>
+                  <textarea id="lesson-answer-notes" className={INPUT_CLASS} rows={5} value={form.answerNotes} onChange={(event) => updateForm('answerNotes', event.target.value)} aria-describedby="lesson-answer-notes-hint" required />
+                </Field>
                 <Field label="Prerequisites" htmlFor="lesson-prerequisites" hint="Optional. One learner prerequisite per line.">
                   <textarea id="lesson-prerequisites" className={INPUT_CLASS} rows={2} value={form.prerequisites} onChange={(event) => updateForm('prerequisites', event.target.value)} aria-describedby="lesson-prerequisites-hint" />
                 </Field>
@@ -1144,6 +1175,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 {form.objectives.map((objective, index) => (
                   <fieldset className="lesson-builder-repeater" key={objective.key}>
                     <legend>Objective {index + 1}</legend>
+                    {objective.learnerLevels && <p className="lesson-builder-hint">For {objective.learnerLevels.map(level => LEARNER_LEVELS.find(item => item.id === level)?.label ?? level).join(', ')}{objective.sourceSlides ? ` · Source slides ${objective.sourceSlides.join(', ')}` : ''}</p>}
                     <div className="lesson-builder-repeater-actions">
                       <button type="button" className="lesson-builder-icon-button repeater-action" aria-label={`Move objective ${index + 1} up`} disabled={index === 0} onClick={() => moveObjective(objective.key, -1)}>
                         <ArrowUp aria-hidden="true" />
@@ -1184,6 +1216,12 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <Field label="Socratic opening" htmlFor="lesson-opening" hint="Write the first focused question the learner receives." required>
                   <textarea id="lesson-opening" className={INPUT_CLASS} rows={3} value={form.socraticOpening} onChange={(event) => updateForm('socraticOpening', event.target.value)} aria-describedby="lesson-opening-hint" required />
                 </Field>
+                {form.learnerOpenings?.map(opening => (
+                  <Field key={opening.learnerLevel} label={`${LEARNER_LEVELS.find(level => level.id === opening.learnerLevel)?.label ?? opening.learnerLevel} opening`} htmlFor={`lesson-opening-${opening.learnerLevel}`}>
+                    <textarea id={`lesson-opening-${opening.learnerLevel}`} className={INPUT_CLASS} rows={2} value={opening.content} onChange={event => updateForm('learnerOpenings', form.learnerOpenings?.map(item => item.learnerLevel === opening.learnerLevel ? { ...item, content: event.target.value } : item))} />
+                  </Field>
+                ))}
+                <label className="lesson-builder-hint"><input type="checkbox" checked={form.practiceMode === 'guided'} onChange={event => updateForm('practiceMode', event.target.checked ? 'guided' : undefined)} /> Guided practice: ask for an attempt, offer hints on request, and track objective evidence.</label>
 
                 <section className="lesson-builder-subsection" aria-labelledby="hints-heading">
                   <div className="lesson-builder-subsection-heading"><div><h3 id="hints-heading">Allowed hints</h3><p>Hints are explicit and linked to an objective.</p></div><button type="button" className="lesson-builder-button secondary compact" onClick={addHint}><Plus aria-hidden="true" /> Add hint</button></div>
@@ -1233,7 +1271,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <Field label="Educator tutor instructions" htmlFor="lesson-tutor-instructions" hint="Describe tone, sequence, learner agency, and what the tutor should avoid." required>
                   <textarea id="lesson-tutor-instructions" className={INPUT_CLASS} rows={5} value={form.tutorInstructions} onChange={(event) => updateForm('tutorInstructions', event.target.value)} aria-describedby="lesson-tutor-instructions-hint" required />
                 </Field>
-                <Field label="Answer-revealing teaching notes" htmlFor="lesson-answer-notes" hint="One note per line. These notes are exported and sent to the model, but are not shown as the neutral case description." required>
+                <Field label="Educator answer key" htmlFor="lesson-answer-notes" hint="The same answer key from Setup. These facts are sent to the coach and included in educator exports; they are not the learner's case description." required>
                   <textarea id="lesson-answer-notes" className={INPUT_CLASS} rows={5} value={form.answerNotes} onChange={(event) => updateForm('answerNotes', event.target.value)} aria-describedby="lesson-answer-notes-hint" required />
                 </Field>
               </div>

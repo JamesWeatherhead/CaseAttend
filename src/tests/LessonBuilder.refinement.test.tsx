@@ -39,6 +39,37 @@ function unloadIsProtected() {
   return event.defaultPrevented;
 }
 
+it('retains level-specific curriculum, openings, guided mode and turn budget across a title revision', async () => {
+  const original = await makeEditableLessonCase();
+  const { manifest: _lessonManifest, ...draft } = original.lessonPlan;
+  const level = draft.learner.levels[0];
+  const lessonPlan = await finalizeLessonPlanV1({
+    ...draft, practiceMode: 'guided', turnBudget: 18,
+    objectives: draft.objectives.map(objective => ({ ...objective, learnerLevels: draft.learner.levels, sourceSlides: [23] })),
+    learnerOpenings: [{ learnerLevel: level, content: 'Describe the image in your own words.' }],
+  });
+  const { manifest: _caseManifest, ...caseDraft } = original.casePackage;
+  const casePackage = await finalizeCasePackageV1({ ...caseDraft, lessonPlanRef: getLessonPlanRef(lessonPlan) });
+  const portable = await createPortableCasePackageV1(casePackage, lessonPlan, original.assets);
+  const store = new CasePackageStore({ indexedDB: new IDBFactory() });
+  await store.save(portable);
+  const controller = createCaseStudioController({ store });
+  render(<LessonBuilder onExit={() => undefined} loadCasePackages={async () => [casePackage]}
+    loadStoredLesson={controller.loadStoredLesson} saveUpdatedBundle={controller.saveUpdatedBundle}
+    getStorageStatus={controller.getStorageStatus} />);
+  await screen.findByRole('heading', { name: 'Set up the lesson' });
+  expect(screen.getByLabelText(/Educator answer key/)).toHaveProperty('value', lessonPlan.teachingNotes.join('\n'));
+  fireEvent.change(screen.getByLabelText(/Lesson title/), { target: { value: 'Revised curriculum title' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Review/export' }));
+  await screen.findByText(/Browser-local case and exact lesson revision saved/);
+  const saved = (await store.get(casePackage.id))!.lessonPlan;
+  expect(saved.objectives).toEqual(lessonPlan.objectives);
+  expect(saved.learnerOpenings).toEqual(lessonPlan.learnerOpenings);
+  expect(saved.practiceMode).toBe('guided');
+  expect(saved.turnBudget).toBe(18);
+  store.close();
+});
+
 it('protects the new in-memory revision when persistent storage fails during saving', async () => {
   const indexedDB = new IDBFactory();
   const { portable, store } = await openSavedLesson({ indexedDB });

@@ -225,7 +225,7 @@ describe('LessonBuilder', () => {
     fireEvent.click(screen.getByRole('button', { name: /Tutor path/ }));
     expect((screen.getByLabelText(/Socratic opening/) as HTMLTextAreaElement).value)
       .toContain('connects to this teaching material');
-    expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value)
+    expect((screen.getByLabelText(/Educator answer key/) as HTMLTextAreaElement).value)
       .toContain('EDUCATOR IMPORTED NOTE');
 
     fireEvent.click(screen.getByRole('button', { name: /Sources\/review/ }));
@@ -262,6 +262,26 @@ describe('LessonBuilder', () => {
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value)
       .toBe('Keep my edited title');
     expect(screen.getByRole('button', { name: 'Apply imported draft' })).toBeTruthy();
+  });
+
+  it('preserves an educator answer key when adding imported teaching text', async () => {
+    render(<LessonBuilder onExit={() => undefined} loadCasePackages={loadCasePackages}
+      parseLessonSource={async () => importedOutline} />);
+    await screen.findByRole('heading', { name: 'Set up the lesson' });
+    fireEvent.change(screen.getByLabelText(/Educator answer key/), {
+      target: { value: 'Confirmed educator finding: a focal lesion in the supplied region.' },
+    });
+    fireEvent.click(screen.getByText('Import teaching text'));
+    fireEvent.change(screen.getByLabelText('Choose PDF or PowerPoint'), {
+      target: { files: [new File(['source'], 'teaching.pdf', { type: 'application/pdf' })] },
+    });
+    await screen.findByRole('heading', { name: 'PDF draft ready to review' });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply imported draft' }));
+    const answer = (screen.getByLabelText(/Educator answer key/) as HTMLTextAreaElement).value;
+    expect(answer).toContain('Confirmed educator finding: a focal lesion in the supplied region.');
+    expect(answer).toContain('IMPORTED SOURCE — educator review required:');
+    expect(answer).toContain('EDUCATOR IMPORTED NOTE');
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('uses native step buttons and exposes the current step', async () => {
@@ -501,7 +521,7 @@ describe('LessonBuilder', () => {
     fireEvent.change(whenFields[1], { target: { value: 'the learner completes the objective' } });
     fireEvent.change(screen.getByLabelText(/Learner message/), { target: { value: 'Summarize the evidence and stop.' } });
     fireEvent.change(screen.getByLabelText(/Educator tutor instructions/), { target: { value: 'Ask one focused question at a time.' } });
-    fireEvent.change(screen.getByLabelText(/Answer-revealing teaching notes/), { target: { value: 'Answer note for the educator.' } });
+    fireEvent.change(screen.getByLabelText(/Educator answer key/), { target: { value: 'Answer note for the educator.' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Review\/export/ }));
 
@@ -541,7 +561,7 @@ describe('LessonBuilder', () => {
     fireEvent.change(screen.getByLabelText(/Observable evidence/), { target: { value: 'CASE A PRIVATE EVIDENCE' } });
     fireEvent.click(screen.getByRole('button', { name: /Tutor path/ }));
     fireEvent.change(screen.getByLabelText(/Educator tutor instructions/), { target: { value: 'CASE A PRIVATE TUTOR INSTRUCTIONS' } });
-    fireEvent.change(screen.getByLabelText(/Answer-revealing teaching notes/), { target: { value: 'CASE A PRIVATE ANSWER' } });
+    fireEvent.change(screen.getByLabelText(/Educator answer key/), { target: { value: 'CASE A PRIVATE ANSWER' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Setup/ }));
     fireEvent.change(screen.getByRole('combobox', { name: /Teaching case/ }), { target: { value: secondTeachingCase.id } });
@@ -558,7 +578,7 @@ describe('LessonBuilder', () => {
     expect((screen.getByLabelText(/Observable evidence/) as HTMLTextAreaElement).value).toBe('');
     fireEvent.click(screen.getByRole('button', { name: /Tutor path/ }));
     expect((screen.getByLabelText(/Educator tutor instructions/) as HTMLTextAreaElement).value).toBe('');
-    expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value).toBe('');
+    expect((screen.getByLabelText(/Educator answer key/) as HTMLTextAreaElement).value).toBe('');
     expect(document.body.textContent).not.toContain('CASE A PRIVATE');
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -617,7 +637,7 @@ describe('LessonBuilder', () => {
     await waitFor(() => {
       expect((screen.getByLabelText(/Socratic opening/) as HTMLTextAreaElement).value)
         .toBe(storedLesson.socraticOpening);
-      expect((screen.getByLabelText(/Answer-revealing teaching notes/) as HTMLTextAreaElement).value)
+      expect((screen.getByLabelText(/Educator answer key/) as HTMLTextAreaElement).value)
         .toBe(storedLesson.teachingNotes.join('\n'));
     }, { timeout: 5_000 });
     expect(fetch).not.toHaveBeenCalled();
@@ -678,10 +698,7 @@ describe('LessonBuilder', () => {
     const { manifest: _manifest, ...starterDraft } = starter;
     const advancedLesson = await finalizeLessonPlanV1({
       ...starterDraft,
-      learnerOpenings: [{
-        learnerLevel: 'undergrad',
-        content: 'What visual feature would you describe first at your current level?',
-      }],
+      rubric: { criteria: [...starterDraft.rubric.criteria, { ...starterDraft.rubric.criteria[0], id: 'extra-criterion' }] },
     });
     const loadStoredLesson = vi.fn(async (casePackage: CasePackageV1) => (
       casePackage.id === localTeachingCase.id ? advancedLesson : null
@@ -701,7 +718,7 @@ describe('LessonBuilder', () => {
     });
 
     const alert = await screen.findByRole('alert');
-    expect(alert.textContent).toContain('audience-specific learner openings');
+    expect(alert.textContent).toContain('objectives with multiple rubric criteria');
     expect(alert.textContent).toContain('No lesson content was changed.');
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toBe(originalTitle);
     expect((screen.getByRole('combobox', { name: /Teaching case/ }) as HTMLSelectElement).value)

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, KeyRound, ShieldCheck, ExternalLink, Check, Gift } from 'lucide-react';
 import { beginOpenRouterOAuth } from '../services/openrouterAuth';
 import { hasKey, getModel, setModel, clearKey, MODEL_OPTIONS } from '../services/byokStore';
@@ -51,7 +52,7 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose, returnFocusR
     setConnected(false);
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
       onClick={onClose}
@@ -111,6 +112,9 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose, returnFocusR
           )}
 
           {/* Model picker (pinned for cost safety) */}
+          <p className="text-xs leading-relaxed text-[#aab2bf]">
+            Guided lessons offer optional objective checks using a separate paid model. Checks start off; you can turn them on in the lesson. They use your OpenRouter balance even when the tutor is free.
+          </p>
           <div>
             <div className="text-sm font-bold uppercase tracking-wider text-[#aab2bf] mb-2">Model</div>
             <div className="flex flex-col gap-1.5">
@@ -195,7 +199,8 @@ const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose, returnFocusR
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
