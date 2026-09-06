@@ -9,11 +9,10 @@ import type {
   FrozenResearchSetup,
   ResearchMaterialOption,
 } from './components/ResearchSetupWizard/ResearchSetupWizard';
-import ViewerCanvas from './components/ViewerCanvas';
+import { DeferredViewer as ViewerCanvas, DeferredTutor as AiAssistantPanel } from './components/DeferredCaseTools';
 import SeriesSelector from './components/SeriesSelector';
 import MeasurementPanel from './components/MeasurementPanel';
 import SegmentationPanel from './components/SegmentationPanel';
-import AiAssistantPanel from './components/AiAssistantPanel';
 import SessionDataPanel from './components/SessionDataPanel';
 import ResearchDataPanel from './components/ResearchDataPanel';
 import SafetyModal from './components/SafetyModal';
@@ -31,8 +30,7 @@ import {
   pendingOAuthCode,
 } from './services/openrouterAuth';
 import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
-import { browserTeachingEngine } from './services/browserTeachingEngine';
-import { generateAuthoredIntroCacheWithOpenRouter } from './services/openrouterClient';
+import { generateIntroCacheLazily } from './services/deferredIntroCacheGeneration';
 import {
   getPreference,
   PREFERENCE_KEYS,
@@ -172,7 +170,7 @@ const App: React.FC = () => {
   }, []);
   const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
   const caseStudioController = useMemo(() => createCaseStudioController({
-    runIntroCacheGeneration: generateAuthoredIntroCacheWithOpenRouter,
+    runIntroCacheGeneration: generateIntroCacheLazily,
   }), []);
   const [researchMaterials, setResearchMaterials] = useState<readonly ResearchMaterialOption[]>([]);
   const [researchMaterialsLoading, setResearchMaterialsLoading] = useState(false);
@@ -184,6 +182,8 @@ const App: React.FC = () => {
   const [participantSession, setParticipantSession] = useState<ResearchParticipantSession | null>(null);
   const [participantInferenceReady, setParticipantInferenceReady] = useState(() => hasKey());
   const [participantInferenceBusy, setParticipantInferenceBusy] = useState(false);
+  const [participantViewerReady, setParticipantViewerReady] = useState(false);
+  const [participantTutorReady, setParticipantTutorReady] = useState(false);
   const participantCancelInferenceRef = useRef<(() => Promise<void>) | null>(null);
   const researchSetupRequestRef = useRef(0);
 
@@ -279,6 +279,8 @@ const App: React.FC = () => {
       throw new Error('Participant launch is blocked because this browser does not have an OpenRouter key. Exit Participant Mode and ask the study team how to connect an approved key before returning.');
     }
     const session = await researchSetupController.startParticipant(participantFrozen, participantCode);
+    setParticipantViewerReady(false);
+    setParticipantTutorReady(false);
     setParticipantInferenceBusy(false);
     setParticipantSession(session);
     setSelectedStudy(session.portableCase.casePackage);
@@ -917,6 +919,7 @@ const App: React.FC = () => {
           storageStatus={researchStorageStatus}
           inferenceReady={participantInferenceReady}
           inferenceBusy={participantInferenceBusy}
+          activityReady={participantViewerReady && participantTutorReady}
           cancelInferenceAndWait={participantCancelInferenceRef.current ?? undefined}
           onStart={startParticipantSession}
           onExit={exitParticipantMode}
@@ -939,6 +942,8 @@ const App: React.FC = () => {
                 />
                 <CaseContentWarnings warnings={selectedStudy.contentWarnings} />
                 <ViewerCanvas
+                  onReadyChange={setParticipantViewerReady}
+                  allowReload={false}
                   ref={viewerRef}
                   series={activeSeries}
                   activeTool={activeTool}
@@ -1017,7 +1022,8 @@ const App: React.FC = () => {
                   )}
                   <div className={`absolute inset-0 bg-[#0f1011] ${activeRightTab === 'ai' ? 'z-10 block' : 'hidden'}`}>
                     <AiAssistantPanel
-                      teachingEngine={browserTeachingEngine}
+                      onReadyChange={setParticipantTutorReady}
+                      allowReload={false}
                       captureCurrentView={captureCurrentView}
                       sessionContext={{
                         casePackageRef: {
@@ -1293,7 +1299,6 @@ const App: React.FC = () => {
                      </div>}
                      <div className={`absolute inset-0 w-full h-full bg-[#0f1011] ${activeRightTab === 'ai' ? 'block z-10' : 'hidden'}`}>
                          <AiAssistantPanel
-                            teachingEngine={browserTeachingEngine}
                             captureCurrentView={captureCurrentView}
                             sessionContext={{
                               casePackageRef: {

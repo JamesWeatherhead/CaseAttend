@@ -31,6 +31,8 @@ export interface ParticipantTaskFlowProps {
   onComplete?: () => void;
   /** True while the assigned tutor has a request without a persisted terminal event. */
   activityBusy?: boolean;
+  /** False while a required activity tool is loading or could not be loaded. */
+  activityReady?: boolean;
   /** Monotonic clock injection for deterministic duration tests. */
   nowMs?: () => number;
 }
@@ -191,6 +193,7 @@ const ParticipantTaskFlow: React.FC<ParticipantTaskFlowProps> = ({
   renderActivity,
   onComplete,
   activityBusy = false,
+  activityReady = true,
   nowMs = defaultNowMs,
 }) => {
   const validationErrors = useMemo(() => validateParticipantTaskSet(tasks), [tasks]);
@@ -303,7 +306,7 @@ const ParticipantTaskFlow: React.FC<ParticipantTaskFlowProps> = ({
   };
 
   const finishActivity = async () => {
-    if (busy || activityBusy) return;
+    if (busy || activityBusy || !activityReady) return;
     if (tasks.post.length > 0) {
       setTaskIndex(0);
       setPhase('post');
@@ -330,14 +333,16 @@ const ParticipantTaskFlow: React.FC<ParticipantTaskFlowProps> = ({
         <div className="participant-task-activity-content">{renderActivity}</div>
         <div className="participant-task-finish-bar">
           <p id="participant-task-finish-guidance" role="status" aria-live="polite">
-            {activityBusy
+            {!activityReady
+              ? 'The study tools are not ready yet. Wait for them to open. If loading fails, use Exit study to safely end this session.'
+              : activityBusy
               ? 'An AI response is still active. Wait for it to finish or cancel it before finishing this activity.'
               : 'Complete the configured activity before continuing. You cannot return after finishing it.'}
           </p>
           <button
             type="button"
             onClick={() => { void finishActivity(); }}
-            disabled={busy || activityBusy}
+            disabled={busy || activityBusy || !activityReady}
             aria-describedby="participant-task-finish-guidance"
           >
             Finish study activity
