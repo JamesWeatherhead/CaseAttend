@@ -45,13 +45,15 @@ Files over 25 MiB or documents over 80 pages/slides are rejected. Text from a ve
 ## Import step by step
 
 1. From the CaseAttend home screen, select **Create a lesson from PDF or PowerPoint**.
-2. In **Setup**, choose the Case Package this lesson will teach.
-3. Find **Import PDF or PowerPoint**.
+2. In **Setup**, choose the **Teaching case** this lesson will teach.
+3. Expand **Import teaching text**, below the lesson title and learner levels.
 4. Drag one `.pdf` or `.pptx` file into the import area. You can also use its file-picker button, which is the better option for keyboard and assistive-technology users.
 5. Wait while CaseAttend extracts text locally.
 6. Read the import preview and every warning. Check that the material belongs to the selected case.
 7. Select **Apply imported draft** when the preview is useful.
 8. Review and edit every populated field before moving through the rest of Lesson Builder.
+
+Collapsing **Import teaching text** keeps the current preview and any ongoing parse. Reopening it lets you continue reviewing. Changing the teaching case clears that import preview and cancels its pending parse, keeping material for different cases separate.
 
 If the current lesson already contains work, CaseAttend asks before replacing editable material. Read that confirmation carefully. A failed or cancelled parse should not become a reason to discard the lesson you already wrote.
 

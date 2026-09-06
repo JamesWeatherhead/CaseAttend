@@ -27,17 +27,19 @@ Choose one route:
 - From the home screen, select **Create a lesson from PDF or PowerPoint**. Import is optional; you can build the lesson manually.
 - After saving a browser-local case, select **Build the lesson**.
 
-Lesson Builder has five steps: **Setup**, **Objectives/evidence**, **Tutor path**, **Sources/review**, and **Review/export**.
+Lesson Builder has five steps: **Setup**, **Objectives/evidence**, **Tutor path**, **Sources/review**, and **Review/export**. On a phone, select **All steps** to open the full list; choosing a step closes the list and focuses its heading.
 
 If your source material is already in a PDF or PowerPoint presentation, you may first [import its text into an editable draft](import-pdf-powerpoint.md). Import is a starting point, not a finished lesson.
 
 ## Step 1: Set up the lesson
 
-### Choose the Case Package
+### Choose the teaching case
 
-Select the exact visual case this lesson teaches. A lesson remains linked to that case revision.
+Use **Teaching case** to select the exact visual case this lesson teaches. A compact image preview and its review status appear immediately below. Open **Case details** for the vignette, specialty, and case version. A lesson remains linked to that case revision.
 
 ### Name and version the lesson
+
+Start with the lesson title and learner levels. Open **Lesson settings** below the teaching fields to change the stable ID or content version. Existing IDs and versions are preserved when you edit the title or reopen settings.
 
 - **Lesson title:** a human-readable title.
 - **Stable lesson ID:** lowercase words separated by hyphens, such as `pleural-line-reasoning`.
@@ -59,6 +61,8 @@ Choose every learner level the lesson is designed to support. List genuine prere
 ### Check the neutral description
 
 Describe what the learner receives without naming the answer. This answer-safe description is shared by the case and lesson.
+
+If review finds an invalid ID or version, select **Edit lesson settings** to return to Setup with those fields expanded. Other incomplete sections have an **Edit** action that returns to their fields. Field checks run even when you jump directly to **Review/export**.
 
 ## Step 2: Define objectives and evidence
 
