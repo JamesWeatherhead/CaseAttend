@@ -8,6 +8,7 @@ const SUGGESTIONS_NO_IMAGE: Record<LearnerLevel, string[]> = {
   undergrad: ["What is H&E staining and what does each color show?", "Review basic breast tissue architecture with me."],
   ms_preclinical: ["What are the histologic features that distinguish benign from malignant?", "Review normal breast glandular architecture with me."],
   ms_clinical: ["How should I systematically analyze an H&E slide for grading?", "What molecular markers will I need to order and why?"],
+  ms_step2: ["How should I systematically analyze an H&E slide for grading?", "What molecular markers will I need to order and why?"],
   resident: ["What is the grading system for invasive ductal carcinoma?", "Walk me through the Nottingham grading criteria."],
 };
 
@@ -16,6 +17,7 @@ const SUGGESTIONS_WITH_IMAGE: Record<LearnerLevel, string[]> = {
   undergrad: ["Describe the tissue architecture I can see.", "What cell types are visible here?"],
   ms_preclinical: ["Walk me through the histology I see in this field.", "What cellular features indicate this is abnormal?"],
   ms_clinical: ["What is the most important finding and how does it change management?", "What is the differential diagnosis for this pattern?"],
+  ms_step2: ["What is the most important finding and how does it change management?", "What is the differential diagnosis for this pattern?"],
   resident: ["Describe the morphological features and their significance.", "What is the differential diagnosis for this pattern?"],
 };
 

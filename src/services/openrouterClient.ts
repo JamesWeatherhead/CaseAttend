@@ -34,6 +34,12 @@ import {
   type IntroCacheGenerationRequest,
 } from './introCacheAuthoring';
 import type { IntroCacheV1 } from '../core/introCache';
+import {
+  OBJECTIVE_EVIDENCE_LIMITS,
+  OBJECTIVE_EVIDENCE_MODEL_ID,
+  type ObjectiveEvidenceModelRequest,
+  type ObjectiveEvidenceModelResponse,
+} from './objectiveEvidence';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
@@ -50,6 +56,101 @@ export async function generateAuthoredIntroCacheWithOpenRouter(
     apiKey: getKey() ?? '',
     modelId: getModel(),
   });
+}
+
+/**
+ * Credential boundary for optional, ordinary-learning objective assessment.
+ * Key access, fixed-endpoint fetch, deadline, and bounded body reading remain
+ * here. The evaluator receives only content/model metadata and curated errors.
+ */
+export async function requestObjectiveEvidenceWithOpenRouter(
+  request: ObjectiveEvidenceModelRequest,
+): Promise<ObjectiveEvidenceModelResponse> {
+  const invalid = () => new SafeInferenceError({ code: 'invalid_response', message: 'Objective evidence could not be assessed.', retryable: true });
+  if (request.modelId !== OBJECTIVE_EVIDENCE_MODEL_ID
+    || request.systemPrompt.length + request.userContent.length > OBJECTIVE_EVIDENCE_LIMITS.maxRequestCharacters) throw invalid();
+  if (request.signal.aborted) throw new SafeInferenceError({ code: 'request_aborted', message: 'Objective assessment cancelled.', retryable: true });
+  const apiKey = getKey();
+  if (!apiKey) throw new SafeInferenceError({ code: 'missing_key', message: 'Connect OpenRouter to assess objective evidence.', retryable: false });
+  const controller = new AbortController();
+  let timedOut = false;
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let rejectAbort!: (error: SafeInferenceError) => void;
+  const aborted = new Promise<never>((_, reject) => { rejectAbort = reject; });
+  const abort = () => {
+    controller.abort();
+    void reader?.cancel().catch(() => {});
+    rejectAbort(new SafeInferenceError({ code: timedOut ? 'timeout' : 'request_aborted', message: timedOut ? 'Objective assessment timed out.' : 'Objective assessment cancelled.', retryable: true }));
+  };
+  const timeout = setTimeout(() => { timedOut = true; abort(); }, OBJECTIVE_EVIDENCE_LIMITS.timeoutMs);
+  request.signal.addEventListener('abort', abort, { once: true });
+  const run = async (): Promise<ObjectiveEvidenceModelResponse> => {
+    const body = JSON.stringify({
+      model: request.modelId,
+      messages: [{ role: 'system', content: request.systemPrompt }, { role: 'user', content: request.userContent }],
+      stream: false, temperature: 0, max_tokens: OBJECTIVE_EVIDENCE_LIMITS.maxTokens,
+      provider: { require_parameters: true, allow_fallbacks: false, data_collection: 'deny' },
+      response_format: { type: 'json_schema', json_schema: { name: 'objective_evidence', strict: true, schema: request.responseSchema } },
+    });
+    // Include the schema and JSON escaping in the actual outbound byte bound.
+    if (new TextEncoder().encode(body).byteLength > OBJECTIVE_EVIDENCE_LIMITS.maxRequestCharacters * 4) throw invalid();
+    const response = await fetch(OPENROUTER_URL, {
+      method: 'POST', redirect: 'error', credentials: 'omit', signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json',
+        'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://caseattend.com',
+        'X-Title': 'CaseAttend',
+      },
+      body,
+    });
+    if (controller.signal.aborted) throw invalid();
+    if (!response.ok) {
+      // Never read an error body: it may echo private content or credentials.
+      void response.body?.cancel().catch(() => {});
+      const codes: Record<number, InferenceErrorCode> = { 401: 'unauthorized', 402: 'payment_required', 403: 'forbidden', 429: 'rate_limited' };
+      throw new SafeInferenceError({
+        code: codes[response.status] ?? (response.status >= 500 ? 'provider_unavailable' : 'provider_error'),
+        message: 'OpenRouter could not assess objective evidence.', retryable: response.status === 429 || response.status >= 500,
+        httpStatus: response.status,
+      });
+    }
+    if (Number(response.headers.get('content-length')) > OBJECTIVE_EVIDENCE_LIMITS.maxResponseBytes || !response.body) {
+      void response.body?.cancel().catch(() => {});
+      throw invalid();
+    }
+    reader = response.body.getReader();
+    let total = 0;
+    let content = '';
+    const decoder = new TextDecoder('utf-8', { fatal: true });
+    while (true) {
+      if (controller.signal.aborted) throw invalid();
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      total += chunk.value.byteLength;
+      if (total > OBJECTIVE_EVIDENCE_LIMITS.maxResponseBytes) throw invalid();
+      content += decoder.decode(chunk.value, { stream: true });
+    }
+    content += decoder.decode();
+    const value: unknown = JSON.parse(content);
+    if (!value || typeof value !== 'object') throw invalid();
+    const data = value as Record<string, any>;
+    const choice = Array.isArray(data.choices) && data.choices.length === 1 ? data.choices[0] : undefined;
+    if (data.error || data.model !== request.modelId || choice?.finish_reason !== 'stop'
+      || choice?.message?.tool_calls?.length || typeof choice?.message?.content !== 'string'
+      || !choice.message.content.trim()) throw invalid();
+    return { content: choice.message.content, modelId: request.modelId };
+  };
+  try {
+    return await Promise.race([run(), aborted]);
+  } catch (error) {
+    if (timedOut || request.signal.aborted) throw new SafeInferenceError({ code: timedOut ? 'timeout' : 'request_aborted', message: 'Objective evidence was not assessed.', retryable: true });
+    if (error instanceof SafeInferenceError) throw error;
+    throw new SafeInferenceError({ code: error instanceof SyntaxError || error instanceof TypeError && reader ? 'invalid_response' : 'network_error', message: 'Objective evidence was not assessed.', retryable: true });
+  } finally {
+    clearTimeout(timeout);
+    request.signal.removeEventListener('abort', abort);
+    void reader?.cancel().catch(() => {});
+  }
 }
 
 export interface ORChunk {

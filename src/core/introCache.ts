@@ -20,13 +20,15 @@ export const INTRO_CACHE_SCHEMA = 'caseattend.intro-cache' as const;
 export const INTRO_CACHE_SCHEMA_VERSION = '1.0' as const;
 export const INTRO_CACHE_REQUEST_TEMPLATE_VERSION = '1.0' as const;
 
-export const INTRO_CACHE_LEARNER_LEVELS: readonly LearnerLevel[] = Object.freeze([
+export const INTRO_CACHE_LEARNER_LEVELS = Object.freeze([
   'highschool',
   'undergrad',
   'ms_preclinical',
   'ms_clinical',
   'resident',
-]);
+] as const);
+
+export type IntroCacheLearnerLevel = typeof INTRO_CACHE_LEARNER_LEVELS[number];
 
 export interface IntroCacheQuestionV1 {
   /** Stable kebab-case identifier for exact-match lookup. */
@@ -80,7 +82,9 @@ export interface IntroCacheV1 {
   lessonPlanSha256: string;
   provenance: IntroCacheProvenanceV1;
   review: IntroCacheReviewV1;
-  levels: Readonly<Record<LearnerLevel, IntroCacheLevelV1>>;
+  // v1 caches cover the original five audiences. New guided Step 2 curricula
+  // do not acquire a cached answer merely by adding a learner level.
+  levels: Readonly<Record<IntroCacheLearnerLevel, IntroCacheLevelV1> & Partial<Record<LearnerLevel, IntroCacheLevelV1>>>;
 }
 
 export interface IntroCacheValidationResult {
@@ -269,7 +273,7 @@ export function validateIntroCacheV1(value: unknown): IntroCacheValidationResult
 
 /** Small helper the runtime uses: is a given level guaranteed a cached question? */
 export function introCacheHasLevel(cache: IntroCacheV1, level: LearnerLevel): boolean {
-  return Object.hasOwn(cache.levels, level) && cache.levels[level].introQuestions.length > 0;
+  return Object.hasOwn(cache.levels, level) && (cache.levels[level]?.introQuestions.length ?? 0) > 0;
 }
 
 /**

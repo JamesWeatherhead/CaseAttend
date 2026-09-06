@@ -8,6 +8,7 @@ CaseAttend uses different file controls for different jobs. Choose the row that 
 
 | Task | Accepted file | How it is used |
 | --- | --- | --- |
+| Create a coached lesson from slides and objectives | One `.pptx` plus one `.xlsx` or `.csv` | Imports visible slide media and instructor notes for review, then assembles selected images with the educator's level-specific objectives and answer keys. |
 | Create a visual case in Case Studio | JPEG (`.jpg`, `.jpeg`), PNG (`.png`), or WebP (`.webp`) | One image becomes a single-image case; several become an ordered image stack. Prepared pixels are re-encoded locally. |
 | Start a lesson draft in Lesson Builder | One PDF (`.pdf`) or modern PowerPoint (`.pptx`) | Selectable PDF text or text stored in non-hidden PowerPoint slides is extracted locally into an editable draft. Pages and slides do not become case images. |
 | Restore a browser-created case | One `.caseattend` portable case | The strict archive is validated and saves its exact case, linked lesson, and referenced re-encoded images in the browser. |
@@ -45,7 +46,13 @@ Re-encoding does not remove:
 
 Run the warning-only screen and complete human review. A valid file is not automatically a safe, licensed, accessible, or clinically accurate teaching artifact.
 
-## PDF and PowerPoint lesson-import limits
+## Slides and objective workbooks
+
+The streamlined **Create a lesson** workflow accepts a PowerPoint up to 25 MiB and 80 slide positions, with up to 256 embedded PNG, JPEG or WebP pictures within the extraction limits. Only selected, decoded and re-encoded media enter the saved case. PowerPoint overlays, crops, animations, audio and video are not reconstructed. Notes are instructor source material and are not automatically learner content.
+
+The objective workbook can be `.xlsx` or `.csv`, up to 8 MiB and 200 objective rows. A guided lesson supports up to 24 selected objectives per learner level. Use a visible **Objectives** worksheet and the columns shown in the [slides and objectives guide](../guides/slides-and-objectives.md). Formula cells use saved values only. External links are not fetched and macros are not run.
+
+## PDF and PowerPoint text-import limits
 
 | Limit | Value |
 | --- | ---: |

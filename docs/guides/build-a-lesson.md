@@ -4,7 +4,7 @@
 
 Lesson Builder turns your teaching intent into a structured, versioned lesson. The tutor still responds conversationally, but your plan gives that conversation a destination.
 
-You need a Case Package before you begin. You can choose a built-in case or [create your own visual case](create-a-case.md).
+This guide covers the detailed builder for an existing case. For a faster start from a PowerPoint and an Excel workbook, use [Slides and objectives](slides-and-objectives.md). The detailed builder can use a built-in case or [your own visual case](create-a-case.md).
 
 ## Plan the lesson first
 
@@ -24,7 +24,7 @@ Use the [lesson-planning worksheet](../templates/lesson-planning-worksheet.md) i
 
 Choose one route:
 
-- From the home screen, select **Create a lesson from PDF or PowerPoint**. Import is optional; you can build the lesson manually.
+- From the home screen, select **Create a lesson**, then **Use an existing case instead**. Import is optional; you can build the lesson manually.
 - After saving a browser-local case, select **Build the lesson**.
 
 Lesson Builder has five steps: **Setup**, **Objectives/evidence**, **Tutor path**, **Sources/review**, and **Review/export**. On a phone, select **All steps** to open the full list; choosing a step closes the list and focuses its heading.
@@ -118,7 +118,7 @@ The stopping message should summarize the next appropriate step without pretendi
 
 ### Educator instructions and answer notes
 
-Use **Educator tutor instructions** for tone, sequence, learner agency, and behavior to avoid. Use **Answer-revealing teaching notes** for the actual teaching interpretation, one note per line.
+Use **Educator tutor instructions** for tone, sequence, learner agency, and behavior to avoid. Use **Educator answer key** for the known teaching interpretation, one note per line. The same answer key appears in Setup and Tutor path. Adding imported source text preserves an existing key and appends the imported material for review.
 
 Answer notes are exported and may be sent to the selected model during a learner interaction. They are not shown as the neutral case description.
 

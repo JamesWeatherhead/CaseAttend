@@ -192,6 +192,7 @@ const LEARNER_LEVELS = new Set<LearnerLevel>([
   'undergrad',
   'ms_preclinical',
   'ms_clinical',
+  'ms_step2',
   'resident',
 ]);
 const MODES = new Set(['chat', 'deep_think', 'search']);

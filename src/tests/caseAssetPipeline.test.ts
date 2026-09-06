@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { findPortableImageMetadata } from '../core/portableCasePackage';
 import {
   CaseAssetPipelineError,
   inspectCaseImageBytes,
@@ -14,6 +15,24 @@ const ONE_PIXEL_PNG_BASE64 =
 
 function onePixelPng(): Uint8Array {
   return Uint8Array.from(atob(ONE_PIXEL_PNG_BASE64), (character) => character.charCodeAt(0));
+}
+
+// Encoder-container fixtures: pixel decoding is supplied explicitly in these
+// tests so the metadata fallback can be checked independently of a browser.
+function onePixelJpeg(withProfile = false): Uint8Array {
+  return Uint8Array.from([
+    0xff, 0xd8,
+    ...(withProfile ? [0xff, 0xe2, 0, 16, ...new TextEncoder().encode('ICC_PROFILE\0'), 1, 1] : []),
+    0xff, 0xc0, 0, 17, 8, 0, 1, 0, 1, 3, 1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0,
+    0xff, 0xd9,
+  ]);
+}
+
+function pngWithProfile(): Uint8Array {
+  const png = onePixelPng();
+  // An empty iCCP chunk models a still-disallowed metadata container. Its
+  // contents must never be accepted by the portable-asset guard.
+  return Uint8Array.from([...png.slice(0, -12), 0, 0, 0, 0, 105, 67, 67, 80, 0, 0, 0, 0, ...png.slice(-12)]);
 }
 
 function blobBuffer(bytes: Uint8Array): ArrayBuffer {
@@ -123,6 +142,78 @@ describe('case image asset pipeline', () => {
       new File([blobBuffer(bytes)], 'image.png', { type: 'image/png' }),
       { createCanvas, decode },
     )).resolves.toMatchObject({ width: 1, height: 1, mimeType: 'image/png' });
+  });
+
+  it('keeps a clean JPEG as JPEG with one canvas encoding', async () => {
+    const toBlob = vi.fn((callback: BlobCallback, type?: string) => {
+      callback(new Blob([blobBuffer(onePixelJpeg())], { type }));
+    });
+    const prepared = await prepareCaseImageAsset(
+      new File([blobBuffer(onePixelJpeg())], 'source.jpg', { type: 'image/jpeg' }),
+      {
+        decode: async () => ({ source: {} as CanvasImageSource, width: 1, height: 1 }),
+        createCanvas: () => ({ width: 0, height: 0, getContext: () => ({ drawImage: vi.fn() }), toBlob }),
+      },
+    );
+    expect(toBlob).toHaveBeenCalledOnce();
+    expect(toBlob).toHaveBeenCalledWith(expect.any(Function), 'image/jpeg', 0.92);
+    expect(prepared.mimeType).toBe('image/jpeg');
+    expect(prepared.uri).toMatch(/\.jpg$/);
+  });
+
+  it('retries encoder-added JPEG ICC metadata once as PNG using the same decoded pixels', async () => {
+    const source = {} as CanvasImageSource;
+    const close = vi.fn();
+    const decode = vi.fn(async () => ({ source, width: 1, height: 1, close }));
+    const drawImage = vi.fn();
+    const toBlob = vi.fn((callback: BlobCallback, type?: string) => {
+      callback(new Blob([blobBuffer(type === 'image/png' ? onePixelPng() : onePixelJpeg(true))], { type }));
+    });
+    const createCanvas = vi.fn(() => ({ width: 0, height: 0, getContext: () => ({ drawImage }), toBlob }));
+    const prepared = await prepareCaseImageAsset(
+      new File([blobBuffer(onePixelJpeg(true))], 'commons-source.jpg', { type: 'image/jpeg' }),
+      { decode, createCanvas },
+    );
+    expect(toBlob.mock.calls.map(call => call[1])).toEqual(['image/jpeg', 'image/png']);
+    expect(decode).toHaveBeenCalledOnce();
+    expect(createCanvas).toHaveBeenCalledOnce();
+    expect(drawImage).toHaveBeenCalledExactlyOnceWith(source, 0, 0, 1, 1);
+    expect(close).toHaveBeenCalledOnce();
+    expect(prepared).toMatchObject({ mimeType: 'image/png', width: 1, height: 1, originalName: 'commons-source.jpg', bytesBase64: ONE_PIXEL_PNG_BASE64 });
+    expect(prepared.uri).toMatch(/\.png$/);
+    expect(findPortableImageMetadata(new Uint8Array(await prepared.blob.arrayBuffer()), 'image/png')).toEqual([]);
+  });
+
+  it.each(['image/jpeg', 'image/png'] as const)('rejects remaining PNG metadata without an encoding loop (initial %s)', async outputMimeType => {
+    const close = vi.fn();
+    const toBlob = vi.fn((callback: BlobCallback, type?: string) => {
+      callback(new Blob([blobBuffer(type === 'image/png' ? pngWithProfile() : onePixelJpeg(true))], { type }));
+    });
+    await expect(reencodeCaseImageWithCanvas(new Blob([blobBuffer(onePixelPng())], { type: 'image/png' }), {
+      outputMimeType,
+      decode: async () => ({ source: {} as CanvasImageSource, width: 1, height: 1, close }),
+      createCanvas: () => ({ width: 0, height: 0, getContext: () => ({ drawImage: vi.fn() }), toBlob }),
+    })).rejects.toMatchObject({ code: 'reencode-failed' });
+    expect(toBlob).toHaveBeenCalledTimes(outputMimeType === 'image/png' ? 1 : 2);
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it('bounds a larger PNG fallback before reading its bytes', async () => {
+    const output = new Blob([blobBuffer(onePixelPng())], { type: 'image/png' });
+    Object.defineProperty(output, 'size', { configurable: true, value: 101 });
+    const arrayBuffer = vi.spyOn(output, 'arrayBuffer');
+    const toBlob = vi.fn((callback: BlobCallback, type?: string) => callback(type === 'image/png'
+      ? output : new Blob([blobBuffer(onePixelJpeg(true))], { type })));
+    await expect(prepareCaseImageAsset(
+      new File([blobBuffer(onePixelJpeg())], 'source.jpg', { type: 'image/jpeg' }),
+      {
+        limits: { maxAssetBytes: 100 },
+        decode: async () => ({ source: {} as CanvasImageSource, width: 1, height: 1 }),
+        createCanvas: () => ({ width: 0, height: 0, getContext: () => ({ drawImage: vi.fn() }), toBlob }),
+      },
+    )).rejects.toMatchObject({ code: 'file-too-large' });
+    expect(toBlob).toHaveBeenCalledTimes(2);
+    expect(arrayBuffer).not.toHaveBeenCalled();
   });
 
   it('enforces count and total-byte limits before decoding a stack', async () => {

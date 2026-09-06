@@ -54,7 +54,10 @@ interface ArchivePreflight {
 }
 
 /** Read the ZIP central directory before inflating attacker-controlled data. */
-function preflightArchive(bytes: Uint8Array): ArchivePreflight {
+export function preflightArchive(
+  bytes: Uint8Array,
+  selectPath: (name: string) => boolean = selectedXmlPath,
+): ArchivePreflight {
   const minimumEocd = 22;
   if (bytes.length < minimumEocd) throw archiveError('The PowerPoint archive is incomplete.');
   const floor = Math.max(0, bytes.length - 65_557);
@@ -134,7 +137,7 @@ function preflightArchive(bytes: Uint8Array): ArchivePreflight {
       throw archiveError('The presentation contains an unsafe ZIP path.');
     }
     if (names.has(name)) throw archiveError('The presentation contains a duplicated ZIP path.');
-    const selectedXml = selectedXmlPath(name);
+    const selectedXml = selectPath(name);
     if (selectedXml) {
       const manifestXml = (
         name === '[Content_Types].xml'
@@ -215,7 +218,7 @@ function yieldToBrowser(): Promise<void> {
   return new Promise((resolve) => { setTimeout(resolve, 0); });
 }
 
-async function extractSelectedXml(
+export async function extractSelectedXml(
   bytes: Uint8Array,
   preflight: ArchivePreflight,
   selectedNames: ReadonlySet<string>,
@@ -338,7 +341,7 @@ function assertXmlLexicalBudget(source: string, label: string, maxElements: numb
   }
 }
 
-function xmlDocument(
+export function xmlDocument(
   bytes: Uint8Array | undefined,
   label: string,
   maxElements: number = LESSON_SOURCE_LIMITS.maxXmlNodesPerUnit,
@@ -375,7 +378,7 @@ function normalizeSlideTarget(target: string): string | null {
   return /^ppt\/slides\/slide\d+\.xml$/i.test(path) ? path : null;
 }
 
-function slideOrder(files: Record<string, Uint8Array>): string[] {
+export function slideOrder(files: Record<string, Uint8Array>): string[] {
   const presentation = xmlDocument(
     files['ppt/presentation.xml'],
     'the presentation manifest',
@@ -436,7 +439,7 @@ function slideOrder(files: Record<string, Uint8Array>): string[] {
   return ordered;
 }
 
-function hiddenShape(element: Element): boolean {
+export function hiddenShape(element: Element): boolean {
   if (
     element.namespaceURI !== PRESENTATION_NS
     || !['sp', 'grpSp', 'graphicFrame', 'cxnSp', 'pic'].includes(element.localName)
@@ -453,13 +456,22 @@ function hiddenShape(element: Element): boolean {
   return hidden === '1' || hidden === 'true';
 }
 
-function slideText(
+export function slideText(
   bytes: Uint8Array | undefined,
   label: string,
   maxCharacters: number,
   signal?: AbortSignal,
+  omitNotesPlaceholders = false,
 ): { text: string; truncated: boolean } {
   const slide = xmlDocument(bytes, label);
+  if (omitNotesPlaceholders) {
+    for (const shape of Array.from(slide.getElementsByTagNameNS(PRESENTATION_NS, 'sp'))) {
+      const placeholder = shape.getElementsByTagNameNS(PRESENTATION_NS, 'ph')[0];
+      if (placeholder && ['sldNum', 'hdr', 'ftr', 'dt', 'sldImg'].includes(placeholder.getAttribute('type') ?? '')) {
+        shape.remove();
+      }
+    }
+  }
   const show = slide.documentElement.getAttribute('show')?.toLocaleLowerCase('en-US');
   if (show === '0' || show === 'false') return { text: '', truncated: false };
 

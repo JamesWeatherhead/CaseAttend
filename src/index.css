@@ -7,6 +7,23 @@
   --ca-build: "0.5.0+cachebust-20260809";
 }
 
+.ca-guided-tutor { container-type: inline-size; }
+.ca-guided-body { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+.ca-guided-conversation { display: flex; min-height: 0; min-width: 0; flex: 1; flex-direction: column; }
+.ca-objective-evidence { flex: none; max-height: 11rem; overflow-y: auto; padding: 0.5rem 1rem; border-top: 1px solid #ffffff14; background: #10151d; }
+@container (min-width: 38rem) {
+  .ca-guided-body { flex-direction: row; }
+  .ca-objective-evidence { width: 15rem; max-height: none; border-top: 0; border-left: 1px solid #ffffff14; }
+}
+
+/* Guided practice needs room for chat and its evidence column. Keep the
+   learner's explicit resize choice; other lessons retain their usual width. */
+@media (min-width: 64rem) and (min-height: 40rem) {
+  .ca-learner-workspace:has(.ca-guided-tutor) > .ca-tutor-pane {
+    width: var(--caseattend-guided-sidebar-width);
+  }
+}
+
 /* A wide but short viewport still needs the scrollable learning layout. */
 @media (min-width: 48rem) and (max-height: 40rem) {
   .ca-pane-nav { display: flex; }

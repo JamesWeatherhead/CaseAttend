@@ -133,6 +133,7 @@ function makeIntroCache(): IntroCacheV1 {
       undergrad: levelEntry,
       ms_preclinical: levelEntry,
       ms_clinical: levelEntry,
+      ms_step2: levelEntry,
       resident: levelEntry,
     },
   };
@@ -400,6 +401,7 @@ describe('AiAssistantPanel suggested follow-ups', () => {
         undergrad: ['UG q1', 'UG q2', 'UG q3'],
         ms_preclinical: ['Dynamic MS1 q1', 'Dynamic MS1 q2', 'Dynamic MS1 q3'],
         ms_clinical: ['MS3 q1', 'MS3 q2', 'MS3 q3'],
+        ms_step2: ['MS3 q1', 'MS3 q2', 'MS3 q3'],
         resident: ['Res q1', 'Res q2', 'Res q3'],
       };
       mocks.streamChatResponse.mockImplementation(async (

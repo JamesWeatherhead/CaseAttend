@@ -166,6 +166,18 @@ vi.mock('../components/LessonBuilder', () => ({
   ),
 }));
 
+vi.mock('../components/TeachingDeckImport', () => ({
+  default: ({ onCancel, onEditExistingCase, onCreated }: {
+    onCancel: () => void; onEditExistingCase: () => void;
+    onCreated: (casePackage: CasePackageV1) => void;
+  }) => <main><h1>Teaching deck import test surface</h1>
+    <input aria-label="Slide lesson draft" defaultValue="" />
+    <button type="button" onClick={onEditExistingCase}>Use an existing case instead</button>
+    <button type="button" onClick={() => onCreated(mocks.localCase as unknown as CasePackageV1)}>Open imported lesson</button>
+    <button type="button" onClick={onCancel}>Exit teaching deck import</button>
+  </main>,
+}));
+
 vi.mock('../components/ViewerCanvas', () => ({
   default: ({ series }: { series: { id: string } | null }) => (
     <output aria-label="Active local series">{series?.id ?? 'none'}</output>
@@ -225,12 +237,23 @@ describe('App Case Studio integration', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Create a lesson' }));
+    expect(await screen.findByRole('heading', { name: 'Teaching deck import test surface' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Use an existing case instead' }));
     expect((await screen.findByRole('status', { name: 'Initial case' })).textContent).toBe('none');
+  });
+
+  it('opens the exact case produced by the streamlined import', async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Create a lesson' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Open imported lesson' }));
+    await waitFor(() => expect(mocks.fetchDicomWebSeries).toHaveBeenCalledWith(
+      expect.objectContaining({ url: 'local' }), mocks.localCase.id, mocks.localCase,
+    ));
   });
 
   it.each([
     ['Create a case', 'Case draft', 'Exit Case Studio'],
-    ['Create a lesson', 'Lesson draft', 'Exit Lesson Builder'],
+    ['Create a lesson', 'Slide lesson draft', 'Exit teaching deck import'],
   ])('keeps the mounted draft through browser Back and Forward in %s', async (open, label, exit) => {
     window.history.replaceState({}, '', '/#case/old-case');
     window.history.pushState({}, '', '/');

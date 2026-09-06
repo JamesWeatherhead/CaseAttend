@@ -10,6 +10,7 @@ CaseAttend is a browser-based visual tutor for case-based education. You can use
 | --- | --- |
 | Try CaseAttend as a learner | [Complete your first case](getting-started/first-case.md) |
 | Turn one or more approved images into a case | [Create a visual teaching case](guides/create-a-case.md) |
+| Create a coached lesson from slides and an objective workbook | [Slides and objectives](guides/slides-and-objectives.md) |
 | Design the tutor's objectives, hints, and stopping rules | [Build a lesson](guides/build-a-lesson.md) |
 | Start a lesson from a PDF or PowerPoint file | [Import PDF or PowerPoint text](guides/import-pdf-powerpoint.md) |
 | Plan on paper before using the builder | [Lesson-planning worksheet](templates/lesson-planning-worksheet.md) |
@@ -37,7 +38,7 @@ Use **Create a case from images** on the home screen to make one. Case Studio ac
 
 A lesson defines what learners should accomplish and how the tutor should help. It includes objectives, observable evidence, the opening question, hints, escalation rules, stopping conditions, educator notes, sources, and an explicit clinical-review state.
 
-Use **Create a lesson from PDF or PowerPoint** on the home screen, or choose **Build the lesson** after saving a new case. You can build manually even when you do not import a document.
+Use **Create a lesson** on the home screen to import a PowerPoint and an objective workbook. Choose **Use an existing case instead** for the detailed builder, or **Build the lesson** after saving a new case. You can still build manually or import PDF/PowerPoint teaching text there.
 
 ### A `.caseattend` file is a portable copy
 
@@ -70,7 +71,7 @@ For the full security boundary, see [the repository security policy](../SECURITY
 
 - Automated text and face checks are warnings, not proof of de-identification.
 - A scanned PDF may contain no selectable text, so the lesson importer may find nothing useful.
-- PDF and PowerPoint import extracts text only. It does not turn pages or slides into case images.
+- The detailed builder offers PDF/PowerPoint text import. The streamlined slides-and-objectives workflow also imports selected embedded PowerPoint images.
 - Imported text is a draft. CaseAttend does not check its medical accuracy or perform clinical review.
 - Clearing site data, using private browsing, or moving to another browser can remove or hide browser-local work. Export a backup.
 - The `.caseattend` format is for portable cases created in Case Studio. A JSON lesson bundle exported for a built-in case is not a Case Studio restore file.
