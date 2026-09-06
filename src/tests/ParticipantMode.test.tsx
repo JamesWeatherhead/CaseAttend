@@ -10,6 +10,7 @@ import ParticipantMode, {
   type ParticipantModeProps,
 } from '../components/ParticipantMode/ParticipantMode';
 import type { ParticipantTaskRecorder } from '../components/ParticipantTaskFlow/ParticipantTaskFlow';
+import DeferredFeature, { deferFeature } from '../components/DeferredFeature';
 
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
@@ -95,6 +96,60 @@ describe('ParticipantMode', () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+  });
+
+  it('keeps task progress and safe exit when a required tool fails to download', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const download = deferred<{ default: React.FC }>();
+    const load = deferFeature(() => download.promise);
+    const end = vi.fn().mockRejectedValueOnce(new Error('Final record unavailable')).mockResolvedValueOnce(undefined);
+    const onStart = vi.fn(async () => ({
+      participantReference: 'participant:derived-reference',
+      armId: 'question-first',
+      taskFlow: {
+        tasks: { pre: [{ id: 'baseline', title: 'Baseline check', instructions: 'Read before continuing.', response: { kind: 'none' as const } }], post: [] },
+        recorder: { record: vi.fn(), end } as unknown as ParticipantTaskRecorder,
+      },
+    }));
+    const cancel = vi.fn(async () => {});
+    function Session() {
+      const [ready, setReady] = React.useState(false);
+      const [exited, setExited] = React.useState(false);
+      return exited ? <div>Returned to cases</div> : <ParticipantMode {...props({
+        onStart,
+        activityReady: ready,
+        cancelInferenceAndWait: cancel,
+        onExit: async () => { await end('withdrawn'); setExited(true); },
+        renderActivity: () => <DeferredFeature label="tutor" component={load} allowReload={false} onReadyChange={setReady}>
+          {Tutor => <Tutor />}
+        </DeferredFeature>,
+      })} />;
+    }
+    render(<Session />);
+    fireEvent.change(screen.getByLabelText('Pseudonymous participant code'), { target: { value: '01234-56789-ABCDEFGHJK' } });
+    fireEvent.click(screen.getByLabelText(/I read the participant information/));
+    fireEvent.click(screen.getByRole('button', { name: 'Start study session' }));
+    await screen.findByRole('heading', { name: 'Baseline check' });
+    fireEvent.click(screen.getByRole('button', { name: 'Continue to activity' }));
+    await screen.findByRole('heading', { name: 'Opening the tutor' });
+    expect(screen.getByRole('button', { name: 'Finish study activity' }).matches(':disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Exit study' }).matches(':disabled')).toBe(false);
+    await act(async () => { download.reject(new Error('offline')); });
+    expect(await screen.findByRole('heading', { name: "Couldn't load the tutor" })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /reload/i })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Baseline check' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish study activity' }));
+    expect(end).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Exit study' }));
+    await screen.findByText('Final record unavailable');
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('heading', { name: "Couldn't load the tutor" })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Exit study' }));
+    await screen.findByText('Returned to cases');
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(cancel).toHaveBeenCalledTimes(2);
+    expect(end).toHaveBeenCalledTimes(2);
+    expect(end).toHaveBeenLastCalledWith('withdrawn');
   });
 
   it('shows the exact locked disclosures without catalog, authoring, model, level, or general data controls', () => {

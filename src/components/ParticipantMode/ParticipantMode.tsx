@@ -78,6 +78,8 @@ export interface ParticipantModeProps {
   inferenceReady: boolean;
   /** True until an active model request has a persisted terminal event. */
   inferenceBusy?: boolean;
+  /** Required activity tools are mounted; separate from inference cancellation. */
+  activityReady?: boolean;
   /** Aborts the active request and resolves only after its terminal event is persisted. */
   cancelInferenceAndWait?: () => Promise<void>;
   onStart: (participantCode: string) => Promise<ParticipantStartResult>;
@@ -94,6 +96,7 @@ const ParticipantMode: React.FC<ParticipantModeProps> = ({
   storageStatus,
   inferenceReady,
   inferenceBusy = false,
+  activityReady = true,
   cancelInferenceAndWait,
   onStart,
   onExit,
@@ -243,6 +246,7 @@ const ParticipantMode: React.FC<ParticipantModeProps> = ({
               recorder={taskFlow.recorder}
               renderActivity={assignedActivity}
               activityBusy={inferenceBusy}
+              activityReady={activityReady}
             />
           ) : assignedActivity}
         </section>
