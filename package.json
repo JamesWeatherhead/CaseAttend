@@ -32,7 +32,7 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "fflate": "^0.8.3",
     "lucide-react": "^0.556.0",
-    "pdfjs-dist": "6.2.108",
+    "pdfjs-dist": "6.3.289",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tesseract.js": "^7.0.0"
