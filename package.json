@@ -14,7 +14,7 @@
   "scripts": {
     "prepare:ocr": "node scripts/syncTesseractAssets.mjs",
     "dev": "npm run prepare:ocr && vite",
-    "build": "npm run build:sdk && npm run build:examples && npm run prepare:ocr && vite build",
+    "build": "npm run starters:check && npm run build:sdk && npm run build:examples && npm run prepare:ocr && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "npm run build --workspace @caseattend/core && tsc --noEmit --pretty false && npm run check --workspace @caseattend/react && npm run check --workspace @caseattend/example-basic && npm run check --workspace @caseattend/example-self-hosted-research",
@@ -24,7 +24,9 @@
     "example:basic": "npm run dev --workspace @caseattend/example-basic",
     "example:research": "npm run dev --workspace @caseattend/example-self-hosted-research",
     "pack:sdk": "npm run build:sdk && npm pack --dry-run --workspace @caseattend/core && npm pack --dry-run --workspace @caseattend/react",
-    "thumbnails:generate": "tsx scripts/generateLibraryThumbnails.mts"
+    "thumbnails:generate": "tsx scripts/generateLibraryThumbnails.mts",
+    "starters:generate": "tsx scripts/generateStarterIndex.mts",
+    "starters:check": "tsx scripts/generateStarterIndex.mts --check"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",

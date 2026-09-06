@@ -24,6 +24,12 @@ vi.mock('../services/byokStore', () => ({
   hasKey: () => false,
 }));
 
+// Synthetic metadata keeps UI tests independent of clinical content.
+vi.mock('../data/builtinStarters.generated', () => ({
+  BUILTIN_STARTERS: Object.fromEntries(['ecg-conduction-case', 'fundus-normal', ...Array.from({ length: 25 }, (_, i) => `case-${i}`)]
+    .map(id => [id, ['a'.repeat(64), 'a'.repeat(64)]])),
+}));
+
 vi.mock('../services/casePackageStore', () => ({
   casePackageStore: {
     resolveAssetUri: mocks.resolveAssetUri,
@@ -149,7 +155,7 @@ describe('StudyList case loading', () => {
     expect(await screen.findByRole('heading', { level: 3, name: 'No cases found' })).toBeTruthy();
   });
 
-  it('starts the first sample and exposes semantic case and authoring controls', async () => {
+  it('opens the first local case without claiming free starters and exposes semantic authoring controls', async () => {
     const onSelectStudy = vi.fn();
     const onOpenLessonBuilder = vi.fn();
     const onOpenCaseStudio = vi.fn();
@@ -173,9 +179,10 @@ describe('StudyList case loading', () => {
       />,
     );
 
-    const sampleCase = await screen.findByRole('button', { name: 'Try a sample case' });
+    const sampleCase = await screen.findByRole('button', { name: 'Open first case' });
     expect(sampleCase).toHaveProperty('disabled', false);
-    expect(screen.queryByText(/pre-reviewed starter questions/i)).toBeNull();
+    expect(screen.queryByText(/built-in sample has free starter answers/i)).toBeNull();
+    expect(screen.getByRole('checkbox', { name: 'Free starter samples only' })).toHaveProperty('checked', false);
     fireEvent.click(sampleCase);
     expect(onSelectStudy).toHaveBeenCalledWith(localCase);
 
@@ -236,7 +243,7 @@ describe('StudyList case loading', () => {
     );
 
     expect(await screen.findByText('Showing 2 of 2 cases')).toBeTruthy();
-    expect(screen.getByText(/Built-in samples offer pre-reviewed starter questions/i)).toBeTruthy();
+    expect(screen.getByText('1 built-in sample has free starter answers. No account needed.')).toBeTruthy();
     const search = screen.getByRole('searchbox', { name: 'Search cases' });
     fireEvent.change(search, { target: { value: 'cardiology' } });
 
@@ -363,14 +370,16 @@ describe('StudyList case loading', () => {
     fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
     fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Teaching' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Free starter samples only' }));
     fireEvent.click(screen.getByRole('button', { name: 'Show more cases (13 remaining)' }));
     screen.getByRole('main').scrollTop = 920;
     fireEvent.click(screen.getByRole('button', { name: 'Start case: Teaching case 15' }));
-    expect(stateRef.current).toMatchObject({ searchQuery: 'Teaching', caseTypeFilter: 'ecg', curriculumFilter: 'step-2', visibleCount: 24, scrollTop: 920, focusTriggerId: 'case:case-15' });
+    expect(stateRef.current).toMatchObject({ searchQuery: 'Teaching', caseTypeFilter: 'ecg', curriculumFilter: 'step-2', freeStarterOnly: true, visibleCount: 24, scrollTop: 920, focusTriggerId: 'case:case-15' });
     firstMount.unmount();
     render(<StudyList {...props} />);
     await screen.findByText('Showing 24 of 25 cases');
     expect(screen.getByRole('searchbox')).toHaveProperty('value', 'Teaching');
+    expect(screen.getByRole('checkbox', { name: 'Free starter samples only' })).toHaveProperty('checked', true);
     expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'ecg');
     expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
     expect(screen.getByRole('main').scrollTop).toBe(920);
@@ -388,12 +397,14 @@ describe('StudyList case loading', () => {
     fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
     fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'conduction' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Free starter samples only' }));
     firstMount.unmount();
     render(<StudyList {...props} />);
     await screen.findByText('Showing 1 of 1 case');
     expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'ecg');
     expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
     expect(screen.getByRole('searchbox')).toHaveProperty('value', 'conduction');
+    expect(screen.getByRole('checkbox', { name: 'Free starter samples only' })).toHaveProperty('checked', true);
   });
 
   it('restores the sample trigger outside active filters and falls back to search for a missing card', async () => {
@@ -410,6 +421,77 @@ describe('StudyList case loading', () => {
     render(<StudyList {...props} />);
     await screen.findByText('Showing 0 of 0 cases');
     expect(document.activeElement).toBe(screen.getByRole('searchbox'));
+  });
+
+  it('finds verified starter samples with combined filters without fetching answers or replacing case objects', async () => {
+    const ready = { ...cardiologyCase, presentation: { ...cardiologyCase.presentation, subtitle: 'ECG | Step 2' } };
+    const stale = { ...cardiologyCase, id: 'case-0', title: 'Stale ECG case',
+      lessonPlanRef: { ...cardiologyCase.lessonPlanRef, sha256: 'b'.repeat(64) } };
+    mocks.searchDicomWebStudies.mockResolvedValue([localCase, stale, ready]);
+    mocks.resolveAssetUri.mockResolvedValue('blob:resolved-local-preview');
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    const onSelectStudy = vi.fn();
+    render(<StudyList onSelectStudy={onSelectStudy} connectionType="DICOMWEB"
+      setConnectionType={() => undefined} dicomConfig={{ url: 'local', name: 'Cases' }} setDicomConfig={() => undefined} />);
+    await screen.findByText('Showing 3 of 3 cases');
+    const readyButton = screen.getByRole('button', { name: `Start case: ${ready.title}`, description: 'Free starter answers' });
+    expect(screen.getByRole('button', { name: `Start case: ${stale.title}` }).getAttribute('aria-describedby')).toBeNull();
+    expect(screen.getAllByText('Free starter answers')).toHaveLength(1);
+    const toggle = screen.getByRole('checkbox', { name: 'Free starter samples only', description: 'Built-in cases with reviewed answers. No account needed.' });
+    toggle.focus();
+    fireEvent.click(toggle);
+    expect(document.activeElement).toBe(toggle);
+    expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
+    fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'conduction' } });
+    expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
+    fireEvent.click(readyButton);
+    expect(onSelectStudy.mock.calls[0][0]).toBe(ready);
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ct' } });
+    expect(screen.getByText('Showing 0 of 0 cases')).toBeTruthy();
+    expect(screen.getByText(/turn off “Free starter samples only”/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+    expect(toggle).toHaveProperty('checked', true);
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all search and filters' }));
+    expect(toggle).toHaveProperty('checked', false);
+    expect(screen.getByText('Showing 3 of 3 cases')).toBeTruthy();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('chooses a verified sample outside current filters and prefers the designated sample', async () => {
+    const sample = { ...cardiologyCase, id: 'fundus-normal', title: 'Synthetic preferred sample' };
+    const stale = { ...cardiologyCase, id: 'case-0', manifest: { ...cardiologyCase.manifest, sha256: 'b'.repeat(64) } };
+    mocks.searchDicomWebStudies.mockResolvedValue([stale, cardiologyCase, sample]);
+    const onSelectStudy = vi.fn();
+    const props = { onSelectStudy, connectionType: 'DICOMWEB' as const, setConnectionType: () => undefined,
+      dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
+    const firstMount = render(<StudyList {...props} />);
+    await screen.findByText('Showing 3 of 3 cases');
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ct' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Try a sample case' }));
+    expect(onSelectStudy.mock.calls[0][0]).toBe(sample);
+    firstMount.unmount();
+    mocks.searchDicomWebStudies.mockResolvedValue([stale, cardiologyCase]);
+    render(<StudyList {...props} />);
+    await screen.findByText('Showing 2 of 2 cases');
+    fireEvent.click(screen.getByRole('button', { name: 'Try a sample case' }));
+    expect(onSelectStudy.mock.calls[1][0]).toBe(cardiologyCase);
+  });
+
+  it('resets an expanded batch when the starter shortcut changes', async () => {
+    const cases = Array.from({ length: 25 }, (_, i) => ({ ...cardiologyCase, id: `case-${i}`, title: `Teaching case ${i}` }));
+    mocks.searchDicomWebStudies.mockResolvedValue(cases);
+    render(<StudyList onSelectStudy={() => undefined} connectionType="DICOMWEB"
+      setConnectionType={() => undefined} dicomConfig={{ url: 'local', name: 'Cases' }} setDicomConfig={() => undefined} />);
+    await screen.findByText('Showing 12 of 25 cases');
+    fireEvent.click(screen.getByRole('button', { name: 'Show more cases (13 remaining)' }));
+    const toggle = screen.getByRole('checkbox', { name: 'Free starter samples only' });
+    toggle.focus();
+    fireEvent.click(toggle);
+    expect(screen.getByText('Showing 12 of 25 cases')).toBeTruthy();
+    expect(document.activeElement).toBe(toggle);
   });
 
   it('disables testimonial animation when reduced motion is preferred', () => {

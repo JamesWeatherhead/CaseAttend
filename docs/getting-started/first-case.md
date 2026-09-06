@@ -13,6 +13,8 @@ CaseAttend is an educational tutor, not a diagnostic or clinical decision-making
 
 Search accepts words in any order: **chest pain** and **pain chest** find the same cases. **xray**, **x-ray**, and **radiograph** work too. You can combine **Case type** with **Curriculum tag**, such as **CT** and **Step 2**. Leave **Any curriculum** selected to include cases without a curriculum tag. **Clear search** keeps your filters; **Clear all** resets both filters and the search.
 
+Turn on **Free starter samples only** to browse built-in cases with reviewed starter answers that match their current lessons. Their cards say **Free starter answers**; no account or key is needed to read these answers. The shortcut works with your search and other filters. Turn it off to include all cases, including browser-local material. An unmarked card does not describe the availability of locally authored answers. **Clear all** also turns off this shortcut.
+
 The case opens with the image and **Tutor** panel. On a small or short screen, use **View image** and **Open tutor** to move between them.
 
 You can also open the [sample fundus case directly](https://caseattend.com/#case/fundus-normal). Case links work after a refresh and can be bookmarked.
@@ -62,7 +64,7 @@ This is the experience an educator shapes in Lesson Builder: the opening questio
 
 ## 6. Start over or leave the case
 
-Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, both filters, loaded cases, and position retained for this visit.
+Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, filters, free-starter shortcut, loaded cases, and position retained for this visit.
 
 The browser's **Back** and **Forward** buttons also move between ordinary cases and the library. Use **Copy link** beside the case title to share a built-in case. If copying is blocked, a dialog provides selectable link text.
 
