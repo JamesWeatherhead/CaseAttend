@@ -27,7 +27,7 @@
 .ca-library-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; margin-bottom: 18px; }
 .ca-library-heading h2 { font-size: 1.375rem; font-weight: 650; letter-spacing: -.02em; }
 .ca-library-heading p { color: #9baac0; font-size: .875rem; margin-top: 4px; }
-.ca-library-controls { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(170px, 220px) minmax(170px, 220px); align-items: end; gap: 14px; margin-bottom: 24px; }
+.ca-library-controls { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(170px, 220px) minmax(170px, 220px); align-items: end; gap: 14px; margin-bottom: 12px; }
 .ca-library-controls > div { min-width: 0; }
 .ca-library-controls label { display: block; color: #aebed3; font-size: .875rem; margin-bottom: 8px; }
 .ca-select-field select { width: 100%; min-width: 0; min-height: 48px; padding: 10px 12px; border: 1px solid #344155; border-radius: 10px; color: #edf3fc; background: #111823; font-size: 1rem; color-scheme: dark; }
@@ -41,6 +41,12 @@
 .ca-search input::placeholder { color: #8e9eb4; }
 .ca-search input::-webkit-search-cancel-button { display: none; }
 .ca-search button { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+.ca-starter-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; margin-bottom: 20px; }
+.ca-starter-filter label { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #dce9fa; font-size: .875rem; cursor: pointer; }
+.ca-starter-filter input { width: 18px; height: 18px; flex-shrink: 0; accent-color: #78a7ff; color-scheme: dark; }
+.ca-starter-filter p { color: #9baac0; font-size: .8125rem; line-height: 1.6; }
+.ca-starter-badge { display: inline-flex; align-items: center; gap: 6px; color: #90d6bc; }
+.ca-starter-badge svg { flex-shrink: 0; }
 .ca-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .ca-card { min-width: 0; position: relative; display: flex; flex-direction: column; border: 1px solid #253044; border-radius: 13px; background: #101721; overflow: hidden; transition: border-color .15s, background .15s; }
 .ca-card:hover, .ca-card:focus-within { border-color: #6888b8; background: #141e2c; }

@@ -9,6 +9,7 @@ import { hasKey, BYOK_CHANGED_EVENT } from '../services/byokStore';
 import OpenRouterMark from './OpenRouterLogo';
 import './StudyList.css';
 import { SAMPLE_CASE_ID } from '../data/sampleCase';
+import { hasBuiltInStarter } from '../data/builtinStarters';
 import CaseLibraryPreview from './CaseLibraryPreview';
 import { matchesStudyFilter, CASE_TYPE_FILTERS, CURRICULUM_FILTERS } from './studyFilters';
 import { indexStudyCases, matchesStudySearch, studySearchWords } from './studySearch';
@@ -17,6 +18,7 @@ export interface CaseLibraryState {
   searchQuery: string;
   caseTypeFilter: string;
   curriculumFilter: string;
+  freeStarterOnly: boolean;
   visibleCount: number;
   scrollTop: number;
   focusTriggerId?: string;
@@ -181,14 +183,15 @@ const StudyList: React.FC<StudyListProps> = ({
   const focusNextIndex = useRef<number | null>(null);
   const [caseTypeFilter, setCaseTypeFilter] = useState(stateRef?.current?.caseTypeFilter ?? 'all');
   const [curriculumFilter, setCurriculumFilter] = useState(stateRef?.current?.curriculumFilter ?? 'all');
+  const [freeStarterOnly, setFreeStarterOnly] = useState(stateRef?.current?.freeStarterOnly ?? false);
   const [searchQuery, setSearchQuery] = useState(stateRef?.current?.searchQuery ?? '');
   const searchRef = useRef<HTMLInputElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const restoredRef = useRef(false);
-  const filtersRef = useRef({ caseTypeFilter, curriculumFilter, searchQuery });
+  const filtersRef = useRef({ caseTypeFilter, curriculumFilter, searchQuery, freeStarterOnly });
   const rememberLibrary = (focusTriggerId?: string) => {
     if (stateRef) stateRef.current = {
-      caseTypeFilter, curriculumFilter, searchQuery, visibleCount,
+      caseTypeFilter, curriculumFilter, searchQuery, freeStarterOnly, visibleCount,
       scrollTop: mainRef.current?.scrollTop ?? 0,
       focusTriggerId,
     };
@@ -216,12 +219,12 @@ const StudyList: React.FC<StudyListProps> = ({
 
   useEffect(() => {
     const previous = filtersRef.current;
-    if (previous.caseTypeFilter !== caseTypeFilter || previous.curriculumFilter !== curriculumFilter || previous.searchQuery !== searchQuery) {
+    if (previous.caseTypeFilter !== caseTypeFilter || previous.curriculumFilter !== curriculumFilter || previous.searchQuery !== searchQuery || previous.freeStarterOnly !== freeStarterOnly) {
       focusNextIndex.current = null;
       setVisibleCount(12);
-      filtersRef.current = { caseTypeFilter, curriculumFilter, searchQuery };
+      filtersRef.current = { caseTypeFilter, curriculumFilter, searchQuery, freeStarterOnly };
     }
-  }, [caseTypeFilter, curriculumFilter, searchQuery]);
+  }, [caseTypeFilter, curriculumFilter, searchQuery, freeStarterOnly]);
   useLayoutEffect(() => {
     if (loading || loadError || restoredRef.current || !mainRef.current) return;
     restoredRef.current = true;
@@ -237,7 +240,7 @@ const StudyList: React.FC<StudyListProps> = ({
     // Browser history and authoring tools can leave the library without a card click.
     // Wait until the saved scroll/focus has been restored before replacing it.
     if (restoredRef.current && !loading && !loadError) rememberLibrary(stateRef?.current?.focusTriggerId);
-  }, [caseTypeFilter, curriculumFilter, searchQuery, visibleCount, loading, loadError]);
+  }, [caseTypeFilter, curriculumFilter, searchQuery, freeStarterOnly, visibleCount, loading, loadError]);
   useEffect(() => {
     if (focusNextIndex.current !== null) {
       nextCaseRef.current?.focus();
@@ -251,16 +254,17 @@ const StudyList: React.FC<StudyListProps> = ({
     matchesStudyFilter(casePackage, caseTypeFilter)
     && matchesStudyFilter(casePackage, curriculumFilter)
     && matchesStudySearch(words, queryWords)
+    && (!freeStarterOnly || hasBuiltInStarter(casePackage))
   )).map(entry => entry.casePackage);
-  const hasCaseFilters = Boolean(searchQuery) || caseTypeFilter !== 'all' || curriculumFilter !== 'all';
-  const firstAvailableCase = casePackages.find(casePackage => casePackage.id === SAMPLE_CASE_ID) ?? casePackages[0];
-  const hasBuiltInSample = casePackages.some((casePackage) => (
-    !casePackage.preview.src.startsWith('case://assets/')
-  ));
+  const hasCaseFilters = Boolean(searchQuery) || caseTypeFilter !== 'all' || curriculumFilter !== 'all' || freeStarterOnly;
+  const starterCases = useMemo(() => casePackages.filter(hasBuiltInStarter), [casePackages]);
+  const sampleCase = starterCases.find(casePackage => casePackage.id === SAMPLE_CASE_ID) ?? starterCases[0];
+  const firstAvailableCase = sampleCase ?? casePackages[0];
   const clearCaseFilters = () => {
     setSearchQuery('');
     setCaseTypeFilter('all');
     setCurriculumFilter('all');
+    setFreeStarterOnly(false);
     searchRef.current?.focus();
   };
 
@@ -286,11 +290,11 @@ const StudyList: React.FC<StudyListProps> = ({
             <p className="ca-eyebrow">VISUAL LEARNING · MEDICAL EDUCATION</p>
             <h2 id="intro-heading">Look closer. Think it through.</h2>
             <p className="ca-intro-description">Real images. Clinical cases. A tutor that helps you reason, one question at a time.</p>
-            {hasBuiltInSample && <p className="ca-free-note"><CircleCheck size={16} aria-hidden="true" />Built-in samples offer pre-reviewed starter questions without an account or key.</p>}
+            {starterCases.length > 0 && <p className="ca-free-note"><CircleCheck size={16} aria-hidden="true" />{starterCases.length} built-in {starterCases.length === 1 ? 'sample has' : 'samples have'} free starter answers. No account needed.</p>}
           </div>
           <button type="button" data-case-trigger="sample" onClick={() => firstAvailableCase && selectCase(firstAvailableCase, 'sample')} disabled={!firstAvailableCase} className="ca-button ca-button-primary min-h-11">
             {loading ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <Scan size={18} aria-hidden="true" />}
-            Try a sample case<ArrowRight size={18} aria-hidden="true" />
+            {loading || sampleCase ? 'Try a sample case' : 'Open first case'}<ArrowRight size={18} aria-hidden="true" />
           </button>
         </section>
 
@@ -326,13 +330,20 @@ const StudyList: React.FC<StudyListProps> = ({
               </select>
             </div>
           </div>
+          <div className="ca-starter-filter">
+            <label htmlFor="case-free-starter-filter">
+              <input id="case-free-starter-filter" type="checkbox" checked={freeStarterOnly} onChange={event => setFreeStarterOnly(event.target.checked)} aria-describedby="case-free-starter-help" />
+              <span>Free starter samples only</span>
+            </label>
+            <p id="case-free-starter-help">Built-in cases with reviewed answers. No account needed.</p>
+          </div>
           <div className="ca-grid" aria-busy={loading}>
             {loading && <div className="ca-empty" role="status" aria-label="Loading cases"><Loader2 size={22} className="animate-spin" aria-hidden="true" /><p>Loading cases…</p></div>}
             {!loading && loadError && <div className="ca-empty"><p role="alert">{loadError}</p><button type="button" onClick={() => void loadCases()} className="ca-button ca-button-primary min-h-11">Try loading cases again</button></div>}
-            {!loading && !loadError && visibleCasePackages.length === 0 && <div className="ca-empty" role="status"><Search size={28} aria-hidden="true" /><h3>No cases found</h3><p>{casePackages.length === 0 ? 'No cases are available in this browser yet.' : 'Try fewer search words or broaden a filter.'}</p></div>}
+            {!loading && !loadError && visibleCasePackages.length === 0 && <div className="ca-empty" role="status"><Search size={28} aria-hidden="true" /><h3>No cases found</h3><p>{casePackages.length === 0 ? 'No cases are available in this browser yet.' : freeStarterOnly ? 'Try fewer search words, broaden a filter, or turn off “Free starter samples only”.' : 'Try fewer search words or broaden a filter.'}</p></div>}
             {!loading && !loadError && visibleCasePackages.slice(0, visibleCount).map((casePackage, index) => (
               <article key={casePackage.id} className="ca-card">
-                <button ref={index === focusNextIndex.current ? nextCaseRef : undefined} data-case-trigger={`case:${casePackage.id}`} type="button" className="ca-card-action" onClick={() => selectCase(casePackage)} aria-label={`Start case: ${casePackage.title}`} />
+                <button ref={index === focusNextIndex.current ? nextCaseRef : undefined} data-case-trigger={`case:${casePackage.id}`} type="button" className="ca-card-action" onClick={() => selectCase(casePackage)} aria-label={`Start case: ${casePackage.title}`} aria-describedby={hasBuiltInStarter(casePackage) ? `starter-${casePackage.id}` : undefined} />
                 <div className="ca-card-image"><CaseLibraryPreview preview={casePackage.preview} /></div>
                 {casePackage.preview.src.startsWith('case://assets/') && onDeleteLocalCase && <button type="button" className="ca-delete min-h-11" aria-label={`Delete browser-local case: ${casePackage.title}`} onClick={() => {
                   if (!window.confirm(`Delete browser-local case "${casePackage.title}" from this browser?`)) return;
@@ -342,7 +353,7 @@ const StudyList: React.FC<StudyListProps> = ({
                   <p className="ca-card-meta">{casePackage.presentation.subtitle}</p>
                   <h3>{casePackage.title}</h3>
                   <p className="ca-card-vignette">{casePackage.vignette}</p>
-                  <div className="ca-card-footer"><span>{casePackage.preview.src.startsWith('case://assets/') ? 'Browser-local case' : 'Explore case'}</span><ArrowRight size={18} aria-hidden="true" /></div>
+                  <div className="ca-card-footer">{hasBuiltInStarter(casePackage) ? <span id={`starter-${casePackage.id}`} className="ca-starter-badge"><CircleCheck size={15} aria-hidden="true" />Free starter answers</span> : <span>{casePackage.preview.src.startsWith('case://assets/') ? 'Browser-local case' : 'Explore case'}</span>}<ArrowRight size={18} aria-hidden="true" /></div>
                 </div>
               </article>
             ))}
