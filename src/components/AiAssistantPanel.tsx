@@ -321,8 +321,15 @@ const AiAssistantPanel: React.FC<AiAssistantPanelProps> = ({
     : null;
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-  const [evidenceChecksEnabled, setEvidenceChecksEnabled] = useState(false);
-  useEffect(() => { setEvidenceChecksEnabled(false); }, [guidedIdentity]);
+  const [evidenceCheckChoice, setEvidenceCheckChoice] = useState({ identity: guidedIdentity, enabled: false });
+  // Discard prior consent before rendering a different lesson/level. A passive
+  // reset can run after a learner clicks the newly mounted checkbox and erase
+  // that explicit choice. Do not restore old consent when returning to a level.
+  if (evidenceCheckChoice.identity !== guidedIdentity) {
+    setEvidenceCheckChoice({ identity: guidedIdentity, enabled: false });
+  }
+  const evidenceChecksEnabled = evidenceCheckChoice.identity === guidedIdentity && evidenceCheckChoice.enabled;
+  const setEvidenceChecksEnabled = (enabled: boolean) => setEvidenceCheckChoice({ identity: guidedIdentity, enabled });
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [mode, setMode] = useState<AiMode>(() => lockedTutor?.mode ?? 'chat');
   const [provider, setProvider] = useState<AIProvider>('openrouter');
