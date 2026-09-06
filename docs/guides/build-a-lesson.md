@@ -150,11 +150,17 @@ The result depends on the case:
 - For a case created in this browser, the lesson revision is saved with that case and the download is a portable `.caseattend` file containing the linked lesson and referenced re-encoded images.
 - For a built-in case, the download is a JSON case-and-lesson bundle. It records the metadata, versions, and hashes, but it is not a `.caseattend` restore file for Case Studio.
 
-Lesson Builder does not provide general draft autosave for every path. Complete validation and export before leaving, especially when adapting a built-in case.
+You can return to an earlier step, refine the lesson, and open **Review/export** again to save the next local revision. Switching away and reselecting a saved local case loads its newest saved lesson. A genuine change from another view still stops the save instead of overwriting that work.
+
+The header shows **Unsaved changes** when the form differs from its last loaded, saved, or exported version. **Back to cases** and **Done** offer **Stay in Lesson Builder** before discarding those changes; Escape also keeps the editor open. Refreshing or closing the page uses the browser's own unsaved-work warning. This is not draft autosave. Merely validating an adapted built-in lesson does not save it; export its JSON bundle before leaving.
+
+If browser storage is unavailable, **Saved for this visit** means the local lesson remains only in memory. Export a portable copy before closing the page. A failed backup download does not undo a successful local save; retry the export. Download completion is reported by your browser, so check that the file was retained.
 
 ## Rehearse before release
 
-Open the case as a learner and test at least these paths:
+For a browser-created case, open the saved case from the library to rehearse its latest lesson. Adapting a built-in case currently produces an export-only JSON bundle; opening its original library card still uses the original lesson. Rehearsing that adapted bundle requires a compatible integration that loads its exact case and lesson together.
+
+Test at least these paths:
 
 - a correct observation with weak reasoning;
 - a plausible but incorrect answer;
