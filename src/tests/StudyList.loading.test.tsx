@@ -195,19 +195,15 @@ describe('StudyList case loading', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: 'Cases' })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: localCase.title })).toBeTruthy();
-    const filterGroup = screen.getByRole('group', { name: 'Filter cases' });
-    expect(filterGroup.className).toContain('overflow-x-auto');
-    const filterButtons = Array.from(filterGroup.querySelectorAll('button'));
-    expect(filterButtons.map((button) => button.textContent)).toEqual(expect.arrayContaining([
-      'Step 1',
-      'Step 2',
-      'Clerkship',
-      'ECG',
-      'Ultrasound',
-      'Ophthalmology',
-    ]));
-    expect(filterButtons.every((button) => button.className.includes('min-h-11'))).toBe(true);
-    expect(screen.getByRole('button', { name: 'All' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('group', { name: 'Find cases' })).toBeTruthy();
+    const caseTypes = screen.getByRole('combobox', { name: 'Case type' });
+    const curricula = screen.getByRole('combobox', { name: 'Curriculum tag' });
+    expect(caseTypes).toHaveProperty('value', 'all');
+    expect(curricula).toHaveProperty('value', 'all');
+    expect(Array.from(caseTypes.querySelectorAll('option')).map(option => option.textContent))
+      .toEqual(expect.arrayContaining(['ECG', 'Ultrasound', 'Ophthalmology']));
+    expect(Array.from(curricula.querySelectorAll('option')).map(option => option.textContent))
+      .toEqual(['Any curriculum', 'Step 1', 'Step 2', 'Clerkship']);
 
     const preview = screen.getByRole('img', { name: localCase.preview.alt });
     expect(preview.tagName).toBe('IMG');
@@ -252,7 +248,7 @@ describe('StudyList case loading', () => {
     expect(screen.getByText('Showing 0 of 0 cases')).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: 'No cases found' })).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all search and filters' }));
     expect(search).toHaveProperty('value', '');
     expect(screen.getByText('Showing 2 of 2 cases')).toBeTruthy();
   });
@@ -285,6 +281,35 @@ describe('StudyList case loading', () => {
     expect(await screen.findByRole('heading', { level: 3, name: 'No cases found' })).toBeTruthy();
   });
 
+  it('combines type and curriculum, preserves untagged defaults, and clears search independently', async () => {
+    const tagged = { ...cardiologyCase, id: 'tagged-ecg', title: 'Tagged ECG case',
+      presentation: { ...cardiologyCase.presentation, subtitle: 'ECG | Step 2' } };
+    mocks.searchDicomWebStudies.mockResolvedValue([localCase, cardiologyCase, tagged]);
+    mocks.resolveAssetUri.mockResolvedValue('blob:resolved-local-preview');
+    const onSelectStudy = vi.fn();
+    render(<StudyList onSelectStudy={onSelectStudy} connectionType="DICOMWEB"
+      setConnectionType={() => undefined} dicomConfig={{ url: 'local', name: 'Cases' }} setDicomConfig={() => undefined} />);
+    await screen.findByText('Showing 3 of 3 cases');
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
+    expect(screen.getByText('Showing 2 of 2 cases')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
+    expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'case tagged' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+    expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'ecg');
+    expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
+    fireEvent.click(screen.getByRole('button', { name: 'Start case: Tagged ECG case' }));
+    expect(onSelectStudy.mock.calls[0][0]).toBe(tagged);
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'derm' } });
+    expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
+    expect(screen.getByRole('heading', { name: 'No cases found' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all search and filters' }));
+    expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'all');
+    expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'all');
+    expect(document.activeElement).toBe(screen.getByRole('searchbox'));
+    expect(screen.getByText('Showing 3 of 3 cases')).toBeTruthy();
+  });
+
   it('reveals more cases, focuses the first new case, and searches the entire library', async () => {
     const cases = Array.from({ length: 25 }, (_, index) => ({
       ...cardiologyCase,
@@ -304,7 +329,7 @@ describe('StudyList case loading', () => {
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Teaching case 24' } });
     expect(screen.getByText('Showing 1 of 1 case')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Start case: Teaching case 24' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all search and filters' }));
     expect(screen.getByText('Showing 12 of 25 cases')).toBeTruthy();
   });
 
@@ -327,24 +352,64 @@ describe('StudyList case loading', () => {
   });
 
   it('restores the search, loaded batch, scroll position, and originating card after a case', async () => {
-    const cases = Array.from({ length: 25 }, (_, index) => ({ ...cardiologyCase, id: `case-${index}`, title: `Teaching case ${index}` }));
+    const cases = Array.from({ length: 25 }, (_, index) => ({ ...cardiologyCase, id: `case-${index}`, title: `Teaching case ${index}`,
+      presentation: { ...cardiologyCase.presentation, subtitle: 'ECG | Step 2' } }));
     mocks.searchDicomWebStudies.mockResolvedValue(cases);
     const stateRef = { current: undefined as CaseLibraryState | undefined };
     const props = { stateRef, onSelectStudy: vi.fn(), connectionType: 'DICOMWEB' as const,
       setConnectionType: () => undefined, dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
     const firstMount = render(<StudyList {...props} />);
     await screen.findByText('Showing 12 of 25 cases');
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
+    fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Teaching' } });
     fireEvent.click(screen.getByRole('button', { name: 'Show more cases (13 remaining)' }));
     screen.getByRole('main').scrollTop = 920;
     fireEvent.click(screen.getByRole('button', { name: 'Start case: Teaching case 15' }));
-    expect(stateRef.current).toMatchObject({ searchQuery: 'Teaching', visibleCount: 24, scrollTop: 920, focusTriggerId: 'case:case-15' });
+    expect(stateRef.current).toMatchObject({ searchQuery: 'Teaching', caseTypeFilter: 'ecg', curriculumFilter: 'step-2', visibleCount: 24, scrollTop: 920, focusTriggerId: 'case:case-15' });
     firstMount.unmount();
     render(<StudyList {...props} />);
     await screen.findByText('Showing 24 of 25 cases');
     expect(screen.getByRole('searchbox')).toHaveProperty('value', 'Teaching');
+    expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'ecg');
+    expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
     expect(screen.getByRole('main').scrollTop).toBe(920);
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Start case: Teaching case 15' }));
+  });
+
+  it('remembers changed controls when navigation unmounts the library without a click or scroll', async () => {
+    const tagged = { ...cardiologyCase, presentation: { ...cardiologyCase.presentation, subtitle: 'ECG | Step 2' } };
+    mocks.searchDicomWebStudies.mockResolvedValue([tagged]);
+    const stateRef = { current: undefined as CaseLibraryState | undefined };
+    const props = { stateRef, onSelectStudy: vi.fn(), connectionType: 'DICOMWEB' as const,
+      setConnectionType: () => undefined, dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
+    const firstMount = render(<StudyList {...props} />);
+    await screen.findByText('Showing 1 of 1 case');
+    fireEvent.change(screen.getByLabelText('Case type'), { target: { value: 'ecg' } });
+    fireEvent.change(screen.getByLabelText('Curriculum tag'), { target: { value: 'step-2' } });
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'conduction' } });
+    firstMount.unmount();
+    render(<StudyList {...props} />);
+    await screen.findByText('Showing 1 of 1 case');
+    expect(screen.getByLabelText('Case type')).toHaveProperty('value', 'ecg');
+    expect(screen.getByLabelText('Curriculum tag')).toHaveProperty('value', 'step-2');
+    expect(screen.getByRole('searchbox')).toHaveProperty('value', 'conduction');
+  });
+
+  it('restores the sample trigger outside active filters and falls back to search for a missing card', async () => {
+    mocks.searchDicomWebStudies.mockResolvedValue([cardiologyCase]);
+    const stateRef = { current: { searchQuery: '', caseTypeFilter: 'derm', curriculumFilter: 'all', visibleCount: 12,
+      scrollTop: 0, focusTriggerId: 'sample' } as CaseLibraryState | undefined };
+    const props = { stateRef, onSelectStudy: vi.fn(), connectionType: 'DICOMWEB' as const,
+      setConnectionType: () => undefined, dicomConfig: { url: 'local', name: 'Cases' }, setDicomConfig: () => undefined };
+    const firstMount = render(<StudyList {...props} />);
+    await screen.findByText('Showing 0 of 0 cases');
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Try a sample case' }));
+    firstMount.unmount();
+    stateRef.current = { ...stateRef.current!, focusTriggerId: 'case:removed-case' };
+    render(<StudyList {...props} />);
+    await screen.findByText('Showing 0 of 0 cases');
+    expect(document.activeElement).toBe(screen.getByRole('searchbox'));
   });
 
   it('disables testimonial animation when reduced motion is preferred', () => {

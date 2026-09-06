@@ -24,11 +24,15 @@ function matchesSubtitleToken(token: string): StudyFilter['matches'] {
   return (casePackage) => subtitleTokens(casePackage).has(normalized);
 }
 
-export const STUDY_FILTERS: readonly StudyFilter[] = [
-  { id: 'all', label: 'All', matches: () => true },
+export const CURRICULUM_FILTERS: readonly StudyFilter[] = [
+  { id: 'all', label: 'Any curriculum', matches: () => true },
   { id: 'step-1', label: 'Step 1', matches: matchesSubtitleToken('Step 1') },
   { id: 'step-2', label: 'Step 2', matches: matchesSubtitleToken('Step 2') },
   { id: 'clerkship', label: 'Clerkship', matches: matchesSubtitleToken('Clerkship') },
+];
+
+export const CASE_TYPE_FILTERS: readonly StudyFilter[] = [
+  { id: 'all', label: 'All case types', matches: () => true },
   { id: 'xray', label: 'X-ray', matches: matchesCategory('xray') },
   { id: 'ct', label: 'CT', matches: matchesCategory('ct') },
   { id: 'mri', label: 'MRI', matches: matchesCategory('mri') },
@@ -40,5 +44,5 @@ export const STUDY_FILTERS: readonly StudyFilter[] = [
 ];
 
 export function matchesStudyFilter(casePackage: CasePackageV1, filterId: string): boolean {
-  return STUDY_FILTERS.find((filter) => filter.id === filterId)?.matches(casePackage) ?? false;
+  return [...CASE_TYPE_FILTERS, ...CURRICULUM_FILTERS].find((filter) => filter.id === filterId)?.matches(casePackage) ?? false;
 }
