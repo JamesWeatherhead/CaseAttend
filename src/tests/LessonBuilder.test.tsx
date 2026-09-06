@@ -191,7 +191,7 @@ describe('LessonBuilder', () => {
     });
     const previewHeading = await screen.findByRole('heading', { name: 'PDF draft ready to review' });
     await waitFor(() => expect(document.activeElement).toBe(previewHeading));
-    expect(screen.getByRole('status').textContent).toContain('PDF draft ready to review');
+    expect(screen.getAllByRole('status').some(status => status.textContent?.includes('PDF draft ready to review'))).toBe(true);
     expect(screen.getByText('Links found—not verified or added as sources')).toBeTruthy();
     expect(document.body.textContent).not.toContain('PATIENT-NAME');
     fireEvent.click(screen.getByRole('button', { name: 'Apply imported draft' }));
@@ -466,6 +466,7 @@ describe('LessonBuilder', () => {
   });
 
   it('finalizes an exact linked case and lesson bundle entirely in the browser', async () => {
+    const onExit = vi.fn();
     const exportPortableCase = vi.fn(async () => undefined);
     const createObjectURL = vi.fn(() => 'blob:lesson-json');
     const revokeObjectURL = vi.fn();
@@ -479,7 +480,7 @@ describe('LessonBuilder', () => {
     });
     render(
       <LessonBuilder
-        onExit={() => undefined}
+        onExit={onExit}
         loadCasePackages={loadCasePackages}
         exportPortableCase={exportPortableCase}
       />,
@@ -508,13 +509,27 @@ describe('LessonBuilder', () => {
     expect(screen.getByText('Fixed by CaseAttend')).toBeTruthy();
     expect(screen.getByText('Educator controlled')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Download JSON bundle' })).toBeTruthy();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Done' }).matches(':disabled')).toBe(false));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(onExit).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog', { name: 'Keep working on your lesson?' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Stay in Lesson Builder' }));
+    createObjectURL.mockImplementationOnce(() => { throw new Error('Download unavailable'); });
+    fireEvent.click(screen.getByRole('button', { name: 'Export JSON bundle' }));
+    expect((await screen.findByRole('alert')).textContent).toContain('Download unavailable');
+    expect(screen.getByRole('status', { name: 'Lesson save status' }).textContent).toBe('Unsaved changes');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Export JSON bundle' }).matches(':disabled')).toBe(false));
     fireEvent.click(screen.getByRole('button', { name: 'Export JSON bundle' }));
     expect(await screen.findByText('The versioned case and lesson bundle was downloaded from this browser.')).toBeTruthy();
-    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(createObjectURL).toHaveBeenCalledTimes(2);
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:lesson-json');
     expect(downloadedName).toMatch(/\.json$/);
     expect(exportPortableCase).not.toHaveBeenCalled();
     expect(fetch).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Done' }).matches(':disabled')).toBe(false));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(confirm).not.toHaveBeenCalled();
   });
 
   it('clears all case-specific lesson content before switching to another case', async () => {
@@ -536,6 +551,7 @@ describe('LessonBuilder', () => {
     );
     expect((screen.getByLabelText(/Lesson title/) as HTMLInputElement).value).toContain('Second teaching case');
     expect((screen.getByLabelText(/Stable lesson ID/) as HTMLInputElement).value).toBe('second-teaching-case-lesson');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Objectives/evidence' })).toHaveProperty('disabled', false));
 
     fireEvent.click(screen.getByRole('button', { name: /Objectives\/evidence/ }));
     expect((screen.getByLabelText(/Learner-facing objective/) as HTMLInputElement).value).toBe('');

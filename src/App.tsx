@@ -1129,6 +1129,7 @@ const App: React.FC = () => {
           onExit={() => { setLessonBuilderInitialCaseId(undefined); setHomeView('cases'); }}
           initialCaseId={lessonBuilderInitialCaseId}
           loadStoredLesson={caseStudioController.loadStoredLesson}
+          getStorageStatus={caseStudioController.getStorageStatus}
           saveUpdatedBundle={caseStudioController.saveUpdatedBundle}
           exportPortableCase={caseStudioController.exportCase}
           resolveAssetUri={caseStudioController.resolveAssetUri}

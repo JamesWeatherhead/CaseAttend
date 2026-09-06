@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   AlertCircle,
   ArrowDown,
@@ -41,6 +42,7 @@ import { listCasePackages } from '../data/caseRegistry';
 import LessonSourceDropzone, { type LessonSourceParser } from './LessonSourceDropzone';
 import type { LessonSourceOutline } from '../services/lessonSourceImport';
 import './LessonBuilder.css';
+import { useDialogFocus } from '../hooks/useDialogFocus';
 
 interface LessonBuilderProps {
   onExit: () => void;
@@ -54,6 +56,7 @@ interface LessonBuilderProps {
   ) => Promise<boolean>;
   exportPortableCase?: (casePackage: CasePackageV1) => Promise<void>;
   resolveAssetUri?: (uri: string) => Promise<string>;
+  getStorageStatus?: () => Promise<{ persistent: boolean }>;
   parseLessonSource?: LessonSourceParser;
 }
 
@@ -123,6 +126,24 @@ interface FinalizedBundle {
   lessonPlan: LessonPlanV1;
   prompt: LessonTutorPromptSections;
   bundle: CaseLessonBundleV1;
+}
+
+function LeaveLessonDialog({ onStay, onLeave, memoryOnly }: { onStay: () => void; onLeave: () => void; memoryOnly: boolean }) {
+  const dialogRef = useDialogFocus(onStay);
+  return createPortal(
+    <div className="lesson-builder-dialog-backdrop">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="leave-lesson-title" aria-describedby="leave-lesson-description" tabIndex={-1} className="lesson-builder-dialog">
+        <h2 id="leave-lesson-title">{memoryOnly ? 'Export a copy before leaving?' : 'Keep working on your lesson?'}</h2>
+        <p id="leave-lesson-description">{memoryOnly
+          ? 'This lesson is saved only for this visit. Export a portable copy to keep it after the page closes.'
+          : 'Changes since your last save or export will be lost. Stay to review and save or export your lesson.'}</p>
+        <div className="lesson-builder-dialog-actions">
+          <button type="button" className="lesson-builder-button primary" onClick={onStay}>Stay in Lesson Builder</button>
+          <button type="button" className="lesson-builder-button secondary" onClick={onLeave}>Leave Lesson Builder</button>
+        </div>
+      </div>
+    </div>, document.body,
+  );
 }
 
 const STEPS = [
@@ -482,6 +503,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   saveUpdatedBundle,
   exportPortableCase,
   resolveAssetUri,
+  getStorageStatus,
   parseLessonSource,
 }) => {
   const [casePackages, setCasePackages] = useState<readonly CasePackageV1[]>([]);
@@ -489,6 +511,11 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   const [loadError, setLoadError] = useState('');
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<BuilderForm>(() => initialForm());
+  const [retainedForm, setRetainedForm] = useState('');
+  const [exportedForm, setExportedForm] = useState('');
+  const [localLessonSaved, setLocalLessonSaved] = useState(false);
+  const [memoryOnly, setMemoryOnly] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [finalized, setFinalized] = useState<FinalizedBundle | null>(null);
   const [busy, setBusy] = useState(false);
@@ -500,6 +527,49 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const settingsRef = useRef<HTMLDetailsElement>(null);
   const caseChangeRequestRef = useRef(0);
+  const operationRef = useRef(false);
+  const mountedRef = useRef(true);
+  const formSnapshot = JSON.stringify(form);
+  const hasUnsavedChanges = Boolean(retainedForm && formSnapshot !== retainedForm);
+  const needsMemoryExport = memoryOnly && formSnapshot !== exportedForm;
+  const shouldWarnBeforeExit = busy || hasUnsavedChanges || needsMemoryExport;
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; caseChangeRequestRef.current += 1; };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldWarnBeforeExit) return;
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warnBeforeUnload);
+    return () => window.removeEventListener('beforeunload', warnBeforeUnload);
+  }, [shouldWarnBeforeExit]);
+
+  const requestExit = () => {
+    if (operationRef.current || busy) return;
+    if (hasUnsavedChanges || needsMemoryExport) { setShowExitDialog(true); return; }
+    onExit();
+  };
+
+  const readPersistence = async () => {
+    try { return (await getStorageStatus?.())?.persistent === true; }
+    catch { return false; }
+  };
+
+  const runOperation = async <T,>(operation: () => Promise<T>): Promise<T | null> => {
+    if (operationRef.current) return null;
+    operationRef.current = true;
+    setBusy(true);
+    try { return await operation(); }
+    finally {
+      operationRef.current = false;
+      if (mountedRef.current) setBusy(false);
+    }
+  };
 
   const selectedCase = useMemo(
     () => casePackages.find((casePackage) => casePackage.id === form.caseId),
@@ -509,6 +579,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
 
   useEffect(() => {
     let active = true;
+    caseChangeRequestRef.current += 1;
     loadCasePackages()
       .then(async (packages) => {
         if (!active) return;
@@ -518,9 +589,15 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         const storedLesson = loadStoredLesson
           ? await loadStoredLesson(initialCase)
           : null;
+        const persistent = storedLesson ? await readPersistence() : false;
         if (!active) return;
+        const nextForm = storedLesson ? formFromLesson(initialCase, storedLesson) : initialForm(initialCase);
         setCasePackages(packages);
-        setForm(storedLesson ? formFromLesson(initialCase, storedLesson) : initialForm(initialCase));
+        setForm(nextForm);
+        setRetainedForm(JSON.stringify(nextForm));
+        setExportedForm('');
+        setLocalLessonSaved(Boolean(storedLesson));
+        setMemoryOnly(Boolean(storedLesson) && !persistent);
         setLoading(false);
       })
       .catch((error: unknown) => {
@@ -529,7 +606,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         setLoading(false);
       });
     return () => { active = false; };
-  }, [initialCaseId, loadCasePackages, loadStoredLesson]);
+  }, [initialCaseId, loadCasePackages, loadStoredLesson, getStorageStatus]);
 
   useEffect(() => {
     setFinalized(null);
@@ -561,37 +638,39 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   };
 
   const changeCase = async (caseId: string): Promise<boolean> => {
+    if (operationRef.current) return false;
     const nextCase = casePackages.find((casePackage) => casePackage.id === caseId);
     if (!nextCase || nextCase.id === form.caseId) return false;
     if (
       selectedCase
-      && !isPristineForCase(form, selectedCase)
+      && hasUnsavedChanges
       && !window.confirm('Changing the teaching case will clear the lesson content entered for this case. Continue?')
     ) {
       return false;
     }
+    if (!hasUnsavedChanges && needsMemoryExport
+      && !window.confirm('Change teaching case? This lesson is saved only for this visit. Export a portable copy before closing the page.')) return false;
     const requestId = ++caseChangeRequestRef.current;
-    setBusy(true);
-    try {
-      const storedLesson = loadStoredLesson
-        ? await loadStoredLesson(nextCase)
-        : null;
-      if (requestId !== caseChangeRequestRef.current) return false;
-      setForm(storedLesson ? formFromLesson(nextCase, storedLesson) : initialForm(nextCase));
-      setHasImportedDraft(false);
-      setErrors([]);
-      return true;
-    } catch (error) {
-      if (requestId !== caseChangeRequestRef.current) return false;
-      showErrors([
-        error instanceof Error
-          ? error.message
-          : 'The exact saved lesson revision could not be loaded.',
-      ]);
-      return false;
-    } finally {
-      if (requestId === caseChangeRequestRef.current) setBusy(false);
-    }
+    return (await runOperation(async () => {
+      try {
+        const storedLesson = loadStoredLesson ? await loadStoredLesson(nextCase) : null;
+        const persistent = storedLesson ? await readPersistence() : false;
+        if (!mountedRef.current || requestId !== caseChangeRequestRef.current) return false;
+        const nextForm = storedLesson ? formFromLesson(nextCase, storedLesson) : initialForm(nextCase);
+        setForm(nextForm);
+        setRetainedForm(JSON.stringify(nextForm));
+        setExportedForm('');
+        setLocalLessonSaved(Boolean(storedLesson));
+        setMemoryOnly(Boolean(storedLesson) && !persistent);
+        setHasImportedDraft(false);
+        setErrors([]);
+        return true;
+      } catch (error) {
+        if (!mountedRef.current || requestId !== caseChangeRequestRef.current) return false;
+        showErrors([error instanceof Error ? error.message : 'The exact saved lesson revision could not be loaded.']);
+        return false;
+      }
+    })) ?? false;
   };
 
   const toggleLevel = (level: LearnerLevel) => {
@@ -679,6 +758,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   };
 
   const applyImportedOutline = (outline: LessonSourceOutline): boolean => {
+    if (operationRef.current) return false;
     if (!selectedCase) {
       showErrors(['Choose a Case Package before applying an imported draft.']);
       return false;
@@ -736,7 +816,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     return true;
   };
 
-  const finalize = async (): Promise<FinalizedBundle | null> => {
+  const prepareLesson = async (): Promise<FinalizedBundle | null> => {
     if (!selectedCase) {
       showErrors(['Choose a teaching case before finalizing the lesson.']);
       return null;
@@ -752,7 +832,10 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
       showErrors(validation.errors);
       return null;
     }
-    setBusy(true);
+    // Keep the baseline tied to the form and case captured for this operation.
+    const savedForm = JSON.stringify(form);
+    const previousCase = selectedCase;
+    const requestId = caseChangeRequestRef.current;
     try {
       const lessonPlan = await finalizeLessonPlanV1(draft);
       const lessonPlanRef = getLessonPlanRef(lessonPlan);
@@ -777,29 +860,42 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
         },
       });
       const nextFinalized = { casePackage, lessonPlan, prompt, bundle };
+      if (!mountedRef.current || requestId !== caseChangeRequestRef.current) return null;
       const savedBrowserLocal = saveUpdatedBundle
         ? await saveUpdatedBundle(casePackage, lessonPlan, selectedCase.manifest.sha256)
         : false;
+      const persistent = savedBrowserLocal ? await readPersistence() : false;
+      if (!mountedRef.current || requestId !== caseChangeRequestRef.current) return null;
+      if (savedBrowserLocal) {
+        setCasePackages(current => current.map(entry => (
+          entry.id === previousCase.id && entry.manifest.sha256 === previousCase.manifest.sha256 ? casePackage : entry
+        )));
+        setRetainedForm(savedForm);
+        setLocalLessonSaved(true);
+        setMemoryOnly(!persistent);
+      }
       setFinalized(nextFinalized);
       setErrors([]);
       setStatusMessage(
         savedBrowserLocal
-          ? 'Browser-local case and exact lesson revision saved. The portable export is ready.'
+          ? persistent ? 'Browser-local case and exact lesson revision saved. The portable export is ready.' : 'Case and exact lesson revision saved for this visit only. Export a portable copy before closing the page.'
           : lessonPlan.clinicalReview.reviewed
           ? 'Clinically reviewed lesson and linked Case Package validated. The export is ready.'
           : 'Draft lesson and linked Case Package validated. The draft export is ready.',
       );
       return nextFinalized;
     } catch (error: unknown) {
+      if (!mountedRef.current || requestId !== caseChangeRequestRef.current) return null;
       const message = error instanceof Error ? error.message : 'The lesson could not be finalized.';
       showErrors(message.split('\n').filter((line) => line && !line.startsWith('Cannot finalize')));
       return null;
-    } finally {
-      setBusy(false);
     }
   };
 
+  const finalize = () => runOperation(prepareLesson);
+
   const goNext = async () => {
+    if (operationRef.current) return;
     const stepErrors = validateStep(step, form);
     if (stepErrors.length) {
       showErrors(stepErrors);
@@ -812,6 +908,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   };
 
   const chooseStep = async (index: number) => {
+    if (operationRef.current) return;
     setStepListOpen(false);
     if (index === step) headingRef.current?.focus();
     setErrors([]);
@@ -819,12 +916,15 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
     if (index === STEPS.length - 1) await finalize();
   };
 
-  const downloadBundle = async () => {
+  const downloadBundle = () => runOperation(async () => {
+    const downloadedForm = JSON.stringify(form);
     try {
-      const ready = finalized ?? await finalize();
+      const ready = finalized ?? await prepareLesson();
       if (!ready) return;
       if (ready.casePackage.preview.src.startsWith('case://assets/') && exportPortableCase) {
         await exportPortableCase(ready.casePackage);
+        if (!mountedRef.current) return;
+        setExportedForm(downloadedForm);
         setStatusMessage('The portable case, exact lesson, and referenced images were downloaded from this browser.');
         return;
       }
@@ -836,8 +936,11 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
       anchor.click();
       anchor.remove();
       URL.revokeObjectURL(url);
+      setRetainedForm(downloadedForm);
+      setExportedForm(downloadedForm);
       setStatusMessage('The versioned case and lesson bundle was downloaded from this browser.');
     } catch (error: unknown) {
+      if (!mountedRef.current) return;
       setStatusMessage('');
       showErrors([
         error instanceof Error
@@ -845,7 +948,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           : 'The export could not be completed. Your lesson remains in this browser.',
       ]);
     }
-  };
+  });
 
   if (loading) {
     return <main className="lesson-builder-loading" aria-busy="true">Loading Case Packages...</main>;
@@ -862,9 +965,10 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
   }
 
   return (
-    <main className="lesson-builder-shell">
+    <>
+    <main className="lesson-builder-shell" inert={showExitDialog}>
       <header className="lesson-builder-topbar">
-        <button type="button" className="lesson-builder-back" aria-label="Back to cases" onClick={onExit}>
+        <button type="button" className="lesson-builder-back" aria-label="Back to cases" disabled={busy} onClick={requestExit}>
           <ArrowLeft aria-hidden="true" />
           Back to cases
         </button>
@@ -873,7 +977,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           <span>CaseAttend</span>
           <span className="lesson-builder-product">Lesson Builder</span>
         </div>
-        <span className="lesson-builder-local"><LockKeyhole aria-hidden="true" /> Browser-only builder</span>
+        <span className={`lesson-builder-local${hasUnsavedChanges || localLessonSaved || exportedForm ? ' has-save-status' : ''}`} role="status" aria-label="Lesson save status"><LockKeyhole aria-hidden="true" />{hasUnsavedChanges ? 'Unsaved changes' : needsMemoryExport ? 'Saved for this visit' : exportedForm && memoryOnly ? 'Copy exported' : localLessonSaved ? 'Lesson saved' : exportedForm ? 'Copy exported' : 'Browser-only builder'}</span>
       </header>
 
       <div className="lesson-builder-layout">
@@ -884,7 +988,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
             <p>Choose a case, set your learning goals, then shape the questions and hints.</p>
           </div>
           <nav aria-label="Lesson builder steps" className={stepListOpen ? 'is-open' : ''}>
-            <button type="button" className="lesson-builder-step-toggle" aria-label="All lesson steps" aria-describedby="lesson-builder-current-step" aria-expanded={stepListOpen} aria-controls="lesson-builder-step-list"
+            <button type="button" disabled={busy} className="lesson-builder-step-toggle" aria-label="All lesson steps" aria-describedby="lesson-builder-current-step" aria-expanded={stepListOpen} aria-controls="lesson-builder-step-list"
               onClick={() => setStepListOpen(open => !open)}>
               <span id="lesson-builder-current-step">Step {step + 1} of {STEPS.length} · {STEPS[step].short}</span>
               <span>All steps <ChevronDown aria-hidden="true" /></span>
@@ -894,6 +998,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <li key={item.short}>
                   <button
                     type="button"
+                    disabled={busy}
                     aria-current={step === index ? 'step' : undefined}
                     onClick={() => void chooseStep(index)}
                   >
@@ -914,7 +1019,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           </div>
         </aside>
 
-        <section className="lesson-builder-workspace" aria-labelledby="lesson-builder-step-title">
+        <section className="lesson-builder-workspace" aria-labelledby="lesson-builder-step-title" aria-busy={busy}>
           <div className="lesson-builder-workspace-header">
             <p>Step {step + 1} of {STEPS.length}</p>
             <h2 id="lesson-builder-step-title" ref={headingRef} tabIndex={-1}>{STEPS[step].title}</h2>
@@ -933,13 +1038,13 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                 <h3>Review these items</h3>
                 <ul>{errors.map((error, index) => <li key={`${error}-${index}`}>{error.replace(/^- /, '')}</li>)}</ul>
                 {hasSettingsError && step !== 0 && (
-                  <button type="button" className="lesson-builder-button secondary compact" onClick={() => { setStep(0); setErrors(validateStep(0, form)); }}>Edit lesson settings</button>
+                  <button type="button" disabled={busy} className="lesson-builder-button secondary compact" onClick={() => { setStep(0); setErrors(validateStep(0, form)); }}>Edit lesson settings</button>
                 )}
                 <div className="lesson-builder-error-actions">
                   {['Edit setup', 'Edit learning goals', 'Edit tutor path', 'Edit sources'].map((label, index) => (
                     index !== step && !(index === 0 && hasSettingsError)
                     && validateStep(index, form).some(error => errors.includes(error))
-                    && <button key={label} type="button" className="lesson-builder-button secondary compact"
+                    && <button key={label} type="button" disabled={busy} className="lesson-builder-button secondary compact"
                       onClick={() => { setStep(index); setErrors(validateStep(index, form)); }}>{label}</button>
                   ))}
                 </div>
@@ -948,6 +1053,7 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
           )}
 
           <form onSubmit={(event) => event.preventDefault()} noValidate>
+            <fieldset disabled={busy} className="lesson-builder-editable">
             {step === 0 && (
               <div className="lesson-builder-section-stack">
                 <div className="lesson-builder-case-choice">
@@ -1244,14 +1350,18 @@ const LessonBuilder: React.FC<LessonBuilderProps> = ({
                   <ChevronRight aria-hidden="true" />
                 </button>
               ) : (
-                <button type="button" className="lesson-builder-button secondary" onClick={onExit}>Done</button>
+                <button type="button" className="lesson-builder-button secondary" onClick={requestExit}>Done</button>
               )}
             </div>
+            </fieldset>
           </form>
         </section>
       </div>
       <span className="sr-only" aria-live="polite">{busy ? 'Validating lesson' : ''}</span>
     </main>
+    {showExitDialog && <LeaveLessonDialog memoryOnly={!hasUnsavedChanges && needsMemoryExport}
+      onStay={() => setShowExitDialog(false)} onLeave={() => { setShowExitDialog(false); onExit(); }} />}
+    </>
   );
 };
 
