@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import type { CasePackageV1 } from '../core/casePackage';
 import type { ConnectionType, DicomWebConfig } from '../types';
 import { searchDicomWebStudies } from '../services/dicomService';
@@ -10,11 +10,13 @@ import OpenRouterMark from './OpenRouterLogo';
 import './StudyList.css';
 import { SAMPLE_CASE_ID } from '../data/sampleCase';
 import CaseLibraryPreview from './CaseLibraryPreview';
-import { matchesStudyFilter, STUDY_FILTERS } from './studyFilters';
+import { matchesStudyFilter, CASE_TYPE_FILTERS, CURRICULUM_FILTERS } from './studyFilters';
+import { indexStudyCases, matchesStudySearch, studySearchWords } from './studySearch';
 
 export interface CaseLibraryState {
   searchQuery: string;
-  activeFilter: string;
+  caseTypeFilter: string;
+  curriculumFilter: string;
   visibleCount: number;
   scrollTop: number;
   focusTriggerId?: string;
@@ -177,15 +179,16 @@ const StudyList: React.FC<StudyListProps> = ({
   const [visibleCount, setVisibleCount] = useState(stateRef?.current?.visibleCount ?? 12);
   const nextCaseRef = useRef<HTMLButtonElement | null>(null);
   const focusNextIndex = useRef<number | null>(null);
-  const [activeFilter, setActiveFilter] = useState(stateRef?.current?.activeFilter ?? 'all');
+  const [caseTypeFilter, setCaseTypeFilter] = useState(stateRef?.current?.caseTypeFilter ?? 'all');
+  const [curriculumFilter, setCurriculumFilter] = useState(stateRef?.current?.curriculumFilter ?? 'all');
   const [searchQuery, setSearchQuery] = useState(stateRef?.current?.searchQuery ?? '');
   const searchRef = useRef<HTMLInputElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const restoredRef = useRef(false);
-  const filtersRef = useRef({ activeFilter, searchQuery });
+  const filtersRef = useRef({ caseTypeFilter, curriculumFilter, searchQuery });
   const rememberLibrary = (focusTriggerId?: string) => {
     if (stateRef) stateRef.current = {
-      activeFilter, searchQuery, visibleCount,
+      caseTypeFilter, curriculumFilter, searchQuery, visibleCount,
       scrollTop: mainRef.current?.scrollTop ?? 0,
       focusTriggerId,
     };
@@ -212,11 +215,13 @@ const StudyList: React.FC<StudyListProps> = ({
   }, [loadCases]);
 
   useEffect(() => {
-    if (filtersRef.current.activeFilter !== activeFilter || filtersRef.current.searchQuery !== searchQuery) {
+    const previous = filtersRef.current;
+    if (previous.caseTypeFilter !== caseTypeFilter || previous.curriculumFilter !== curriculumFilter || previous.searchQuery !== searchQuery) {
+      focusNextIndex.current = null;
       setVisibleCount(12);
-      filtersRef.current = { activeFilter, searchQuery };
+      filtersRef.current = { caseTypeFilter, curriculumFilter, searchQuery };
     }
-  }, [activeFilter, searchQuery]);
+  }, [caseTypeFilter, curriculumFilter, searchQuery]);
   useLayoutEffect(() => {
     if (loading || loadError || restoredRef.current || !mainRef.current) return;
     restoredRef.current = true;
@@ -226,7 +231,13 @@ const StudyList: React.FC<StudyListProps> = ({
       .find(button => button.dataset.caseTrigger === saved.focusTriggerId);
     trigger?.focus({ preventScroll: true });
     mainRef.current.scrollTop = saved.scrollTop;
+    if (saved.focusTriggerId && !trigger) searchRef.current?.focus();
   }, [loading, loadError, stateRef]);
+  useEffect(() => {
+    // Browser history and authoring tools can leave the library without a card click.
+    // Wait until the saved scroll/focus has been restored before replacing it.
+    if (restoredRef.current && !loading && !loadError) rememberLibrary(stateRef?.current?.focusTriggerId);
+  }, [caseTypeFilter, curriculumFilter, searchQuery, visibleCount, loading, loadError]);
   useEffect(() => {
     if (focusNextIndex.current !== null) {
       nextCaseRef.current?.focus();
@@ -234,24 +245,22 @@ const StudyList: React.FC<StudyListProps> = ({
     }
   }, [visibleCount]);
 
-  const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
-  const visibleCasePackages = casePackages.filter((casePackage) => {
-    if (!matchesStudyFilter(casePackage, activeFilter)) return false;
-    if (!normalizedSearchQuery) return true;
-    return [
-      casePackage.title,
-      casePackage.vignette,
-      casePackage.domain,
-      casePackage.presentation.subtitle,
-    ].join(' ').toLocaleLowerCase().includes(normalizedSearchQuery);
-  });
+  const searchIndex = useMemo(() => indexStudyCases(casePackages), [casePackages]);
+  const queryWords = studySearchWords(searchQuery);
+  const visibleCasePackages = searchIndex.filter(({ casePackage, words }) => (
+    matchesStudyFilter(casePackage, caseTypeFilter)
+    && matchesStudyFilter(casePackage, curriculumFilter)
+    && matchesStudySearch(words, queryWords)
+  )).map(entry => entry.casePackage);
+  const hasCaseFilters = Boolean(searchQuery) || caseTypeFilter !== 'all' || curriculumFilter !== 'all';
   const firstAvailableCase = casePackages.find(casePackage => casePackage.id === SAMPLE_CASE_ID) ?? casePackages[0];
   const hasBuiltInSample = casePackages.some((casePackage) => (
     !casePackage.preview.src.startsWith('case://assets/')
   ));
   const clearCaseFilters = () => {
     setSearchQuery('');
-    setActiveFilter('all');
+    setCaseTypeFilter('all');
+    setCurriculumFilter('all');
     searchRef.current?.focus();
   };
 
@@ -293,25 +302,34 @@ const StudyList: React.FC<StudyListProps> = ({
                 {loading ? 'Loading the case library…' : loadError ? 'The case library is temporarily unavailable.' : `Showing ${Math.min(visibleCount, visibleCasePackages.length)} of ${visibleCasePackages.length} ${visibleCasePackages.length === 1 ? 'case' : 'cases'}`}
               </p>
             </div>
-            <div className="ca-search">
-              <label htmlFor="case-search" className="sr-only">Search cases</label>
-              <Search size={18} aria-hidden="true" />
-              <input ref={searchRef} id="case-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search title, specialty, or vignette" />
-              {searchQuery && <button type="button" aria-label="Clear search" onClick={() => { setSearchQuery(''); searchRef.current?.focus(); }}><X size={16} aria-hidden="true" /></button>}
+            {hasCaseFilters && <button type="button" className="ca-clear-filters" aria-label="Clear all search and filters" onClick={clearCaseFilters}>Clear all<X size={15} aria-hidden="true" /></button>}
+          </div>
+          <div className="ca-library-controls" role="group" aria-label="Find cases">
+            <div className="ca-search-field">
+              <label htmlFor="case-search">Search cases</label>
+              <div className="ca-search">
+                <Search size={18} aria-hidden="true" />
+                <input ref={searchRef} id="case-search" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="e.g. chest pain or CT head" autoComplete="off" />
+                {searchQuery && <button type="button" aria-label="Clear search" onClick={() => { setSearchQuery(''); searchRef.current?.focus(); }}><X size={16} aria-hidden="true" /></button>}
+              </div>
+            </div>
+            <div className="ca-select-field">
+              <label htmlFor="case-type-filter">Case type</label>
+              <select id="case-type-filter" value={caseTypeFilter} onChange={event => setCaseTypeFilter(event.target.value)}>
+                {CASE_TYPE_FILTERS.map(filter => <option key={filter.id} value={filter.id}>{filter.label}</option>)}
+              </select>
+            </div>
+            <div className="ca-select-field">
+              <label htmlFor="case-curriculum-filter">Curriculum tag</label>
+              <select id="case-curriculum-filter" value={curriculumFilter} onChange={event => setCurriculumFilter(event.target.value)}>
+                {CURRICULUM_FILTERS.map(filter => <option key={filter.id} value={filter.id}>{filter.label}</option>)}
+              </select>
             </div>
           </div>
-          <div className="ca-filters overflow-x-auto" role="group" aria-label="Filter cases">
-            {STUDY_FILTERS.map(f => (
-              <button key={f.id} type="button" aria-pressed={activeFilter === f.id} onClick={() => setActiveFilter(f.id)} className="min-h-11">{f.label}</button>
-            ))}
-          </div>
-          {(searchQuery || activeFilter !== 'all') && (
-            <div className="ca-filter-summary"><span>{visibleCasePackages.length} matching {visibleCasePackages.length === 1 ? 'case' : 'cases'}</span><button type="button" onClick={clearCaseFilters}>Clear search and filters</button></div>
-          )}
           <div className="ca-grid" aria-busy={loading}>
             {loading && <div className="ca-empty" role="status" aria-label="Loading cases"><Loader2 size={22} className="animate-spin" aria-hidden="true" /><p>Loading cases…</p></div>}
             {!loading && loadError && <div className="ca-empty"><p role="alert">{loadError}</p><button type="button" onClick={() => void loadCases()} className="ca-button ca-button-primary min-h-11">Try loading cases again</button></div>}
-            {!loading && !loadError && visibleCasePackages.length === 0 && <div className="ca-empty" role="status"><Search size={28} aria-hidden="true" /><h3>No cases found</h3><p>{casePackages.length === 0 ? 'No cases are available in this browser yet.' : 'Try another search term or choose a different topic.'}</p></div>}
+            {!loading && !loadError && visibleCasePackages.length === 0 && <div className="ca-empty" role="status"><Search size={28} aria-hidden="true" /><h3>No cases found</h3><p>{casePackages.length === 0 ? 'No cases are available in this browser yet.' : 'Try fewer search words or broaden a filter.'}</p></div>}
             {!loading && !loadError && visibleCasePackages.slice(0, visibleCount).map((casePackage, index) => (
               <article key={casePackage.id} className="ca-card">
                 <button ref={index === focusNextIndex.current ? nextCaseRef : undefined} data-case-trigger={`case:${casePackage.id}`} type="button" className="ca-card-action" onClick={() => selectCase(casePackage)} aria-label={`Start case: ${casePackage.title}`} />

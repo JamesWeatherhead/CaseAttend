@@ -9,7 +9,9 @@ CaseAttend is an educational tutor, not a diagnostic or clinical decision-making
 ## 1. Open a case
 
 1. Go to [caseattend.com](https://caseattend.com).
-2. Select **Try a sample case** for the quickest start. You can instead scroll to **Cases**, use the subject filters, and choose any case card.
+2. Select **Try a sample case** for the quickest start. You can instead scroll to **Cases**, search, and choose any case card.
+
+Search accepts words in any order: **chest pain** and **pain chest** find the same cases. **xray**, **x-ray**, and **radiograph** work too. You can combine **Case type** with **Curriculum tag**, such as **CT** and **Step 2**. Leave **Any curriculum** selected to include cases without a curriculum tag. **Clear search** keeps your filters; **Clear all** resets both filters and the search.
 
 The case opens with the image and **Tutor** panel. On a small or short screen, use **View image** and **Open tutor** to move between them.
 
@@ -23,7 +25,7 @@ You can use the viewer tools to point, draw, measure, zoom, or change frames whe
 
 ## 3. Choose your learner level
 
-At the bottom of the **AI Tutor** panel, choose the level closest to your audience:
+Use **Your level** above the tutor's first questions to choose the level closest to your audience:
 
 - **High school** for a high-school explanation;
 - **Undergraduate** for biology or pre-med learners;
@@ -34,9 +36,9 @@ Changing the level changes the teaching style. It does not change the underlying
 
 ## 4. Ask one focused question
 
-Some built-in cases show suggested questions or pre-cached answers. You can try one of those first.
+When reviewed starter answers are available, choose a question under **Start with a free question** to read its answer without connecting. **Case introduction** expands the original opening text. After the conversation begins, **Your level** moves beside the question controls.
 
-To type a new question, select **Connect** in the tutor, then **Continue with OpenRouter**. Sign in to OpenRouter and choose a model. Free models may be available subject to OpenRouter's limits; paid models use your own OpenRouter balance.
+To type a new question, select **Connect to ask your own question** in the tutor, then **Continue with OpenRouter**. Sign in to OpenRouter and choose a model. Free models may be available subject to OpenRouter's limits; paid models use your own OpenRouter balance.
 
 After connecting, CaseAttend returns to the case you opened when browser session storage is available. This reopens the case; it does not restore a previous conversation or drawings.
 
@@ -60,7 +62,7 @@ This is the experience an educator shapes in Lesson Builder: the opening questio
 
 ## 6. Start over or leave the case
 
-Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, loaded cases, and position retained for this visit.
+Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, both filters, loaded cases, and position retained for this visit.
 
 The browser's **Back** and **Forward** buttons also move between ordinary cases and the library. Use **Copy link** beside the case title to share a built-in case. If copying is blocked, a dialog provides selectable link text.
 
