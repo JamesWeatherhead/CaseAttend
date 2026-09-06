@@ -23,7 +23,8 @@
     "build:examples": "npm run build --workspace @caseattend/example-basic && npm run build --workspace @caseattend/example-self-hosted-research",
     "example:basic": "npm run dev --workspace @caseattend/example-basic",
     "example:research": "npm run dev --workspace @caseattend/example-self-hosted-research",
-    "pack:sdk": "npm run build:sdk && npm pack --dry-run --workspace @caseattend/core && npm pack --dry-run --workspace @caseattend/react"
+    "pack:sdk": "npm run build:sdk && npm pack --dry-run --workspace @caseattend/core && npm pack --dry-run --workspace @caseattend/react",
+    "thumbnails:generate": "tsx scripts/generateLibraryThumbnails.mts"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",
@@ -45,6 +46,7 @@
     "dotenv": "^17.4.2",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
+    "sharp": "0.35.4",
     "tailwindcss": "^4.1.0",
     "tsx": "^4.23.8",
     "typescript": "~7.0.2",

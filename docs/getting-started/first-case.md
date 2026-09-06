@@ -11,11 +11,11 @@ CaseAttend is an educational tutor, not a diagnostic or clinical decision-making
 1. Go to [caseattend.com](https://caseattend.com).
 2. Select **Try a sample case** for the quickest start. You can instead scroll to **Cases**, use the subject filters, and choose any case card.
 
-The case opens with the visual artifact on one side and the **Tutor** panel on the other. On a small screen, you may need to scroll between them.
+The case opens with the image and **Tutor** panel. On a small or short screen, use **View image** and **Open tutor** to move between them.
 
 ## 2. Read before asking
 
-Read the short case vignette, then inspect the image or image stack. If the case has several frames, move through them before deciding what seems important.
+Open **Case details** to read the short vignette, then inspect the image or image stack. **Fit image** brings the whole image into view. If the case has several frames, move through them before deciding what seems important.
 
 You can use the viewer tools to point, draw, measure, zoom, or change frames when those tools are available for the case. The tutor can use the current view when you submit a question.
 
@@ -23,9 +23,9 @@ You can use the viewer tools to point, draw, measure, zoom, or change frames whe
 
 At the bottom of the **AI Tutor** panel, choose the level closest to your audience:
 
-- **HS** for a high-school explanation;
-- **Undergrad** for biology or pre-med learners;
-- **Med (Pre)** or **Med (Post)** for medical students; or
+- **High school** for a high-school explanation;
+- **Undergraduate** for biology or pre-med learners;
+- **Medical student · Pre-Step 1** or **Medical student · Post-Step 1** for medical students; or
 - **Resident** for more advanced clinical reasoning.
 
 Changing the level changes the teaching style. It does not change the underlying image or make the tutor a clinical authority.
@@ -56,7 +56,7 @@ This is the experience an educator shapes in Lesson Builder: the opening questio
 
 ## 6. Start over or leave the case
 
-Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog.
+Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, loaded cases, and position retained for this visit.
 
 ## A quick educator debrief
 
