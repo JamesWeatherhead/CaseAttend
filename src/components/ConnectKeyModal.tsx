@@ -6,6 +6,7 @@ import { useDialogFocus } from '../hooks/useDialogFocus';
 
 interface ConnectKeyModalProps {
   onClose: () => void;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }
 
 const isFree = (id: string) => id.endsWith(':free');
@@ -17,12 +18,12 @@ const isFree = (id: string) => id.endsWith(':free');
  *    status bar reflects live. No free-text entry, so no runaway-cost model.
  * The key is minted into the browser and never touches our servers.
  */
-const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose }) => {
+const ConnectKeyModal: React.FC<ConnectKeyModalProps> = ({ onClose, returnFocusRef }) => {
   const [connected, setConnected] = useState<boolean>(hasKey());
   const [selectedModel, setSelectedModel] = useState<string>(getModel());
   const [connecting, setConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState('');
-  const dialogRef = useDialogFocus(onClose);
+  const dialogRef = useDialogFocus(onClose, returnFocusRef);
 
   useEffect(() => {
     setConnected(hasKey());

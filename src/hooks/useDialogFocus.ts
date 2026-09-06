@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 /** Keep keyboard navigation in an open dialog and return focus to its trigger. */
-export function useDialogFocus(onClose: () => void) {
+export function useDialogFocus(onClose: () => void, returnFocusRef?: RefObject<HTMLElement | null>) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -35,6 +35,7 @@ export function useDialogFocus(onClose: () => void) {
     return () => {
       dialog.removeEventListener('keydown', handleKeyDown);
       if (previous?.isConnected) previous.focus();
+      else if (returnFocusRef?.current?.isConnected) returnFocusRef.current.focus({ preventScroll: true });
     };
   }, []);
   return dialogRef;

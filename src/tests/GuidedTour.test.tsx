@@ -173,7 +173,8 @@ describe('GuidedTour', () => {
 
     expect(screen.getByText('Suggested Questions')).toBeTruthy();
     expect(screen.getByRole('dialog').textContent).toMatch(
-      /press Send.*captures the exact current view.*visible learner annotations/i,
+      /Pressing Send shares the current view.*visible annotations/i,
     );
+    expect(screen.getByRole('dialog').textContent).toMatch(/Free starter questions.*reviewed answers.*without a connection/i);
   });
 });

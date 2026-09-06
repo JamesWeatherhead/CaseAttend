@@ -34,6 +34,12 @@ vi.mock('../services/byokStore', () => ({
   getModel: () => 'openai/gpt-4.1-mini',
   hasKey: mocks.hasKey,
   modelLabel: () => 'Test vision model',
+  setModel: vi.fn(),
+  clearKey: () => {
+    mocks.hasKey.mockReturnValue(false);
+    window.dispatchEvent(new Event('caseattend:byok-changed'));
+  },
+  MODEL_OPTIONS: [{ id: 'openai/gpt-4.1-mini', label: 'Test vision model' }],
 }));
 
 vi.mock('../services/introCacheStore', () => ({
@@ -133,9 +139,10 @@ function makeIntroCache(): IntroCacheV1 {
 }
 
 async function renderPanel() {
-  render(
+  const captureCurrentView = vi.fn(() => capturedView);
+  const view = render(
     <AiAssistantPanel
-      captureCurrentView={() => capturedView}
+      captureCurrentView={captureCurrentView}
       sessionContext={sessionContext}
       studyMetadata={study}
     />,
@@ -147,6 +154,14 @@ async function renderPanel() {
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
+  return { ...view, captureCurrentView };
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
 }
 
 describe('AiAssistantPanel suggested follow-ups', () => {
@@ -168,13 +183,161 @@ describe('AiAssistantPanel suggested follow-ups', () => {
     vi.clearAllMocks();
   });
 
+  it.each(['pointer', 'touch', 'keyboard'])('reveals a reviewed answer from %s at its beginning without capture or inference', async (interaction) => {
+    mocks.hasKey.mockReturnValue(false);
+    const { captureCurrentView } = await renderPanel();
+    const chat = screen.getByRole('log');
+    vi.spyOn(chat, 'scrollHeight', 'get').mockReturnValue(2000);
+    vi.spyOn(chat, 'clientHeight', 'get').mockReturnValue(300);
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      const top = this.getAttribute('data-tutor-message')?.endsWith('-model') ? 800 : 100;
+      return { top, bottom: top + 300, left: 0, right: 300, width: 300, height: 300, x: 0, y: top, toJSON: () => ({}) };
+    });
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+    const question = screen.getByRole('button', { name: 'Show pre-cached answer for: What is an epidural hematoma?' });
+    if (interaction === 'pointer') fireEvent.pointerDown(question);
+    if (interaction === 'touch') fireEvent.touchStart(question);
+    if (interaction === 'keyboard') question.focus();
+    fireEvent.click(question, { detail: interaction === 'keyboard' ? 0 : 1 });
+    const answer = await screen.findByRole('article', { name: 'Reviewed starter answer' });
+    expect(answer.textContent).toBe('A collection of blood between the skull and dura.');
+    expect(document.activeElement).toBe(answer);
+    expect(focus).toHaveBeenLastCalledWith({ preventScroll: true });
+    expect(chat.scrollTop).toBe(688);
+    await act(async () => {});
+    expect(chat.scrollTop).toBe(688);
+    expect(captureCurrentView).not.toHaveBeenCalled();
+    expect(mocks.streamChatResponse).not.toHaveBeenCalled();
+    expect(screen.getAllByLabelText('Your level')).toHaveLength(1);
+    expect(document.querySelectorAll('[data-tour-id="ai-suggestions"]')).toHaveLength(1);
+
+    const introduction = screen.getByText('Case introduction').closest('details')!;
+    introduction.open = true;
+    fireEvent(introduction, new Event('toggle'));
+    chat.scrollTop = 1000;
+    fireEvent.click(screen.getByRole('button', { name: 'Clear chat and start a new conversation' }));
+    expect(await screen.findByRole('heading', { name: 'Start with a free question' })).toBeTruthy();
+    expect(introduction.open).toBe(false);
+    expect(chat.scrollTop).toBe(0);
+    expect(screen.queryByRole('article', { name: 'Reviewed starter answer' })).toBeNull();
+  });
+
+  it('uses distinct level questions and preserves the original introduction after an exchange', async () => {
+    const base = makeIntroCache();
+    const cache: IntroCacheV1 = { ...base, levels: { ...base.levels,
+      highschool: { introPrompt: 'High school introduction.', introQuestions: [{ id: 'hs', label: 'High school question', prompt: 'High school prompt.', cachedAnswer: 'High school answer.' }] },
+      resident: { introPrompt: 'Resident introduction.', introQuestions: [{ id: 'resident', label: 'Resident question', prompt: 'Resident prompt.', cachedAnswer: 'Resident answer.' }] },
+    } };
+    mocks.hasKey.mockReturnValue(false);
+    mocks.loadIntroCache.mockResolvedValue(cache);
+    await renderPanel();
+    fireEvent.change(screen.getByLabelText('Your level'), { target: { value: 'highschool' } });
+    await screen.findByRole('button', { name: 'Show pre-cached answer for: High school question' });
+    expect(screen.getByText('High school introduction.')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Your level'), { target: { value: 'resident' } });
+    fireEvent.click(await screen.findByRole('button', { name: 'Show pre-cached answer for: Resident question' }));
+    expect(await screen.findByText('Resident answer.')).toBeTruthy();
+    expect(screen.getByText('Resident prompt.')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Your level'), { target: { value: 'highschool' } });
+    expect(screen.getByText('Resident introduction.')).toBeTruthy();
+    expect(screen.queryByText('High school introduction.')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Show pre-cached answer for: High school question' })).toBeTruthy();
+    mocks.hasKey.mockReturnValue(true);
+    act(() => window.dispatchEvent(new Event('caseattend:byok-changed')));
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), { target: { value: 'Continue the lesson.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send view and question' }));
+    await waitFor(() => expect(mocks.streamChatResponse).toHaveBeenCalledTimes(1));
+    expect(mocks.streamChatResponse.mock.calls[0][0]).toContain('Resident introduction.');
+    expect(mocks.streamChatResponse.mock.calls[0][0]).toContain('Resident answer.');
+    expect(mocks.streamChatResponse.mock.calls[0][2]).toBe('highschool');
+  });
+
+  it.each(['missing', 'rejected'])('distinguishes loading from %s starter answers without suggesting a free live call', async (outcome) => {
+    mocks.hasKey.mockReturnValue(false);
+    const gate = deferred<IntroCacheV1 | null>();
+    mocks.loadIntroCache.mockReturnValue(gate.promise);
+    await renderPanel();
+    expect(screen.getByText('Loading starter questions…')).toBeTruthy();
+    expect(screen.queryByText('Free · instant · no key')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Send suggested question/ })).toBeNull();
+    await act(async () => { if (outcome === 'missing') gate.resolve(null); else gate.reject(new Error('offline')); });
+    expect(await screen.findByText(/Free starter answers aren’t available/)).toBeTruthy();
+    expect(screen.queryByText('Loading starter questions…')).toBeNull();
+    expect(screen.queryByRole('button', { name: /pre-cached answer/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Connect to ask your own question' })).toBeTruthy();
+    expect(mocks.streamChatResponse).not.toHaveBeenCalled();
+  });
+
+  it('discards an earlier case’s delayed cache after a case switch', async () => {
+    const oldCache = deferred<IntroCacheV1 | null>();
+    const base = makeIntroCache();
+    const nextCache: IntroCacheV1 = { ...base, caseId: 'ct-subdural', levels: { ...base.levels,
+      ms_preclinical: { introPrompt: 'Current case introduction.', introQuestions: [{ id: 'new', label: 'Current case question', prompt: 'Current case prompt.', cachedAnswer: 'Current case answer.' }] },
+    } };
+    mocks.hasKey.mockReturnValue(false);
+    mocks.loadIntroCache.mockImplementation(id => id === study.studyId ? oldCache.promise : Promise.resolve(nextCache));
+    const { rerender, captureCurrentView } = await renderPanel();
+    rerender(<AiAssistantPanel captureCurrentView={captureCurrentView} studyMetadata={{ ...study, studyId: 'ct-subdural' }} />);
+    await screen.findByRole('button', { name: 'Show pre-cached answer for: Current case question' });
+    await act(async () => oldCache.resolve(makeIntroCache()));
+    expect(screen.queryByRole('button', { name: 'Show pre-cached answer for: What is an epidural hematoma?' })).toBeNull();
+    expect(screen.getByText('Current case introduction.')).toBeTruthy();
+  });
+
+  it('returns focus to Connect after disconnecting removes the Change trigger', async () => {
+    await renderPanel();
+    const change = screen.getByRole('button', { name: 'Change' });
+    change.focus();
+    fireEvent.click(change);
+    fireEvent.click(screen.getByRole('button', { name: 'Disconnect OpenRouter' }));
+    expect(change.isConnected).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: /^Close$/ }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Connect to ask your own question' }));
+    expect(mocks.streamChatResponse).not.toHaveBeenCalled();
+  });
+
+  it.each(['scroll away', 'pause near bottom'])('respects %s while streaming and resumes only after Jump to latest', async (interaction) => {
+    const gate = deferred<{ provider: 'openrouter'; model: string; latencyMs: number; promptSha256: string }>();
+    let chunk!: (text: string) => void;
+    mocks.streamChatResponse.mockImplementation((...args: any[]) => { chunk = args[4]; return gate.promise; });
+    await renderPanel();
+    const chat = screen.getByRole('log');
+    let height = 2000;
+    vi.spyOn(chat, 'scrollHeight', 'get').mockImplementation(() => height);
+    vi.spyOn(chat, 'clientHeight', 'get').mockReturnValue(300);
+    fireEvent.change(screen.getByLabelText('Question for the AI tutor'), { target: { value: 'Explain the image.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send view and question' }));
+    await waitFor(() => expect(mocks.streamChatResponse).toHaveBeenCalled());
+    expect(screen.getByLabelText('Your level')).toHaveProperty('disabled', true);
+    if (interaction === 'scroll away') {
+      fireEvent.wheel(chat);
+      chat.scrollTop = 240;
+      fireEvent.scroll(chat);
+    } else {
+      chat.scrollTop = height - 300;
+      fireEvent.pointerDown(chat);
+      expect(screen.queryByRole('button', { name: 'Jump to latest' })).toBeNull();
+      height = 2500;
+    }
+    act(() => chunk('First part of the response.'));
+    expect(chat.scrollTop).toBe(interaction === 'scroll away' ? 240 : 1700);
+    fireEvent.click(screen.getByRole('button', { name: 'Jump to latest' }));
+    expect(chat.scrollTop).toBe(height);
+    height = 2900;
+    act(() => chunk(' Another part of the response.'));
+    expect(chat.scrollTop).toBe(2900);
+    await act(async () => gate.resolve({ provider: 'openrouter', model: 'openai/gpt-4.1-mini', latencyMs: 12, promptSha256: PROMPT_HASH }));
+    expect(screen.getByLabelText('Your level')).toHaveProperty('disabled', false);
+  });
+
   describe('label gating (fix 1)', () => {
     it('hides the "Free · instant · no key" tag when connected to OpenRouter', async () => {
       mocks.hasKey.mockReturnValue(true);
       await renderPanel();
 
       await waitFor(() => {
-        expect(screen.getByText(/Suggested Follow-ups/i)).toBeTruthy();
+        expect(screen.getByRole('heading', { name: 'Choose a first question' })).toBeTruthy();
       });
       expect(screen.queryByText(/Free · instant · no key/)).toBeNull();
     });
