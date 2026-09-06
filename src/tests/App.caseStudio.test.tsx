@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
 import type { CasePackageV1 } from '../core/casePackage';
@@ -77,6 +77,7 @@ const mocks = vi.hoisted(() => {
   };
   return {
     controller,
+    getCasePackage: vi.fn(),
     fetchDicomWebSeries: vi.fn(async () => [{
       id: 'browser-local-case:teaching-image',
       studyId: 'browser-local-case',
@@ -104,6 +105,7 @@ vi.mock('../services/openrouterAuth', () => ({
 
 vi.mock('../data/caseRegistry', () => ({
   primaryCaseModality: () => 'XC',
+  getCasePackage: mocks.getCasePackage,
 }));
 
 vi.mock('../components/StudyList', () => ({
@@ -136,6 +138,7 @@ vi.mock('../components/CaseStudio/CaseStudio', () => ({
   }) => (
     <main>
       <h1>Case Studio test surface</h1>
+      <input aria-label="Case draft" defaultValue="" />
       <button type="button" onClick={() => onOpenLessonBuilder(mocks.localCase.id)}>Build saved case lesson</button>
       <button type="button" onClick={() => onPreview(mocks.localCase as unknown as CasePackageV1)}>Preview saved case</button>
       <button type="button" onClick={onExit}>Exit Case Studio</button>
@@ -155,6 +158,7 @@ vi.mock('../components/LessonBuilder', () => ({
   }) => (
     <main>
       <h1>Lesson Builder test surface</h1>
+      <input aria-label="Lesson draft" defaultValue="" />
       <output aria-label="Initial case">{initialCaseId ?? 'none'}</output>
       <button type="button" onClick={() => void loadStoredLesson?.(mocks.localCase as unknown as CasePackageV1)}>Load exact local lesson</button>
       <button type="button" onClick={onExit}>Exit Lesson Builder</button>
@@ -178,6 +182,7 @@ vi.mock('../components/SafetyModal', () => ({ default: () => null }));
 
 describe('App Case Studio integration', () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     localStorage.clear();
     localStorage.setItem('caseattend.guidedTour.completed', 'true');
     vi.clearAllMocks();
@@ -207,11 +212,12 @@ describe('App Case Studio integration', () => {
     await waitFor(() => expect(mocks.fetchDicomWebSeries).toHaveBeenCalledWith(
       expect.objectContaining({ url: 'local' }),
       mocks.localCase.id,
+      mocks.localCase,
     ));
     expect(await screen.findByText('browser-local-case:teaching-image')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Back to study list' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Delete local case' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete local case' }));
     await waitFor(() => expect(mocks.controller.deleteCase).toHaveBeenCalledWith(mocks.localCase.id));
   });
 
@@ -220,5 +226,30 @@ describe('App Case Studio integration', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Create a lesson' }));
     expect((await screen.findByRole('status', { name: 'Initial case' })).textContent).toBe('none');
+  });
+
+  it.each([
+    ['Create a case', 'Case draft', 'Exit Case Studio'],
+    ['Create a lesson', 'Lesson draft', 'Exit Lesson Builder'],
+  ])('keeps the mounted draft through browser Back and Forward in %s', async (open, label, exit) => {
+    window.history.replaceState({}, '', '/#case/old-case');
+    window.history.pushState({}, '', '/');
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: open }));
+    const draft = await screen.findByRole('textbox', { name: label });
+    fireEvent.change(draft, { target: { value: 'Unsaved teaching material' } });
+    for (const direction of ['back', 'forward'] as const) {
+      await act(async () => {
+        const traversed = new Promise<void>(resolve => window.addEventListener('popstate', () => resolve(), { once: true }));
+        window.history[direction]();
+        await traversed;
+      });
+      expect(screen.getByRole('textbox', { name: label })).toBe(draft);
+      expect((draft as HTMLInputElement).value).toBe('Unsaved teaching material');
+      expect(window.location.hash).toBe('');
+    }
+    expect(mocks.getCasePackage).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: exit }));
+    expect(await screen.findByRole('main', { name: 'Case catalog' })).toBeTruthy();
   });
 });

@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from 'react';
 import StudyList, { type CaseLibraryState } from './components/StudyList';
+import CaseLinkButton from './components/CaseLinkButton';
+import CaseRouteStatus from './components/CaseRouteStatus';
+import { useCaseNavigation } from './hooks/useCaseNavigation';
 import type {
   FrozenResearchSetup,
   ResearchMaterialOption,
@@ -30,7 +33,6 @@ import {
 import { BYOK_CHANGED_EVENT, hasKey } from './services/byokStore';
 import { browserTeachingEngine } from './services/browserTeachingEngine';
 import { generateAuthoredIntroCacheWithOpenRouter } from './services/openrouterClient';
-import { CASE_SESSION_EXIT_EVENT } from './services/sessionRecorder';
 import {
   getPreference,
   PREFERENCE_KEYS,
@@ -160,7 +162,14 @@ export function normalizeToolForArtifact(
 
 const App: React.FC = () => {
   const libraryStateRef = useRef<CaseLibraryState | undefined>(undefined);
-  const [homeView, setHomeView] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
+  const [homeView, setHomeViewRaw] = useState<'cases' | 'lesson-builder' | 'case-studio' | 'research-setup' | 'participant'>('cases');
+  const navigationRef = useRef<ReturnType<typeof useCaseNavigation> | null>(null);
+  const setHomeView = useCallback((view: typeof homeView) => {
+    // Protect the workspace before any asynchronous setup or React render.
+    if (view === 'cases') navigationRef.current?.resume();
+    else navigationRef.current?.suspend();
+    setHomeViewRaw(view);
+  }, []);
   const [lessonBuilderInitialCaseId, setLessonBuilderInitialCaseId] = useState<string | undefined>();
   const caseStudioController = useMemo(() => createCaseStudioController({
     runIntroCacheGeneration: generateAuthoredIntroCacheWithOpenRouter,
@@ -305,6 +314,12 @@ const App: React.FC = () => {
   });
 
   const [selectedStudy, setSelectedStudy] = useState<CasePackageV1 | null>(null);
+  const navigation = useCaseNavigation(setSelectedStudy);
+  navigationRef.current = navigation;
+  const caseHeadingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (homeView === 'cases' && selectedStudy) caseHeadingRef.current?.focus({ preventScroll: true });
+  }, [homeView, selectedStudy?.id]);
   const participantViewerPolicy = participantSession?.arm.viewerPolicy;
   const participantCapturePolicy = participantSession?.arm.capturePolicy;
   const effectiveArtifactHints = useMemo(() => selectedStudy ? ({
@@ -316,13 +331,12 @@ const App: React.FC = () => {
       && participantViewerPolicy?.allowAnnotations !== false
       && participantViewerPolicy?.allowSegmentation !== false,
   }) : null, [participantViewerPolicy, selectedStudy]);
-  const handleBackToCases = useCallback(() => {
-    window.dispatchEvent(new Event(CASE_SESSION_EXIT_EVENT));
-    setSelectedStudy(null);
-  }, []);
+  const handleBackToCases = navigation.back;
   const [studySeries, setStudySeries] = useState<Series[]>([]);
   const [activeSeries, setActiveSeries] = useState<Series | null>(null);
   const seriesLoadRequestRef = useRef(0);
+  const [seriesLoadError, setSeriesLoadError] = useState(false);
+  const [seriesLoadAttempt, setSeriesLoadAttempt] = useState(0);
   const [activeTool, setActiveToolRaw] = useState<ToolMode>(ToolMode.SCROLL);
   const setActiveTool = (tool: ToolMode) => {
     const allowedTool = selectedStudy
@@ -545,6 +559,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const requestId = ++seriesLoadRequestRef.current;
     let cancelled = false;
+    setSeriesLoadError(false);
 
     async function loadSeries() {
       if (!selectedStudy) {
@@ -570,7 +585,7 @@ const App: React.FC = () => {
       }
 
       try {
-        const seriesData = await fetchDicomWebSeries(dicomConfig, selectedStudy.id);
+        const seriesData = await fetchDicomWebSeries(dicomConfig, selectedStudy.id, selectedStudy);
         if (cancelled || requestId !== seriesLoadRequestRef.current) return;
 
         setStudySeries(seriesData);
@@ -580,10 +595,12 @@ const App: React.FC = () => {
           setActiveRightTab('ai');
         } else {
           setActiveSeries(null);
+          setSeriesLoadError(true);
         }
       } catch (err) {
         if (cancelled || requestId !== seriesLoadRequestRef.current) return;
         console.error("Error loading series", err);
+        setSeriesLoadError(true);
       }
     }
 
@@ -591,7 +608,7 @@ const App: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedStudy, connectionType, dicomConfig, participantSession]);
+  }, [selectedStudy, connectionType, dicomConfig, participantSession, seriesLoadAttempt]);
 
   useEffect(() => {
     if (activeSeries) {
@@ -838,7 +855,10 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="max-h-[35dvh] overflow-y-auto border-t border-white/[0.06] px-5 py-3 bg-[#101722]">
-          <h1 className="text-base sm:text-lg font-semibold leading-snug text-slate-100">{selectedStudy.title}</h1>
+          <div className="flex items-start justify-between gap-3">
+            <h1 ref={caseHeadingRef} tabIndex={-1} className="min-w-0 pt-2 text-base sm:text-lg font-semibold leading-snug text-slate-100 focus:outline-none">{selectedStudy.title}</h1>
+            <div className="shrink-0"><CaseLinkButton key={selectedStudy.id} caseId={selectedStudy.id} local={selectedStudy.preview?.src.startsWith('case://assets/') ?? false} /></div>
+          </div>
           <details className="mt-1 text-sm text-slate-300">
             <summary className="min-h-9 w-fit cursor-pointer py-1 text-blue-300 focus-visible:outline-2 focus-visible:outline-blue-300">Case details</summary>
             <p className="max-w-4xl py-2 leading-relaxed">{selectedStudy.vignette}</p>
@@ -1115,7 +1135,7 @@ const App: React.FC = () => {
           saveCase={caseStudioController.saveCase}
           importCase={caseStudioController.importCase}
           exportCase={caseStudioController.exportCase}
-          onPreview={(casePackage) => { setHomeView('cases'); setSelectedStudy(casePackage); }}
+          onPreview={(casePackage) => { setHomeView('cases'); navigation.open(casePackage); }}
           onOpenLessonBuilder={(caseId) => {
             setLessonBuilderInitialCaseId(caseId);
             setHomeView('lesson-builder');
@@ -1132,11 +1152,13 @@ const App: React.FC = () => {
           hasApiKey={hasKey}
           onConnectOpenRouter={() => { void beginOpenRouterOAuth(); }}
         />
+      ) : homeView === 'cases' && navigation.status !== 'ready' ? (
+        <CaseRouteStatus status={navigation.status} onBack={navigation.back} onRetry={navigation.retry} />
       ) : !selectedStudy ? (
         <div className="h-full w-full bg-[#0f1011] overflow-hidden">
            <StudyList 
             stateRef={libraryStateRef}
-            onSelectStudy={(casePackage) => { setHomeView('cases'); setSelectedStudy(casePackage); }}
+            onSelectStudy={navigation.open}
             connectionType={connectionType}
             setConnectionType={setConnectionType}
             dicomConfig={dicomConfig}
@@ -1173,6 +1195,11 @@ const App: React.FC = () => {
                     artifactHints={selectedStudy.artifactHints}
                   />
                   <CaseContentWarnings warnings={selectedStudy.contentWarnings} />
+
+                  {seriesLoadError && <div role="alert" className="border-b border-amber-400/30 bg-amber-950 p-4 text-sm text-amber-100">
+                    <p>The teaching image could not be opened.</p>
+                    <button type="button" onClick={() => setSeriesLoadAttempt(attempt => attempt + 1)} className="mt-2 min-h-11 rounded-lg border border-amber-300/50 px-4 font-semibold focus-visible:outline-2 focus-visible:outline-amber-200">Try loading the image again</button>
+                  </div>}
 
                   <ViewerCanvas
                     ref={viewerRef}

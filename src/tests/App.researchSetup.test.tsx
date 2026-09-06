@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import React, { useState } from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
 
@@ -99,6 +99,7 @@ const mocks = vi.hoisted(() => {
       startParticipant: vi.fn(async () => session),
     },
     aiProps: vi.fn(),
+    getCasePackage: vi.fn(),
     viewerProps: vi.fn(),
     toolbarProps: vi.fn(),
     hasKey: vi.fn(() => true),
@@ -131,7 +132,7 @@ vi.mock('../services/browserTeachingEngine', () => ({
   browserTeachingEngine: mocks.browserTeachingEngine,
 }));
 vi.mock('../services/dicomService', () => ({ fetchDicomWebSeries: vi.fn() }));
-vi.mock('../data/caseRegistry', () => ({ primaryCaseModality: () => 'XC' }));
+vi.mock('../data/caseRegistry', () => ({ primaryCaseModality: () => 'XC', getCasePackage: mocks.getCasePackage }));
 
 vi.mock('../components/StudyList', () => ({
   default: ({ onOpenResearchSetup }: { onOpenResearchSetup: () => void }) => (
@@ -151,6 +152,7 @@ vi.mock('../components/ResearchSetupWizard/ResearchSetupWizard', () => ({
   }) => (
     <main>
       <h1>Research Setup test surface</h1>
+      <input aria-label="Study draft" defaultValue="" />
       <button type="button" onClick={() => { void onFreeze({}).then(onLaunchParticipant); }}>Freeze and launch</button>
     </main>
   ),
@@ -169,11 +171,13 @@ vi.mock('../components/ParticipantMode/ParticipantMode', () => ({
     renderActivity?: (context: { participantReference: string; config: unknown; arm: { id: string; label: string } }) => React.ReactNode;
   }) => {
     const [started, setStarted] = useState('');
+    const [error, setError] = useState('');
     return (
       <main>
         <h1>Participant Mode test surface</h1>
         <button type="button" disabled={!inferenceReady} onClick={() => { void onStart('0123456789ABCDEFGHJK').then((result) => setStarted(result.armId)); }}>Start participant</button>
-        <button type="button" onClick={() => { void onExit(); }}>Exit study</button>
+        <button type="button" onClick={() => { void Promise.resolve(onExit()).catch(error => setError(error.message)); }}>Exit study</button>
+        {error && <p role="alert">{error}</p>}
         <output aria-label="Assigned arm">{started}</output>
         {started && renderActivity?.({
           participantReference: 'b'.repeat(64),
@@ -199,6 +203,7 @@ vi.mock('../components/SafetyModal', () => ({ default: () => null }));
 
 describe('App Research Setup integration', () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     vi.clearAllMocks();
     mocks.hasKey.mockReturnValue(true);
     localStorage.clear();
@@ -284,5 +289,43 @@ describe('App Research Setup integration', () => {
 
     expect(screen.getByRole('button', { name: 'Start participant' }).matches(':disabled')).toBe(true);
     expect(mocks.controller.startParticipant).not.toHaveBeenCalled();
+  });
+
+  it('protects setup, participant launch, and the exact active session from case routes, including after a failed exit', async () => {
+    const attemptRoute = () => act(() => {
+      window.history.pushState({}, '', '/#case/ordinary-case');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Set up a research study' }));
+    attemptRoute(); // Covers the asynchronous material-loading interval too.
+    const draft = await screen.findByRole('textbox', { name: 'Study draft' });
+    fireEvent.change(draft, { target: { value: 'Unsaved study configuration' } });
+    attemptRoute();
+    expect(screen.getByRole('textbox', { name: 'Study draft' })).toBe(draft);
+    expect((draft as HTMLInputElement).value).toBe('Unsaved study configuration');
+    fireEvent.click(screen.getByRole('button', { name: 'Freeze and launch' }));
+    await screen.findByRole('heading', { name: 'Participant Mode test surface' });
+    attemptRoute();
+    expect(mocks.controller.startParticipant).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Start participant' }));
+    await waitFor(() => expect(screen.getByRole('status', { name: 'Assigned arm' }).textContent).toBe('question-first'));
+    attemptRoute();
+    expect(mocks.getCasePackage).not.toHaveBeenCalled();
+    expect(mocks.releaseAssets).not.toHaveBeenCalled();
+    expect(mocks.recorder.end).not.toHaveBeenCalled();
+    expect(window.location.hash).toBe('');
+    expect(screen.queryByRole('button', { name: 'Copy case link' })).toBeNull();
+
+    mocks.recorder.end.mockRejectedValueOnce(new Error('storage unavailable'));
+    fireEvent.click(screen.getByRole('button', { name: 'Exit study' }));
+    expect((await screen.findByRole('alert')).textContent).toContain('study remains open');
+    attemptRoute();
+    expect(screen.getByRole('status', { name: 'Assigned arm' }).textContent).toBe('question-first');
+    expect(mocks.releaseAssets).not.toHaveBeenCalled();
+    expect(mocks.getCasePackage).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Exit study' }));
+    expect(await screen.findByRole('main', { name: 'Case catalog' })).toBeTruthy();
   });
 });

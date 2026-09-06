@@ -13,6 +13,8 @@ CaseAttend is an educational tutor, not a diagnostic or clinical decision-making
 
 The case opens with the image and **Tutor** panel. On a small or short screen, use **View image** and **Open tutor** to move between them.
 
+You can also open the [sample fundus case directly](https://caseattend.com/#case/fundus-normal). Case links work after a refresh and can be bookmarked.
+
 ## 2. Read before asking
 
 Open **Case details** to read the short vignette, then inspect the image or image stack. **Fit image** brings the whole image into view. If the case has several frames, move through them before deciding what seems important.
@@ -36,6 +38,8 @@ Some built-in cases show suggested questions or pre-cached answers. You can try 
 
 To type a new question, select **Connect** in the tutor, then **Continue with OpenRouter**. Sign in to OpenRouter and choose a model. Free models may be available subject to OpenRouter's limits; paid models use your own OpenRouter balance.
 
+After connecting, CaseAttend returns to the case you opened when browser session storage is available. This reopens the case; it does not restore a previous conversation or drawings.
+
 Try a question that makes your reasoning visible, such as:
 
 > I notice an asymmetry near the right edge. What should I compare next before naming a diagnosis?
@@ -57,6 +61,12 @@ This is the experience an educator shapes in Lesson Builder: the opening questio
 ## 6. Start over or leave the case
 
 Use the trash-button action labeled **Clear chat and start a new conversation** to reset the conversation. Use **Back to study list** in the header to return to the case catalog with your search, loaded cases, and position retained for this visit.
+
+The browser's **Back** and **Forward** buttons also move between ordinary cases and the library. Use **Copy link** beside the case title to share a built-in case. If copying is blocked, a dialog provides selectable link text.
+
+A case created or imported locally is available only in the browser where it was saved. Its link does not upload the images or lesson. To share that material, export the `.caseattend` file from **Create a case** and have the recipient import it. If a link cannot be opened, choose **Try again** or **Back to cases**.
+
+Case links do not restore research sessions or unfinished authoring work. Use the workspace's own exit action when creating material or participating in a study. Refreshing or leaving the site can discard unsaved work.
 
 ## A quick educator debrief
 

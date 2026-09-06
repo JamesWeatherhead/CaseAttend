@@ -275,6 +275,7 @@ vi.mock('../components/SafetyModal', () => ({ default: () => null }));
 
 describe('App viewer accessibility integration', () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     vi.clearAllMocks();
     localStorage.clear();
     localStorage.setItem('caseattend.guidedTour.completed', 'true');
